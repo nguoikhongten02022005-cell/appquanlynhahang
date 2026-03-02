@@ -57,7 +57,7 @@
     <string name="price_259k">259.000 đ</string>
     <string name="price_45k">45.000 đ</string>
 
-    <string name="order_screen_title">Đơn hàng của tôi</string>
+    <string name="order_screen_title">Đơn hàng</string>
     <string name="order_sample_code">#DH12345</string>
     <string name="order_sample_time">12/05/2024 10:30</string>
     <string name="order_sample_total">500.000 đ</string>
@@ -81,4 +81,76 @@
     <string name="order_quantity_format">Số lượng: %1$d</string>
     <string name="order_price_format">Giá: %1$s</string>
     <string name="order_cancel_success">Đã hủy đơn %1$s</string>
+
+    <string name="requests_screen_title">Đặt bàn &amp; Yêu cầu của tôi</string>
+
+    <string name="reservation_section_title">Đặt bàn trước</string>
+    <string name="reservation_list_title">Lịch sử đặt bàn</string>
+    <string name="reservation_date_label">Ngày đặt bàn</string>
+    <string name="reservation_time_label">Giờ đặt bàn</string>
+    <string name="reservation_sample_date">05/03/2026</string>
+    <string name="reservation_sample_time">19:00</string>
+    <string name="reservation_sample_datetime">05/03/2026 19:00</string>
+    <string name="reservation_guest_count_hint">Số người</string>
+    <string name="reservation_note_hint">Ghi chú (nếu có)</string>
+    <string name="reservation_submit">Gửi yêu cầu</string>
+    <string name="reservation_cancel">Hủy</string>
+
+    <string name="reservation_status_pending">Chờ duyệt</string>
+    <string name="reservation_status_confirmed">Đã xác nhận</string>
+    <string name="reservation_status_completed">Hoàn thành</string>
+    <string name="reservation_status_canceled">Đã hủy</string>
+
+    <string name="reservation_sample_guest_count">Số người: 4</string>
+    <string name="reservation_sample_note">Ghi chú: Ngồi gần cửa sổ</string>
+    <string name="reservation_guest_count_format">Số người: %1$d</string>
+    <string name="reservation_note_format">Ghi chú: %1$s</string>
+    <string name="reservation_note_empty">Ghi chú: Không có</string>
+    <string name="reservation_validation_guest_count">Vui lòng nhập số người hợp lệ</string>
+    <string name="reservation_submit_success">Đã gửi yêu cầu đặt bàn</string>
+    <string name="reservation_cancel_success">Đã hủy yêu cầu đặt bàn</string>
+
+    <string name="service_request_section_title">Yêu cầu phục vụ</string>
+    <string name="service_request_list_title">Danh sách yêu cầu gần đây</string>
+    <string name="service_request_quick_call_staff">Gọi nhân viên</string>
+    <string name="service_request_quick_more_water">Thêm nước</string>
+    <string name="service_request_quick_payment">Thanh toán</string>
+    <string name="service_request_status_processing">Đang xử lý</string>
+    <string name="service_request_status_done">Đã xong</string>
+    <string name="service_request_sample_content">Gọi nhân viên</string>
+    <string name="service_request_sample_time">02/03/2026 12:05</string>
+    <string name="service_request_submit_success">Đã gửi yêu cầu: %1$s</string>
+
+    <string name="account_screen_title">Tài khoản của tôi</string>
+    <string name="account_actions_title">Thao tác nhanh</string>
+    <string name="account_avatar_content_description">Ảnh đại diện</string>
+    <string name="account_edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="account_change_password">Đổi mật khẩu</string>
+    <string name="account_contact_support">Liên hệ hỗ trợ</string>
+    <string name="account_logout">Đăng xuất</string>
+
+    <string name="account_edit_profile_title">Chỉnh sửa hồ sơ</string>
+    <string name="account_name_hint">Họ và tên</string>
+    <string name="account_phone_hint">Số điện thoại</string>
+    <string name="account_save_changes">Lưu thay đổi</string>
+
+    <string name="account_change_password_title">Đổi mật khẩu</string>
+    <string name="account_current_password_hint">Mật khẩu cũ</string>
+    <string name="account_new_password_hint">Mật khẩu mới</string>
+    <string name="account_confirm_password_hint">Xác nhận mật khẩu mới</string>
+    <string name="account_change_password_submit">Đổi mật khẩu</string>
+
+    <string name="account_profile_validation_required">Vui lòng nhập đầy đủ tên và số điện thoại</string>
+    <string name="account_profile_update_success">Đã cập nhật hồ sơ</string>
+    <string name="account_password_validation_required">Vui lòng nhập đầy đủ thông tin mật khẩu</string>
+    <string name="account_password_validation_old_wrong">Mật khẩu cũ không đúng</string>
+    <string name="account_password_validation_confirm_mismatch">Xác nhận mật khẩu không khớp</string>
+    <string name="account_password_change_success">Đổi mật khẩu thành công</string>
+    <string name="account_support_placeholder">Vui lòng liên hệ 1900 0000 để được hỗ trợ</string>
+    <string name="account_logout_placeholder">Đăng xuất thành công (mô phỏng)</string>
+
+    <string name="account_default_name">Nguyễn Minh Anh</string>
+    <string name="account_default_email">minhanh@example.com</string>
+    <string name="account_default_phone">0901234567</string>
+    <string name="account_default_password">123456</string>
 </resources>

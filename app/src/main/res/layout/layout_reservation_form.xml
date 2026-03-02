@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="0dp"
+    app:cardUseCompatPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dish_card"
+        android:orientation="vertical"
+        android:padding="@dimen/space_md">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reservation_date_label"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvReservationDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:background="@drawable/bg_search_rounded"
+            android:clickable="true"
+            android:drawableEnd="@drawable/ic_calendar_24"
+            android:drawablePadding="@dimen/space_sm"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/search_height"
+            android:paddingStart="@dimen/space_md"
+            android:paddingTop="@dimen/space_sm"
+            android:paddingEnd="@dimen/space_md"
+            android:paddingBottom="@dimen/space_sm"
+            android:text="@string/reservation_sample_date"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:text="@string/reservation_time_label"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvReservationTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:background="@drawable/bg_search_rounded"
+            android:clickable="true"
+            android:drawableEnd="@drawable/ic_calendar_24"
+            android:drawablePadding="@dimen/space_sm"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/search_height"
+            android:paddingStart="@dimen/space_md"
+            android:paddingTop="@dimen/space_sm"
+            android:paddingEnd="@dimen/space_md"
+            android:paddingBottom="@dimen/space_sm"
+            android:text="@string/reservation_sample_time"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/etGuestCount"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/search_height"
+            android:layout_marginTop="@dimen/space_md"
+            android:background="@drawable/bg_search_rounded"
+            android:gravity="center_vertical"
+            android:hint="@string/reservation_guest_count_hint"
+            android:inputType="number"
+            android:maxLines="1"
+            android:paddingStart="@dimen/space_md"
+            android:paddingEnd="@dimen/space_md"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/etReservationNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:background="@drawable/bg_search_rounded"
+            android:gravity="top|start"
+            android:hint="@string/reservation_note_hint"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minHeight="90dp"
+            android:padding="@dimen/space_md"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmitReservation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:background="@drawable/bg_button_green"
+            android:minHeight="0dp"
+            android:paddingTop="@dimen/space_sm"
+            android:paddingBottom="@dimen/space_sm"
+            android:text="@string/reservation_submit"
+            android:textAllCaps="false"
+            android:textColor="@color/text_on_color"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:backgroundTint="@null" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

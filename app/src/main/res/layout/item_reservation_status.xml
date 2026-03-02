@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_md"
+    app:cardElevation="0dp"
+    app:cardUseCompatPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dish_card"
+        android:orientation="vertical"
+        android:padding="@dimen/space_md">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvReservationTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/reservation_sample_datetime"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvReservationStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_button_green"
+                android:paddingStart="@dimen/space_md"
+                android:paddingTop="@dimen/space_xs"
+                android:paddingEnd="@dimen/space_md"
+                android:paddingBottom="@dimen/space_xs"
+                android:text="@string/reservation_status_pending"
+                android:textColor="@color/text_on_color"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/brand_orange" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvReservationGuestCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="@string/reservation_sample_guest_count"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvReservationNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="@string/reservation_sample_note"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:ignore="TextContrastCheck" />
+
+        <Button
+            android:id="@+id/btnCancelReservation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:background="@drawable/bg_button_orange"
+            android:minHeight="0dp"
+            android:paddingStart="@dimen/space_md"
+            android:paddingTop="@dimen/space_sm"
+            android:paddingEnd="@dimen/space_md"
+            android:paddingBottom="@dimen/space_sm"
+            android:text="@string/reservation_cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/text_on_color"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

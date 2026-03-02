@@ -56,6 +56,16 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            if (item.getItemId() == R.id.navigation_requests) {
+                showRequests();
+                return true;
+            }
+
+            if (item.getItemId() == R.id.nav_account) {
+                showAccount();
+                return true;
+            }
+
             return false;
         });
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
@@ -98,6 +108,36 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragmentContainer, new OrderFragment())
+                    .commit();
+        }
+    }
+
+    private void showRequests() {
+        View mainScrollView = findViewById(R.id.mainScrollView);
+        View fragmentContainer = findViewById(R.id.fragmentContainer);
+
+        mainScrollView.setVisibility(View.GONE);
+        fragmentContainer.setVisibility(View.VISIBLE);
+
+        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof RequestsFragment)) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer, new RequestsFragment())
+                    .commit();
+        }
+    }
+
+    private void showAccount() {
+        View mainScrollView = findViewById(R.id.mainScrollView);
+        View fragmentContainer = findViewById(R.id.fragmentContainer);
+
+        mainScrollView.setVisibility(View.GONE);
+        fragmentContainer.setVisibility(View.VISIBLE);
+
+        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof AccountFragment)) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer, new AccountFragment())
                     .commit();
         }
     }

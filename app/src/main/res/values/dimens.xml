@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">12dp</dimen>
+    <dimen name="space_lg">16dp</dimen>
+    <dimen name="space_xl">20dp</dimen>
+    <dimen name="space_2xl">24dp</dimen>
+
+    <dimen name="screen_padding_horizontal">16dp</dimen>
+
+    <dimen name="corner_small">8dp</dimen>
+    <dimen name="corner_medium">12dp</dimen>
+    <dimen name="corner_large">16dp</dimen>
+
+    <dimen name="header_icon_box_size">40dp</dimen>
+    <dimen name="icon_size_20">20dp</dimen>
+    <dimen name="icon_size_24">24dp</dimen>
+    <dimen name="search_height">40dp</dimen>
+    <dimen name="cart_badge_size">18dp</dimen>
+    <dimen name="cart_badge_text_size">10sp</dimen>
+
+    <dimen name="hero_height">190dp</dimen>
+    <dimen name="quick_action_height">52dp</dimen>
+
+    <dimen name="category_item_width">84dp</dimen>
+    <dimen name="category_circle_size">64dp</dimen>
+
+    <dimen name="recommended_image_height">120dp</dimen>
+    <dimen name="add_button_size">32dp</dimen>
+
+    <dimen name="bottom_nav_min_height">60dp</dimen>
+</resources>

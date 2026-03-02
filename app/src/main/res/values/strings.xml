@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">Quản lý nhà hàng</string>
+
+    <string name="logo_text">NH</string>
+    <string name="home_greeting">Xin chào!</string>
+    <string name="search_hint">Tìm món ăn, combo...</string>
+
+    <string name="hero_title">Khám phá món ngon hôm nay</string>
+    <string name="hero_subtitle">Ưu đãi đặc biệt cho khách đặt trước</string>
+    <string name="hero_cta">Xem ưu đãi</string>
+
+    <string name="quick_action_order">Đặt món ngay</string>
+    <string name="quick_action_book_table">Đặt bàn nhanh</string>
+    <string name="pending_label">Bạn có 2 yêu cầu của tôi đang chờ xử lý</string>
+
+    <string name="section_category">Danh mục món</string>
+    <string name="section_recommended">Món đề xuất</string>
+
+    <string name="bottom_nav_home">Trang chủ</string>
+    <string name="bottom_nav_menu">Menu</string>
+    <string name="bottom_nav_orders">Đơn hàng</string>
+    <string name="bottom_nav_booking">Đặt bàn &amp; Yêu cầu của tôi</string>
+    <string name="bottom_nav_account">Tài khoản</string>
+
+    <string name="cart_badge_count">3</string>
+    <string name="dish_status_available">Còn món</string>
+    <string name="dish_status_unavailable">Hết món</string>
+
+    <string name="cd_search">Tìm kiếm</string>
+    <string name="cd_cart">Giỏ hàng</string>
+    <string name="cd_profile">Tài khoản</string>
+    <string name="cd_category_icon">Biểu tượng danh mục</string>
+    <string name="cd_dish_image">Hình món ăn</string>
+    <string name="cd_add_dish">Thêm món</string>
+
+    <string name="category_main_course">Món chính</string>
+    <string name="category_hotpot">Lẩu</string>
+    <string name="category_drink">Đồ uống</string>
+    <string name="category_dessert">Tráng miệng</string>
+    <string name="category_combo">Combo</string>
+
+    <string name="dish_bo_luc_lac">Bò lúc lắc</string>
+    <string name="dish_salad_ca_hoi">Salad cá hồi</string>
+    <string name="dish_lau_thai">Lẩu Thái hải sản</string>
+    <string name="dish_tra_dao">Trà đào cam sả</string>
+
+    <string name="price_145k">145.000 đ</string>
+    <string name="price_129k">129.000 đ</string>
+    <string name="price_259k">259.000 đ</string>
+    <string name="price_45k">45.000 đ</string>
+</resources>

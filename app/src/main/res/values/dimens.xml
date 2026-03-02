@@ -27,6 +27,7 @@
     <dimen name="category_circle_size">64dp</dimen>
 
     <dimen name="recommended_image_height">120dp</dimen>
+    <dimen name="menu_image_size">88dp</dimen>
     <dimen name="add_button_size">32dp</dimen>
 
     <dimen name="bottom_nav_min_height">60dp</dimen>

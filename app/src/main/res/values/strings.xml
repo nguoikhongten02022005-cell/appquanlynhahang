@@ -4,6 +4,7 @@
     <string name="logo_text">NH</string>
     <string name="home_greeting">Xin chào!</string>
     <string name="search_hint">Tìm món ăn, combo...</string>
+    <string name="menu_search_hint">Tìm trong thực đơn...</string>
 
     <string name="hero_title">Khám phá món ngon hôm nay</string>
     <string name="hero_subtitle">Ưu đãi đặc biệt cho khách đặt trước</string>
@@ -32,6 +33,7 @@
     <string name="cd_category_icon">Biểu tượng danh mục</string>
     <string name="cd_dish_image">Hình món ăn</string>
     <string name="cd_add_dish">Thêm món</string>
+    <string name="menu_added_to_cart">Đã thêm %1$s vào giỏ hàng</string>
 
     <string name="category_main_course">Món chính</string>
     <string name="category_hotpot">Lẩu</string>
@@ -43,6 +45,12 @@
     <string name="dish_salad_ca_hoi">Salad cá hồi</string>
     <string name="dish_lau_thai">Lẩu Thái hải sản</string>
     <string name="dish_tra_dao">Trà đào cam sả</string>
+
+    <string name="menu_desc_bo_luc_lac">Thăn bò áp chảo sốt tiêu đen, rau củ theo mùa.</string>
+    <string name="menu_desc_salad_ca_hoi">Cá hồi tươi, xà lách hữu cơ, sốt mè rang.</string>
+    <string name="menu_desc_lau_thai">Nước lẩu chua cay đậm vị cùng hải sản tươi.</string>
+    <string name="menu_desc_tra_dao">Trà đào thanh mát với cam sả và đào ngâm.</string>
+    <string name="menu_sample_description">Món ăn đặc trưng chuẩn vị nhà hàng.</string>
 
     <string name="price_145k">145.000 đ</string>
     <string name="price_129k">129.000 đ</string>

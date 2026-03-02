@@ -1,6 +1,7 @@
 package com.example.quanlynhahang;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,13 +35,51 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setupBottomNavigation();
-        setupCategoryList();
-        setupRecommendedDishGrid();
+        showHome();
     }
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_home) {
+                showHome();
+                return true;
+            }
+
+            if (item.getItemId() == R.id.nav_menu) {
+                showMenu();
+                return true;
+            }
+
+            return false;
+        });
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
+    }
+
+    private void showHome() {
+        View mainScrollView = findViewById(R.id.mainScrollView);
+        View fragmentContainer = findViewById(R.id.fragmentContainer);
+
+        mainScrollView.setVisibility(View.VISIBLE);
+        fragmentContainer.setVisibility(View.GONE);
+
+        setupCategoryList();
+        setupRecommendedDishGrid();
+    }
+
+    private void showMenu() {
+        View mainScrollView = findViewById(R.id.mainScrollView);
+        View fragmentContainer = findViewById(R.id.fragmentContainer);
+
+        mainScrollView.setVisibility(View.GONE);
+        fragmentContainer.setVisibility(View.VISIBLE);
+
+        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof MenuFragment)) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer, new MenuFragment())
+                    .commit();
+        }
     }
 
     private void setupCategoryList() {

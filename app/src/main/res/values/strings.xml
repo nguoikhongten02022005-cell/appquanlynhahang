@@ -56,4 +56,29 @@
     <string name="price_129k">129.000 đ</string>
     <string name="price_259k">259.000 đ</string>
     <string name="price_45k">45.000 đ</string>
+
+    <string name="order_screen_title">Đơn hàng của tôi</string>
+    <string name="order_sample_code">#DH12345</string>
+    <string name="order_sample_time">12/05/2024 10:30</string>
+    <string name="order_sample_total">500.000 đ</string>
+    <string name="order_sample_quantity">Số lượng: 2</string>
+    <string name="order_sample_unit_price">Giá: 145.000 đ</string>
+
+    <string name="order_view_details">Chi tiết</string>
+    <string name="order_hide_details">Ẩn chi tiết</string>
+    <string name="order_cancel">Hủy đơn</string>
+    <string name="order_detail_dishes_title">Món trong đơn</string>
+
+    <string name="order_status_pending">Chờ xác nhận</string>
+    <string name="order_status_confirmed">Đã xác nhận</string>
+    <string name="order_status_completed">Hoàn thành</string>
+    <string name="order_status_canceled">Đã hủy</string>
+
+    <string name="order_total_335k">335.000 đ</string>
+    <string name="order_total_388k">388.000 đ</string>
+    <string name="order_total_258k">258.000 đ</string>
+
+    <string name="order_quantity_format">Số lượng: %1$d</string>
+    <string name="order_price_format">Giá: %1$s</string>
+    <string name="order_cancel_success">Đã hủy đơn %1$s</string>
 </resources>

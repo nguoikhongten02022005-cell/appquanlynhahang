@@ -51,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            if (item.getItemId() == R.id.nav_orders) {
+                showOrders();
+                return true;
+            }
+
             return false;
         });
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
@@ -78,6 +83,21 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragmentContainer, new MenuFragment())
+                    .commit();
+        }
+    }
+
+    private void showOrders() {
+        View mainScrollView = findViewById(R.id.mainScrollView);
+        View fragmentContainer = findViewById(R.id.fragmentContainer);
+
+        mainScrollView.setVisibility(View.GONE);
+        fragmentContainer.setVisibility(View.VISIBLE);
+
+        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof OrderFragment)) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer, new OrderFragment())
                     .commit();
         }
     }

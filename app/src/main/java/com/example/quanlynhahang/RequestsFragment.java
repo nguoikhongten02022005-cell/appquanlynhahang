@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.ReservationAdapter;
 import com.example.quanlynhahang.adapter.ServiceRequestAdapter;
+import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.Reservation;
 import com.example.quanlynhahang.model.ServiceRequest;
 import com.google.android.material.button.MaterialButton;
@@ -39,6 +41,9 @@ public class RequestsFragment extends Fragment {
     private EditText etGuestCount;
     private EditText etReservationNote;
 
+    private DatabaseHelper databaseHelper;
+    private SessionManager sessionManager;
+
     private ReservationAdapter reservationAdapter;
     private ServiceRequestAdapter serviceRequestAdapter;
 
@@ -54,12 +59,26 @@ public class RequestsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        databaseHelper = new DatabaseHelper(requireContext());
+        sessionManager = new SessionManager(requireContext());
+        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+
         initViews(view);
-        setupMockData();
+        setupServiceRequestMockData();
+        loadReservations();
         setupDateTimePicker();
         setupReservationList(view);
         setupServiceRequestList(view);
         setupActions(view);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadReservations();
+        if (reservationAdapter != null) {
+            reservationAdapter.setReservations(reservations);
+        }
     }
 
     private void initViews(View view) {
@@ -148,6 +167,16 @@ public class RequestsFragment extends Fragment {
         rvReservations.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         reservationAdapter = new ReservationAdapter(reservations, (reservation, position) -> {
+            boolean canceled = databaseHelper.cancelReservation(reservation.getId());
+            if (!canceled) {
+                Toast.makeText(
+                        requireContext(),
+                        getString(R.string.db_operation_failed),
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
+
             reservation.cancel();
             reservationAdapter.notifyItemChanged(position);
             Toast.makeText(
@@ -188,6 +217,11 @@ public class RequestsFragment extends Fragment {
     }
 
     private void submitReservation() {
+        if (!sessionManager.isLoggedIn()) {
+            Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String guestCountText = etGuestCount.getText() == null ? "" : etGuestCount.getText().toString().trim();
         if (TextUtils.isEmpty(guestCountText)) {
             Toast.makeText(
@@ -221,8 +255,27 @@ public class RequestsFragment extends Fragment {
 
         String note = etReservationNote.getText() == null ? "" : etReservationNote.getText().toString().trim();
         String reservationDateTime = getFormattedDateTime(selectedDateTime);
+        long userId = sessionManager.getCurrentUserId();
+
+        long newReservationId = databaseHelper.insertReservation(
+                userId,
+                reservationDateTime,
+                guestCount,
+                note,
+                Reservation.Status.PENDING_APPROVAL
+        );
+
+        if (newReservationId <= 0) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.db_operation_failed),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
 
         Reservation newReservation = new Reservation(
+                newReservationId,
                 reservationDateTime,
                 guestCount,
                 note,
@@ -281,27 +334,18 @@ public class RequestsFragment extends Fragment {
         );
     }
 
-    private void setupMockData() {
+    private void loadReservations() {
         reservations.clear();
-        reservations.add(new Reservation(
-                "05/03/2026 19:00",
-                4,
-                "Ngồi gần cửa sổ",
-                Reservation.Status.PENDING_APPROVAL
-        ));
-        reservations.add(new Reservation(
-                "01/03/2026 18:30",
-                2,
-                "Kỷ niệm ngày cưới",
-                Reservation.Status.CONFIRMED
-        ));
-        reservations.add(new Reservation(
-                "25/02/2026 12:00",
-                6,
-                "",
-                Reservation.Status.COMPLETED
-        ));
 
+        long userId = sessionManager.getCurrentUserId();
+        if (userId <= 0 || !sessionManager.isLoggedIn()) {
+            return;
+        }
+
+        reservations.addAll(databaseHelper.getReservationsByUserId(userId));
+    }
+
+    private void setupServiceRequestMockData() {
         serviceRequests.clear();
         serviceRequests.add(new ServiceRequest(
                 getString(R.string.service_request_quick_more_water),

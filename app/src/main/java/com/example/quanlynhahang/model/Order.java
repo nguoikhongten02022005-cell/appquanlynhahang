@@ -12,6 +12,7 @@ public class Order {
         CANCELED
     }
 
+    private final long id;
     private final String code;
     private final String time;
     private final String totalPrice;
@@ -19,17 +20,23 @@ public class Order {
     private Status status;
     private boolean expanded;
 
-    public Order(String code,
+    public Order(long id,
+                 String code,
                  String time,
                  String totalPrice,
                  Status status,
                  List<OrderDish> dishes) {
+        this.id = id;
         this.code = code;
         this.time = time;
         this.totalPrice = totalPrice;
         this.status = status;
         this.dishes = new ArrayList<>(dishes);
         this.expanded = false;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getCode() {

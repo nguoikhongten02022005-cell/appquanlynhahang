@@ -1,7 +1,6 @@
 package com.example.quanlynhahang;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.EditText;
@@ -10,14 +9,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.data.SessionManager;
 import com.google.android.material.button.MaterialButton;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private static final String PREFS_AUTH = "auth_prefs";
-    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
-    private static final String KEY_REGISTERED_EMAIL = "registered_email";
-    private static final String KEY_REGISTERED_PASSWORD = "registered_password";
+    private DatabaseHelper databaseHelper;
+    private SessionManager sessionManager;
 
     private EditText etRegisterFullName;
     private EditText etRegisterEmail;
@@ -29,6 +28,10 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        databaseHelper = new DatabaseHelper(this);
+        sessionManager = new SessionManager(this);
+        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
 
         etRegisterFullName = findViewById(R.id.etRegisterFullName);
         etRegisterEmail = findViewById(R.id.etRegisterEmail);
@@ -64,12 +67,11 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_AUTH, MODE_PRIVATE);
-        sharedPreferences.edit()
-                .putString(KEY_REGISTERED_EMAIL, email)
-                .putString(KEY_REGISTERED_PASSWORD, password)
-                .putBoolean(KEY_IS_LOGGED_IN, false)
-                .apply();
+        long newUserId = databaseHelper.insertUser(fullName, email, phone, password);
+        if (newUserId <= 0) {
+            Toast.makeText(this, getString(R.string.register_email_exists), Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Toast.makeText(this, getString(R.string.register_success), Toast.LENGTH_SHORT).show();
         navigateToLogin();

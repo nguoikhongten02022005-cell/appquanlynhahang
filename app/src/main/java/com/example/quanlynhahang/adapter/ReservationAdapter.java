@@ -34,6 +34,12 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         this.onCancelReservationClickListener = onCancelReservationClickListener;
     }
 
+    public void setReservations(List<Reservation> newReservations) {
+        reservations.clear();
+        reservations.addAll(newReservations);
+        notifyDataSetChanged();
+    }
+
     public void addReservation(Reservation reservation) {
         reservations.add(0, reservation);
         notifyItemInserted(0);

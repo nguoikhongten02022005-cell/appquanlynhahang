@@ -1,7 +1,6 @@
 package com.example.quanlynhahang;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.EditText;
@@ -10,16 +9,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.model.User;
 import com.google.android.material.button.MaterialButton;
 
 public class LoginActivity extends AppCompatActivity {
 
     public static final String EXTRA_RETURN_TO_CALLER = "extra_return_to_caller";
 
-    private static final String PREFS_AUTH = "auth_prefs";
-    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
-    private static final String KEY_REGISTERED_EMAIL = "registered_email";
-    private static final String KEY_REGISTERED_PASSWORD = "registered_password";
+    private DatabaseHelper databaseHelper;
+    private SessionManager sessionManager;
 
     private EditText etLoginEmail;
     private EditText etLoginPassword;
@@ -28,6 +28,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        databaseHelper = new DatabaseHelper(this);
+        sessionManager = new SessionManager(this);
+        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
 
         etLoginEmail = findViewById(R.id.etLoginEmail);
         etLoginPassword = findViewById(R.id.etLoginPassword);
@@ -47,13 +51,13 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        if (!isValidCredential(email, password)) {
+        User authenticatedUser = databaseHelper.checkLogin(email, password);
+        if (authenticatedUser == null) {
             Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_AUTH, MODE_PRIVATE);
-        sharedPreferences.edit().putBoolean(KEY_IS_LOGGED_IN, true).apply();
+        sessionManager.saveLoginSession(authenticatedUser.getId());
 
         Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
 
@@ -65,21 +69,6 @@ public class LoginActivity extends AppCompatActivity {
 
         startActivity(new Intent(this, MainActivity.class));
         finish();
-    }
-
-    private boolean isValidCredential(String email, String password) {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_AUTH, MODE_PRIVATE);
-
-        String savedEmail = sharedPreferences.getString(
-                KEY_REGISTERED_EMAIL,
-                getString(R.string.account_default_email)
-        );
-        String savedPassword = sharedPreferences.getString(
-                KEY_REGISTERED_PASSWORD,
-                getString(R.string.account_default_password)
-        );
-
-        return email.equalsIgnoreCase(savedEmail) && password.equals(savedPassword);
     }
 
     private String getTrimmedText(EditText editText) {

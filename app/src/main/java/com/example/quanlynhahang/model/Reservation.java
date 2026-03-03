@@ -9,16 +9,22 @@ public class Reservation {
         CANCELED
     }
 
+    private final long id;
     private final String time;
     private final int guestCount;
     private final String note;
     private Status status;
 
-    public Reservation(String time, int guestCount, String note, Status status) {
+    public Reservation(long id, String time, int guestCount, String note, Status status) {
+        this.id = id;
         this.time = time;
         this.guestCount = guestCount;
         this.note = note;
         this.status = status;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getTime() {

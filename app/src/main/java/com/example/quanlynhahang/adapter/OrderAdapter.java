@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -25,10 +24,22 @@ import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
-    private final List<Order> orders = new ArrayList<>();
+    public interface OnCancelOrderClickListener {
+        void onCancelOrder(Order order, int position);
+    }
 
-    public OrderAdapter(List<Order> orders) {
+    private final List<Order> orders = new ArrayList<>();
+    private final OnCancelOrderClickListener onCancelOrderClickListener;
+
+    public OrderAdapter(List<Order> orders, OnCancelOrderClickListener onCancelOrderClickListener) {
         this.orders.addAll(orders);
+        this.onCancelOrderClickListener = onCancelOrderClickListener;
+    }
+
+    public void updateData(List<Order> newOrders) {
+        orders.clear();
+        orders.addAll(newOrders);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -95,7 +106,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             btnOrderDetail.setOnClickListener(v -> toggleDetails(order));
 
             btnOrderCancel.setVisibility(order.canCancel() ? View.VISIBLE : View.GONE);
-            btnOrderCancel.setOnClickListener(v -> cancelOrder(order));
+            btnOrderCancel.setOnClickListener(v -> {
+                int adapterPosition = getBindingAdapterPosition();
+                if (adapterPosition == RecyclerView.NO_POSITION || !order.canCancel()) {
+                    return;
+                }
+                onCancelOrderClickListener.onCancelOrder(order, adapterPosition);
+            });
         }
 
         private void toggleDetails(Order order) {
@@ -108,20 +125,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             notifyItemChanged(adapterPosition);
         }
 
-        private void cancelOrder(Order order) {
-            int adapterPosition = getBindingAdapterPosition();
-            if (adapterPosition == RecyclerView.NO_POSITION || !order.canCancel()) {
-                return;
-            }
-
-            order.cancel();
-            Toast.makeText(
-                    itemView.getContext(),
-                    itemView.getContext().getString(R.string.order_cancel_success, order.getCode()),
-                    Toast.LENGTH_SHORT
-            ).show();
-            notifyItemChanged(adapterPosition);
-        }
     }
 
     private int getStatusTextRes(Order.Status status) {

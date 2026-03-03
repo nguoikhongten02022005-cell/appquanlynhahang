@@ -2,16 +2,20 @@ package com.example.quanlynhahang.model;
 
 public class User {
 
-    private String name;
+    private final long id;
+    private final String name;
     private final String email;
-    private String phone;
-    private String password;
+    private final String phone;
 
-    public User(String name, String email, String phone, String password) {
+    public User(long id, String name, String email, String phone) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.password = password;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getName() {
@@ -24,18 +28,5 @@ public class User {
 
     public String getPhone() {
         return phone;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void updateProfile(String name, String phone) {
-        this.name = name;
-        this.phone = phone;
-    }
-
-    public void changePassword(String newPassword) {
-        password = newPassword;
     }
 }

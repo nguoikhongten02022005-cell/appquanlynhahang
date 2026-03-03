@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.MenuAdapter;
+import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.model.RecommendedDishItem;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class MenuFragment extends Fragment {
     private final List<RecommendedDishItem> allDishes = new ArrayList<>();
     private final List<String> allDescriptions = new ArrayList<>();
 
+    private DatabaseHelper databaseHelper;
     private MenuAdapter menuAdapter;
 
     @Nullable
@@ -40,6 +42,9 @@ public class MenuFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        databaseHelper = new DatabaseHelper(requireContext());
+        databaseHelper.seedDishesIfEmpty(requireContext());
 
         setupDishData();
         setupRecyclerView(view);
@@ -112,36 +117,10 @@ public class MenuFragment extends Fragment {
         allDishes.clear();
         allDescriptions.clear();
 
-        allDishes.add(new RecommendedDishItem(
-                R.drawable.ic_restaurant_24,
-                getString(R.string.dish_bo_luc_lac),
-                getString(R.string.price_145k),
-                true
-        ));
-        allDescriptions.add(getString(R.string.menu_desc_bo_luc_lac));
-
-        allDishes.add(new RecommendedDishItem(
-                R.drawable.ic_restaurant_24,
-                getString(R.string.dish_salad_ca_hoi),
-                getString(R.string.price_129k),
-                true
-        ));
-        allDescriptions.add(getString(R.string.menu_desc_salad_ca_hoi));
-
-        allDishes.add(new RecommendedDishItem(
-                R.drawable.ic_restaurant_24,
-                getString(R.string.dish_lau_thai),
-                getString(R.string.price_259k),
-                false
-        ));
-        allDescriptions.add(getString(R.string.menu_desc_lau_thai));
-
-        allDishes.add(new RecommendedDishItem(
-                R.drawable.ic_local_drink_24,
-                getString(R.string.dish_tra_dao),
-                getString(R.string.price_45k),
-                true
-        ));
-        allDescriptions.add(getString(R.string.menu_desc_tra_dao));
+        List<DatabaseHelper.DishRecord> dishRecords = databaseHelper.getAllDishes();
+        for (DatabaseHelper.DishRecord record : dishRecords) {
+            allDishes.add(record.getDishItem());
+            allDescriptions.add(record.getDescription());
+        }
     }
 }

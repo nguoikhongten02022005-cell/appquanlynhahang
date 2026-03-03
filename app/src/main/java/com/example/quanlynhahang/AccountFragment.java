@@ -1,8 +1,6 @@
 package com.example.quanlynhahang;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -18,13 +16,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.User;
 import com.google.android.material.button.MaterialButton;
 
 public class AccountFragment extends Fragment {
 
-    private static final String PREFS_AUTH = "auth_prefs";
-    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
+    private DatabaseHelper databaseHelper;
+    private SessionManager sessionManager;
 
     private User currentUser;
 
@@ -62,9 +62,11 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        databaseHelper = new DatabaseHelper(requireContext());
+        sessionManager = new SessionManager(requireContext());
+        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+
         initViews(view);
-        initDefaultUser();
-        bindUserData();
         setupActions(view);
         updateAuthStateUi();
     }
@@ -94,21 +96,6 @@ public class AccountFragment extends Fragment {
         etConfirmPassword = view.findViewById(R.id.etConfirmPassword);
     }
 
-    private void initDefaultUser() {
-        currentUser = new User(
-                getString(R.string.account_default_name),
-                getString(R.string.account_default_email),
-                getString(R.string.account_default_phone),
-                getString(R.string.account_default_password)
-        );
-    }
-
-    private void bindUserData() {
-        tvAccountName.setText(currentUser.getName());
-        tvAccountEmail.setText(currentUser.getEmail());
-        tvAccountPhone.setText(currentUser.getPhone());
-    }
-
     private void setupActions(View view) {
         MaterialButton btnLoginNow = view.findViewById(R.id.btnLoginNow);
         MaterialButton btnEditProfile = view.findViewById(R.id.btnEditProfile);
@@ -123,6 +110,7 @@ public class AccountFragment extends Fragment {
             intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
             loginLauncher.launch(intent);
         });
+
         btnEditProfile.setOnClickListener(v -> showEditProfileForm());
         btnSaveProfileChanges.setOnClickListener(v -> saveProfileChanges());
         btnOpenChangePassword.setOnClickListener(v -> showChangePasswordForm());
@@ -135,15 +123,15 @@ public class AccountFragment extends Fragment {
         ).show());
 
         btnLogout.setOnClickListener(v -> {
-            SharedPreferences sharedPreferences = requireContext().getSharedPreferences(
-                    PREFS_AUTH,
-                    Context.MODE_PRIVATE
-            );
-            sharedPreferences.edit().putBoolean(KEY_IS_LOGGED_IN, false).apply();
+            sessionManager.clearSession();
+            currentUser = null;
+            layoutEditProfile.setVisibility(View.GONE);
+            layoutChangePassword.setVisibility(View.GONE);
+            clearChangePasswordForm();
 
             Toast.makeText(
                     requireContext(),
-                    getString(R.string.account_logout_placeholder),
+                    getString(R.string.account_logout_success),
                     Toast.LENGTH_SHORT
             ).show();
             updateAuthStateUi();
@@ -151,6 +139,11 @@ public class AccountFragment extends Fragment {
     }
 
     private void showEditProfileForm() {
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         layoutEditProfile.setVisibility(View.VISIBLE);
         layoutChangePassword.setVisibility(View.GONE);
 
@@ -159,6 +152,11 @@ public class AccountFragment extends Fragment {
     }
 
     private void saveProfileChanges() {
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String name = getTrimmedText(etEditName);
         String phone = getTrimmedText(etEditPhone);
 
@@ -171,8 +169,26 @@ public class AccountFragment extends Fragment {
             return;
         }
 
-        currentUser.updateProfile(name, phone);
-        bindUserData();
+        boolean isUpdated = databaseHelper.updateUserProfile(currentUser.getId(), name, phone);
+        if (!isUpdated) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.db_operation_failed),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        User refreshedUser = databaseHelper.getUserById(currentUser.getId());
+        if (refreshedUser == null) {
+            Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
+            sessionManager.clearSession();
+            updateAuthStateUi();
+            return;
+        }
+
+        currentUser = refreshedUser;
+        bindUserData(currentUser);
         layoutEditProfile.setVisibility(View.GONE);
 
         Toast.makeText(
@@ -183,11 +199,20 @@ public class AccountFragment extends Fragment {
     }
 
     private void showChangePasswordForm() {
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
+            return;
+        }
         layoutChangePassword.setVisibility(View.VISIBLE);
         layoutEditProfile.setVisibility(View.GONE);
     }
 
     private void submitPasswordChange() {
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String currentPassword = getTrimmedText(etCurrentPassword);
         String newPassword = getTrimmedText(etNewPassword);
         String confirmPassword = getTrimmedText(etConfirmPassword);
@@ -203,7 +228,8 @@ public class AccountFragment extends Fragment {
             return;
         }
 
-        if (!currentUser.getPassword().equals(currentPassword)) {
+        User matchedUser = databaseHelper.checkLogin(currentUser.getEmail(), currentPassword);
+        if (matchedUser == null) {
             Toast.makeText(
                     requireContext(),
                     getString(R.string.account_password_validation_old_wrong),
@@ -221,7 +247,16 @@ public class AccountFragment extends Fragment {
             return;
         }
 
-        currentUser.changePassword(newPassword);
+        boolean isUpdated = databaseHelper.updateUserPassword(currentUser.getId(), newPassword);
+        if (!isUpdated) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.db_operation_failed),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
         clearChangePasswordForm();
         layoutChangePassword.setVisibility(View.GONE);
 
@@ -243,23 +278,46 @@ public class AccountFragment extends Fragment {
             return;
         }
 
-        boolean isLoggedIn = isUserLoggedIn();
-        layoutAccountLoggedIn.setVisibility(isLoggedIn ? View.VISIBLE : View.GONE);
-        layoutAccountLoggedOut.setVisibility(isLoggedIn ? View.GONE : View.VISIBLE);
-
-        if (!isLoggedIn) {
+        if (!sessionManager.isLoggedIn()) {
+            layoutAccountLoggedIn.setVisibility(View.GONE);
+            layoutAccountLoggedOut.setVisibility(View.VISIBLE);
+            currentUser = null;
             layoutEditProfile.setVisibility(View.GONE);
             layoutChangePassword.setVisibility(View.GONE);
             clearChangePasswordForm();
+            return;
         }
+
+        long currentUserId = sessionManager.getCurrentUserId();
+        if (currentUserId <= 0) {
+            sessionManager.clearSession();
+            currentUser = null;
+            layoutAccountLoggedIn.setVisibility(View.GONE);
+            layoutAccountLoggedOut.setVisibility(View.VISIBLE);
+            Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        User user = databaseHelper.getUserById(currentUserId);
+        if (user == null) {
+            sessionManager.clearSession();
+            currentUser = null;
+            layoutAccountLoggedIn.setVisibility(View.GONE);
+            layoutAccountLoggedOut.setVisibility(View.VISIBLE);
+            Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        currentUser = user;
+        layoutAccountLoggedIn.setVisibility(View.VISIBLE);
+        layoutAccountLoggedOut.setVisibility(View.GONE);
+        bindUserData(currentUser);
     }
 
-    private boolean isUserLoggedIn() {
-        SharedPreferences sharedPreferences = requireContext().getSharedPreferences(
-                PREFS_AUTH,
-                Context.MODE_PRIVATE
-        );
-        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
+    private void bindUserData(User user) {
+        tvAccountName.setText(user.getName());
+        tvAccountEmail.setText(user.getEmail());
+        tvAccountPhone.setText(user.getPhone());
     }
 
     private String getTrimmedText(EditText editText) {

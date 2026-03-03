@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,6 +28,9 @@ public class AccountFragment extends Fragment {
 
     private User currentUser;
 
+    private View layoutAccountLoggedIn;
+    private View layoutAccountLoggedOut;
+
     private TextView tvAccountName;
     private TextView tvAccountEmail;
     private TextView tvAccountPhone;
@@ -39,6 +44,11 @@ public class AccountFragment extends Fragment {
     private EditText etCurrentPassword;
     private EditText etNewPassword;
     private EditText etConfirmPassword;
+
+    private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> updateAuthStateUi()
+    );
 
     @Nullable
     @Override
@@ -56,9 +66,19 @@ public class AccountFragment extends Fragment {
         initDefaultUser();
         bindUserData();
         setupActions(view);
+        updateAuthStateUi();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateAuthStateUi();
     }
 
     private void initViews(View view) {
+        layoutAccountLoggedIn = view.findViewById(R.id.layoutAccountLoggedIn);
+        layoutAccountLoggedOut = view.findViewById(R.id.layoutAccountLoggedOut);
+
         tvAccountName = view.findViewById(R.id.tvAccountName);
         tvAccountEmail = view.findViewById(R.id.tvAccountEmail);
         tvAccountPhone = view.findViewById(R.id.tvAccountPhone);
@@ -90,6 +110,7 @@ public class AccountFragment extends Fragment {
     }
 
     private void setupActions(View view) {
+        MaterialButton btnLoginNow = view.findViewById(R.id.btnLoginNow);
         MaterialButton btnEditProfile = view.findViewById(R.id.btnEditProfile);
         MaterialButton btnSaveProfileChanges = view.findViewById(R.id.btnSaveProfileChanges);
         MaterialButton btnOpenChangePassword = view.findViewById(R.id.btnOpenChangePassword);
@@ -97,6 +118,11 @@ public class AccountFragment extends Fragment {
         MaterialButton btnContactSupport = view.findViewById(R.id.btnContactSupport);
         MaterialButton btnLogout = view.findViewById(R.id.btnLogout);
 
+        btnLoginNow.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), LoginActivity.class);
+            intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
+            loginLauncher.launch(intent);
+        });
         btnEditProfile.setOnClickListener(v -> showEditProfileForm());
         btnSaveProfileChanges.setOnClickListener(v -> saveProfileChanges());
         btnOpenChangePassword.setOnClickListener(v -> showChangePasswordForm());
@@ -120,10 +146,7 @@ public class AccountFragment extends Fragment {
                     getString(R.string.account_logout_placeholder),
                     Toast.LENGTH_SHORT
             ).show();
-
-            Intent intent = new Intent(requireContext(), LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            updateAuthStateUi();
         });
     }
 
@@ -213,6 +236,30 @@ public class AccountFragment extends Fragment {
         etCurrentPassword.setText("");
         etNewPassword.setText("");
         etConfirmPassword.setText("");
+    }
+
+    private void updateAuthStateUi() {
+        if (!isAdded() || layoutAccountLoggedIn == null || layoutAccountLoggedOut == null) {
+            return;
+        }
+
+        boolean isLoggedIn = isUserLoggedIn();
+        layoutAccountLoggedIn.setVisibility(isLoggedIn ? View.VISIBLE : View.GONE);
+        layoutAccountLoggedOut.setVisibility(isLoggedIn ? View.GONE : View.VISIBLE);
+
+        if (!isLoggedIn) {
+            layoutEditProfile.setVisibility(View.GONE);
+            layoutChangePassword.setVisibility(View.GONE);
+            clearChangePasswordForm();
+        }
+    }
+
+    private boolean isUserLoggedIn() {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences(
+                PREFS_AUTH,
+                Context.MODE_PRIVATE
+        );
+        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
     }
 
     private String getTrimmedText(EditText editText) {

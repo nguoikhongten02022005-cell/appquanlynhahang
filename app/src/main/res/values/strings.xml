@@ -128,6 +128,9 @@
     <string name="account_change_password">Đổi mật khẩu</string>
     <string name="account_contact_support">Liên hệ hỗ trợ</string>
     <string name="account_logout">Đăng xuất</string>
+    <string name="account_logged_out_title">Bạn chưa đăng nhập</string>
+    <string name="account_logged_out_message">Đăng nhập để xem và quản lý thông tin tài khoản của bạn.</string>
+    <string name="account_login_now">Đăng nhập ngay</string>
 
     <string name="account_edit_profile_title">Chỉnh sửa hồ sơ</string>
     <string name="account_name_hint">Họ và tên</string>

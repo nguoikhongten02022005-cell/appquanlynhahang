@@ -14,6 +14,8 @@ import com.google.android.material.button.MaterialButton;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public static final String EXTRA_RETURN_TO_CALLER = "extra_return_to_caller";
+
     private static final String PREFS_AUTH = "auth_prefs";
     private static final String KEY_IS_LOGGED_IN = "is_logged_in";
     private static final String KEY_REGISTERED_EMAIL = "registered_email";
@@ -54,6 +56,13 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences.edit().putBoolean(KEY_IS_LOGGED_IN, true).apply();
 
         Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
+
+        if (getIntent().getBooleanExtra(EXTRA_RETURN_TO_CALLER, false)) {
+            setResult(RESULT_OK);
+            finish();
+            return;
+        }
+
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }

@@ -1,7 +1,5 @@
 package com.example.quanlynhahang;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -25,18 +23,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String PREFS_AUTH = "auth_prefs";
-    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (!isUserLoggedIn()) {
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-            return;
-        }
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -177,11 +166,6 @@ public class MainActivity extends AppCompatActivity {
         categories.add(new CategoryItem(R.drawable.ic_restaurant_24, getString(R.string.category_dessert)));
         categories.add(new CategoryItem(R.drawable.ic_menu_24, getString(R.string.category_combo)));
         return categories;
-    }
-
-    private boolean isUserLoggedIn() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_AUTH, MODE_PRIVATE);
-        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
     }
 
     private List<RecommendedDishItem> getMockRecommendedDishes() {

@@ -1,5 +1,8 @@
 package com.example.quanlynhahang;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -17,6 +20,9 @@ import com.example.quanlynhahang.model.User;
 import com.google.android.material.button.MaterialButton;
 
 public class AccountFragment extends Fragment {
+
+    private static final String PREFS_AUTH = "auth_prefs";
+    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
 
     private User currentUser;
 
@@ -102,11 +108,23 @@ public class AccountFragment extends Fragment {
                 Toast.LENGTH_SHORT
         ).show());
 
-        btnLogout.setOnClickListener(v -> Toast.makeText(
-                requireContext(),
-                getString(R.string.account_logout_placeholder),
-                Toast.LENGTH_SHORT
-        ).show());
+        btnLogout.setOnClickListener(v -> {
+            SharedPreferences sharedPreferences = requireContext().getSharedPreferences(
+                    PREFS_AUTH,
+                    Context.MODE_PRIVATE
+            );
+            sharedPreferences.edit().putBoolean(KEY_IS_LOGGED_IN, false).apply();
+
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.account_logout_placeholder),
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            Intent intent = new Intent(requireContext(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
     }
 
     private void showEditProfileForm() {

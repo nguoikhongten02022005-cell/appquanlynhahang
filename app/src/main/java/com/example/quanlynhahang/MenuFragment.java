@@ -36,12 +36,7 @@ public class MenuFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_menu, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.seedDishesIfEmpty(requireContext());
@@ -49,6 +44,8 @@ public class MenuFragment extends Fragment {
         setupDishData();
         setupRecyclerView(view);
         setupSearch(view);
+
+        return view;
     }
 
     private void setupRecyclerView(View view) {

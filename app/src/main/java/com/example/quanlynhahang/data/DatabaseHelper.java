@@ -2,6 +2,7 @@ package com.example.quanlynhahang.data;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
@@ -308,6 +309,80 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return dishRecords;
     }
 
+    public List<RecommendedDishItem> getAllDishItems() {
+        List<RecommendedDishItem> dishes = new ArrayList<>();
+        List<DishRecord> dishRecords = getAllDishes();
+
+        for (DishRecord record : dishRecords) {
+            dishes.add(record.getDishItem());
+        }
+
+        return dishes;
+    }
+
+    public long insertOrder(int userId,
+                            String code,
+                            String time,
+                            String totalPrice,
+                            Order.Status status,
+                            List<Order.OrderDish> dishes) {
+        if (userId <= 0
+                || TextUtils.isEmpty(code)
+                || TextUtils.isEmpty(time)
+                || TextUtils.isEmpty(totalPrice)
+                || status == null
+                || dishes == null
+                || dishes.isEmpty()) {
+            return -1;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+
+        try {
+            ContentValues orderValues = new ContentValues();
+            orderValues.put(COL_ORDER_USER_ID, userId);
+            orderValues.put(COL_ORDER_CODE, code);
+            orderValues.put(COL_ORDER_TIME, time);
+            orderValues.put(COL_ORDER_TOTAL_PRICE, totalPrice);
+            orderValues.put(COL_ORDER_STATUS, status.name());
+
+            long orderId = db.insert(TABLE_ORDER, null, orderValues);
+            if (orderId <= 0) {
+                return -1;
+            }
+
+            for (Order.OrderDish orderDish : dishes) {
+                if (orderDish == null || orderDish.getDishItem() == null) {
+                    return -1;
+                }
+
+                RecommendedDishItem dishItem = orderDish.getDishItem();
+                ContentValues itemValues = new ContentValues();
+                itemValues.put(COL_ORDER_ITEM_ORDER_ID, orderId);
+                itemValues.put(COL_ORDER_ITEM_DISH_NAME, dishItem.getName());
+                itemValues.put(COL_ORDER_ITEM_DISH_PRICE, dishItem.getPrice());
+                itemValues.put(COL_ORDER_ITEM_IMAGE_RES_NAME, resolveImageResName(dishItem.getImageResId()));
+                itemValues.put(COL_ORDER_ITEM_IS_AVAILABLE, dishItem.isAvailable() ? 1 : 0);
+                itemValues.put(COL_ORDER_ITEM_QUANTITY, orderDish.getQuantity());
+
+                long itemId = db.insert(TABLE_ORDER_ITEM, null, itemValues);
+                if (itemId <= 0) {
+                    return -1;
+                }
+            }
+
+            db.setTransactionSuccessful();
+            return orderId;
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    public List<Order> getOrdersByUserId(int userId) {
+        return getOrdersByUserId((long) userId);
+    }
+
     public List<Order> getOrdersByUserId(long userId) {
         List<Order> orders = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -357,6 +432,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
+    public List<Reservation> getReservationsByUserId(int userId) {
+        return getReservationsByUserId((long) userId);
+    }
+
     public List<Reservation> getReservationsByUserId(long userId) {
         List<Reservation> reservations = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -395,6 +474,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return reservations;
+    }
+
+    public long insertReservation(int userId, String time, int peopleCount, String notes) {
+        return insertReservation(
+                (long) userId,
+                time,
+                peopleCount,
+                notes,
+                Reservation.Status.PENDING_APPROVAL
+        );
     }
 
     public long insertReservation(long userId,
@@ -561,6 +650,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 appContext.getPackageName()
         );
         return resId == 0 ? R.drawable.ic_restaurant_24 : resId;
+    }
+
+    private String resolveImageResName(int imageResId) {
+        if (imageResId == 0) {
+            return "ic_restaurant_24";
+        }
+
+        try {
+            return appContext.getResources().getResourceEntryName(imageResId);
+        } catch (Resources.NotFoundException ex) {
+            return "ic_restaurant_24";
+        }
     }
 
     private Order.Status parseOrderStatus(String statusRaw) {

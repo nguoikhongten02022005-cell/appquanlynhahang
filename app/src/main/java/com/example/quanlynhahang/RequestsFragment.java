@@ -217,8 +217,13 @@ public class RequestsFragment extends Fragment {
     }
 
     private void submitReservation() {
-        if (!sessionManager.isLoggedIn()) {
-            Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+        long currentUserId = sessionManager.getCurrentUserId();
+        if (!sessionManager.isLoggedIn() || currentUserId <= 0) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.reservation_login_required),
+                    Toast.LENGTH_SHORT
+            ).show();
             return;
         }
 
@@ -255,14 +260,12 @@ public class RequestsFragment extends Fragment {
 
         String note = etReservationNote.getText() == null ? "" : etReservationNote.getText().toString().trim();
         String reservationDateTime = getFormattedDateTime(selectedDateTime);
-        long userId = sessionManager.getCurrentUserId();
 
         long newReservationId = databaseHelper.insertReservation(
-                userId,
+                (int) currentUserId,
                 reservationDateTime,
                 guestCount,
-                note,
-                Reservation.Status.PENDING_APPROVAL
+                note
         );
 
         if (newReservationId <= 0) {
@@ -274,15 +277,9 @@ public class RequestsFragment extends Fragment {
             return;
         }
 
-        Reservation newReservation = new Reservation(
-                newReservationId,
-                reservationDateTime,
-                guestCount,
-                note,
-                Reservation.Status.PENDING_APPROVAL
-        );
-
-        reservationAdapter.addReservation(newReservation);
+        reservations.clear();
+        reservations.addAll(databaseHelper.getReservationsByUserId((int) currentUserId));
+        reservationAdapter.setReservations(reservations);
 
         etGuestCount.setText("");
         etReservationNote.setText("");

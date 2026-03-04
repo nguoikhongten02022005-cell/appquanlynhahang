@@ -107,6 +107,7 @@
     <string name="reservation_note_format">Ghi chú: %1$s</string>
     <string name="reservation_note_empty">Ghi chú: Không có</string>
     <string name="reservation_validation_guest_count">Vui lòng nhập số người hợp lệ</string>
+    <string name="reservation_login_required">Vui lòng đăng nhập trước khi gửi yêu cầu đặt bàn</string>
     <string name="reservation_submit_success">Đã gửi yêu cầu đặt bàn</string>
     <string name="reservation_cancel_success">Đã hủy yêu cầu đặt bàn</string>
 

@@ -86,6 +86,6 @@ public class OrderFragment extends Fragment {
             return;
         }
 
-        orders.addAll(databaseHelper.getOrdersByUserId(userId));
+        orders.addAll(databaseHelper.getOrdersByUserId((int) userId));
     }
 }

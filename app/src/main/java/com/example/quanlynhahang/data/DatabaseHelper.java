@@ -208,15 +208,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Nullable
-    public User checkLogin(String email, String password) {
+    public User checkLogin(String usernameOrEmail, String password) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
             cursor = db.query(
                     TABLE_USER,
                     new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE},
-                    COL_USER_EMAIL + " = ? AND " + COL_USER_PASSWORD + " = ?",
-                    new String[]{email, password},
+                    "(" + COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?) AND " + COL_USER_PASSWORD + " = ?",
+                    new String[]{usernameOrEmail, usernameOrEmail, password},
                     null,
                     null,
                     null,

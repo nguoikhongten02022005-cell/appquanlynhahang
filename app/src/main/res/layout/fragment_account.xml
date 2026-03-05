@@ -38,6 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                app:cardCornerRadius="0dp"
                 app:cardElevation="0dp"
                 app:cardUseCompatPadding="false">
 
@@ -100,6 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_lg"
+                app:cardCornerRadius="0dp"
                 app:cardElevation="0dp"
                 app:cardUseCompatPadding="false">
 

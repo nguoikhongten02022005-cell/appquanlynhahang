@@ -131,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/hero_height"
                 android:layout_marginTop="@dimen/space_lg"
-                app:cardCornerRadius="@dimen/corner_large"
+                app:cardCornerRadius="0dp"
                 app:cardElevation="0dp">
 
                 <FrameLayout

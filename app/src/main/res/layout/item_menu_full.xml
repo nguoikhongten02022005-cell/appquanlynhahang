@@ -12,7 +12,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="@dimen/menu_image_size"
         android:layout_height="@dimen/menu_image_size"
-        app:cardCornerRadius="@dimen/corner_medium"
+        app:cardCornerRadius="0dp"
         app:cardElevation="0dp">
 
         <ImageView

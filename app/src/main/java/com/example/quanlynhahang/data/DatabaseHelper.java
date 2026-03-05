@@ -23,7 +23,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "restaurant.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     public static final String TABLE_USER = "users";
     public static final String TABLE_DISH = "dishes";
@@ -121,13 +121,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ")");
 
         seedDishesIfEmpty(appContext, db);
-        seedUsersIfEmpty(db);
+        ensureTestUserExists(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
             seedDishesIfEmpty(appContext, db);
+        }
+
+        if (oldVersion < 4) {
+            ensureTestUserExists(db);
         }
     }
 
@@ -585,11 +589,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_DISH, null, values);
     }
 
-    private void seedUsersIfEmpty(SQLiteDatabase db) {
+    private void ensureTestUserExists(SQLiteDatabase db) {
         Cursor cursor = null;
         try {
-            cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_USER, null);
-            if (cursor.moveToFirst() && cursor.getInt(0) > 0) {
+            cursor = db.query(
+                    TABLE_USER,
+                    new String[]{COL_USER_ID},
+                    COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?",
+                    new String[]{"kh1", "0123456789"},
+                    null,
+                    null,
+                    null,
+                    "1"
+            );
+            if (cursor.moveToFirst()) {
                 return;
             }
 

@@ -163,7 +163,7 @@
     <string name="login_password_hint">Mật khẩu</string>
     <string name="login_button">Đăng nhập</string>
     <string name="login_go_to_register">Chưa có tài khoản? Đăng ký ngay</string>
-    <string name="login_validation_required">Vui lòng nhập đầy đủ tên đăng nhập/email và mật khẩu</string>
+    <string name="login_validation_required">Vui lòng nhập đầy đủ tên đăng nhập/email/số điện thoại và mật khẩu</string>
     <string name="login_failed">Đăng nhập thất bại, vui lòng kiểm tra thông tin</string>
     <string name="login_success">Đăng nhập thành công</string>
 

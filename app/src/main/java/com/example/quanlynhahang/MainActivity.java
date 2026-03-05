@@ -139,7 +139,13 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragmentContainer, new AccountFragment())
-                    .commit();
+                    .commitNow();
+        }
+
+        AccountFragment accountFragment =
+                (AccountFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if (accountFragment != null) {
+            accountFragment.onAccountTabSelected();
         }
     }
 

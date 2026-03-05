@@ -20,6 +20,7 @@ import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.User;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AccountFragment extends Fragment {
 
@@ -29,7 +30,6 @@ public class AccountFragment extends Fragment {
     private User currentUser;
 
     private View layoutAccountLoggedIn;
-    private View layoutAccountLoggedOut;
 
     private TextView tvAccountName;
     private TextView tvAccountEmail;
@@ -47,7 +47,13 @@ public class AccountFragment extends Fragment {
 
     private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> updateAuthStateUi()
+            result -> {
+                updateAuthStateUi();
+                if (!isAdded() || sessionManager == null || sessionManager.isLoggedIn()) {
+                    return;
+                }
+                navigateToHomeTab();
+            }
     );
 
     @Nullable
@@ -59,25 +65,12 @@ public class AccountFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
 
-        if (!sessionManager.isLoggedIn()) {
-            if (getActivity() != null) {
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
-                startActivity(intent);
-            }
-            return new View(requireContext());
-        }
-
         return inflater.inflate(R.layout.fragment_account, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        if (sessionManager == null || !sessionManager.isLoggedIn()) {
-            return;
-        }
 
         initViews(view);
         setupActions(view);
@@ -92,7 +85,6 @@ public class AccountFragment extends Fragment {
 
     private void initViews(View view) {
         layoutAccountLoggedIn = view.findViewById(R.id.layoutAccountLoggedIn);
-        layoutAccountLoggedOut = view.findViewById(R.id.layoutAccountLoggedOut);
 
         tvAccountName = view.findViewById(R.id.tvAccountName);
         tvAccountEmail = view.findViewById(R.id.tvAccountEmail);
@@ -110,19 +102,12 @@ public class AccountFragment extends Fragment {
     }
 
     private void setupActions(View view) {
-        MaterialButton btnLoginNow = view.findViewById(R.id.btnLoginNow);
         MaterialButton btnEditProfile = view.findViewById(R.id.btnEditProfile);
         MaterialButton btnSaveProfileChanges = view.findViewById(R.id.btnSaveProfileChanges);
         MaterialButton btnOpenChangePassword = view.findViewById(R.id.btnOpenChangePassword);
         MaterialButton btnSubmitChangePassword = view.findViewById(R.id.btnSubmitChangePassword);
         MaterialButton btnContactSupport = view.findViewById(R.id.btnContactSupport);
         MaterialButton btnLogout = view.findViewById(R.id.btnLogout);
-
-        btnLoginNow.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), LoginActivity.class);
-            intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
-            loginLauncher.launch(intent);
-        });
 
         btnEditProfile.setOnClickListener(v -> showEditProfileForm());
         btnSaveProfileChanges.setOnClickListener(v -> saveProfileChanges());
@@ -137,17 +122,14 @@ public class AccountFragment extends Fragment {
 
         btnLogout.setOnClickListener(v -> {
             sessionManager.clearSession();
-            currentUser = null;
-            layoutEditProfile.setVisibility(View.GONE);
-            layoutChangePassword.setVisibility(View.GONE);
-            clearChangePasswordForm();
+            clearLoggedOutUi();
 
             Toast.makeText(
                     requireContext(),
                     getString(R.string.account_logout_success),
                     Toast.LENGTH_SHORT
             ).show();
-            updateAuthStateUi();
+            launchLogin();
         });
     }
 
@@ -286,27 +268,37 @@ public class AccountFragment extends Fragment {
         etConfirmPassword.setText("");
     }
 
+    public void onAccountTabSelected() {
+        updateAuthStateUi();
+        if (sessionManager == null || sessionManager.isLoggedIn()) {
+            return;
+        }
+        launchLogin();
+    }
+
+    private void launchLogin() {
+        if (!isAdded()) {
+            return;
+        }
+        Intent intent = new Intent(requireContext(), LoginActivity.class);
+        intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
+        loginLauncher.launch(intent);
+    }
+
     private void updateAuthStateUi() {
-        if (!isAdded() || layoutAccountLoggedIn == null || layoutAccountLoggedOut == null) {
+        if (!isAdded() || layoutAccountLoggedIn == null) {
             return;
         }
 
         if (!sessionManager.isLoggedIn()) {
-            layoutAccountLoggedIn.setVisibility(View.GONE);
-            layoutAccountLoggedOut.setVisibility(View.VISIBLE);
-            currentUser = null;
-            layoutEditProfile.setVisibility(View.GONE);
-            layoutChangePassword.setVisibility(View.GONE);
-            clearChangePasswordForm();
+            clearLoggedOutUi();
             return;
         }
 
         long currentUserId = sessionManager.getCurrentUserId();
         if (currentUserId <= 0) {
             sessionManager.clearSession();
-            currentUser = null;
-            layoutAccountLoggedIn.setVisibility(View.GONE);
-            layoutAccountLoggedOut.setVisibility(View.VISIBLE);
+            clearLoggedOutUi();
             Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -314,17 +306,33 @@ public class AccountFragment extends Fragment {
         User user = databaseHelper.getUserById(currentUserId);
         if (user == null) {
             sessionManager.clearSession();
-            currentUser = null;
-            layoutAccountLoggedIn.setVisibility(View.GONE);
-            layoutAccountLoggedOut.setVisibility(View.VISIBLE);
+            clearLoggedOutUi();
             Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
             return;
         }
 
         currentUser = user;
         layoutAccountLoggedIn.setVisibility(View.VISIBLE);
-        layoutAccountLoggedOut.setVisibility(View.GONE);
         bindUserData(currentUser);
+    }
+
+    private void clearLoggedOutUi() {
+        currentUser = null;
+        layoutAccountLoggedIn.setVisibility(View.GONE);
+        layoutEditProfile.setVisibility(View.GONE);
+        layoutChangePassword.setVisibility(View.GONE);
+        clearChangePasswordForm();
+    }
+
+    private void navigateToHomeTab() {
+        if (!(requireActivity() instanceof MainActivity)) {
+            return;
+        }
+
+        BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        }
     }
 
     private void bindUserData(User user) {

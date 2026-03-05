@@ -121,6 +121,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ")");
 
         seedDishesIfEmpty(appContext, db);
+        seedUsersIfEmpty(db);
     }
 
     @Override
@@ -582,6 +583,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_DISH_IMAGE_RES_NAME, imageResName);
         values.put(COL_DISH_IS_AVAILABLE, isAvailable ? 1 : 0);
         db.insert(TABLE_DISH, null, values);
+    }
+
+    private void seedUsersIfEmpty(SQLiteDatabase db) {
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_USER, null);
+            if (cursor.moveToFirst() && cursor.getInt(0) > 0) {
+                return;
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(COL_USER_NAME, "Khách hàng Test");
+            values.put(COL_USER_EMAIL, "kh1");
+            values.put(COL_USER_PHONE, "0123456789");
+            values.put(COL_USER_PASSWORD, "1");
+            db.insert(TABLE_USER, null, values);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     @Nullable

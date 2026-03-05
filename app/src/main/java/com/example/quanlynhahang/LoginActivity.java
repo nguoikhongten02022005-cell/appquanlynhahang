@@ -43,15 +43,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleLogin() {
-        String email = getTrimmedText(etLoginEmail);
+        String usernameOrEmail = getTrimmedText(etLoginEmail);
         String password = getTrimmedText(etLoginPassword);
 
-        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(usernameOrEmail) || TextUtils.isEmpty(password)) {
             Toast.makeText(this, getString(R.string.login_validation_required), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        User authenticatedUser = databaseHelper.checkLogin(email, password);
+        User authenticatedUser = databaseHelper.checkLogin(usernameOrEmail, password);
         if (authenticatedUser == null) {
             Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
             return;

@@ -55,6 +55,19 @@ public class AccountFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        databaseHelper = new DatabaseHelper(requireContext());
+        sessionManager = new SessionManager(requireContext());
+        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+
+        if (!sessionManager.isLoggedIn()) {
+            if (getActivity() != null) {
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
+                startActivity(intent);
+            }
+            return new View(requireContext());
+        }
+
         return inflater.inflate(R.layout.fragment_account, container, false);
     }
 
@@ -62,9 +75,9 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        databaseHelper = new DatabaseHelper(requireContext());
-        sessionManager = new SessionManager(requireContext());
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        if (sessionManager == null || !sessionManager.isLoggedIn()) {
+            return;
+        }
 
         initViews(view);
         setupActions(view);

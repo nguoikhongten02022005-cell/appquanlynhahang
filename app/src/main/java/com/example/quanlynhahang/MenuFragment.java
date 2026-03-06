@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.MenuAdapter;
+import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.model.RecommendedDishItem;
 
@@ -55,11 +56,14 @@ public class MenuFragment extends Fragment {
         menuAdapter = new MenuAdapter(
                 allDishes,
                 allDescriptions,
-                dish -> Toast.makeText(
-                        requireContext(),
-                        getString(R.string.menu_added_to_cart, dish.getName()),
-                        Toast.LENGTH_SHORT
-                ).show()
+                dish -> {
+                    CartManager.getInstance().addToCart(dish);
+                    Toast.makeText(
+                            requireContext(),
+                            getString(R.string.menu_added_to_cart, dish.getName()),
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
         );
 
         rvMenu.setAdapter(menuAdapter);

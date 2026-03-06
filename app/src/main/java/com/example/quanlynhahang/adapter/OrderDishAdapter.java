@@ -3,7 +3,9 @@ package com.example.quanlynhahang.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -55,6 +57,10 @@ public class OrderDishAdapter extends RecyclerView.Adapter<OrderDishAdapter.Orde
                         item.getDishItem().getPrice()
                 )
         );
+
+        holder.layoutOrderDishActions.setVisibility(View.GONE);
+        holder.btnOrderDishIncrease.setOnClickListener(null);
+        holder.btnOrderDishDecrease.setOnClickListener(null);
     }
 
     @Override
@@ -67,6 +73,9 @@ public class OrderDishAdapter extends RecyclerView.Adapter<OrderDishAdapter.Orde
         private final TextView tvOrderDishName;
         private final TextView tvOrderDishQuantity;
         private final TextView tvOrderDishPrice;
+        private final LinearLayout layoutOrderDishActions;
+        private final ImageButton btnOrderDishIncrease;
+        private final ImageButton btnOrderDishDecrease;
 
         OrderDishViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,6 +83,9 @@ public class OrderDishAdapter extends RecyclerView.Adapter<OrderDishAdapter.Orde
             tvOrderDishName = itemView.findViewById(R.id.tvOrderDishName);
             tvOrderDishQuantity = itemView.findViewById(R.id.tvOrderDishQuantity);
             tvOrderDishPrice = itemView.findViewById(R.id.tvOrderDishPrice);
+            layoutOrderDishActions = itemView.findViewById(R.id.layoutOrderDishActions);
+            btnOrderDishIncrease = itemView.findViewById(R.id.btnOrderDishIncrease);
+            btnOrderDishDecrease = itemView.findViewById(R.id.btnOrderDishDecrease);
         }
     }
 }

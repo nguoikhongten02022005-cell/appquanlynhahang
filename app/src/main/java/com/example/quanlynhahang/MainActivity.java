@@ -2,6 +2,7 @@ package com.example.quanlynhahang;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.CategoryAdapter;
 import com.example.quanlynhahang.adapter.RecommendedDishAdapter;
+import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.model.CategoryItem;
 import com.example.quanlynhahang.model.RecommendedDishItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -22,6 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private TextView tvCartBadge;
+
+    private final CartManager.CartListener cartListener = this::updateCartBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +41,25 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        tvCartBadge = findViewById(R.id.tvCartBadge);
+
         setupBottomNavigation();
+        setupHeaderActions();
         showHome();
+        updateCartBadge();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        CartManager.getInstance().addListener(cartListener);
+        updateCartBadge();
+    }
+
+    @Override
+    protected void onStop() {
+        CartManager.getInstance().removeListener(cartListener);
+        super.onStop();
     }
 
     private void setupBottomNavigation() {
@@ -70,6 +93,23 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
+    }
+
+    private void setupHeaderActions() {
+        View layoutCartIcon = findViewById(R.id.layoutCartIcon);
+        layoutCartIcon.setOnClickListener(v -> {
+            BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+            bottomNavigationView.setSelectedItemId(R.id.nav_orders);
+        });
+    }
+
+    private void updateCartBadge() {
+        if (tvCartBadge == null) {
+            return;
+        }
+
+        int totalQuantity = CartManager.getInstance().getTotalQuantity();
+        tvCartBadge.setText(totalQuantity > 99 ? "99+" : String.valueOf(totalQuantity));
     }
 
     private void showHome() {

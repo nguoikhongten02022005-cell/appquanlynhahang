@@ -19,11 +19,11 @@
 
     <string name="bottom_nav_home">Trang chủ</string>
     <string name="bottom_nav_menu">Menu</string>
-    <string name="bottom_nav_orders">Đơn hàng</string>
+    <string name="bottom_nav_orders">Giỏ hàng</string>
     <string name="bottom_nav_booking">Đặt bàn &amp; Yêu cầu của tôi</string>
     <string name="bottom_nav_account">Tài khoản</string>
 
-    <string name="cart_badge_count">3</string>
+    <string name="cart_badge_count">0</string>
     <string name="dish_status_available">Còn món</string>
     <string name="dish_status_unavailable">Hết món</string>
 
@@ -34,6 +34,14 @@
     <string name="cd_dish_image">Hình món ăn</string>
     <string name="cd_add_dish">Thêm món</string>
     <string name="menu_added_to_cart">Đã thêm %1$s vào giỏ hàng</string>
+    <string name="cart_empty_message">Giỏ hàng của bạn đang trống</string>
+    <string name="cart_total_label">Tổng tiền: %1$s</string>
+    <string name="cart_checkout">Thanh toán</string>
+    <string name="cart_checkout_requires_login">Vui lòng đăng nhập để thanh toán</string>
+    <string name="cart_checkout_success">Đặt hàng thành công</string>
+    <string name="cart_order_code_prefix">#DH</string>
+    <string name="cd_cart_increase">Tăng số lượng</string>
+    <string name="cd_cart_decrease">Giảm số lượng</string>
 
     <string name="category_main_course">Món chính</string>
     <string name="category_hotpot">Lẩu</string>
@@ -57,7 +65,7 @@
     <string name="price_259k">259.000 đ</string>
     <string name="price_45k">45.000 đ</string>
 
-    <string name="order_screen_title">Đơn hàng</string>
+    <string name="order_screen_title">Giỏ hàng</string>
     <string name="order_sample_code">#DH12345</string>
     <string name="order_sample_time">12/05/2024 10:30</string>
     <string name="order_sample_total">500.000 đ</string>

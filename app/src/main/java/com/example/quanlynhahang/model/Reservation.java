@@ -11,13 +11,20 @@ public class Reservation {
 
     private final long id;
     private final String time;
+    private final String tableNumber;
     private final int guestCount;
     private final String note;
     private Status status;
 
-    public Reservation(long id, String time, int guestCount, String note, Status status) {
+    public Reservation(long id,
+                       String time,
+                       String tableNumber,
+                       int guestCount,
+                       String note,
+                       Status status) {
         this.id = id;
         this.time = time;
+        this.tableNumber = tableNumber;
         this.guestCount = guestCount;
         this.note = note;
         this.status = status;
@@ -29,6 +36,10 @@ public class Reservation {
 
     public String getTime() {
         return time;
+    }
+
+    public String getTableNumber() {
+        return tableNumber;
     }
 
     public int getGuestCount() {

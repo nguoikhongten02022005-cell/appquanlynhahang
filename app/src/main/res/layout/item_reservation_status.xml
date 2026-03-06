@@ -49,6 +49,15 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tvReservationTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="@string/reservation_sample_table"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <TextView
             android:id="@+id/tvReservationGuestCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

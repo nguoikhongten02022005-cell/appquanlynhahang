@@ -17,13 +17,17 @@ import com.example.quanlynhahang.model.RecommendedDishItem;
 import com.example.quanlynhahang.model.Reservation;
 import com.example.quanlynhahang.model.User;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "restaurant.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     public static final String TABLE_USER = "users";
     public static final String TABLE_DISH = "dishes";
@@ -62,6 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL_RESERVATION_ID = "id";
     private static final String COL_RESERVATION_USER_ID = "user_id";
     private static final String COL_RESERVATION_TIME = "time";
+    private static final String COL_RESERVATION_TABLE_NUMBER = "table_number";
     private static final String COL_RESERVATION_GUEST_COUNT = "guest_count";
     private static final String COL_RESERVATION_NOTE = "note";
     private static final String COL_RESERVATION_STATUS = "status";
@@ -115,6 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_RESERVATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COL_RESERVATION_USER_ID + " INTEGER NOT NULL, "
                 + COL_RESERVATION_TIME + " TEXT NOT NULL, "
+                + COL_RESERVATION_TABLE_NUMBER + " TEXT NOT NULL, "
                 + COL_RESERVATION_GUEST_COUNT + " INTEGER NOT NULL, "
                 + COL_RESERVATION_NOTE + " TEXT, "
                 + COL_RESERVATION_STATUS + " TEXT NOT NULL"
@@ -132,6 +138,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (oldVersion < 4) {
             ensureTestUserExists(db);
+        }
+
+        if (oldVersion < 5) {
+            db.execSQL("ALTER TABLE " + TABLE_RESERVATION
+                    + " ADD COLUMN " + COL_RESERVATION_TABLE_NUMBER + " TEXT NOT NULL DEFAULT 'Bàn 01'");
         }
     }
 
@@ -452,6 +463,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     new String[]{
                             COL_RESERVATION_ID,
                             COL_RESERVATION_TIME,
+                            COL_RESERVATION_TABLE_NUMBER,
                             COL_RESERVATION_GUEST_COUNT,
                             COL_RESERVATION_NOTE,
                             COL_RESERVATION_STATUS
@@ -466,11 +478,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             while (cursor.moveToNext()) {
                 long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_RESERVATION_ID));
                 String time = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_TIME));
+                String tableNumber = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_TABLE_NUMBER));
                 int guestCount = cursor.getInt(cursor.getColumnIndexOrThrow(COL_RESERVATION_GUEST_COUNT));
                 String note = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_NOTE));
                 String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_STATUS));
 
-                reservations.add(new Reservation(id, time, guestCount, note, parseReservationStatus(statusRaw)));
+                reservations.add(new Reservation(id, time, tableNumber, guestCount, note, parseReservationStatus(statusRaw)));
             }
         } finally {
             if (cursor != null) {
@@ -481,10 +494,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return reservations;
     }
 
-    public long insertReservation(int userId, String time, int peopleCount, String notes) {
+    public long insertReservation(int userId,
+                                  String time,
+                                  String tableNumber,
+                                  int peopleCount,
+                                  String notes) {
         return insertReservation(
                 (long) userId,
                 time,
+                tableNumber,
                 peopleCount,
                 notes,
                 Reservation.Status.PENDING_APPROVAL
@@ -493,6 +511,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public long insertReservation(long userId,
                                   String time,
+                                  String tableNumber,
                                   int guestCount,
                                   @Nullable String note,
                                   Reservation.Status status) {
@@ -500,6 +519,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COL_RESERVATION_USER_ID, userId);
         values.put(COL_RESERVATION_TIME, time);
+        values.put(COL_RESERVATION_TABLE_NUMBER, tableNumber);
         values.put(COL_RESERVATION_GUEST_COUNT, guestCount);
         values.put(COL_RESERVATION_NOTE, note);
         values.put(COL_RESERVATION_STATUS, status.name());

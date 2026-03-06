@@ -65,6 +65,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
 
     class ReservationViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvReservationTime;
+        private final TextView tvReservationTable;
         private final TextView tvReservationGuestCount;
         private final TextView tvReservationNote;
         private final TextView tvReservationStatus;
@@ -73,6 +74,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         ReservationViewHolder(@NonNull View itemView) {
             super(itemView);
             tvReservationTime = itemView.findViewById(R.id.tvReservationTime);
+            tvReservationTable = itemView.findViewById(R.id.tvReservationTable);
             tvReservationGuestCount = itemView.findViewById(R.id.tvReservationGuestCount);
             tvReservationNote = itemView.findViewById(R.id.tvReservationNote);
             tvReservationStatus = itemView.findViewById(R.id.tvReservationStatus);
@@ -82,6 +84,9 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         void bind(Reservation reservation) {
             Context context = itemView.getContext();
             tvReservationTime.setText(reservation.getTime());
+            tvReservationTable.setText(
+                    context.getString(R.string.reservation_table_format_display, reservation.getTableNumber())
+            );
             tvReservationGuestCount.setText(
                     context.getString(R.string.reservation_guest_count_format, reservation.getGuestCount())
             );

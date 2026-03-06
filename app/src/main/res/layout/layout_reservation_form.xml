@@ -71,6 +71,24 @@
             android:textColor="@color/text_primary"
             android:textSize="13sp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:text="@string/reservation_table_label"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spinnerReservationTable"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/search_height"
+            android:layout_marginTop="@dimen/space_xs"
+            android:background="@drawable/bg_search_rounded"
+            android:paddingStart="@dimen/space_md"
+            android:paddingEnd="@dimen/space_md" />
+
         <EditText
             android:id="@+id/etGuestCount"
             android:layout_width="match_parent"

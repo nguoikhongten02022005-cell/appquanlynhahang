@@ -7,7 +7,9 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +40,11 @@ public class RequestsFragment extends Fragment {
     private Calendar selectedDateTime;
     private TextView tvReservationDate;
     private TextView tvReservationTime;
+    private Spinner spinnerReservationTable;
     private EditText etGuestCount;
     private EditText etReservationNote;
+
+    private final List<String> tableOptions = new ArrayList<>();
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
@@ -84,8 +89,11 @@ public class RequestsFragment extends Fragment {
     private void initViews(View view) {
         tvReservationDate = view.findViewById(R.id.tvReservationDate);
         tvReservationTime = view.findViewById(R.id.tvReservationTime);
+        spinnerReservationTable = view.findViewById(R.id.spinnerReservationTable);
         etGuestCount = view.findViewById(R.id.etGuestCount);
         etReservationNote = view.findViewById(R.id.etReservationNote);
+
+        setupTableSelector();
 
         selectedDateTime = Calendar.getInstance();
         selectedDateTime.add(Calendar.DAY_OF_MONTH, 1);
@@ -160,6 +168,26 @@ public class RequestsFragment extends Fragment {
                 selectedDateTime.get(Calendar.MINUTE)
         );
         tvReservationTime.setText(timeText);
+    }
+
+    private void setupTableSelector() {
+        tableOptions.clear();
+        tableOptions.add(getString(R.string.reservation_table_format, 1, 2));
+        tableOptions.add(getString(R.string.reservation_table_format, 2, 2));
+        tableOptions.add(getString(R.string.reservation_table_format, 3, 4));
+        tableOptions.add(getString(R.string.reservation_table_format, 4, 4));
+        tableOptions.add(getString(R.string.reservation_table_format, 5, 6));
+        tableOptions.add(getString(R.string.reservation_table_format, 6, 6));
+        tableOptions.add(getString(R.string.reservation_table_format, 7, 8));
+        tableOptions.add(getString(R.string.reservation_table_format, 8, 8));
+
+        ArrayAdapter<String> tableAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                tableOptions
+        );
+        tableAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerReservationTable.setAdapter(tableAdapter);
     }
 
     private void setupReservationList(View view) {
@@ -258,12 +286,17 @@ public class RequestsFragment extends Fragment {
             return;
         }
 
+        String selectedTableDisplay = spinnerReservationTable.getSelectedItem() == null
+                ? ""
+                : spinnerReservationTable.getSelectedItem().toString();
+        String selectedTable = extractTableNumber(selectedTableDisplay);
         String note = etReservationNote.getText() == null ? "" : etReservationNote.getText().toString().trim();
         String reservationDateTime = getFormattedDateTime(selectedDateTime);
 
         long newReservationId = databaseHelper.insertReservation(
                 (int) currentUserId,
                 reservationDateTime,
+                selectedTable,
                 guestCount,
                 note
         );
@@ -317,6 +350,19 @@ public class RequestsFragment extends Fragment {
                 now.get(Calendar.HOUR_OF_DAY),
                 now.get(Calendar.MINUTE)
         );
+    }
+
+    private String extractTableNumber(String selectedTableDisplay) {
+        if (TextUtils.isEmpty(selectedTableDisplay)) {
+            return getString(R.string.reservation_table_format_simple, "01");
+        }
+
+        int endIndex = selectedTableDisplay.indexOf("(");
+        if (endIndex <= 0) {
+            return selectedTableDisplay.trim();
+        }
+
+        return selectedTableDisplay.substring(0, endIndex).trim();
     }
 
     private String getFormattedDateTime(Calendar calendar) {

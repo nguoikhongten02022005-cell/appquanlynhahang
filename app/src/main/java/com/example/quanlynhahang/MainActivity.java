@@ -1,5 +1,6 @@
 package com.example.quanlynhahang;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -76,12 +77,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (item.getItemId() == R.id.nav_orders) {
-                showOrders();
+                showRequests();
                 return true;
             }
 
-            if (item.getItemId() == R.id.navigation_requests) {
-                showRequests();
+            if (item.getItemId() == R.id.nav_cart) {
+                openCart();
                 return true;
             }
 
@@ -97,10 +98,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupHeaderActions() {
         View layoutCartIcon = findViewById(R.id.layoutCartIcon);
-        layoutCartIcon.setOnClickListener(v -> {
-            BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-            bottomNavigationView.setSelectedItemId(R.id.nav_orders);
-        });
+        layoutCartIcon.setOnClickListener(v -> openCart());
+    }
+
+    private void openCart() {
+        Intent intent = new Intent(this, CartActivity.class);
+        startActivity(intent);
     }
 
     private void updateCartBadge() {

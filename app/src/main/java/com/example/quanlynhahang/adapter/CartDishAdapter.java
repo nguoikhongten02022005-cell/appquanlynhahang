@@ -23,6 +23,8 @@ public class CartDishAdapter extends RecyclerView.Adapter<CartDishAdapter.CartDi
         void onIncrease(CartManager.CartItem item);
 
         void onDecrease(CartManager.CartItem item);
+
+        void onRemove(CartManager.CartItem item);
     }
 
     private final List<CartManager.CartItem> items = new ArrayList<>();
@@ -64,6 +66,7 @@ public class CartDishAdapter extends RecyclerView.Adapter<CartDishAdapter.CartDi
         holder.layoutActions.setVisibility(View.VISIBLE);
         holder.btnIncrease.setOnClickListener(v -> onQuantityActionListener.onIncrease(item));
         holder.btnDecrease.setOnClickListener(v -> onQuantityActionListener.onDecrease(item));
+        holder.btnRemove.setOnClickListener(v -> onQuantityActionListener.onRemove(item));
     }
 
     @Override
@@ -79,6 +82,7 @@ public class CartDishAdapter extends RecyclerView.Adapter<CartDishAdapter.CartDi
         private final LinearLayout layoutActions;
         private final ImageButton btnIncrease;
         private final ImageButton btnDecrease;
+        private final ImageButton btnRemove;
 
         CartDishViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,6 +93,7 @@ public class CartDishAdapter extends RecyclerView.Adapter<CartDishAdapter.CartDi
             layoutActions = itemView.findViewById(R.id.layoutOrderDishActions);
             btnIncrease = itemView.findViewById(R.id.btnOrderDishIncrease);
             btnDecrease = itemView.findViewById(R.id.btnOrderDishDecrease);
+            btnRemove = itemView.findViewById(R.id.btnOrderDishRemove);
         }
     }
 }

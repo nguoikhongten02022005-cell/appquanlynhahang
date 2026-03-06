@@ -16,9 +16,9 @@
         android:title="@string/bottom_nav_orders" />
 
     <item
-        android:id="@+id/navigation_requests"
-        android:icon="@drawable/ic_calendar_24"
-        android:title="@string/bottom_nav_booking" />
+        android:id="@+id/nav_cart"
+        android:icon="@drawable/ic_shopping_cart_24"
+        android:title="@string/bottom_nav_cart" />
 
     <item
         android:id="@+id/nav_account"

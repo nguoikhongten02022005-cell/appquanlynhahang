@@ -18,9 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quanlynhahang.R;
 import com.example.quanlynhahang.model.Order;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
@@ -93,7 +96,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
             tvOrderCode.setText(order.getCode());
             tvOrderTime.setText(order.getTime());
-            tvOrderTotal.setText(order.getTotalPrice());
+            tvOrderTotal.setText(formatPrice(order.getTotalPrice()));
             tvOrderStatus.setText(getStatusTextRes(order.getStatus()));
 
             int statusColor = ContextCompat.getColor(context, getStatusColorRes(order.getStatus()));
@@ -125,6 +128,29 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             notifyItemChanged(adapterPosition);
         }
 
+    }
+
+    private String formatPrice(String rawPrice) {
+        if (rawPrice == null) {
+            return "0đ";
+        }
+
+        String digitsOnly = rawPrice.replaceAll("[^0-9]", "");
+        if (digitsOnly.isEmpty()) {
+            return "0đ";
+        }
+
+        long amount;
+        try {
+            amount = Long.parseLong(digitsOnly);
+        } catch (NumberFormatException ex) {
+            return "0đ";
+        }
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.forLanguageTag("vi-VN"));
+        symbols.setGroupingSeparator('.');
+        DecimalFormat decimalFormat = new DecimalFormat("#,###", symbols);
+        return decimalFormat.format(amount) + "đ";
     }
 
     private int getStatusTextRes(Order.Status status) {

@@ -96,6 +96,12 @@ public class CartManager {
         notifyCartChanged();
     }
 
+    public synchronized void removeItem(String dishKey) {
+        if (itemMap.remove(dishKey) != null) {
+            notifyCartChanged();
+        }
+    }
+
     public synchronized void clearCart() {
         if (itemMap.isEmpty()) {
             return;

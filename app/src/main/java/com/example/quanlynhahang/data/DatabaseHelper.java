@@ -27,7 +27,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "restaurant.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     public static final String TABLE_USER = "users";
     public static final String TABLE_DISH = "dishes";
@@ -431,6 +431,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
+        orders.sort((first, second) -> Long.compare(
+                parseOrderTimeToMillis(second.getTime()),
+                parseOrderTimeToMillis(first.getTime())
+        ));
+
         return orders;
     }
 
@@ -728,6 +733,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return Order.Status.valueOf(statusRaw);
         } catch (IllegalArgumentException ex) {
             return Order.Status.PENDING_CONFIRMATION;
+        }
+    }
+
+    private long parseOrderTimeToMillis(@Nullable String timeRaw) {
+        if (TextUtils.isEmpty(timeRaw)) {
+            return 0L;
+        }
+
+        try {
+            Date parsedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse(timeRaw);
+            return parsedDate == null ? 0L : parsedDate.getTime();
+        } catch (ParseException ex) {
+            return 0L;
         }
     }
 

@@ -5,55 +5,42 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quanlynhahang.adapter.CartDishAdapter;
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.adapter.OrderAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.Order;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderFragment extends Fragment {
-
-    private static final AtomicInteger ORDER_SEQUENCE = new AtomicInteger(10000);
-
-    private final CartManager cartManager = CartManager.getInstance();
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
 
-    private CartDishAdapter cartDishAdapter;
+    private RecyclerView rvOrders;
+    private TextView tvOrderEmpty;
+    private OrderAdapter orderAdapter;
 
-    private TextView tvCartEmpty;
-    private TextView tvCartTotal;
-    private Button btnCheckout;
+    private boolean hasPromptedLogin;
 
     private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (!isAdded()) {
-                    return;
-                }
-                refreshCartUi();
+                hasPromptedLogin = false;
+                refreshOrdersUi(false);
             }
     );
 
@@ -73,145 +60,108 @@ public class OrderFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
 
-        tvCartEmpty = view.findViewById(R.id.tvCartEmpty);
-        tvCartTotal = view.findViewById(R.id.tvCartTotal);
-        btnCheckout = view.findViewById(R.id.btnCheckout);
+        rvOrders = view.findViewById(R.id.rvOrders);
+        tvOrderEmpty = view.findViewById(R.id.tvCartEmpty);
 
-        setupRecyclerView(view);
-        btnCheckout.setOnClickListener(v -> checkout());
+        View layoutCartFooter = view.findViewById(R.id.layoutCartFooter);
+        if (layoutCartFooter != null) {
+            layoutCartFooter.setVisibility(View.GONE);
+        }
 
-        refreshCartUi();
+        setupRecyclerView();
+        refreshOrdersUi(true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        refreshCartUi();
+        refreshOrdersUi(false);
     }
 
-    private void setupRecyclerView(View view) {
-        RecyclerView rvOrders = view.findViewById(R.id.rvOrders);
+    private void setupRecyclerView() {
         rvOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
-
-        cartDishAdapter = new CartDishAdapter(cartManager.getItems(), new CartDishAdapter.OnQuantityActionListener() {
-            @Override
-            public void onIncrease(CartManager.CartItem item) {
-                cartManager.increaseQuantity(cartManager.getDishKey(item));
-                refreshCartUi();
-            }
-
-            @Override
-            public void onDecrease(CartManager.CartItem item) {
-                cartManager.decreaseQuantity(cartManager.getDishKey(item));
-                refreshCartUi();
-            }
-        });
-
-        rvOrders.setAdapter(cartDishAdapter);
+        orderAdapter = new OrderAdapter(new ArrayList<>(), this::cancelOrder);
+        rvOrders.setAdapter(orderAdapter);
     }
 
-    private void refreshCartUi() {
-        List<CartManager.CartItem> items = cartManager.getItems();
-        cartDishAdapter.updateData(items);
-
-        boolean isEmpty = items.isEmpty();
-        tvCartEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        btnCheckout.setEnabled(!isEmpty);
-        btnCheckout.setAlpha(isEmpty ? 0.5f : 1f);
-
-        tvCartTotal.setText(getString(R.string.cart_total_label, formatPrice(calculateCartTotal(items))));
-    }
-
-    private void checkout() {
-        List<CartManager.CartItem> items = cartManager.getItems();
-        if (items.isEmpty()) {
-            refreshCartUi();
+    private void refreshOrdersUi(boolean autoLaunchLogin) {
+        if (!isAdded()) {
             return;
         }
 
         if (!sessionManager.isLoggedIn()) {
-            Toast.makeText(requireContext(), getString(R.string.cart_checkout_requires_login), Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(requireContext(), LoginActivity.class);
-            intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
-            loginLauncher.launch(intent);
+            showLoginRequiredState();
+            if (autoLaunchLogin && !hasPromptedLogin) {
+                hasPromptedLogin = true;
+                launchLogin();
+            }
             return;
         }
 
         long userId = sessionManager.getCurrentUserId();
         if (userId <= 0) {
             sessionManager.clearSession();
-            Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            showLoginRequiredState();
+            if (autoLaunchLogin && !hasPromptedLogin) {
+                hasPromptedLogin = true;
+                launchLogin();
+            }
             return;
         }
 
-        List<Order.OrderDish> orderDishes = new ArrayList<>();
-        for (CartManager.CartItem item : items) {
-            orderDishes.add(new Order.OrderDish(item.getDish(), item.getQuantity()));
+        hasPromptedLogin = false;
+
+        List<Order> orders = databaseHelper.getOrdersByUserId((int) userId);
+        orderAdapter.updateData(orders);
+
+        if (orders.isEmpty()) {
+            showEmptyState(getString(R.string.order_empty_message));
+            return;
         }
 
-        String orderCode = buildOrderCode();
-        String orderTime = buildOrderTime();
-        String totalPrice = formatPrice(calculateCartTotal(items));
+        showListState();
+    }
 
-        long newOrderId = databaseHelper.insertOrder(
-                (int) userId,
-                orderCode,
-                orderTime,
-                totalPrice,
-                Order.Status.PENDING_CONFIRMATION,
-                orderDishes
-        );
-
-        if (newOrderId <= 0) {
+    private void cancelOrder(Order order, int position) {
+        boolean canceled = databaseHelper.cancelOrder(order.getId());
+        if (!canceled) {
             Toast.makeText(requireContext(), getString(R.string.db_operation_failed), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        cartManager.clearCart();
-        refreshCartUi();
+        order.cancel();
+        orderAdapter.notifyItemChanged(position);
 
-        Toast.makeText(requireContext(), getString(R.string.cart_checkout_success), Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+                requireContext(),
+                getString(R.string.order_cancel_success, order.getCode()),
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
-    private int calculateCartTotal(List<CartManager.CartItem> items) {
-        int total = 0;
-        for (CartManager.CartItem item : items) {
-            total += parsePrice(item.getDish().getPrice()) * item.getQuantity();
+    private void showLoginRequiredState() {
+        orderAdapter.updateData(Collections.emptyList());
+        showEmptyState(getString(R.string.order_login_required));
+    }
+
+    private void showEmptyState(String message) {
+        tvOrderEmpty.setText(message);
+        tvOrderEmpty.setVisibility(View.VISIBLE);
+        rvOrders.setVisibility(View.GONE);
+    }
+
+    private void showListState() {
+        tvOrderEmpty.setVisibility(View.GONE);
+        rvOrders.setVisibility(View.VISIBLE);
+    }
+
+    private void launchLogin() {
+        if (!isAdded()) {
+            return;
         }
-        return total;
-    }
 
-    private int parsePrice(String rawPrice) {
-        if (rawPrice == null) {
-            return 0;
-        }
-
-        String digitsOnly = rawPrice.replaceAll("[^0-9]", "");
-        if (digitsOnly.isEmpty()) {
-            return 0;
-        }
-
-        try {
-            return Integer.parseInt(digitsOnly);
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
-    }
-
-    private String formatPrice(int amount) {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.forLanguageTag("vi-VN"));
-        symbols.setGroupingSeparator('.');
-        DecimalFormat decimalFormat = new DecimalFormat("#,###", symbols);
-        return decimalFormat.format(amount) + " đ";
-    }
-
-    private String buildOrderCode() {
-        int next = ORDER_SEQUENCE.incrementAndGet();
-        return getString(R.string.cart_order_code_prefix) + next;
-    }
-
-    private String buildOrderTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        return sdf.format(new Date());
+        Intent intent = new Intent(requireContext(), LoginActivity.class);
+        intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
+        loginLauncher.launch(intent);
     }
 }

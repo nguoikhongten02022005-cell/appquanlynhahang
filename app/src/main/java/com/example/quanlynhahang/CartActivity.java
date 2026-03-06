@@ -2,10 +2,16 @@ package com.example.quanlynhahang;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,12 +33,30 @@ public class CartActivity extends AppCompatActivity {
 
     private RecyclerView rvCartItems;
     private TextView tvCartTotal;
+    private TextView tvCartEmpty;
     private Button btnCheckout;
+    private Button btnClearCart;
+    private Button btnContinueShopping;
 
     private CartDishAdapter cartAdapter;
     private CartManager cartManager;
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
+
+    private boolean pendingCheckoutAfterLogin;
+
+    private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (pendingCheckoutAfterLogin && sessionManager.isLoggedIn()) {
+                    pendingCheckoutAfterLogin = false;
+                    handleCheckout();
+                    return;
+                }
+                pendingCheckoutAfterLogin = false;
+                updateCartDisplay();
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +69,24 @@ public class CartActivity extends AppCompatActivity {
 
         initViews();
         setupRecyclerView();
-        updateCartDisplay();
         setupCheckoutButton();
+        setupActionButtons();
+        updateCartDisplay();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateCartDisplay();
     }
 
     private void initViews() {
         rvCartItems = findViewById(R.id.rvCartItems);
         tvCartTotal = findViewById(R.id.tvCartTotal);
+        tvCartEmpty = findViewById(R.id.tvCartEmpty);
         btnCheckout = findViewById(R.id.btnCheckout);
+        btnClearCart = findViewById(R.id.btnClearCart);
+        btnContinueShopping = findViewById(R.id.btnContinueShopping);
     }
 
     private void setupRecyclerView() {
@@ -74,10 +108,24 @@ public class CartActivity extends AppCompatActivity {
                         cartManager.decreaseQuantity(key);
                         updateCartDisplay();
                     }
+
+                    @Override
+                    public void onRemove(CartManager.CartItem item) {
+                        removeSingleItem(item);
+                    }
                 }
         );
 
         rvCartItems.setAdapter(cartAdapter);
+    }
+
+    private void setupCheckoutButton() {
+        btnCheckout.setOnClickListener(v -> handleCheckout());
+    }
+
+    private void setupActionButtons() {
+        btnClearCart.setOnClickListener(v -> clearAllCartItems());
+        btnContinueShopping.setOnClickListener(v -> finish());
     }
 
     private void updateCartDisplay() {
@@ -86,6 +134,14 @@ public class CartActivity extends AppCompatActivity {
 
         long totalPrice = calculateTotalPrice(items);
         tvCartTotal.setText(getString(R.string.cart_total_label, formatPrice(totalPrice)));
+
+        boolean isEmpty = items.isEmpty();
+        rvCartItems.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        tvCartEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        btnContinueShopping.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        btnClearCart.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        btnCheckout.setEnabled(!isEmpty);
+        btnCheckout.setAlpha(isEmpty ? 0.5f : 1f);
     }
 
     private long calculateTotalPrice(List<CartManager.CartItem> items) {
@@ -97,7 +153,7 @@ public class CartActivity extends AppCompatActivity {
         return total;
     }
 
-    private long parsePriceFromString(String priceString) {
+    private long parsePriceFromString(@Nullable String priceString) {
         if (priceString == null || priceString.isEmpty()) {
             return 0;
         }
@@ -114,25 +170,59 @@ public class CartActivity extends AppCompatActivity {
         return String.format(Locale.getDefault(), "%,d đ", price);
     }
 
-    private void setupCheckoutButton() {
-        btnCheckout.setOnClickListener(v -> handleCheckout());
+    private void removeSingleItem(@NonNull CartManager.CartItem item) {
+        String dishName = item.getDish().getName();
+        String key = cartManager.getDishKey(item);
+        cartManager.removeItem(key);
+        updateCartDisplay();
+        Toast.makeText(this, getString(R.string.cart_item_removed, dishName), Toast.LENGTH_SHORT).show();
     }
 
-    private void handleCheckout() {
-        if (!sessionManager.isLoggedIn()) {
-            Toast.makeText(this, R.string.cart_checkout_requires_login, Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
+    private void clearAllCartItems() {
+        if (cartManager.isEmpty()) {
+            updateCartDisplay();
             return;
         }
 
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.cart_clear)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    cartManager.clearCart();
+                    updateCartDisplay();
+                    Toast.makeText(this, R.string.cart_cleared, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void handleCheckout() {
         List<CartManager.CartItem> items = cartManager.getItems();
         if (items.isEmpty()) {
             Toast.makeText(this, R.string.cart_empty_message, Toast.LENGTH_SHORT).show();
+            updateCartDisplay();
+            return;
+        }
+
+        if (!sessionManager.isLoggedIn()) {
+            pendingCheckoutAfterLogin = true;
+            Toast.makeText(this, R.string.cart_checkout_requires_login, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
+            loginLauncher.launch(intent);
             return;
         }
 
         long userId = sessionManager.getCurrentUserId();
+        if (userId <= 0) {
+            pendingCheckoutAfterLogin = true;
+            sessionManager.clearSession();
+            Toast.makeText(this, R.string.session_invalid, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.putExtra(LoginActivity.EXTRA_RETURN_TO_CALLER, true);
+            loginLauncher.launch(intent);
+            return;
+        }
+
         String orderCode = generateOrderCode();
         String orderTime = getCurrentDateTime();
         long totalPrice = calculateTotalPrice(items);
@@ -140,7 +230,8 @@ public class CartActivity extends AppCompatActivity {
 
         List<Order.OrderDish> orderDishes = new ArrayList<>();
         for (CartManager.CartItem item : items) {
-            orderDishes.add(new Order.OrderDish(item.getDish(), item.getQuantity()));
+            RecommendedDishItem dish = item.getDish();
+            orderDishes.add(new Order.OrderDish(dish, item.getQuantity()));
         }
 
         long orderId = databaseHelper.insertOrder(
@@ -153,8 +244,10 @@ public class CartActivity extends AppCompatActivity {
         );
 
         if (orderId > 0) {
+            pendingCheckoutAfterLogin = false;
             Toast.makeText(this, R.string.cart_checkout_success, Toast.LENGTH_SHORT).show();
             cartManager.clearCart();
+            updateCartDisplay();
             finish();
         } else {
             Toast.makeText(this, R.string.db_operation_failed, Toast.LENGTH_SHORT).show();

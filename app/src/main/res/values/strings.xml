@@ -100,9 +100,11 @@
     <string name="reservation_sample_time">19:00</string>
     <string name="reservation_sample_datetime">05/03/2026 19:00</string>
     <string name="reservation_guest_count_hint">Số người</string>
-    <string name="reservation_table_label">Chọn bàn</string>
-    <string name="reservation_table_format">Bàn %1$02d (%2$d chỗ)</string>
-    <string name="reservation_table_format_simple">Bàn %1$s</string>
+    <string name="reservation_area_label">Khu vực ngồi mong muốn</string>
+    <string name="reservation_area_ground_floor">Tầng trệt</string>
+    <string name="reservation_area_balcony">Ban công</string>
+    <string name="reservation_area_vip_room">Phòng VIP</string>
+    <string name="reservation_area_near_window">Gần cửa sổ</string>
     <string name="reservation_note_hint">Ghi chú (nếu có)</string>
     <string name="reservation_submit">Gửi yêu cầu</string>
     <string name="reservation_cancel">Hủy</string>
@@ -112,10 +114,10 @@
     <string name="reservation_status_completed">Hoàn thành</string>
     <string name="reservation_status_canceled">Đã hủy</string>
 
-    <string name="reservation_sample_table">Bàn: Bàn 01</string>
+    <string name="reservation_sample_table">Khu vực: Tầng trệt</string>
     <string name="reservation_sample_guest_count">Số người: 4</string>
     <string name="reservation_sample_note">Ghi chú: Ngồi gần cửa sổ</string>
-    <string name="reservation_table_format_display">Bàn: %1$s</string>
+    <string name="reservation_table_format_display">Khu vực: %1$s</string>
     <string name="reservation_guest_count_format">Số người: %1$d</string>
     <string name="reservation_note_format">Ghi chú: %1$s</string>
     <string name="reservation_note_empty">Ghi chú: Không có</string>

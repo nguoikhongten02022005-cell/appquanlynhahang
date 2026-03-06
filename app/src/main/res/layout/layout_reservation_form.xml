@@ -75,13 +75,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_md"
-            android:text="@string/reservation_table_label"
+            android:text="@string/reservation_area_label"
             android:textColor="@color/text_primary"
             android:textSize="13sp"
             android:textStyle="bold" />
 
         <Spinner
-            android:id="@+id/spinnerReservationTable"
+            android:id="@+id/spinnerReservationArea"
             android:layout_width="match_parent"
             android:layout_height="@dimen/search_height"
             android:layout_marginTop="@dimen/space_xs"

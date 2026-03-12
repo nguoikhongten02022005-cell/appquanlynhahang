@@ -27,10 +27,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/reservation_sample_datetime"
                 android:textColor="@color/text_primary"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="15/03/2026 19:00" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvReservationStatus"
@@ -53,28 +53,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
-            android:text="@string/reservation_sample_table"
             android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            tools:text="Khu vực: Tầng trệt" />
 
         <TextView
             android:id="@+id/tvReservationGuestCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
-            android:text="@string/reservation_sample_guest_count"
             android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            tools:text="Số người: 4" />
 
         <TextView
             android:id="@+id/tvReservationNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
-            android:text="@string/reservation_sample_note"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
-            tools:ignore="TextContrastCheck" />
+            tools:ignore="TextContrastCheck"
+            tools:text="Ghi chú: Gần cửa sổ" />
 
         <Button
             android:id="@+id/btnCancelReservation"

@@ -53,7 +53,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         boolean isSelected = position == selectedPosition;
 
         holder.ivCategoryIcon.setImageResource(item.getIconResId());
-        holder.tvCategoryName.setText(item.getName());
+        holder.tvCategoryName.setText(item.getTenHienThi());
 
         holder.itemView.setSelected(isSelected);
         holder.iconContainer.setSelected(isSelected);

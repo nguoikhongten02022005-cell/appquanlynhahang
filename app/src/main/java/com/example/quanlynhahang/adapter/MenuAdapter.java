@@ -55,14 +55,14 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
         RecommendedDishItem item = items.get(position);
 
         holder.ivMenuDishImage.setImageResource(item.getImageResId());
-        holder.tvMenuDishName.setText(item.getName());
+        holder.tvMenuDishName.setText(item.getTenMon());
         holder.tvMenuDishDescription.setText(descriptions.get(position));
-        holder.tvMenuDishPrice.setText(item.getPrice());
+        holder.tvMenuDishPrice.setText(item.getGiaBan());
 
-        holder.btnMenuAddDish.setEnabled(item.isAvailable());
-        holder.btnMenuAddDish.setAlpha(item.isAvailable() ? 1f : 0.5f);
+        holder.btnMenuAddDish.setEnabled(item.isConPhucVu());
+        holder.btnMenuAddDish.setAlpha(item.isConPhucVu() ? 1f : 0.5f);
         holder.btnMenuAddDish.setOnClickListener(v -> {
-            if (item.isAvailable()) {
+            if (item.isConPhucVu()) {
                 onAddDishClickListener.onAddDishClick(item);
             }
         });

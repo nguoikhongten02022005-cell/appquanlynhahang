@@ -27,14 +27,19 @@ import com.example.quanlynhahang.model.Reservation;
 import com.example.quanlynhahang.model.ServiceRequest;
 import com.google.android.material.button.MaterialButton;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class RequestsFragment extends Fragment {
 
     public static final String ARG_EMBEDDED = "embedded";
+    private static final int SO_KHACH_TOI_DA = 20;
+    private static final SimpleDateFormat DINH_DANG_THOI_GIAN = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 
     private final List<Reservation> reservations = new ArrayList<>();
     private final List<ServiceRequest> serviceRequests = new ArrayList<>();
@@ -78,8 +83,8 @@ public class RequestsFragment extends Fragment {
                 titleView.setVisibility(View.GONE);
             }
         }
-        setupServiceRequestMockData();
         loadReservations();
+        loadServiceRequests();
         setupDateTimePicker();
         setupReservationList(view);
         setupServiceRequestList(view);
@@ -90,8 +95,12 @@ public class RequestsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         loadReservations();
+        loadServiceRequests();
         if (reservationAdapter != null) {
             reservationAdapter.setReservations(reservations);
+        }
+        if (serviceRequestAdapter != null) {
+            serviceRequestAdapter.capNhatDanhSach(serviceRequests);
         }
     }
 
@@ -131,12 +140,17 @@ public class RequestsFragment extends Fragment {
                     selectedDateTime.set(Calendar.YEAR, selectedYear);
                     selectedDateTime.set(Calendar.MONTH, selectedMonth);
                     selectedDateTime.set(Calendar.DAY_OF_MONTH, selectedDayOfMonth);
+                    if (selectedDateTime.before(Calendar.getInstance())) {
+                        selectedDateTime.setTimeInMillis(Calendar.getInstance().getTimeInMillis());
+                    }
                     updateDateLabel();
+                    updateTimeLabel();
                 },
                 year,
                 month,
                 day
         );
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000L);
         datePickerDialog.show();
     }
 
@@ -282,10 +296,19 @@ public class RequestsFragment extends Fragment {
             return;
         }
 
-        if (guestCount <= 0) {
+        if (guestCount <= 0 || guestCount > SO_KHACH_TOI_DA) {
             Toast.makeText(
                     requireContext(),
-                    getString(R.string.reservation_validation_guest_count),
+                    getString(R.string.reservation_validation_guest_count_range, SO_KHACH_TOI_DA),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        if (!isReservationTimeValid()) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.reservation_validation_future_time),
                     Toast.LENGTH_SHORT
             ).show();
             return;
@@ -298,11 +321,12 @@ public class RequestsFragment extends Fragment {
         String reservationDateTime = getFormattedDateTime(selectedDateTime);
 
         long newReservationId = databaseHelper.insertReservation(
-                (int) currentUserId,
+                currentUserId,
                 reservationDateTime,
                 selectedArea,
                 guestCount,
-                note
+                note,
+                Reservation.Status.PENDING_APPROVAL
         );
 
         if (newReservationId <= 0) {
@@ -314,8 +338,7 @@ public class RequestsFragment extends Fragment {
             return;
         }
 
-        reservations.clear();
-        reservations.addAll(databaseHelper.getReservationsByUserId((int) currentUserId));
+        loadReservations();
         reservationAdapter.setReservations(reservations);
 
         etGuestCount.setText("");
@@ -329,12 +352,34 @@ public class RequestsFragment extends Fragment {
     }
 
     private void submitQuickServiceRequest(String requestContent) {
-        ServiceRequest serviceRequest = new ServiceRequest(
+        long currentUserId = sessionManager.getCurrentUserId();
+        if (!sessionManager.isLoggedIn() || currentUserId <= 0) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.service_request_login_required),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        String thoiGianGui = getCurrentTimeText();
+        long requestId = databaseHelper.insertServiceRequest(
+                currentUserId,
                 requestContent,
-                getCurrentTimeText(),
+                thoiGianGui,
                 ServiceRequest.Status.PROCESSING
         );
-        serviceRequestAdapter.addServiceRequest(serviceRequest);
+        if (requestId <= 0) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.db_operation_failed),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        loadServiceRequests();
+        serviceRequestAdapter.capNhatDanhSach(serviceRequests);
 
         Toast.makeText(
                 requireContext(),
@@ -343,29 +388,18 @@ public class RequestsFragment extends Fragment {
         ).show();
     }
 
+    private boolean isReservationTimeValid() {
+        Calendar now = Calendar.getInstance();
+        return selectedDateTime != null && selectedDateTime.after(now);
+    }
+
     private String getCurrentTimeText() {
         Calendar now = Calendar.getInstance();
-        return String.format(
-                Locale.getDefault(),
-                "%02d/%02d/%04d %02d:%02d",
-                now.get(Calendar.DAY_OF_MONTH),
-                now.get(Calendar.MONTH) + 1,
-                now.get(Calendar.YEAR),
-                now.get(Calendar.HOUR_OF_DAY),
-                now.get(Calendar.MINUTE)
-        );
+        return getFormattedDateTime(now);
     }
 
     private String getFormattedDateTime(Calendar calendar) {
-        return String.format(
-                Locale.getDefault(),
-                "%02d/%02d/%04d %02d:%02d",
-                calendar.get(Calendar.DAY_OF_MONTH),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE)
-        );
+        return DINH_DANG_THOI_GIAN.format(calendar.getTime());
     }
 
     private void loadReservations() {
@@ -377,19 +411,32 @@ public class RequestsFragment extends Fragment {
         }
 
         reservations.addAll(databaseHelper.getReservationsByUserId(userId));
+        reservations.sort((first, second) -> Long.compare(
+                parseDateTime(second.getTime()),
+                parseDateTime(first.getTime())
+        ));
     }
 
-    private void setupServiceRequestMockData() {
+    private void loadServiceRequests() {
         serviceRequests.clear();
-        serviceRequests.add(new ServiceRequest(
-                getString(R.string.service_request_quick_more_water),
-                "02/03/2026 12:05",
-                ServiceRequest.Status.PROCESSING
-        ));
-        serviceRequests.add(new ServiceRequest(
-                getString(R.string.service_request_quick_call_staff),
-                "02/03/2026 11:48",
-                ServiceRequest.Status.DONE
-        ));
+
+        long userId = sessionManager.getCurrentUserId();
+        if (userId <= 0 || !sessionManager.isLoggedIn()) {
+            return;
+        }
+
+        serviceRequests.addAll(databaseHelper.getServiceRequestsByUserId(userId));
+    }
+
+    private long parseDateTime(String value) {
+        if (TextUtils.isEmpty(value)) {
+            return 0L;
+        }
+        try {
+            Date date = DINH_DANG_THOI_GIAN.parse(value);
+            return date == null ? 0L : date.getTime();
+        } catch (ParseException e) {
+            return 0L;
+        }
     }
 }

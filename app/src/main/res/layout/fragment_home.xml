@@ -59,6 +59,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_md"
+                        android:maxLines="3"
                         android:text="@string/home_hero_title"
                         android:textColor="@color/white"
                         android:textSize="26sp"
@@ -68,6 +69,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_sm"
+                        android:maxLines="2"
                         android:text="@string/home_hero_subtitle"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
@@ -90,9 +92,11 @@
                             app:iconPadding="@dimen/space_sm" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/space_md"
+                            android:ellipsize="end"
+                            android:maxLines="2"
                             android:text="@string/home_hero_meta"
                             android:textColor="@color/white"
                             android:textSize="12sp" />
@@ -135,6 +139,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_md"
+                    android:maxLines="1"
                     android:text="@string/quick_action_order"
                     android:textColor="@color/white"
                     android:textSize="16sp"
@@ -144,6 +149,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_xs"
+                    android:maxLines="2"
                     android:text="@string/home_quick_order_subtitle"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
@@ -177,6 +183,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_md"
+                    android:maxLines="1"
                     android:text="@string/quick_action_book_table"
                     android:textColor="@color/white"
                     android:textSize="16sp"
@@ -186,6 +193,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_xs"
+                    android:maxLines="2"
                     android:text="@string/home_quick_book_subtitle"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
@@ -196,19 +204,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xl"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:maxLines="1"
                 android:text="@string/section_category"
                 android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:text="@string/home_category_hint"
                 android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
         </LinearLayout>
@@ -228,19 +238,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xl"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:maxLines="1"
                 android:text="@string/section_recommended"
                 android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:text="@string/home_recommended_hint"
                 android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
         </LinearLayout>

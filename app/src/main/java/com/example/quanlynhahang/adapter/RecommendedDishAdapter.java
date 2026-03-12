@@ -46,25 +46,25 @@ public class RecommendedDishAdapter extends RecyclerView.Adapter<RecommendedDish
     @Override
     public void onBindViewHolder(@NonNull RecommendedDishViewHolder holder, int position) {
         RecommendedDishItem item = items.get(position);
-        boolean isAvailable = item.isAvailable();
+        boolean conPhucVu = item.isConPhucVu();
 
         holder.ivDishImage.setImageResource(item.getImageResId());
-        holder.tvDishName.setText(item.getName());
-        holder.tvDishPrice.setText(item.getPrice());
-        holder.tvDishStatus.setText(isAvailable ? R.string.dish_status_available : R.string.dish_status_unavailable);
+        holder.tvDishName.setText(item.getTenMon());
+        holder.tvDishPrice.setText(item.getGiaBan());
+        holder.tvDishStatus.setText(conPhucVu ? R.string.dish_status_available : R.string.dish_status_unavailable);
         holder.tvDishStatus.setBackgroundResource(
-                isAvailable ? R.drawable.bg_status_available : R.drawable.bg_status_unavailable
+                conPhucVu ? R.drawable.bg_status_available : R.drawable.bg_status_unavailable
         );
         holder.tvDishStatus.setTextColor(ContextCompat.getColor(
                 holder.itemView.getContext(),
-                isAvailable ? R.color.status_available_text : R.color.status_unavailable_text
+                conPhucVu ? R.color.status_available_text : R.color.status_unavailable_text
         ));
 
-        holder.btnAddDish.setEnabled(isAvailable);
-        holder.btnAddDish.setAlpha(isAvailable ? 1f : 0.85f);
+        holder.btnAddDish.setEnabled(conPhucVu);
+        holder.btnAddDish.setAlpha(conPhucVu ? 1f : 0.85f);
         holder.btnAddDish.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(
                 holder.itemView.getContext(),
-                isAvailable ? R.color.add_button_icon_enabled : R.color.add_button_icon_disabled
+                conPhucVu ? R.color.add_button_icon_enabled : R.color.add_button_icon_disabled
         )));
 
         View.OnClickListener dishClickListener = v -> {
@@ -76,7 +76,7 @@ public class RecommendedDishAdapter extends RecyclerView.Adapter<RecommendedDish
         holder.itemView.setOnClickListener(dishClickListener);
 
         holder.btnAddDish.setOnClickListener(v -> {
-            if (isAvailable && onDishActionListener != null) {
+            if (conPhucVu && onDishActionListener != null) {
                 onDishActionListener.onAddDishClick(item);
             }
         });

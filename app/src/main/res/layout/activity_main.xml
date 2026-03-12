@@ -8,13 +8,11 @@
     android:background="@color/background"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutTopBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/background"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:paddingStart="@dimen/screen_padding_horizontal"
         android:paddingTop="@dimen/space_sm"
         android:paddingEnd="@dimen/screen_padding_horizontal"
@@ -24,9 +22,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <FrameLayout
+            android:id="@+id/layoutAvatarAction"
             android:layout_width="@dimen/header_avatar_size"
             android:layout_height="@dimen/header_avatar_size"
-            android:background="@drawable/bg_icon_circle">
+            android:background="@drawable/bg_icon_circle"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/ivAvatar"
@@ -39,24 +43,34 @@
         </FrameLayout>
 
         <LinearLayout
+            android:id="@+id/layoutHeaderText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/space_md"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginEnd="@dimen/space_sm"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/layoutAvatarAction"
+            app:layout_constraintEnd_toStartOf="@id/layoutSearchAction"
+            app:layout_constraintStart_toEndOf="@id/layoutAvatarAction"
+            app:layout_constraintTop_toTopOf="@id/layoutAvatarAction">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvHeaderCaption"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/home_header_caption"
                 android:textColor="@color/on_surface_variant"
                 android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tvGreeting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_xs"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/home_greeting"
                 android:textColor="@color/on_surface"
                 android:textSize="18sp"
@@ -64,10 +78,16 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/layoutSearchAction"
             android:layout_width="@dimen/header_icon_box_size"
             android:layout_height="@dimen/header_icon_box_size"
             android:layout_marginEnd="@dimen/space_sm"
-            android:background="@drawable/bg_icon_circle">
+            android:background="@drawable/bg_icon_circle"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@id/layoutAvatarAction"
+            app:layout_constraintEnd_toStartOf="@id/layoutCartIcon"
+            app:layout_constraintTop_toTopOf="@id/layoutAvatarAction">
 
             <ImageView
                 android:layout_width="@dimen/icon_size_20"
@@ -82,7 +102,12 @@
             android:id="@+id/layoutCartIcon"
             android:layout_width="@dimen/header_icon_box_size"
             android:layout_height="@dimen/header_icon_box_size"
-            android:background="@drawable/bg_icon_circle">
+            android:background="@drawable/bg_icon_circle"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@id/layoutAvatarAction"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/layoutAvatarAction">
 
             <ImageView
                 android:layout_width="@dimen/icon_size_20"
@@ -94,17 +119,23 @@
 
             <TextView
                 android:id="@+id/tvCartBadge"
-                android:layout_width="@dimen/cart_badge_size"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/cart_badge_size"
                 android:layout_gravity="top|end"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
                 android:background="@drawable/bg_badge_red"
                 android:gravity="center"
+                android:minWidth="@dimen/cart_badge_size"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
                 android:text="@string/cart_badge_count"
                 android:textColor="@color/on_error"
                 android:textSize="@dimen/cart_badge_text_size"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
         </FrameLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mainFragmentContainer"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/space_sm"
@@ -19,19 +20,19 @@
             android:id="@+id/tvServiceRequestContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/service_request_sample_content"
             android:textColor="@color/text_primary"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Gọi nhân viên" />
 
         <TextView
             android:id="@+id/tvServiceRequestTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
-            android:text="@string/service_request_sample_time"
             android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            tools:text="12/03/2026 12:05" />
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatTextView

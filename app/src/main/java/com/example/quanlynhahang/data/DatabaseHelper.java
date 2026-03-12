@@ -17,6 +17,7 @@ import com.example.quanlynhahang.R;
 import com.example.quanlynhahang.model.Order;
 import com.example.quanlynhahang.model.RecommendedDishItem;
 import com.example.quanlynhahang.model.Reservation;
+import com.example.quanlynhahang.model.ServiceRequest;
 import com.example.quanlynhahang.model.User;
 
 import java.text.ParseException;
@@ -31,7 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
 
     private static final String DATABASE_NAME = "restaurant.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     private static final String TEN_ANH_MAC_DINH = "ic_restaurant_24";
     private static final String BAN_MAC_DINH = "Bàn 01";
@@ -44,6 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_ORDER = "orders";
     public static final String TABLE_ORDER_ITEM = "order_items";
     public static final String TABLE_RESERVATION = "reservations";
+    public static final String TABLE_SERVICE_REQUEST = "service_requests";
 
     private static final String COL_USER_ID = "id";
     private static final String COL_USER_NAME = "name";
@@ -57,6 +59,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL_DISH_DESCRIPTION = "description";
     private static final String COL_DISH_IMAGE_RES_NAME = "image_res_name";
     private static final String COL_DISH_IS_AVAILABLE = "is_available";
+    private static final String COL_DISH_CATEGORY = "category";
+    private static final String COL_DISH_RECOMMEND_SCORE = "recommend_score";
 
     private static final String COL_ORDER_ID = "id";
     private static final String COL_ORDER_USER_ID = "user_id";
@@ -80,6 +84,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL_RESERVATION_GUEST_COUNT = "guest_count";
     private static final String COL_RESERVATION_NOTE = "note";
     private static final String COL_RESERVATION_STATUS = "status";
+
+    private static final String COL_SERVICE_REQUEST_ID = "id";
+    private static final String COL_SERVICE_REQUEST_USER_ID = "user_id";
+    private static final String COL_SERVICE_REQUEST_CONTENT = "content";
+    private static final String COL_SERVICE_REQUEST_SENT_TIME = "sent_time";
+    private static final String COL_SERVICE_REQUEST_STATUS = "status";
 
     private final Context appContext;
 
@@ -144,6 +154,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoBangTonTai(db, TABLE_ORDER, taoBangDonHang());
         damBaoBangTonTai(db, TABLE_ORDER_ITEM, taoBangChiTietDonHang());
         damBaoBangTonTai(db, TABLE_RESERVATION, taoBangDatBan());
+        damBaoBangTonTai(db, TABLE_SERVICE_REQUEST, taoBangYeuCauPhucVu());
 
         damBaoCotTonTai(db, TABLE_USER, COL_USER_NAME, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_USER, COL_USER_EMAIL, "TEXT NOT NULL DEFAULT ''");
@@ -156,6 +167,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoCotTonTai(db, TABLE_DISH, COL_DISH_IMAGE_RES_NAME,
                 "TEXT NOT NULL DEFAULT '" + TEN_ANH_MAC_DINH + "'");
         damBaoCotTonTai(db, TABLE_DISH, COL_DISH_IS_AVAILABLE, "INTEGER NOT NULL DEFAULT 1");
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_CATEGORY, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_RECOMMEND_SCORE, "INTEGER NOT NULL DEFAULT 0");
 
         damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_USER_ID, "INTEGER NOT NULL DEFAULT 0");
         damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_CODE, "TEXT NOT NULL DEFAULT ''");
@@ -180,6 +193,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_NOTE, "TEXT");
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_STATUS,
                 "TEXT NOT NULL DEFAULT '" + Reservation.Status.PENDING_APPROVAL.name() + "'");
+
+        damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_USER_ID, "INTEGER NOT NULL DEFAULT 0");
+        damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_CONTENT, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_SENT_TIME, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_STATUS,
+                "TEXT NOT NULL DEFAULT '" + ServiceRequest.Status.PROCESSING.name() + "'");
     }
 
     private void damBaoDuLieuMacDinh(SQLiteDatabase db) {
@@ -264,7 +283,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_DISH_PRICE + " TEXT NOT NULL, "
                 + COL_DISH_DESCRIPTION + " TEXT NOT NULL, "
                 + COL_DISH_IMAGE_RES_NAME + " TEXT NOT NULL DEFAULT '" + TEN_ANH_MAC_DINH + "', "
-                + COL_DISH_IS_AVAILABLE + " INTEGER NOT NULL DEFAULT 1"
+                + COL_DISH_IS_AVAILABLE + " INTEGER NOT NULL DEFAULT 1, "
+                + COL_DISH_CATEGORY + " TEXT NOT NULL DEFAULT '', "
+                + COL_DISH_RECOMMEND_SCORE + " INTEGER NOT NULL DEFAULT 0"
                 + ")";
     }
 
@@ -300,6 +321,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_RESERVATION_GUEST_COUNT + " INTEGER NOT NULL, "
                 + COL_RESERVATION_NOTE + " TEXT, "
                 + COL_RESERVATION_STATUS + " TEXT NOT NULL"
+                + ")";
+    }
+
+    private String taoBangYeuCauPhucVu() {
+        return "CREATE TABLE IF NOT EXISTS " + TABLE_SERVICE_REQUEST + " ("
+                + COL_SERVICE_REQUEST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COL_SERVICE_REQUEST_USER_ID + " INTEGER NOT NULL, "
+                + COL_SERVICE_REQUEST_CONTENT + " TEXT NOT NULL, "
+                + COL_SERVICE_REQUEST_SENT_TIME + " TEXT NOT NULL, "
+                + COL_SERVICE_REQUEST_STATUS + " TEXT NOT NULL"
                 + ")";
     }
 
@@ -457,7 +488,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             COL_DISH_PRICE,
                             COL_DISH_DESCRIPTION,
                             COL_DISH_IMAGE_RES_NAME,
-                            COL_DISH_IS_AVAILABLE
+                            COL_DISH_IS_AVAILABLE,
+                            COL_DISH_CATEGORY,
+                            COL_DISH_RECOMMEND_SCORE
                     },
                     null,
                     null,
@@ -472,9 +505,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_DESCRIPTION));
                 String imageResName = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_IMAGE_RES_NAME));
                 boolean isAvailable = cursor.getInt(cursor.getColumnIndexOrThrow(COL_DISH_IS_AVAILABLE)) == 1;
+                String category = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_CATEGORY));
+                int recommendScore = cursor.getInt(cursor.getColumnIndexOrThrow(COL_DISH_RECOMMEND_SCORE));
 
                 int imageResId = resolveImageResId(imageResName);
-                RecommendedDishItem dishItem = new RecommendedDishItem(imageResId, name, price, isAvailable);
+                RecommendedDishItem dishItem = new RecommendedDishItem(
+                        imageResId,
+                        name,
+                        price,
+                        isAvailable,
+                        category,
+                        recommendScore
+                );
                 dishRecords.add(new DishRecord(dishItem, description));
             }
         } finally {
@@ -495,6 +537,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return dishes;
+    }
+
+    public List<RecommendedDishItem> getDanhSachMonTheoDanhMuc(@Nullable String tenDanhMuc) {
+        List<RecommendedDishItem> dishes = new ArrayList<>();
+        for (DishRecord record : getAllDishes()) {
+            RecommendedDishItem dishItem = record.getDishItem();
+            if (TextUtils.isEmpty(tenDanhMuc) || TextUtils.equals(tenDanhMuc, dishItem.getTenDanhMuc())) {
+                dishes.add(dishItem);
+            }
+        }
+        return dishes;
+    }
+
+    public List<RecommendedDishItem> getMonDeXuatTrangChu(int soLuongToiDa) {
+        List<RecommendedDishItem> available = new ArrayList<>();
+        List<RecommendedDishItem> fallback = new ArrayList<>();
+
+        for (DishRecord record : getAllDishes()) {
+            RecommendedDishItem dishItem = record.getDishItem();
+            fallback.add(dishItem);
+            if (dishItem.isConPhucVu()) {
+                available.add(dishItem);
+            }
+        }
+
+        List<RecommendedDishItem> source = available.isEmpty() ? fallback : available;
+        source.sort((first, second) -> Integer.compare(second.getDiemDeXuat(), first.getDiemDeXuat()));
+
+        int gioiHan = Math.min(Math.max(soLuongToiDa, 0), source.size());
+        return new ArrayList<>(source.subList(0, gioiHan));
     }
 
     public long insertOrder(int userId,
@@ -537,10 +609,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 RecommendedDishItem dishItem = orderDish.getDishItem();
                 ContentValues itemValues = new ContentValues();
                 itemValues.put(COL_ORDER_ITEM_ORDER_ID, orderId);
-                itemValues.put(COL_ORDER_ITEM_DISH_NAME, dishItem.getName());
-                itemValues.put(COL_ORDER_ITEM_DISH_PRICE, dishItem.getPrice());
+                itemValues.put(COL_ORDER_ITEM_DISH_NAME, dishItem.getTenMon());
+                itemValues.put(COL_ORDER_ITEM_DISH_PRICE, dishItem.getGiaBan());
                 itemValues.put(COL_ORDER_ITEM_IMAGE_RES_NAME, resolveImageResName(dishItem.getImageResId()));
-                itemValues.put(COL_ORDER_ITEM_IS_AVAILABLE, dishItem.isAvailable() ? 1 : 0);
+                itemValues.put(COL_ORDER_ITEM_IS_AVAILABLE, dishItem.isConPhucVu() ? 1 : 0);
                 itemValues.put(COL_ORDER_ITEM_QUANTITY, orderDish.getQuantity());
 
                 long itemId = db.insert(TABLE_ORDER_ITEM, null, itemValues);
@@ -706,6 +778,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
+    public List<ServiceRequest> getServiceRequestsByUserId(long userId) {
+        List<ServiceRequest> requests = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(
+                    TABLE_SERVICE_REQUEST,
+                    new String[]{
+                            COL_SERVICE_REQUEST_ID,
+                            COL_SERVICE_REQUEST_CONTENT,
+                            COL_SERVICE_REQUEST_SENT_TIME,
+                            COL_SERVICE_REQUEST_STATUS
+                    },
+                    COL_SERVICE_REQUEST_USER_ID + " = ?",
+                    new String[]{String.valueOf(userId)},
+                    null,
+                    null,
+                    COL_SERVICE_REQUEST_ID + " DESC"
+            );
+
+            while (cursor.moveToNext()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_ID));
+                String content = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_CONTENT));
+                String sentTime = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_SENT_TIME));
+                String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_STATUS));
+                requests.add(new ServiceRequest(id, content, sentTime, parseServiceRequestStatus(statusRaw)));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return requests;
+    }
+
+    public long insertServiceRequest(long userId,
+                                     String noiDung,
+                                     String thoiGianGui,
+                                     ServiceRequest.Status trangThai) {
+        if (userId <= 0 || TextUtils.isEmpty(noiDung) || TextUtils.isEmpty(thoiGianGui) || trangThai == null) {
+            return -1;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_SERVICE_REQUEST_USER_ID, userId);
+        values.put(COL_SERVICE_REQUEST_CONTENT, noiDung);
+        values.put(COL_SERVICE_REQUEST_SENT_TIME, thoiGianGui);
+        values.put(COL_SERVICE_REQUEST_STATUS, trangThai.name());
+        return db.insert(TABLE_SERVICE_REQUEST, null, values);
+    }
+
     private void seedDishesIfEmpty(Context context, SQLiteDatabase db) {
         if (hasAnyDish(db)) {
             return;
@@ -718,7 +844,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.price_145k),
                 context.getString(R.string.menu_desc_bo_luc_lac),
                 TEN_ANH_MAC_DINH,
-                true
+                true,
+                context.getString(R.string.category_main_course),
+                98
         );
         insertDish(
                 db,
@@ -726,7 +854,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.price_129k),
                 context.getString(R.string.menu_desc_salad_ca_hoi),
                 TEN_ANH_MAC_DINH,
-                true
+                true,
+                context.getString(R.string.category_dessert),
+                84
         );
         insertDish(
                 db,
@@ -734,7 +864,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.price_259k),
                 context.getString(R.string.menu_desc_lau_thai),
                 TEN_ANH_MAC_DINH,
-                false
+                false,
+                context.getString(R.string.category_hotpot),
+                92
         );
         insertDish(
                 db,
@@ -742,7 +874,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.price_45k),
                 context.getString(R.string.menu_desc_tra_dao),
                 "ic_local_drink_24",
-                true
+                true,
+                context.getString(R.string.category_drink),
+                80
         );
     }
 
@@ -766,13 +900,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             String price,
                             String description,
                             String imageResName,
-                            boolean isAvailable) {
+                            boolean isAvailable,
+                            String tenDanhMuc,
+                            int diemDeXuat) {
         ContentValues values = new ContentValues();
         values.put(COL_DISH_NAME, name);
         values.put(COL_DISH_PRICE, price);
         values.put(COL_DISH_DESCRIPTION, description);
         values.put(COL_DISH_IMAGE_RES_NAME, imageResName);
         values.put(COL_DISH_IS_AVAILABLE, isAvailable ? 1 : 0);
+        values.put(COL_DISH_CATEGORY, tenDanhMuc);
+        values.put(COL_DISH_RECOMMEND_SCORE, diemDeXuat);
         db.insert(TABLE_DISH, null, values);
     }
 
@@ -849,7 +987,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         resolveImageResId(imageResName),
                         dishName,
                         dishPrice,
-                        isAvailable
+                        isAvailable,
+                        "",
+                        0
                 );
                 dishes.add(new Order.OrderDish(dishItem, quantity));
             }
@@ -921,6 +1061,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return Reservation.Status.valueOf(statusRaw);
         } catch (IllegalArgumentException ex) {
             return Reservation.Status.PENDING_APPROVAL;
+        }
+    }
+
+    private ServiceRequest.Status parseServiceRequestStatus(String statusRaw) {
+        if (TextUtils.isEmpty(statusRaw)) {
+            return ServiceRequest.Status.PROCESSING;
+        }
+
+        try {
+            return ServiceRequest.Status.valueOf(statusRaw);
+        } catch (IllegalArgumentException ex) {
+            return ServiceRequest.Status.PROCESSING;
         }
     }
 

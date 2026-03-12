@@ -26,10 +26,13 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+    private static final int SO_MON_DE_XUAT = 4;
+
     private final List<CategoryItem> categories = new ArrayList<>();
     private final List<RecommendedDishItem> recommendedDishes = new ArrayList<>();
 
     private DatabaseHelper databaseHelper;
+    private CategoryAdapter categoryAdapter;
 
     @Nullable
     @Override
@@ -57,15 +60,21 @@ public class HomeFragment extends Fragment {
         View actionOrder = view.findViewById(R.id.actionQuickOrder);
         View actionBook = view.findViewById(R.id.actionQuickBook);
 
-        btnHeroCta.setOnClickListener(v -> navigateToMenu());
-        actionOrder.setOnClickListener(v -> navigateToMenu());
+        btnHeroCta.setOnClickListener(v -> navigateToMenu(null, true));
+        actionOrder.setOnClickListener(v -> navigateToMenu(null, true));
         actionBook.setOnClickListener(v -> navigateToRequests());
     }
 
     private void setupCategoryList(View view) {
         RecyclerView rvCategory = view.findViewById(R.id.rvCategory);
         rvCategory.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        rvCategory.setAdapter(new CategoryAdapter(categories, (item, position) -> navigateToMenu()));
+        categoryAdapter = new CategoryAdapter(categories, (item, position) -> {
+            if (categoryAdapter != null) {
+                categoryAdapter.setSelectedPosition(position);
+            }
+            navigateToMenu(item.getTenDanhMuc(), false);
+        });
+        rvCategory.setAdapter(categoryAdapter);
     }
 
     private void setupRecommendedGrid(View view) {
@@ -75,7 +84,7 @@ public class HomeFragment extends Fragment {
         rvRecommended.setAdapter(new RecommendedDishAdapter(recommendedDishes, new RecommendedDishAdapter.OnDishActionListener() {
             @Override
             public void onDishClick(RecommendedDishItem item) {
-                navigateToMenu();
+                navigateToMenu(item.getTenDanhMuc(), false);
             }
 
             @Override
@@ -83,7 +92,7 @@ public class HomeFragment extends Fragment {
                 CartManager.getInstance().addToCart(item);
                 Toast.makeText(
                         requireContext(),
-                        getString(R.string.menu_added_to_cart, item.getName()),
+                        getString(R.string.menu_added_to_cart, item.getTenMon()),
                         Toast.LENGTH_SHORT
                 ).show();
             }
@@ -92,25 +101,41 @@ public class HomeFragment extends Fragment {
 
     private void setupCategoryData() {
         categories.clear();
-        categories.add(new CategoryItem(R.drawable.ic_restaurant_24, getString(R.string.category_main_course)));
-        categories.add(new CategoryItem(R.drawable.ic_receipt_24, getString(R.string.category_hotpot)));
-        categories.add(new CategoryItem(R.drawable.ic_local_drink_24, getString(R.string.category_drink)));
-        categories.add(new CategoryItem(R.drawable.ic_calendar_24, getString(R.string.category_dessert)));
-        categories.add(new CategoryItem(R.drawable.ic_menu_24, getString(R.string.category_combo)));
+        categories.add(new CategoryItem(
+                R.drawable.ic_restaurant_24,
+                getString(R.string.category_main_course),
+                getString(R.string.category_main_course)
+        ));
+        categories.add(new CategoryItem(
+                R.drawable.ic_receipt_24,
+                getString(R.string.category_hotpot),
+                getString(R.string.category_hotpot)
+        ));
+        categories.add(new CategoryItem(
+                R.drawable.ic_local_drink_24,
+                getString(R.string.category_drink),
+                getString(R.string.category_drink)
+        ));
+        categories.add(new CategoryItem(
+                R.drawable.ic_calendar_24,
+                getString(R.string.category_dessert),
+                getString(R.string.category_dessert)
+        ));
+        categories.add(new CategoryItem(
+                R.drawable.ic_menu_24,
+                getString(R.string.category_combo),
+                getString(R.string.category_combo)
+        ));
     }
 
     private void setupRecommendedData() {
         recommendedDishes.clear();
-        List<RecommendedDishItem> dishes = databaseHelper.getAllDishItems();
-        int count = Math.min(dishes.size(), 4);
-        for (int i = 0; i < count; i++) {
-            recommendedDishes.add(dishes.get(i));
-        }
+        recommendedDishes.addAll(databaseHelper.getMonDeXuatTrangChu(SO_MON_DE_XUAT));
     }
 
-    private void navigateToMenu() {
+    private void navigateToMenu(@Nullable String tenDanhMuc, boolean sanSangTimKiem) {
         if (requireActivity() instanceof MainActivity) {
-            ((MainActivity) requireActivity()).navigateToMenu();
+            ((MainActivity) requireActivity()).navigateToMenu(tenDanhMuc, sanSangTimKiem);
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -35,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
 
     private int pendingActivityHubTab = ActivityHubFragment.TAB_ORDERS;
+    private String pendingMenuCategory;
+    private boolean pendingMenuSearchFocus;
 
     private final CartManager.CartListener cartListener = this::updateCartBadge;
 
@@ -62,6 +65,12 @@ public class MainActivity extends AppCompatActivity {
         tvGreeting = findViewById(R.id.tvGreeting);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
+        if (savedInstanceState != null) {
+            pendingMenuCategory = savedInstanceState.getString(MenuFragment.ARG_TEN_DANH_MUC);
+            pendingMenuSearchFocus = savedInstanceState.getBoolean(MenuFragment.ARG_MO_TIM_KIEM, false);
+            pendingActivityHubTab = savedInstanceState.getInt("pending_activity_tab", ActivityHubFragment.TAB_ORDERS);
+        }
+
         setupBottomNavigation();
         setupHeaderActions();
         updateGreeting();
@@ -87,11 +96,21 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(MenuFragment.ARG_TEN_DANH_MUC, pendingMenuCategory);
+        outState.putBoolean(MenuFragment.ARG_MO_TIM_KIEM, pendingMenuSearchFocus);
+        outState.putInt("pending_activity_tab", pendingActivityHubTab);
+    }
+
     private void setupBottomNavigation() {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == bottomNavigationView.getSelectedItemId()) {
-                if (itemId == R.id.nav_orders) {
+                if (itemId == R.id.nav_menu) {
+                    showMenu();
+                } else if (itemId == R.id.nav_orders) {
                     showActivityHub();
                 } else if (itemId == R.id.nav_account) {
                     showAccount();
@@ -125,6 +144,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupHeaderActions() {
         findViewById(R.id.layoutCartIcon).setOnClickListener(v -> openCart());
+        View nutTimKiem = findViewById(R.id.layoutSearchAction);
+        if (nutTimKiem != null) {
+            nutTimKiem.setOnClickListener(v -> navigateToMenu(null, true));
+        }
+
+        View avatar = findViewById(R.id.layoutAvatarAction);
+        if (avatar != null) {
+            avatar.setOnClickListener(v -> {
+                if (bottomNavigationView.getSelectedItemId() == R.id.nav_account) {
+                    showAccount();
+                    return;
+                }
+                bottomNavigationView.setSelectedItemId(R.id.nav_account);
+            });
+        }
     }
 
     private void showHome() {
@@ -132,7 +166,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMenu() {
-        showFragment(findOrCreateMenuFragment(), TAG_MENU);
+        MenuFragment fragment = findOrCreateMenuFragment();
+        fragment.applyHomeNavigationState(pendingMenuCategory, pendingMenuSearchFocus);
+        showFragment(fragment, TAG_MENU);
     }
 
     private void showActivityHub() {
@@ -174,7 +210,10 @@ public class MainActivity extends AppCompatActivity {
 
     private MenuFragment findOrCreateMenuFragment() {
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_MENU);
-        return fragment instanceof MenuFragment ? (MenuFragment) fragment : new MenuFragment();
+        if (fragment instanceof MenuFragment) {
+            return (MenuFragment) fragment;
+        }
+        return MenuFragment.newInstance(pendingMenuCategory, pendingMenuSearchFocus);
     }
 
     private ActivityHubFragment findActivityHubFragment() {
@@ -188,6 +227,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void navigateToMenu() {
+        navigateToMenu(null, false);
+    }
+
+    public void navigateToMenu(String tenDanhMuc, boolean moTimKiem) {
+        pendingMenuCategory = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
+        pendingMenuSearchFocus = moTimKiem;
         if (bottomNavigationView.getSelectedItemId() == R.id.nav_menu) {
             showMenu();
             return;
@@ -244,6 +289,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         int totalQuantity = CartManager.getInstance().getTotalQuantity();
-        tvCartBadge.setText(totalQuantity > 99 ? "99+" : String.valueOf(totalQuantity));
+        if (totalQuantity <= 0) {
+            tvCartBadge.setVisibility(View.GONE);
+            return;
+        }
+
+        tvCartBadge.setVisibility(View.VISIBLE);
+        tvCartBadge.setText(totalQuantity > 99 ? getString(R.string.cart_badge_overflow) : String.valueOf(totalQuantity));
     }
 }

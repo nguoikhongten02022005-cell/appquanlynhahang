@@ -1,6 +1,7 @@
 package com.example.quanlynhahang;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -115,11 +116,7 @@ public class AccountFragment extends Fragment {
         btnOpenChangePassword.setOnClickListener(v -> showChangePasswordForm());
         btnSubmitChangePassword.setOnClickListener(v -> submitPasswordChange());
 
-        btnContactSupport.setOnClickListener(v -> Toast.makeText(
-                requireContext(),
-                getString(R.string.account_support_placeholder),
-                Toast.LENGTH_SHORT
-        ).show());
+        btnContactSupport.setOnClickListener(v -> openSupportChannel());
 
         btnLogout.setOnClickListener(v -> {
             sessionManager.clearSession();
@@ -260,6 +257,21 @@ public class AccountFragment extends Fragment {
                 requireContext(),
                 getString(R.string.account_password_change_success),
                 Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    private void openSupportChannel() {
+        String phoneNumber = getString(R.string.account_support_phone_number_plain);
+        Intent phoneIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
+        if (phoneIntent.resolveActivity(requireContext().getPackageManager()) != null) {
+            startActivity(phoneIntent);
+            return;
+        }
+
+        Toast.makeText(
+                requireContext(),
+                getString(R.string.account_support_fallback, getString(R.string.account_support_phone_number_display)),
+                Toast.LENGTH_LONG
         ).show();
     }
 

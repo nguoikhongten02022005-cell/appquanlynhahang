@@ -26,6 +26,12 @@ public class ServiceRequestAdapter extends RecyclerView.Adapter<ServiceRequestAd
         this.serviceRequests.addAll(serviceRequests);
     }
 
+    public void capNhatDanhSach(List<ServiceRequest> danhSachMoi) {
+        serviceRequests.clear();
+        serviceRequests.addAll(danhSachMoi);
+        notifyDataSetChanged();
+    }
+
     public void addServiceRequest(ServiceRequest serviceRequest) {
         serviceRequests.add(0, serviceRequest);
         notifyItemInserted(0);
@@ -63,10 +69,10 @@ public class ServiceRequestAdapter extends RecyclerView.Adapter<ServiceRequestAd
 
         void bind(ServiceRequest serviceRequest) {
             Context context = itemView.getContext();
-            tvServiceRequestContent.setText(serviceRequest.getContent());
-            tvServiceRequestTime.setText(serviceRequest.getSentTime());
+            tvServiceRequestContent.setText(serviceRequest.getNoiDung());
+            tvServiceRequestTime.setText(serviceRequest.getThoiGianGui());
 
-            if (serviceRequest.getStatus() == ServiceRequest.Status.PROCESSING) {
+            if (serviceRequest.getTrangThai() == ServiceRequest.Status.PROCESSING) {
                 tvServiceRequestStatus.setText(R.string.service_request_status_processing);
                 int processingColor = ContextCompat.getColor(context, R.color.brand_orange);
                 ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(processingColor));

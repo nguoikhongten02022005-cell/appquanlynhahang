@@ -1,69 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardRecommendedDish"
+    style="@style/Widget.Quanlynhahang.SurfaceCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/space_md"
-    android:padding="@dimen/space_xs">
+    app:cardUseCompatPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_dish_card"
         android:orientation="vertical"
         android:padding="@dimen/space_md">
 
-        <ImageView
-            android:id="@+id/ivDishImage"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/recommended_image_height"
-            android:background="@drawable/bg_dish_image_placeholder"
-            android:contentDescription="@string/cd_dish_image"
-            android:padding="@dimen/space_lg"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_restaurant_24"
-            android:tint="@color/brand_green" />
+            android:background="@drawable/bg_dish_image_placeholder">
+
+            <ImageView
+                android:id="@+id/ivDishImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/cd_dish_image"
+                android:padding="@dimen/space_lg"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_restaurant_24"
+                app:tint="@color/primary" />
+
+            <TextView
+                android:id="@+id/tvDishStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/status_badge_height"
+                android:layout_gravity="top|start"
+                android:layout_margin="@dimen/space_sm"
+                android:background="@drawable/bg_status_available"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingStart="@dimen/space_md"
+                android:paddingEnd="@dimen/space_md"
+                android:text="@string/dish_status_available"
+                android:textColor="@color/status_available_text"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnAddDish"
+                android:layout_width="@dimen/add_button_size"
+                android:layout_height="@dimen/add_button_size"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/space_sm"
+                android:background="@drawable/bg_add_button"
+                android:contentDescription="@string/cd_add_dish"
+                android:padding="@dimen/space_sm"
+                android:src="@drawable/ic_add_24"
+                app:tint="@color/add_button_icon_enabled" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tvDishName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
+            android:layout_marginTop="@dimen/space_md"
             android:ellipsize="end"
-            android:maxLines="1"
+            android:maxLines="2"
             android:text="@string/dish_bo_luc_lac"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
+            android:textColor="@color/on_surface"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvDishPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
+            android:layout_marginTop="@dimen/space_sm"
             android:text="@string/price_145k"
-            android:textColor="@color/brand_orange"
-            android:textSize="13sp"
+            android:textColor="@color/secondary"
+            android:textSize="14sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvDishStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
-            android:text="@string/dish_status_available"
-            android:textColor="@color/status_available"
-            android:textSize="12sp" />
     </LinearLayout>
-
-    <ImageButton
-        android:id="@+id/btnAddDish"
-        android:layout_width="@dimen/add_button_size"
-        android:layout_height="@dimen/add_button_size"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/space_md"
-        android:layout_marginBottom="@dimen/space_md"
-        android:background="@drawable/bg_add_button"
-        android:contentDescription="@string/cd_add_dish"
-        android:padding="@dimen/space_sm"
-        android:src="@drawable/ic_add_24" />
-</FrameLayout>
+</com.google.android.material.card.MaterialCardView>

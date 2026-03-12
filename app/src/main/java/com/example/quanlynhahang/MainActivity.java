@@ -3,7 +3,6 @@ package com.example.quanlynhahang;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -11,30 +10,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
 
-import com.example.quanlynhahang.adapter.CategoryAdapter;
-import com.example.quanlynhahang.adapter.RecommendedDishAdapter;
 import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
-import com.example.quanlynhahang.model.CategoryItem;
-import com.example.quanlynhahang.model.RecommendedDishItem;
 import com.example.quanlynhahang.model.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG_HOME = "home";
+    private static final String TAG_MENU = "menu";
+    private static final String TAG_ACTIVITY_HUB = "activity_hub";
+    private static final String TAG_ACCOUNT = "account";
 
     private TextView tvCartBadge;
     private TextView tvGreeting;
+    private BottomNavigationView bottomNavigationView;
 
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
+
+    private int pendingActivityHubTab = ActivityHubFragment.TAB_ORDERS;
 
     private final CartManager.CartListener cartListener = this::updateCartBadge;
 
@@ -56,12 +54,17 @@ public class MainActivity extends AppCompatActivity {
 
         tvCartBadge = findViewById(R.id.tvCartBadge);
         tvGreeting = findViewById(R.id.tvGreeting);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         setupBottomNavigation();
         setupHeaderActions();
         updateGreeting();
-        showHome();
         updateCartBadge();
+
+        if (savedInstanceState == null) {
+            showHome();
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        }
     }
 
     @Override
@@ -79,46 +82,124 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_home) {
+            int itemId = item.getItemId();
+            if (itemId == bottomNavigationView.getSelectedItemId()) {
+                if (itemId == R.id.nav_orders) {
+                    showActivityHub();
+                } else if (itemId == R.id.nav_account) {
+                    showAccount();
+                }
+                return itemId != R.id.nav_cart;
+            }
+
+            if (itemId == R.id.nav_home) {
                 showHome();
                 return true;
             }
-
-            if (item.getItemId() == R.id.nav_menu) {
+            if (itemId == R.id.nav_menu) {
                 showMenu();
                 return true;
             }
-
-            if (item.getItemId() == R.id.nav_orders) {
-                showRequests();
+            if (itemId == R.id.nav_orders) {
+                showActivityHub();
                 return true;
             }
-
-            if (item.getItemId() == R.id.nav_cart) {
+            if (itemId == R.id.nav_cart) {
                 openCart();
-                return true;
+                return false;
             }
-
-            if (item.getItemId() == R.id.nav_account) {
+            if (itemId == R.id.nav_account) {
                 showAccount();
                 return true;
             }
-
             return false;
         });
-        bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
 
     private void setupHeaderActions() {
-        View layoutCartIcon = findViewById(R.id.layoutCartIcon);
-        layoutCartIcon.setOnClickListener(v -> openCart());
+        findViewById(R.id.layoutCartIcon).setOnClickListener(v -> openCart());
+    }
+
+    private void showHome() {
+        showFragment(findOrCreateHomeFragment(), TAG_HOME);
+    }
+
+    private void showMenu() {
+        showFragment(findOrCreateMenuFragment(), TAG_MENU);
+    }
+
+    private void showActivityHub() {
+        ActivityHubFragment fragment = findActivityHubFragment();
+        if (fragment == null) {
+            fragment = ActivityHubFragment.newInstance(pendingActivityHubTab);
+        }
+        showFragment(fragment, TAG_ACTIVITY_HUB);
+        fragment.selectTab(pendingActivityHubTab);
+        pendingActivityHubTab = ActivityHubFragment.TAB_ORDERS;
+    }
+
+    private void showAccount() {
+        AccountFragment fragment = findAccountFragment();
+        if (fragment == null) {
+            fragment = new AccountFragment();
+        }
+        showFragment(fragment, TAG_ACCOUNT);
+        getSupportFragmentManager().executePendingTransactions();
+        fragment.onAccountTabSelected();
+    }
+
+    private void showFragment(Fragment fragment, String tag) {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
+        if (currentFragment == fragment || (currentFragment != null && tag.equals(currentFragment.getTag()))) {
+            return;
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainFragmentContainer, fragment, tag)
+                .commit();
+    }
+
+    private HomeFragment findOrCreateHomeFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_HOME);
+        return fragment instanceof HomeFragment ? (HomeFragment) fragment : new HomeFragment();
+    }
+
+    private MenuFragment findOrCreateMenuFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_MENU);
+        return fragment instanceof MenuFragment ? (MenuFragment) fragment : new MenuFragment();
+    }
+
+    private ActivityHubFragment findActivityHubFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_ACTIVITY_HUB);
+        return fragment instanceof ActivityHubFragment ? (ActivityHubFragment) fragment : null;
+    }
+
+    private AccountFragment findAccountFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_ACCOUNT);
+        return fragment instanceof AccountFragment ? (AccountFragment) fragment : null;
+    }
+
+    public void navigateToMenu() {
+        if (bottomNavigationView.getSelectedItemId() == R.id.nav_menu) {
+            showMenu();
+            return;
+        }
+        bottomNavigationView.setSelectedItemId(R.id.nav_menu);
+    }
+
+    public void openActivityHub(int tab) {
+        pendingActivityHubTab = tab;
+        if (bottomNavigationView.getSelectedItemId() == R.id.nav_orders) {
+            showActivityHub();
+            return;
+        }
+        bottomNavigationView.setSelectedItemId(R.id.nav_orders);
     }
 
     private void openCart() {
-        Intent intent = new Intent(this, CartActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, CartActivity.class));
     }
 
     private void updateGreeting() {
@@ -158,136 +239,5 @@ public class MainActivity extends AppCompatActivity {
 
         int totalQuantity = CartManager.getInstance().getTotalQuantity();
         tvCartBadge.setText(totalQuantity > 99 ? "99+" : String.valueOf(totalQuantity));
-    }
-
-    private void showHome() {
-        View mainScrollView = findViewById(R.id.mainScrollView);
-        View fragmentContainer = findViewById(R.id.fragmentContainer);
-
-        mainScrollView.setVisibility(View.VISIBLE);
-        fragmentContainer.setVisibility(View.GONE);
-
-        setupCategoryList();
-        setupRecommendedDishGrid();
-    }
-
-    private void showMenu() {
-        View mainScrollView = findViewById(R.id.mainScrollView);
-        View fragmentContainer = findViewById(R.id.fragmentContainer);
-
-        mainScrollView.setVisibility(View.GONE);
-        fragmentContainer.setVisibility(View.VISIBLE);
-
-        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof MenuFragment)) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentContainer, new MenuFragment())
-                    .commit();
-        }
-    }
-
-    private void showOrders() {
-        View mainScrollView = findViewById(R.id.mainScrollView);
-        View fragmentContainer = findViewById(R.id.fragmentContainer);
-
-        mainScrollView.setVisibility(View.GONE);
-        fragmentContainer.setVisibility(View.VISIBLE);
-
-        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof OrderFragment)) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentContainer, new OrderFragment())
-                    .commit();
-        }
-    }
-
-    private void showRequests() {
-        View mainScrollView = findViewById(R.id.mainScrollView);
-        View fragmentContainer = findViewById(R.id.fragmentContainer);
-
-        mainScrollView.setVisibility(View.GONE);
-        fragmentContainer.setVisibility(View.VISIBLE);
-
-        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof RequestsFragment)) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentContainer, new RequestsFragment())
-                    .commit();
-        }
-    }
-
-    private void showAccount() {
-        View mainScrollView = findViewById(R.id.mainScrollView);
-        View fragmentContainer = findViewById(R.id.fragmentContainer);
-
-        mainScrollView.setVisibility(View.GONE);
-        fragmentContainer.setVisibility(View.VISIBLE);
-
-        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof AccountFragment)) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentContainer, new AccountFragment())
-                    .commitNow();
-        }
-
-        AccountFragment accountFragment =
-                (AccountFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        if (accountFragment != null) {
-            accountFragment.onAccountTabSelected();
-        }
-    }
-
-    private void setupCategoryList() {
-        RecyclerView rvCategory = findViewById(R.id.rvCategory);
-        rvCategory.setLayoutManager(
-                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        );
-        rvCategory.setAdapter(new CategoryAdapter(getMockCategories()));
-    }
-
-    private void setupRecommendedDishGrid() {
-        RecyclerView rvRecommended = findViewById(R.id.rvRecommended);
-        rvRecommended.setLayoutManager(new GridLayoutManager(this, 2));
-        rvRecommended.setNestedScrollingEnabled(false);
-        rvRecommended.setAdapter(new RecommendedDishAdapter(getMockRecommendedDishes()));
-    }
-
-    private List<CategoryItem> getMockCategories() {
-        List<CategoryItem> categories = new ArrayList<>();
-        categories.add(new CategoryItem(R.drawable.ic_restaurant_24, getString(R.string.category_main_course)));
-        categories.add(new CategoryItem(R.drawable.ic_restaurant_24, getString(R.string.category_hotpot)));
-        categories.add(new CategoryItem(R.drawable.ic_local_drink_24, getString(R.string.category_drink)));
-        categories.add(new CategoryItem(R.drawable.ic_restaurant_24, getString(R.string.category_dessert)));
-        categories.add(new CategoryItem(R.drawable.ic_menu_24, getString(R.string.category_combo)));
-        return categories;
-    }
-
-    private List<RecommendedDishItem> getMockRecommendedDishes() {
-        List<RecommendedDishItem> dishes = new ArrayList<>();
-        dishes.add(new RecommendedDishItem(
-                R.drawable.ic_restaurant_24,
-                getString(R.string.dish_bo_luc_lac),
-                getString(R.string.price_145k),
-                true
-        ));
-        dishes.add(new RecommendedDishItem(
-                R.drawable.ic_restaurant_24,
-                getString(R.string.dish_salad_ca_hoi),
-                getString(R.string.price_129k),
-                true
-        ));
-        dishes.add(new RecommendedDishItem(
-                R.drawable.ic_restaurant_24,
-                getString(R.string.dish_lau_thai),
-                getString(R.string.price_259k),
-                false
-        ));
-        dishes.add(new RecommendedDishItem(
-                R.drawable.ic_local_drink_24,
-                getString(R.string.dish_tra_dao),
-                getString(R.string.price_45k),
-                true
-        ));
-        return dishes;
     }
 }

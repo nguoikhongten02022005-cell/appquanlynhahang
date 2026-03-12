@@ -27,6 +27,8 @@ import java.util.List;
 
 public class OrderFragment extends Fragment {
 
+    public static final String ARG_EMBEDDED = "embedded";
+
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
 
@@ -35,6 +37,7 @@ public class OrderFragment extends Fragment {
     private OrderAdapter orderAdapter;
 
     private boolean hasPromptedLogin;
+    private boolean embedded;
 
     private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -59,9 +62,15 @@ public class OrderFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         sessionManager = new SessionManager(requireContext());
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
         rvOrders = view.findViewById(R.id.rvOrders);
         tvOrderEmpty = view.findViewById(R.id.tvCartEmpty);
+
+        View titleView = view.findViewById(R.id.tvOrderTitle);
+        if (embedded && titleView != null) {
+            titleView.setVisibility(View.GONE);
+        }
 
         View layoutCartFooter = view.findViewById(R.id.layoutCartFooter);
         if (layoutCartFooter != null) {
@@ -91,7 +100,7 @@ public class OrderFragment extends Fragment {
 
         if (!sessionManager.isLoggedIn()) {
             showLoginRequiredState();
-            if (autoLaunchLogin && !hasPromptedLogin) {
+            if (!embedded && autoLaunchLogin && !hasPromptedLogin) {
                 hasPromptedLogin = true;
                 launchLogin();
             }
@@ -102,7 +111,7 @@ public class OrderFragment extends Fragment {
         if (userId <= 0) {
             sessionManager.clearSession();
             showLoginRequiredState();
-            if (autoLaunchLogin && !hasPromptedLogin) {
+            if (!embedded && autoLaunchLogin && !hasPromptedLogin) {
                 hasPromptedLogin = true;
                 launchLogin();
             }

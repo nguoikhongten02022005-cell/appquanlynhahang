@@ -34,6 +34,8 @@ import java.util.Locale;
 
 public class RequestsFragment extends Fragment {
 
+    public static final String ARG_EMBEDDED = "embedded";
+
     private final List<Reservation> reservations = new ArrayList<>();
     private final List<ServiceRequest> serviceRequests = new ArrayList<>();
 
@@ -51,6 +53,7 @@ public class RequestsFragment extends Fragment {
 
     private ReservationAdapter reservationAdapter;
     private ServiceRequestAdapter serviceRequestAdapter;
+    private boolean embedded;
 
     @Nullable
     @Override
@@ -67,8 +70,15 @@ public class RequestsFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         sessionManager = new SessionManager(requireContext());
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
         initViews(view);
+        if (embedded) {
+            View titleView = view.findViewById(R.id.tvRequestsTitle);
+            if (titleView != null) {
+                titleView.setVisibility(View.GONE);
+            }
+        }
         setupServiceRequestMockData();
         loadReservations();
         setupDateTimePicker();

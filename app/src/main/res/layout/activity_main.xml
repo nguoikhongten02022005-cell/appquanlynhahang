@@ -5,309 +5,124 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/screen_background"
+    android:background="@color/background"
     tools:context=".MainActivity">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+    <LinearLayout
+        android:id="@+id/layoutTopBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/surface"
-        android:minHeight="@dimen/bottom_nav_min_height"
-        app:itemIconTint="@color/bottom_nav_item_color"
-        app:itemTextColor="@color/bottom_nav_item_color"
-        app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/menu_bottom_nav" />
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/mainScrollView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        android:background="@color/background"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/screen_padding_horizontal"
+        android:paddingTop="@dimen/space_sm"
+        android:paddingEnd="@dimen/screen_padding_horizontal"
+        android:paddingBottom="@dimen/space_lg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <FrameLayout
+            android:layout_width="@dimen/header_avatar_size"
+            android:layout_height="@dimen/header_avatar_size"
+            android:background="@drawable/bg_icon_circle">
+
+            <ImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="@dimen/icon_size_20"
+                android:layout_height="@dimen/icon_size_20"
+                android:layout_gravity="center"
+                android:contentDescription="@string/account_avatar_content_description"
+                android:src="@drawable/ic_person_24"
+                app:tint="@color/primary" />
+        </FrameLayout>
+
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="@dimen/screen_padding_horizontal"
-            android:paddingTop="@dimen/space_md"
-            android:paddingEnd="@dimen/screen_padding_horizontal"
-            android:paddingBottom="@dimen/space_lg">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/brand_green"
-                android:fitsSystemWindows="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="16dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <FrameLayout
-                        android:layout_width="@dimen/header_icon_box_size"
-                        android:layout_height="@dimen/header_icon_box_size"
-                        android:background="@drawable/bg_icon_circle">
-
-                        <ImageView
-                            android:id="@+id/ivAvatar"
-                            android:layout_width="@dimen/icon_size_20"
-                            android:layout_height="@dimen/icon_size_20"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/account_avatar_content_description"
-                            android:src="@drawable/ic_person_24"
-                            app:tint="@color/text_primary" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:id="@+id/tvGreeting"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/home_greeting"
-                        android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <FrameLayout
-                        android:layout_width="@dimen/header_icon_box_size"
-                        android:layout_height="@dimen/header_icon_box_size"
-                        android:layout_marginEnd="16dp"
-                        android:background="@drawable/bg_icon_circle">
-
-                        <ImageView
-                            android:layout_width="@dimen/icon_size_20"
-                            android:layout_height="@dimen/icon_size_20"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/cd_search"
-                            android:src="@drawable/ic_search_24"
-                            app:tint="@color/text_primary" />
-                    </FrameLayout>
-
-                    <FrameLayout
-                        android:id="@+id/layoutCartIcon"
-                        android:layout_width="@dimen/header_icon_box_size"
-                        android:layout_height="@dimen/header_icon_box_size"
-                        android:background="@drawable/bg_icon_circle">
-
-                        <ImageView
-                            android:layout_width="@dimen/icon_size_20"
-                            android:layout_height="@dimen/icon_size_20"
-                            android:layout_gravity="center"
-                            android:contentDescription="@string/cd_cart"
-                            android:src="@drawable/ic_shopping_cart_24"
-                            app:tint="@color/text_primary" />
-
-                        <TextView
-                            android:id="@+id/tvCartBadge"
-                            android:layout_width="@dimen/cart_badge_size"
-                            android:layout_height="@dimen/cart_badge_size"
-                            android:layout_gravity="top|end"
-                            android:background="@drawable/bg_badge_red"
-                            android:gravity="center"
-                            android:text="@string/cart_badge_count"
-                            android:textColor="@color/text_on_color"
-                            android:textSize="@dimen/cart_badge_text_size"
-                            android:textStyle="bold" />
-                    </FrameLayout>
-                </LinearLayout>
-            </LinearLayout>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/hero_height"
-                android:layout_marginTop="@dimen/space_lg"
-                app:cardCornerRadius="0dp"
-                app:cardElevation="0dp">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_hero_placeholder"
-                        android:contentDescription="@null"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_restaurant_24"
-                        app:tint="@color/text_on_color" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_hero_overlay" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="@dimen/space_lg">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="@string/hero_title"
-                            android:textAlignment="center"
-                            android:textColor="@color/text_on_color"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/space_xs"
-                            android:gravity="center"
-                            android:text="@string/hero_subtitle"
-                            android:textAlignment="center"
-                            android:textColor="@color/text_on_color"
-                            android:textSize="13sp" />
-
-                        <Button
-                            android:id="@+id/btnHeroCta"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/space_md"
-                            android:background="@drawable/bg_button_orange"
-                            android:minHeight="0dp"
-                            android:minWidth="0dp"
-                            android:paddingStart="@dimen/space_lg"
-                            android:paddingTop="@dimen/space_sm"
-                            android:paddingEnd="@dimen/space_lg"
-                            android:paddingBottom="@dimen/space_sm"
-                            android:text="@string/hero_cta"
-                            android:textAllCaps="false"
-                            android:textColor="@color/text_on_color"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-                </FrameLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_lg"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnQuickOrder"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/quick_action_height"
-                    android:layout_marginEnd="@dimen/space_sm"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_button_green"
-                    android:drawableStart="@drawable/ic_receipt_24"
-                    android:drawablePadding="@dimen/space_sm"
-                    android:drawableTint="@color/text_on_color"
-                    android:gravity="start|center_vertical"
-                    android:paddingStart="@dimen/space_md"
-                    android:paddingEnd="@dimen/space_md"
-                    android:text="@string/quick_action_order"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text_on_color"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnQuickBook"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/quick_action_height"
-                    android:layout_marginStart="@dimen/space_sm"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_button_orange"
-                    android:drawableStart="@drawable/ic_calendar_24"
-                    android:drawablePadding="@dimen/space_sm"
-                    android:drawableTint="@color/text_on_color"
-                    android:gravity="start|center_vertical"
-                    android:paddingStart="@dimen/space_md"
-                    android:paddingEnd="@dimen/space_md"
-                    android:text="@string/quick_action_book_table"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text_on_color"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            android:layout_marginStart="@dimen/space_md"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_sm"
-                android:text="@string/pending_label"
-                android:textColor="@color/brand_red"
+                android:text="@string/home_header_caption"
+                android:textColor="@color/on_surface_variant"
                 android:textSize="12sp" />
 
             <TextView
+                android:id="@+id/tvGreeting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xl"
-                android:text="@string/section_category"
-                android:textColor="@color/text_primary"
+                android:layout_marginTop="@dimen/space_xs"
+                android:text="@string/home_greeting"
+                android:textColor="@color/on_surface"
                 android:textSize="18sp"
                 android:textStyle="bold" />
+        </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:clipToPadding="false"
-                android:overScrollMode="never"
-                android:paddingEnd="@dimen/space_sm"
-                tools:listitem="@layout/item_category" />
+        <FrameLayout
+            android:layout_width="@dimen/header_icon_box_size"
+            android:layout_height="@dimen/header_icon_box_size"
+            android:layout_marginEnd="@dimen/space_sm"
+            android:background="@drawable/bg_icon_circle">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size_20"
+                android:layout_height="@dimen/icon_size_20"
+                android:layout_gravity="center"
+                android:contentDescription="@string/cd_search"
+                android:src="@drawable/ic_search_24"
+                app:tint="@color/on_surface" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/layoutCartIcon"
+            android:layout_width="@dimen/header_icon_box_size"
+            android:layout_height="@dimen/header_icon_box_size"
+            android:background="@drawable/bg_icon_circle">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size_20"
+                android:layout_height="@dimen/icon_size_20"
+                android:layout_gravity="center"
+                android:contentDescription="@string/cd_cart"
+                android:src="@drawable/ic_shopping_cart_24"
+                app:tint="@color/on_surface" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xl"
-                android:text="@string/section_recommended"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
+                android:id="@+id/tvCartBadge"
+                android:layout_width="@dimen/cart_badge_size"
+                android:layout_height="@dimen/cart_badge_size"
+                android:layout_gravity="top|end"
+                android:background="@drawable/bg_badge_red"
+                android:gravity="center"
+                android:text="@string/cart_badge_count"
+                android:textColor="@color/on_error"
+                android:textSize="@dimen/cart_badge_text_size"
                 android:textStyle="bold" />
+        </FrameLayout>
+    </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvRecommended"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
-                android:overScrollMode="never"
-                tools:listitem="@layout/item_recommended_dish" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-    <FrameLayout
-        android:id="@+id/fragmentContainer"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mainFragmentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/layoutTopBar" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        style="@style/Widget.Quanlynhahang.BottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_bottom_nav" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

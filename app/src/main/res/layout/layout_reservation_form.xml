@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Quanlynhahang.SurfaceCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="0dp"
-    app:cardElevation="0dp"
     app:cardUseCompatPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_dish_card"
         android:orientation="vertical"
-        android:padding="@dimen/space_md">
+        android:padding="@dimen/space_lg">
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,7 +27,7 @@
             android:layout_marginTop="@dimen/space_xs"
             android:background="@drawable/bg_search_rounded"
             android:clickable="true"
-            android:drawableEnd="@drawable/ic_calendar_24"
+            app:drawableEndCompat="@drawable/ic_calendar_24"
             android:drawablePadding="@dimen/space_sm"
             android:focusable="true"
             android:gravity="center_vertical"
@@ -58,7 +56,7 @@
             android:layout_marginTop="@dimen/space_xs"
             android:background="@drawable/bg_search_rounded"
             android:clickable="true"
-            android:drawableEnd="@drawable/ic_calendar_24"
+            app:drawableEndCompat="@drawable/ic_calendar_24"
             android:drawablePadding="@dimen/space_sm"
             android:focusable="true"
             android:gravity="center_vertical"
@@ -122,19 +120,13 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSubmitReservation"
+            style="@style/Widget.Quanlynhahang.FilledButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_md"
-            android:background="@drawable/bg_button_green"
             android:minHeight="0dp"
-            android:paddingTop="@dimen/space_sm"
-            android:paddingBottom="@dimen/space_sm"
             android:text="@string/reservation_submit"
-            android:textAllCaps="false"
-            android:textColor="@color/text_on_color"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:backgroundTint="@null" />
+            android:textSize="14sp" />
 
     </LinearLayout>
 

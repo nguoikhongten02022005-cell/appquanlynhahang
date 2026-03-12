@@ -24,7 +24,7 @@
             android:padding="@dimen/space_sm"
             android:scaleType="centerInside"
             android:src="@drawable/ic_restaurant_24"
-            android:tint="@color/brand_green" />
+            app:tint="@color/brand_green" />
     </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout

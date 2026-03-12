@@ -21,18 +21,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/requests_screen_title"
-            android:textColor="@color/text_primary"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.PageTitle" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_lg"
             android:text="@string/reservation_section_title"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
 
         <include
             android:id="@+id/layoutReservationForm"
@@ -46,9 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_lg"
             android:text="@string/reservation_list_title"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvReservations"
@@ -69,9 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_lg"
             android:text="@string/service_request_section_title"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -86,53 +78,38 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRequestCallStaff"
+                    style="@style/Widget.Quanlynhahang.FilledButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_button_green"
                     android:minHeight="0dp"
                     android:paddingStart="@dimen/space_md"
-                    android:paddingTop="@dimen/space_sm"
                     android:paddingEnd="@dimen/space_md"
-                    android:paddingBottom="@dimen/space_sm"
                     android:text="@string/service_request_quick_call_staff"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text_on_color"
-                    android:textSize="13sp"
-                    app:backgroundTint="@null" />
+                    android:textSize="13sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRequestMoreWater"
+                    style="@style/Widget.Quanlynhahang.FilledButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_sm"
-                    android:background="@drawable/bg_button_green"
                     android:minHeight="0dp"
                     android:paddingStart="@dimen/space_md"
-                    android:paddingTop="@dimen/space_sm"
                     android:paddingEnd="@dimen/space_md"
-                    android:paddingBottom="@dimen/space_sm"
                     android:text="@string/service_request_quick_more_water"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text_on_color"
-                    android:textSize="13sp"
-                    app:backgroundTint="@null" />
+                    android:textSize="13sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRequestPayment"
+                    style="@style/Widget.Quanlynhahang.FilledButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_sm"
-                    android:background="@drawable/bg_button_green"
                     android:minHeight="0dp"
                     android:paddingStart="@dimen/space_md"
-                    android:paddingTop="@dimen/space_sm"
                     android:paddingEnd="@dimen/space_md"
-                    android:paddingBottom="@dimen/space_sm"
                     android:text="@string/service_request_quick_payment"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text_on_color"
-                    android:textSize="13sp"
-                    app:backgroundTint="@null" />
+                    android:textSize="13sp" />
             </LinearLayout>
         </HorizontalScrollView>
 
@@ -141,9 +118,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_lg"
             android:text="@string/service_request_list_title"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvServiceRequests"

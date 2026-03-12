@@ -17,12 +17,27 @@
 
     <string name="section_category">Danh mục món</string>
     <string name="section_recommended">Món đề xuất</string>
+    <string name="home_header_caption">Chọn món và giữ chỗ trong vài chạm</string>
+    <string name="home_hero_eyebrow">Ưu đãi tối nay</string>
+    <string name="home_hero_title">Bữa tối chuẩn vị nhà hàng, đặt nhanh ngay trên điện thoại</string>
+    <string name="home_hero_subtitle">Giữ chỗ sớm, chọn món nổi bật và theo dõi đơn hàng trong cùng một luồng mượt mà.</string>
+    <string name="home_hero_cta">Xem thực đơn nổi bật</string>
+    <string name="home_hero_meta">Tối nay còn nhận giữ chỗ đến 21:30</string>
+    <string name="home_quick_order_subtitle">Mở menu và thêm món vào giỏ ngay</string>
+    <string name="home_quick_book_subtitle">Qua khu hoạt động để đặt bàn và gọi phục vụ</string>
+    <string name="home_category_hint">Chọn nhanh nhóm món bạn muốn</string>
+    <string name="home_recommended_hint">Thêm món sẵn có vào giỏ chỉ với một chạm</string>
 
     <string name="bottom_nav_home">Trang chủ</string>
     <string name="bottom_nav_menu">Menu</string>
     <string name="bottom_nav_orders">Đơn &amp; Đặt bàn</string>
+    <string name="bottom_nav_activity">Hoạt động</string>
     <string name="bottom_nav_cart">Giỏ hàng</string>
     <string name="bottom_nav_account">Tài khoản</string>
+    <string name="activity_hub_title">Lịch sử &amp; yêu cầu của bạn</string>
+    <string name="activity_hub_subtitle">Theo dõi đơn hàng, đặt bàn và yêu cầu phục vụ từ một điểm đến duy nhất.</string>
+    <string name="activity_hub_tab_orders">Đơn hàng</string>
+    <string name="activity_hub_tab_requests">Đặt bàn &amp; yêu cầu</string>
 
     <string name="cart_badge_count">0</string>
     <string name="dish_status_available">Còn món</string>

@@ -3,26 +3,94 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="brand_green">#2E7D32</color>
-    <color name="brand_orange">#F57C00</color>
-    <color name="brand_red">#D32F2F</color>
+    <color name="brand_primary">#2F6B3B</color>
+    <color name="brand_primary_dark">#214E2B</color>
+    <color name="brand_primary_container">#DDEEDD</color>
+    <color name="brand_secondary">#F08A24</color>
+    <color name="brand_secondary_dark">#C86D12</color>
+    <color name="brand_secondary_container">#FFE3C8</color>
+    <color name="brand_tertiary">#8C5A16</color>
+    <color name="brand_tertiary_container">#F7E4C8</color>
 
-    <color name="text_primary">#1F2937</color>
-    <color name="text_secondary">#6B7280</color>
-    <color name="text_on_color">#FFFFFFFF</color>
+    <color name="primary">@color/brand_primary</color>
+    <color name="on_primary">@color/white</color>
+    <color name="primary_container">@color/brand_primary_container</color>
+    <color name="on_primary_container">#16311D</color>
+    <color name="secondary">@color/brand_secondary</color>
+    <color name="on_secondary">@color/white</color>
+    <color name="secondary_container">@color/brand_secondary_container</color>
+    <color name="on_secondary_container">#4E2500</color>
+    <color name="tertiary">@color/brand_tertiary</color>
+    <color name="on_tertiary">@color/white</color>
+    <color name="tertiary_container">@color/brand_tertiary_container</color>
+    <color name="on_tertiary_container">#3C2400</color>
 
-    <color name="screen_background">#F5F7FA</color>
-    <color name="surface">#FFFFFFFF</color>
-    <color name="stroke">#E5E7EB</color>
+    <color name="background">#F7F3ED</color>
+    <color name="on_background">#1A211A</color>
+    <color name="surface">#FFFDFC</color>
+    <color name="on_surface">#1B1F1A</color>
+    <color name="surface_variant">#E8E4DC</color>
+    <color name="on_surface_variant">#667065</color>
+    <color name="surface_container">#F3EEE6</color>
+    <color name="surface_container_high">#EEE8DF</color>
+    <color name="inverse_surface">#273127</color>
+    <color name="inverse_on_surface">#EDF1EA</color>
 
-    <color name="hero_top">#66BB6A</color>
-    <color name="hero_bottom">#2E7D32</color>
+    <color name="outline">#C9CFC3</color>
+    <color name="outline_variant">#DDE2D8</color>
+
+    <color name="success">#2E7D32</color>
+    <color name="on_success">@color/white</color>
+    <color name="warning">#E08A13</color>
+    <color name="on_warning">#3D2500</color>
+    <color name="error">#C44736</color>
+    <color name="on_error">@color/white</color>
+
+    <color name="nav_selected">@color/primary</color>
+    <color name="nav_unselected">#7B857A</color>
+    <color name="nav_indicator">#DDEEDD</color>
+
+    <color name="ripple_brand">#1F2F6B3B</color>
+    <color name="ripple_accent">#1FF08A24</color>
+    <color name="ripple_neutral">#141B1F1A</color>
+
+    <color name="hero_gradient_start">#2A5A32</color>
+    <color name="hero_gradient_center">#3F7F4B</color>
+    <color name="hero_gradient_end">#F08A24</color>
+    <color name="hero_overlay">#14000000</color>
+    <color name="hero_glow">#40FFFFFF</color>
+    <color name="hero_decor_light">#29FFFFFF</color>
+    <color name="hero_decor_dark">#12000000</color>
+
+    <color name="category_selected_bg">#DDEEDD</color>
+    <color name="category_unselected_bg">#FFFDFC</color>
+    <color name="category_selected_icon">@color/primary</color>
+    <color name="category_unselected_icon">#879184</color>
+
+    <color name="status_available_bg">#E4F4E5</color>
+    <color name="status_available_text">#256B29</color>
+    <color name="status_unavailable_bg">#FBE4E1</color>
+    <color name="status_unavailable_text">#B93D2C</color>
+
+    <color name="add_button_enabled">@color/primary</color>
+    <color name="add_button_disabled">#D1D7CD</color>
+    <color name="add_button_icon_enabled">@color/white</color>
+    <color name="add_button_icon_disabled">#70806F</color>
+
+    <color name="brand_green">@color/brand_primary</color>
+    <color name="brand_orange">@color/brand_secondary</color>
+    <color name="brand_red">@color/error</color>
+    <color name="text_primary">@color/on_surface</color>
+    <color name="text_secondary">@color/on_surface_variant</color>
+    <color name="text_on_color">@color/white</color>
+    <color name="screen_background">@color/background</color>
+    <color name="stroke">@color/outline_variant</color>
+    <color name="hero_top">@color/hero_gradient_center</color>
+    <color name="hero_bottom">@color/hero_gradient_end</color>
     <color name="overlay_transparent">#00000000</color>
     <color name="overlay_dark">#99000000</color>
-
-    <color name="category_bg">#E8F5E9</color>
-    <color name="bottom_nav_unselected">#9CA3AF</color>
-
-    <color name="status_available">#2E7D32</color>
-    <color name="status_unavailable">#D32F2F</color>
+    <color name="category_bg">@color/category_unselected_bg</color>
+    <color name="bottom_nav_unselected">@color/nav_unselected</color>
+    <color name="status_available">@color/status_available_text</color>
+    <color name="status_unavailable">@color/status_unavailable_text</color>
 </resources>

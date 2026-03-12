@@ -18,8 +18,8 @@
     <string name="home_hero_meta">Tối nay còn nhận giữ chỗ đến 21:30</string>
     <string name="home_quick_order_subtitle">Mở menu với ô tìm kiếm sẵn sàng để chọn món nhanh</string>
     <string name="home_quick_book_subtitle">Qua khu hoạt động để đặt bàn và gửi yêu cầu phục vụ</string>
-    <string name="home_category_hint">Chọn danh mục để mở menu với bộ lọc tương ứng</string>
-    <string name="home_recommended_hint">Ưu tiên món còn phục vụ và có điểm nổi bật cao nhất</string>
+    <string name="home_category_hint">Chọn danh mục để mở menu đúng nhóm món bạn đang muốn xem</string>
+    <string name="home_recommended_hint">Gợi ý từ các món đang phục vụ có điểm đề xuất cao nhất hôm nay</string>
 
     <string name="bottom_nav_home">Trang chủ</string>
     <string name="bottom_nav_menu">Menu</string>
@@ -43,6 +43,8 @@
     <string name="cd_add_dish">Thêm món</string>
     <string name="menu_added_to_cart">Đã thêm %1$s vào giỏ hàng</string>
     <string name="menu_filter_hint_format">Đang xem danh mục: %1$s</string>
+    <string name="menu_filter_hint_with_query_format">Danh mục: %1$s • Từ khóa: %2$s</string>
+    <string name="menu_filter_query_hint_format">Đang tìm: %1$s</string>
     <string name="cart_title">Giỏ hàng của bạn</string>
     <string name="cart_empty_message">Giỏ hàng của bạn đang trống</string>
     <string name="cart_total_label">Tổng tiền: %1$s</string>
@@ -127,9 +129,12 @@
     <string name="reservation_validation_guest_count">Vui lòng nhập số người hợp lệ</string>
     <string name="reservation_validation_guest_count_range">Số khách phải từ 1 đến %1$d người</string>
     <string name="reservation_validation_future_time">Vui lòng chọn ngày giờ đặt bàn sau thời điểm hiện tại</string>
+    <string name="reservation_validation_area_required">Vui lòng chọn khu vực ngồi mong muốn</string>
+    <string name="reservation_time_normalized_to_future">Giờ bạn chọn đã qua, hệ thống đã chuyển sang thời điểm hợp lệ gần nhất</string>
     <string name="reservation_login_required">Vui lòng đăng nhập trước khi gửi yêu cầu đặt bàn</string>
     <string name="reservation_submit_success">Đã gửi yêu cầu đặt bàn</string>
     <string name="reservation_cancel_success">Đã hủy yêu cầu đặt bàn</string>
+    <string name="reservation_empty_message">Bạn chưa có yêu cầu đặt bàn nào. Hãy chọn thời gian phù hợp và gửi yêu cầu mới.</string>
 
     <string name="service_request_section_title">Yêu cầu phục vụ</string>
     <string name="service_request_list_title">Danh sách yêu cầu gần đây</string>
@@ -140,6 +145,7 @@
     <string name="service_request_status_done">Đã xong</string>
     <string name="service_request_submit_success">Đã gửi yêu cầu: %1$s</string>
     <string name="service_request_login_required">Vui lòng đăng nhập để gửi yêu cầu phục vụ</string>
+    <string name="service_request_empty_message">Chưa có yêu cầu phục vụ nào gần đây. Bạn có thể gọi nhân viên, xin thêm nước hoặc yêu cầu thanh toán ngay tại đây.</string>
 
     <string name="account_screen_title">Tài khoản của tôi</string>
     <string name="account_actions_title">Thao tác nhanh</string>
@@ -165,6 +171,7 @@
     <string name="account_profile_update_success">Đã cập nhật hồ sơ</string>
     <string name="account_password_validation_required">Vui lòng nhập đầy đủ thông tin mật khẩu</string>
     <string name="account_password_validation_old_wrong">Mật khẩu cũ không đúng</string>
+    <string name="account_password_validation_same_as_old">Mật khẩu mới không được trùng mật khẩu hiện tại</string>
     <string name="account_password_validation_confirm_mismatch">Xác nhận mật khẩu không khớp</string>
     <string name="account_password_change_success">Đổi mật khẩu thành công</string>
     <string name="account_support_phone_number_display">1900 0000</string>
@@ -178,11 +185,12 @@
 
     <string name="login_title">Đăng nhập</string>
     <string name="login_email_hint">Email</string>
+    <string name="login_identifier_hint">Email hoặc số điện thoại</string>
     <string name="login_password_hint">Mật khẩu</string>
     <string name="login_button">Đăng nhập</string>
     <string name="login_go_to_register">Chưa có tài khoản? Đăng ký ngay</string>
-    <string name="login_validation_required">Vui lòng nhập đầy đủ tên đăng nhập/email/số điện thoại và mật khẩu</string>
-    <string name="login_failed">Đăng nhập thất bại, vui lòng kiểm tra thông tin</string>
+    <string name="login_validation_required">Vui lòng nhập email hoặc số điện thoại cùng mật khẩu</string>
+    <string name="login_failed">Đăng nhập thất bại, vui lòng kiểm tra lại thông tin</string>
     <string name="login_success">Đăng nhập thành công</string>
 
     <string name="register_title">Đăng ký tài khoản</string>
@@ -197,6 +205,9 @@
     <string name="register_password_mismatch">Mật khẩu xác nhận không khớp</string>
     <string name="register_success">Đăng ký thành công, vui lòng đăng nhập</string>
     <string name="register_email_exists">Email đã tồn tại, vui lòng dùng email khác</string>
+    <string name="validation_email_invalid">Email chưa đúng định dạng</string>
+    <string name="validation_phone_invalid">Số điện thoại chưa hợp lệ</string>
+    <string name="validation_password_too_short">Mật khẩu cần ít nhất %1$d ký tự</string>
     <string name="account_user_not_found">Không tìm thấy người dùng hiện tại</string>
     <string name="db_operation_failed">Không thể lưu dữ liệu, vui lòng thử lại</string>
     <string name="session_invalid">Phiên đăng nhập không hợp lệ, vui lòng đăng nhập lại</string>

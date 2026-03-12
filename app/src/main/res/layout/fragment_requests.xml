@@ -52,6 +52,17 @@
             android:nestedScrollingEnabled="false"
             tools:listitem="@layout/item_reservation_status" />
 
+        <TextView
+            android:id="@+id/tvReservationEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:gravity="center"
+            android:text="@string/reservation_empty_message"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -127,6 +138,17 @@
             android:layout_marginTop="@dimen/space_sm"
             android:nestedScrollingEnabled="false"
             tools:listitem="@layout/item_service_request" />
+
+        <TextView
+            android:id="@+id/tvServiceRequestEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:gravity="center"
+            android:text="@string/service_request_empty_message"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </LinearLayout>
 

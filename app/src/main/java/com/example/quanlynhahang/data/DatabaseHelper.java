@@ -753,6 +753,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                   int guestCount,
                                   @Nullable String note,
                                   Reservation.Status status) {
+        if (userId <= 0
+                || TextUtils.isEmpty(time)
+                || TextUtils.isEmpty(tableNumber)
+                || guestCount <= 0
+                || guestCount > 20
+                || status == null
+                || parseOrderTimeToMillis(time) <= System.currentTimeMillis()) {
+            return -1;
+        }
+
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_RESERVATION_USER_ID, userId);
@@ -796,7 +806,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     new String[]{String.valueOf(userId)},
                     null,
                     null,
-                    COL_SERVICE_REQUEST_ID + " DESC"
+                    null
             );
 
             while (cursor.moveToNext()) {
@@ -812,6 +822,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
+        requests.sort((first, second) -> Long.compare(
+                parseOrderTimeToMillis(second.getThoiGianGui()),
+                parseOrderTimeToMillis(first.getThoiGianGui())
+        ));
         return requests;
     }
 

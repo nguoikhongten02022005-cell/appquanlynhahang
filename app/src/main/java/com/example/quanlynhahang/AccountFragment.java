@@ -25,6 +25,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AccountFragment extends Fragment {
 
+    private static final int DO_DAI_MAT_KHAU_TOI_THIEU = 6;
+
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
 
@@ -50,6 +52,7 @@ public class AccountFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 updateAuthStateUi();
+                refreshHeaderState();
                 if (!isAdded() || sessionManager == null || sessionManager.isLoggedIn()) {
                     return;
                 }
@@ -121,13 +124,14 @@ public class AccountFragment extends Fragment {
         btnLogout.setOnClickListener(v -> {
             sessionManager.clearSession();
             clearLoggedOutUi();
+            refreshHeaderState();
+            navigateToHomeTab();
 
             Toast.makeText(
                     requireContext(),
                     getString(R.string.account_logout_success),
                     Toast.LENGTH_SHORT
             ).show();
-            launchLogin();
         });
     }
 
@@ -162,6 +166,15 @@ public class AccountFragment extends Fragment {
             return;
         }
 
+        if (!laSoDienThoaiHopLe(phone)) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.validation_phone_invalid),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
         boolean isUpdated = databaseHelper.updateUserProfile(currentUser.getId(), name, phone);
         if (!isUpdated) {
             Toast.makeText(
@@ -177,12 +190,14 @@ public class AccountFragment extends Fragment {
             Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
             sessionManager.clearSession();
             updateAuthStateUi();
+            refreshHeaderState();
             return;
         }
 
         currentUser = refreshedUser;
         bindUserData(currentUser);
         layoutEditProfile.setVisibility(View.GONE);
+        refreshHeaderState();
 
         Toast.makeText(
                 requireContext(),
@@ -226,6 +241,24 @@ public class AccountFragment extends Fragment {
             Toast.makeText(
                     requireContext(),
                     getString(R.string.account_password_validation_old_wrong),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        if (TextUtils.equals(currentPassword, newPassword)) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.account_password_validation_same_as_old),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        if (newPassword.length() < DO_DAI_MAT_KHAU_TOI_THIEU) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.validation_password_too_short, DO_DAI_MAT_KHAU_TOI_THIEU),
                     Toast.LENGTH_SHORT
             ).show();
             return;
@@ -283,6 +316,7 @@ public class AccountFragment extends Fragment {
 
     public void onAccountTabSelected() {
         updateAuthStateUi();
+        refreshHeaderState();
         if (sessionManager == null || sessionManager.isLoggedIn()) {
             return;
         }
@@ -298,7 +332,7 @@ public class AccountFragment extends Fragment {
         loginLauncher.launch(intent);
     }
 
-    private void updateAuthStateUi() {
+    public void updateAuthStateUi() {
         if (!isAdded() || layoutAccountLoggedIn == null) {
             return;
         }
@@ -352,6 +386,16 @@ public class AccountFragment extends Fragment {
         tvAccountName.setText(user.getName());
         tvAccountEmail.setText(user.getEmail());
         tvAccountPhone.setText(user.getPhone());
+    }
+
+    private void refreshHeaderState() {
+        if (requireActivity() instanceof MainActivity) {
+            ((MainActivity) requireActivity()).refreshHeaderState();
+        }
+    }
+
+    private boolean laSoDienThoaiHopLe(String phone) {
+        return phone.matches("0\\d{9,10}");
     }
 
     private String getTrimmedText(EditText editText) {

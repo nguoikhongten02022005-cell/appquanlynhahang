@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,6 +19,7 @@ import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.User;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG_MENU = "menu";
     private static final String TAG_ACTIVITY_HUB = "activity_hub";
     private static final String TAG_ACCOUNT = "account";
+    private static final String KEY_PENDING_ACTIVITY_TAB = "pending_activity_tab";
 
     private TextView tvCartBadge;
     private TextView tvGreeting;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private int pendingActivityHubTab = ActivityHubFragment.TAB_ORDERS;
     private String pendingMenuCategory;
     private boolean pendingMenuSearchFocus;
+    private String pendingMenuQuery;
 
     private final CartManager.CartListener cartListener = this::updateCartBadge;
 
@@ -68,13 +72,13 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             pendingMenuCategory = savedInstanceState.getString(MenuFragment.ARG_TEN_DANH_MUC);
             pendingMenuSearchFocus = savedInstanceState.getBoolean(MenuFragment.ARG_MO_TIM_KIEM, false);
-            pendingActivityHubTab = savedInstanceState.getInt("pending_activity_tab", ActivityHubFragment.TAB_ORDERS);
+            pendingMenuQuery = savedInstanceState.getString(MenuFragment.ARG_TU_KHOA_TIM_KIEM);
+            pendingActivityHubTab = savedInstanceState.getInt(KEY_PENDING_ACTIVITY_TAB, ActivityHubFragment.TAB_ORDERS);
         }
 
         setupBottomNavigation();
         setupHeaderActions();
-        updateGreeting();
-        updateCartBadge();
+        refreshHeaderState();
 
         if (savedInstanceState == null) {
             showHome();
@@ -86,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         CartManager.getInstance().addListener(cartListener);
-        updateGreeting();
-        updateCartBadge();
+        refreshHeaderState();
     }
 
     @Override
@@ -101,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putString(MenuFragment.ARG_TEN_DANH_MUC, pendingMenuCategory);
         outState.putBoolean(MenuFragment.ARG_MO_TIM_KIEM, pendingMenuSearchFocus);
-        outState.putInt("pending_activity_tab", pendingActivityHubTab);
+        outState.putString(MenuFragment.ARG_TU_KHOA_TIM_KIEM, pendingMenuQuery);
+        outState.putInt(KEY_PENDING_ACTIVITY_TAB, pendingActivityHubTab);
     }
 
     private void setupBottomNavigation() {
@@ -146,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.layoutCartIcon).setOnClickListener(v -> openCart());
         View nutTimKiem = findViewById(R.id.layoutSearchAction);
         if (nutTimKiem != null) {
-            nutTimKiem.setOnClickListener(v -> navigateToMenu(null, true));
+            nutTimKiem.setOnClickListener(v -> navigateToMenu(null, true, null));
         }
 
         View avatar = findViewById(R.id.layoutAvatarAction);
@@ -167,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showMenu() {
         MenuFragment fragment = findOrCreateMenuFragment();
-        fragment.applyHomeNavigationState(pendingMenuCategory, pendingMenuSearchFocus);
+        fragment.applyHomeNavigationState(pendingMenuCategory, pendingMenuSearchFocus, pendingMenuQuery);
         showFragment(fragment, TAG_MENU);
     }
 
@@ -213,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         if (fragment instanceof MenuFragment) {
             return (MenuFragment) fragment;
         }
-        return MenuFragment.newInstance(pendingMenuCategory, pendingMenuSearchFocus);
+        return MenuFragment.newInstance(pendingMenuCategory, pendingMenuSearchFocus, pendingMenuQuery);
     }
 
     private ActivityHubFragment findActivityHubFragment() {
@@ -227,12 +231,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void navigateToMenu() {
-        navigateToMenu(null, false);
+        navigateToMenu(null, false, null);
     }
 
-    public void navigateToMenu(String tenDanhMuc, boolean moTimKiem) {
+    public void navigateToMenu(@Nullable String tenDanhMuc, boolean moTimKiem) {
+        navigateToMenu(tenDanhMuc, moTimKiem, null);
+    }
+
+    public void navigateToMenu(@Nullable String tenDanhMuc, boolean moTimKiem, @Nullable String tuKhoaTimKiem) {
         pendingMenuCategory = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
         pendingMenuSearchFocus = moTimKiem;
+        pendingMenuQuery = TextUtils.isEmpty(tuKhoaTimKiem) ? null : tuKhoaTimKiem;
         if (bottomNavigationView.getSelectedItemId() == R.id.nav_menu) {
             showMenu();
             return;
@@ -247,6 +256,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         bottomNavigationView.setSelectedItemId(R.id.nav_orders);
+    }
+
+    public void refreshHeaderState() {
+        updateGreeting();
+        updateCartBadge();
     }
 
     private void openCart() {
@@ -284,17 +298,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateCartBadge() {
-        if (tvCartBadge == null) {
-            return;
-        }
-
         int totalQuantity = CartManager.getInstance().getTotalQuantity();
-        if (totalQuantity <= 0) {
-            tvCartBadge.setVisibility(View.GONE);
+        String badgeText = dinhDangSoLuongBadge(totalQuantity);
+
+        if (tvCartBadge != null) {
+            if (badgeText == null) {
+                tvCartBadge.setVisibility(View.GONE);
+            } else {
+                tvCartBadge.setVisibility(View.VISIBLE);
+                tvCartBadge.setText(badgeText);
+            }
+        }
+
+        if (bottomNavigationView == null) {
             return;
         }
 
-        tvCartBadge.setVisibility(View.VISIBLE);
-        tvCartBadge.setText(totalQuantity > 99 ? getString(R.string.cart_badge_overflow) : String.valueOf(totalQuantity));
+        if (badgeText == null) {
+            bottomNavigationView.removeBadge(R.id.nav_cart);
+            return;
+        }
+
+        BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.nav_cart);
+        badgeDrawable.setVisible(true);
+        badgeDrawable.setMaxCharacterCount(3);
+        badgeDrawable.setNumber(totalQuantity);
+    }
+
+    @Nullable
+    private String dinhDangSoLuongBadge(int totalQuantity) {
+        if (totalQuantity <= 0) {
+            return null;
+        }
+        if (totalQuantity > 99) {
+            return getString(R.string.cart_badge_overflow);
+        }
+        return String.valueOf(totalQuantity);
     }
 }

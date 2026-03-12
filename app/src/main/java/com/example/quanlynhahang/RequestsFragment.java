@@ -50,6 +50,8 @@ public class RequestsFragment extends Fragment {
     private Spinner spinnerReservationArea;
     private EditText etGuestCount;
     private EditText etReservationNote;
+    private TextView tvReservationEmptyState;
+    private TextView tvServiceRequestEmptyState;
 
     private final List<String> areaOptions = new ArrayList<>();
 
@@ -89,6 +91,7 @@ public class RequestsFragment extends Fragment {
         setupReservationList(view);
         setupServiceRequestList(view);
         setupActions(view);
+        refreshEmptyStates();
     }
 
     @Override
@@ -102,6 +105,7 @@ public class RequestsFragment extends Fragment {
         if (serviceRequestAdapter != null) {
             serviceRequestAdapter.capNhatDanhSach(serviceRequests);
         }
+        refreshEmptyStates();
     }
 
     private void initViews(View view) {
@@ -110,6 +114,8 @@ public class RequestsFragment extends Fragment {
         spinnerReservationArea = view.findViewById(R.id.spinnerReservationArea);
         etGuestCount = view.findViewById(R.id.etGuestCount);
         etReservationNote = view.findViewById(R.id.etReservationNote);
+        tvReservationEmptyState = view.findViewById(R.id.tvReservationEmptyState);
+        tvServiceRequestEmptyState = view.findViewById(R.id.tvServiceRequestEmptyState);
 
         setupAreaSelector();
 
@@ -140,9 +146,7 @@ public class RequestsFragment extends Fragment {
                     selectedDateTime.set(Calendar.YEAR, selectedYear);
                     selectedDateTime.set(Calendar.MONTH, selectedMonth);
                     selectedDateTime.set(Calendar.DAY_OF_MONTH, selectedDayOfMonth);
-                    if (selectedDateTime.before(Calendar.getInstance())) {
-                        selectedDateTime.setTimeInMillis(Calendar.getInstance().getTimeInMillis());
-                    }
+                    normalizeSelectedDateTime(true);
                     updateDateLabel();
                     updateTimeLabel();
                 },
@@ -163,6 +167,14 @@ public class RequestsFragment extends Fragment {
                 (picker, selectedHour, selectedMinute) -> {
                     selectedDateTime.set(Calendar.HOUR_OF_DAY, selectedHour);
                     selectedDateTime.set(Calendar.MINUTE, selectedMinute);
+                    if (!normalizeSelectedDateTime(false)) {
+                        Toast.makeText(
+                                requireContext(),
+                                getString(R.string.reservation_time_normalized_to_future),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                    updateDateLabel();
                     updateTimeLabel();
                 },
                 hour,
@@ -226,6 +238,7 @@ public class RequestsFragment extends Fragment {
 
             reservation.cancel();
             reservationAdapter.notifyItemChanged(position);
+            refreshEmptyStates();
             Toast.makeText(
                     requireContext(),
                     getString(R.string.reservation_cancel_success),
@@ -317,6 +330,15 @@ public class RequestsFragment extends Fragment {
         String selectedArea = spinnerReservationArea.getSelectedItem() == null
                 ? getString(R.string.reservation_area_ground_floor)
                 : spinnerReservationArea.getSelectedItem().toString();
+        if (TextUtils.isEmpty(selectedArea)) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.reservation_validation_area_required),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
         String note = etReservationNote.getText() == null ? "" : etReservationNote.getText().toString().trim();
         String reservationDateTime = getFormattedDateTime(selectedDateTime);
 
@@ -340,6 +362,7 @@ public class RequestsFragment extends Fragment {
 
         loadReservations();
         reservationAdapter.setReservations(reservations);
+        refreshEmptyStates();
 
         etGuestCount.setText("");
         etReservationNote.setText("");
@@ -380,6 +403,7 @@ public class RequestsFragment extends Fragment {
 
         loadServiceRequests();
         serviceRequestAdapter.capNhatDanhSach(serviceRequests);
+        refreshEmptyStates();
 
         Toast.makeText(
                 requireContext(),
@@ -393,12 +417,51 @@ public class RequestsFragment extends Fragment {
         return selectedDateTime != null && selectedDateTime.after(now);
     }
 
+    private boolean normalizeSelectedDateTime(boolean giuGioDaChon) {
+        Calendar now = Calendar.getInstance();
+        Calendar mucToiThieu = (Calendar) now.clone();
+        mucToiThieu.add(Calendar.MINUTE, 15);
+        mucToiThieu.set(Calendar.SECOND, 0);
+        mucToiThieu.set(Calendar.MILLISECOND, 0);
+
+        if (selectedDateTime == null) {
+            selectedDateTime = (Calendar) mucToiThieu.clone();
+            return false;
+        }
+
+        selectedDateTime.set(Calendar.SECOND, 0);
+        selectedDateTime.set(Calendar.MILLISECOND, 0);
+
+        if (selectedDateTime.after(mucToiThieu)) {
+            return true;
+        }
+
+        if (!giuGioDaChon) {
+            selectedDateTime.setTimeInMillis(mucToiThieu.getTimeInMillis());
+            return false;
+        }
+
+        Calendar ngayDaChon = (Calendar) selectedDateTime.clone();
+        ngayDaChon.set(Calendar.HOUR_OF_DAY, mucToiThieu.get(Calendar.HOUR_OF_DAY));
+        ngayDaChon.set(Calendar.MINUTE, mucToiThieu.get(Calendar.MINUTE));
+        ngayDaChon.set(Calendar.SECOND, 0);
+        ngayDaChon.set(Calendar.MILLISECOND, 0);
+
+        if (!ngayDaChon.before(mucToiThieu)) {
+            selectedDateTime.setTimeInMillis(ngayDaChon.getTimeInMillis());
+            return false;
+        }
+
+        selectedDateTime.setTimeInMillis(mucToiThieu.getTimeInMillis());
+        return false;
+    }
+
     private String getCurrentTimeText() {
         Calendar now = Calendar.getInstance();
         return getFormattedDateTime(now);
     }
 
-    private String getFormattedDateTime(Calendar calendar) {
+    public String getFormattedDateTime(Calendar calendar) {
         return DINH_DANG_THOI_GIAN.format(calendar.getTime());
     }
 
@@ -426,9 +489,22 @@ public class RequestsFragment extends Fragment {
         }
 
         serviceRequests.addAll(databaseHelper.getServiceRequestsByUserId(userId));
+        serviceRequests.sort((first, second) -> Long.compare(
+                parseDateTime(second.getThoiGianGui()),
+                parseDateTime(first.getThoiGianGui())
+        ));
     }
 
-    private long parseDateTime(String value) {
+    private void refreshEmptyStates() {
+        if (tvReservationEmptyState != null) {
+            tvReservationEmptyState.setVisibility(reservations.isEmpty() ? View.VISIBLE : View.GONE);
+        }
+        if (tvServiceRequestEmptyState != null) {
+            tvServiceRequestEmptyState.setVisibility(serviceRequests.isEmpty() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    public long parseDateTime(String value) {
         if (TextUtils.isEmpty(value)) {
             return 0L;
         }

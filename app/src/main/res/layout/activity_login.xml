@@ -40,8 +40,8 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_search_rounded"
                 android:gravity="center_vertical"
-                android:hint="Tên đăng nhập / Email / Số điện thoại"
-                android:inputType="text"
+                android:hint="@string/login_identifier_hint"
+                android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:paddingStart="@dimen/space_md"
                 android:paddingEnd="@dimen/space_md"
@@ -80,15 +80,6 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:backgroundTint="@null" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center"
-                android:text="*Gợi ý: Dùng tài khoản 'kh1' và mật khẩu '1' để đăng nhập thử nghiệm*"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tvGoToRegister"

@@ -23,12 +23,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         void onCategoryClick(CategoryItem item, int position);
     }
 
+    private static final int KHONG_CO_DANH_MUC_DANG_CHON = -1;
+
     private final List<CategoryItem> items;
     private final OnCategoryClickListener onCategoryClickListener;
     private int selectedPosition;
 
     public CategoryAdapter(List<CategoryItem> items, OnCategoryClickListener onCategoryClickListener) {
-        this(items, onCategoryClickListener, 0);
+        this(items, onCategoryClickListener, KHONG_CO_DANH_MUC_DANG_CHON);
     }
 
     public CategoryAdapter(List<CategoryItem> items,
@@ -36,7 +38,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                            int selectedPosition) {
         this.items = items;
         this.onCategoryClickListener = onCategoryClickListener;
-        this.selectedPosition = Math.max(0, selectedPosition);
+        this.selectedPosition = isViTriHopLe(selectedPosition) ? selectedPosition : KHONG_CO_DANH_MUC_DANG_CHON;
     }
 
     @NonNull
@@ -88,14 +90,24 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     public void setSelectedPosition(int newPosition) {
-        if (newPosition < 0 || newPosition >= items.size() || newPosition == selectedPosition) {
+        int viTriMoi = isViTriHopLe(newPosition) ? newPosition : KHONG_CO_DANH_MUC_DANG_CHON;
+        if (viTriMoi == selectedPosition) {
             return;
         }
 
         int previousPosition = selectedPosition;
-        selectedPosition = newPosition;
-        notifyItemChanged(previousPosition);
-        notifyItemChanged(selectedPosition);
+        selectedPosition = viTriMoi;
+
+        if (isViTriHopLe(previousPosition)) {
+            notifyItemChanged(previousPosition);
+        }
+        if (isViTriHopLe(selectedPosition)) {
+            notifyItemChanged(selectedPosition);
+        }
+    }
+
+    private boolean isViTriHopLe(int position) {
+        return position >= 0 && position < items.size();
     }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {

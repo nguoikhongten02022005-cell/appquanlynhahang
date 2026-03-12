@@ -75,6 +75,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_sm"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/price_145k"
             android:textColor="@color/secondary"
             android:textSize="14sp"

@@ -44,15 +44,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleLogin() {
-        String usernameOrEmail = getTrimmedText(etLoginEmail);
+        String emailOrPhone = getTrimmedText(etLoginEmail);
         String password = getTrimmedText(etLoginPassword);
 
-        if (TextUtils.isEmpty(usernameOrEmail) || TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(emailOrPhone) || TextUtils.isEmpty(password)) {
             Toast.makeText(this, getString(R.string.login_validation_required), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        User authenticatedUser = databaseHelper.checkLogin(usernameOrEmail, password);
+        User authenticatedUser = databaseHelper.checkLogin(emailOrPhone, password);
         if (authenticatedUser == null) {
             Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
             return;

@@ -59,6 +59,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_md"
+                        android:ellipsize="end"
                         android:maxLines="3"
                         android:text="@string/home_hero_title"
                         android:textColor="@color/white"
@@ -69,6 +70,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_sm"
+                        android:ellipsize="end"
                         android:maxLines="2"
                         android:text="@string/home_hero_subtitle"
                         android:textColor="@color/white"
@@ -119,6 +121,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_quick_action_primary"
                 android:gravity="center_vertical"
+                android:minWidth="0dp"
                 android:orientation="vertical"
                 android:padding="@dimen/space_lg">
 
@@ -163,6 +166,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_quick_action_secondary"
                 android:gravity="center_vertical"
+                android:minWidth="0dp"
                 android:orientation="vertical"
                 android:padding="@dimen/space_lg">
 

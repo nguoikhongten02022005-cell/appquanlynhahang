@@ -1,5 +1,6 @@
 package com.example.quanlynhahang;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -7,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +32,7 @@ public class MenuFragment extends Fragment {
 
     public static final String ARG_TEN_DANH_MUC = "ten_danh_muc";
     public static final String ARG_MO_TIM_KIEM = "mo_tim_kiem";
+    public static final String ARG_TU_KHOA_TIM_KIEM = "tu_khoa_tim_kiem";
 
     private final List<RecommendedDishItem> allDishes = new ArrayList<>();
     private final List<String> allDescriptions = new ArrayList<>();
@@ -43,12 +46,21 @@ public class MenuFragment extends Fragment {
 
     private String tenDanhMucDangChon;
     private boolean moTimKiemKhiMoMan;
+    private String tuKhoaTimKiemBanDau;
+    private boolean dangCapNhatTimKiemNoiBo;
 
     public static MenuFragment newInstance(@Nullable String tenDanhMuc, boolean moTimKiem) {
+        return newInstance(tenDanhMuc, moTimKiem, null);
+    }
+
+    public static MenuFragment newInstance(@Nullable String tenDanhMuc,
+                                           boolean moTimKiem,
+                                           @Nullable String tuKhoaTimKiem) {
         MenuFragment fragment = new MenuFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TEN_DANH_MUC, tenDanhMuc);
         args.putBoolean(ARG_MO_TIM_KIEM, moTimKiem);
+        args.putString(ARG_TU_KHOA_TIM_KIEM, tuKhoaTimKiem);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,25 +85,34 @@ public class MenuFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putString(ARG_TEN_DANH_MUC, tenDanhMucDangChon);
         outState.putBoolean(ARG_MO_TIM_KIEM, moTimKiemKhiMoMan);
+        outState.putString(ARG_TU_KHOA_TIM_KIEM, layTuKhoaHienTai());
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (moTimKiemKhiMoMan && etMenuSearch != null) {
-            etMenuSearch.requestFocus();
-            etMenuSearch.post(() -> etMenuSearch.setSelection(etMenuSearch.getText() == null ? 0 : etMenuSearch.getText().length()));
+            moBanPhimTimKiem();
             moTimKiemKhiMoMan = false;
         }
     }
 
     public void applyHomeNavigationState(@Nullable String tenDanhMuc, boolean moTimKiem) {
+        applyHomeNavigationState(tenDanhMuc, moTimKiem, null);
+    }
+
+    public void applyHomeNavigationState(@Nullable String tenDanhMuc,
+                                         boolean moTimKiem,
+                                         @Nullable String tuKhoaTimKiem) {
         tenDanhMucDangChon = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
         moTimKiemKhiMoMan = moTimKiem;
+        tuKhoaTimKiemBanDau = TextUtils.isEmpty(tuKhoaTimKiem) ? null : tuKhoaTimKiem;
         if (isAdded()) {
+            apDungTuKhoaTimKiemNeuCan();
             taiDuLieuMonAn();
             if (moTimKiemKhiMoMan && etMenuSearch != null) {
-                etMenuSearch.requestFocus();
+                moBanPhimTimKiem();
+                moTimKiemKhiMoMan = false;
             }
         }
     }
@@ -101,10 +122,12 @@ public class MenuFragment extends Fragment {
         if (source == null) {
             tenDanhMucDangChon = null;
             moTimKiemKhiMoMan = false;
+            tuKhoaTimKiemBanDau = null;
             return;
         }
         tenDanhMucDangChon = source.getString(ARG_TEN_DANH_MUC);
         moTimKiemKhiMoMan = source.getBoolean(ARG_MO_TIM_KIEM, false);
+        tuKhoaTimKiemBanDau = source.getString(ARG_TU_KHOA_TIM_KIEM);
     }
 
     private void setupRecyclerView(View view) {
@@ -130,6 +153,7 @@ public class MenuFragment extends Fragment {
 
     private void setupSearch(View view) {
         etMenuSearch = view.findViewById(R.id.etMenuSearch);
+        apDungTuKhoaTimKiemNeuCan();
         etMenuSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -137,6 +161,9 @@ public class MenuFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (dangCapNhatTimKiemNoiBo) {
+                    return;
+                }
                 applyCurrentFilter();
             }
 
@@ -164,10 +191,8 @@ public class MenuFragment extends Fragment {
         applyCurrentFilter();
     }
 
-    private void applyCurrentFilter() {
-        String tuKhoa = etMenuSearch == null || etMenuSearch.getText() == null
-                ? ""
-                : etMenuSearch.getText().toString().trim().toLowerCase(Locale.ROOT);
+    public void applyCurrentFilter() {
+        String tuKhoa = layTuKhoaHienTai().toLowerCase(Locale.ROOT);
 
         filteredDishes.clear();
         filteredDescriptions.clear();
@@ -198,12 +223,58 @@ public class MenuFragment extends Fragment {
             return;
         }
 
-        if (TextUtils.isEmpty(tenDanhMucDangChon)) {
+        String tuKhoa = layTuKhoaHienTai();
+        boolean coDanhMuc = !TextUtils.isEmpty(tenDanhMucDangChon);
+        boolean coTuKhoa = !TextUtils.isEmpty(tuKhoa);
+
+        if (!coDanhMuc && !coTuKhoa) {
             tvMenuFilterHint.setVisibility(View.GONE);
             return;
         }
 
         tvMenuFilterHint.setVisibility(View.VISIBLE);
-        tvMenuFilterHint.setText(getString(R.string.menu_filter_hint_format, tenDanhMucDangChon));
+        if (coDanhMuc && coTuKhoa) {
+            tvMenuFilterHint.setText(getString(R.string.menu_filter_hint_with_query_format, tenDanhMucDangChon, tuKhoa));
+            return;
+        }
+        if (coDanhMuc) {
+            tvMenuFilterHint.setText(getString(R.string.menu_filter_hint_format, tenDanhMucDangChon));
+            return;
+        }
+        tvMenuFilterHint.setText(getString(R.string.menu_filter_query_hint_format, tuKhoa));
+    }
+
+    private void apDungTuKhoaTimKiemNeuCan() {
+        if (etMenuSearch == null || tuKhoaTimKiemBanDau == null) {
+            return;
+        }
+        String tuKhoaHienTai = layTuKhoaHienTai();
+        if (TextUtils.equals(tuKhoaTimKiemBanDau, tuKhoaHienTai)) {
+            tuKhoaTimKiemBanDau = null;
+            return;
+        }
+        dangCapNhatTimKiemNoiBo = true;
+        etMenuSearch.setText(tuKhoaTimKiemBanDau);
+        etMenuSearch.setSelection(etMenuSearch.length());
+        dangCapNhatTimKiemNoiBo = false;
+        tuKhoaTimKiemBanDau = null;
+    }
+
+    private String layTuKhoaHienTai() {
+        if (etMenuSearch == null || etMenuSearch.getText() == null) {
+            return "";
+        }
+        return etMenuSearch.getText().toString().trim();
+    }
+
+    private void moBanPhimTimKiem() {
+        etMenuSearch.requestFocus();
+        etMenuSearch.post(() -> {
+            etMenuSearch.setSelection(etMenuSearch.getText() == null ? 0 : etMenuSearch.getText().length());
+            InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.showSoftInput(etMenuSearch, InputMethodManager.SHOW_IMPLICIT);
+            }
+        });
     }
 }

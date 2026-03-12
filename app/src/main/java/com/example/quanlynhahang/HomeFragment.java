@@ -27,6 +27,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private static final int SO_MON_DE_XUAT = 4;
+    private static final int KHONG_CO_DANH_MUC_DANG_CHON = -1;
 
     private final List<CategoryItem> categories = new ArrayList<>();
     private final List<RecommendedDishItem> recommendedDishes = new ArrayList<>();
@@ -60,8 +61,14 @@ public class HomeFragment extends Fragment {
         View actionOrder = view.findViewById(R.id.actionQuickOrder);
         View actionBook = view.findViewById(R.id.actionQuickBook);
 
-        btnHeroCta.setOnClickListener(v -> navigateToMenu(null, true));
-        actionOrder.setOnClickListener(v -> navigateToMenu(null, true));
+        btnHeroCta.setOnClickListener(v -> {
+            resetCategorySelection();
+            navigateToMenu(null, true, null);
+        });
+        actionOrder.setOnClickListener(v -> {
+            resetCategorySelection();
+            navigateToMenu(null, true, null);
+        });
         actionBook.setOnClickListener(v -> navigateToRequests());
     }
 
@@ -72,8 +79,8 @@ public class HomeFragment extends Fragment {
             if (categoryAdapter != null) {
                 categoryAdapter.setSelectedPosition(position);
             }
-            navigateToMenu(item.getTenDanhMuc(), false);
-        });
+            navigateToMenu(item.getTenDanhMuc(), false, null);
+        }, KHONG_CO_DANH_MUC_DANG_CHON);
         rvCategory.setAdapter(categoryAdapter);
     }
 
@@ -84,7 +91,8 @@ public class HomeFragment extends Fragment {
         rvRecommended.setAdapter(new RecommendedDishAdapter(recommendedDishes, new RecommendedDishAdapter.OnDishActionListener() {
             @Override
             public void onDishClick(RecommendedDishItem item) {
-                navigateToMenu(item.getTenDanhMuc(), false);
+                resetCategorySelection();
+                navigateToMenu(item.getTenDanhMuc(), false, item.getTenMon());
             }
 
             @Override
@@ -133,9 +141,17 @@ public class HomeFragment extends Fragment {
         recommendedDishes.addAll(databaseHelper.getMonDeXuatTrangChu(SO_MON_DE_XUAT));
     }
 
-    private void navigateToMenu(@Nullable String tenDanhMuc, boolean sanSangTimKiem) {
+    private void resetCategorySelection() {
+        if (categoryAdapter != null) {
+            categoryAdapter.setSelectedPosition(KHONG_CO_DANH_MUC_DANG_CHON);
+        }
+    }
+
+    private void navigateToMenu(@Nullable String tenDanhMuc,
+                                boolean sanSangTimKiem,
+                                @Nullable String tuKhoaTimKiem) {
         if (requireActivity() instanceof MainActivity) {
-            ((MainActivity) requireActivity()).navigateToMenu(tenDanhMuc, sanSangTimKiem);
+            ((MainActivity) requireActivity()).navigateToMenu(tenDanhMuc, sanSangTimKiem, tuKhoaTimKiem);
         }
     }
 

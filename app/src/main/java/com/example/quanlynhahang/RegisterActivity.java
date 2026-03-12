@@ -15,6 +15,8 @@ import com.google.android.material.button.MaterialButton;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private static final int DO_DAI_MAT_KHAU_TOI_THIEU = 6;
+
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
 
@@ -63,6 +65,21 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, getString(R.string.validation_email_invalid), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!laSoDienThoaiHopLe(phone)) {
+            Toast.makeText(this, getString(R.string.validation_phone_invalid), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (password.length() < DO_DAI_MAT_KHAU_TOI_THIEU) {
+            Toast.makeText(this, getString(R.string.validation_password_too_short, DO_DAI_MAT_KHAU_TOI_THIEU), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (!password.equals(confirmPassword)) {
             Toast.makeText(this, getString(R.string.register_password_mismatch), Toast.LENGTH_SHORT).show();
             return;
@@ -83,6 +100,10 @@ public class RegisterActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
+    }
+
+    private boolean laSoDienThoaiHopLe(String phone) {
+        return phone.matches("0\\d{9,10}");
     }
 
     private String getTrimmedText(EditText editText) {

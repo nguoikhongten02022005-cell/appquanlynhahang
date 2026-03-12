@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git push:*)",
+      "Read(//c/Users/Moderator/.claude/projects/**)",
+      "Read(//mnt/c/Users/Moderator/.claude/**)"
+    ]
+  }
+}

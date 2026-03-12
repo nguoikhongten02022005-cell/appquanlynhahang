@@ -2,7 +2,8 @@
     <string name="app_name">Quản lý nhà hàng</string>
 
     <string name="logo_text">NH</string>
-    <string name="home_greeting">Xin chào!</string>
+    <string name="home_greeting">Xin chào, Khách</string>
+    <string name="home_greeting_format">Xin chào, %1$s</string>
     <string name="search_hint">Tìm món ăn, combo...</string>
     <string name="menu_search_hint">Tìm trong thực đơn...</string>
 
@@ -148,6 +149,7 @@
     <string name="account_screen_title">Tài khoản của tôi</string>
     <string name="account_actions_title">Thao tác nhanh</string>
     <string name="account_avatar_content_description">Ảnh đại diện</string>
+    <string name="account_guest_name">Khách</string>
     <string name="account_edit_profile">Chỉnh sửa hồ sơ</string>
     <string name="account_change_password">Đổi mật khẩu</string>
     <string name="account_contact_support">Liên hệ hỗ trợ</string>

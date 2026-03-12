@@ -2,6 +2,7 @@ package com.example.quanlynhahang;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,8 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quanlynhahang.adapter.CategoryAdapter;
 import com.example.quanlynhahang.adapter.RecommendedDishAdapter;
 import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.CategoryItem;
 import com.example.quanlynhahang.model.RecommendedDishItem;
+import com.example.quanlynhahang.model.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -27,6 +31,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private TextView tvCartBadge;
+    private TextView tvGreeting;
+
+    private SessionManager sessionManager;
+    private DatabaseHelper databaseHelper;
 
     private final CartManager.CartListener cartListener = this::updateCartBadge;
 
@@ -42,10 +50,16 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        sessionManager = new SessionManager(this);
+        databaseHelper = new DatabaseHelper(this);
+        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+
         tvCartBadge = findViewById(R.id.tvCartBadge);
+        tvGreeting = findViewById(R.id.tvGreeting);
 
         setupBottomNavigation();
         setupHeaderActions();
+        updateGreeting();
         showHome();
         updateCartBadge();
     }
@@ -54,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         CartManager.getInstance().addListener(cartListener);
+        updateGreeting();
         updateCartBadge();
     }
 
@@ -104,6 +119,36 @@ public class MainActivity extends AppCompatActivity {
     private void openCart() {
         Intent intent = new Intent(this, CartActivity.class);
         startActivity(intent);
+    }
+
+    private void updateGreeting() {
+        if (tvGreeting == null) {
+            return;
+        }
+
+        String displayName = getString(R.string.account_guest_name);
+
+        if (sessionManager != null && databaseHelper != null && sessionManager.isLoggedIn()) {
+            long currentUserId = sessionManager.getCurrentUserId();
+            if (currentUserId > 0) {
+                User currentUser = databaseHelper.getUserById(currentUserId);
+                if (currentUser != null) {
+                    String name = currentUser.getName();
+                    String email = currentUser.getEmail();
+                    String defaultName = getString(R.string.account_default_name);
+
+                    if (!TextUtils.isEmpty(name)
+                            && !TextUtils.equals(name, defaultName)
+                            && !TextUtils.equals(name, "Khách hàng Test")) {
+                        displayName = name;
+                    } else if (!TextUtils.isEmpty(email)) {
+                        displayName = email;
+                    }
+                }
+            }
+        }
+
+        tvGreeting.setText(getString(R.string.home_greeting_format, displayName));
     }
 
     private void updateCartBadge() {

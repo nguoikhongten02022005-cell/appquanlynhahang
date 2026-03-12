@@ -66,6 +66,8 @@ public class CartActivity extends AppCompatActivity {
         cartManager = CartManager.getInstance();
         sessionManager = new SessionManager(this);
         databaseHelper = new DatabaseHelper(this);
+        databaseHelper.chuanBiCoSoDuLieu();
+        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
 
         initViews();
         setupRecyclerView();

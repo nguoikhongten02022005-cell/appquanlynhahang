@@ -44,7 +44,6 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         databaseHelper = new DatabaseHelper(requireContext());
-        databaseHelper.seedDishesIfEmpty(requireContext());
 
         setupCategoryData();
         setupRecommendedData();

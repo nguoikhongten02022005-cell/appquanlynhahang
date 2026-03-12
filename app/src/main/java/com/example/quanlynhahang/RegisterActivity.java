@@ -31,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(this);
+        databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
 
         etRegisterFullName = findViewById(R.id.etRegisterFullName);

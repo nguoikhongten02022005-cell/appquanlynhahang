@@ -6,8 +6,10 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -26,8 +28,16 @@ import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = "DatabaseHelper";
+
     private static final String DATABASE_NAME = "restaurant.db";
     private static final int DATABASE_VERSION = 6;
+
+    private static final String TEN_ANH_MAC_DINH = "ic_restaurant_24";
+    private static final String BAN_MAC_DINH = "Bàn 01";
+    private static final String EMAIL_TAI_KHOAN_TEST = "kh1";
+    private static final String SDT_TAI_KHOAN_TEST = "0123456789";
+    private static final String MAT_KHAU_TAI_KHOAN_TEST = "1";
 
     public static final String TABLE_USER = "users";
     public static final String TABLE_DISH = "dishes";
@@ -78,72 +88,219 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         appContext = context.getApplicationContext();
     }
 
+    public void chuanBiCoSoDuLieu() {
+        Log.i(TAG, "Bắt đầu mở và chuẩn hóa cơ sở dữ liệu.");
+        SQLiteDatabase db = getWritableDatabase();
+        Log.i(TAG, "Cơ sở dữ liệu đã sẵn sàng. version=" + db.getVersion());
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_USER + " ("
+        Log.i(TAG, "onCreate: tạo mới cơ sở dữ liệu. version=" + DATABASE_VERSION);
+        try {
+            damBaoSchema(db);
+            damBaoDuLieuMacDinh(db);
+            Log.i(TAG, "onCreate: tạo schema và dữ liệu mặc định thành công.");
+        } catch (SQLiteException ex) {
+            Log.e(TAG, "onCreate: lỗi khi tạo cơ sở dữ liệu.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.i(TAG, "onUpgrade: nâng cấp cơ sở dữ liệu từ version " + oldVersion + " lên " + newVersion);
+        try {
+            damBaoSchema(db);
+            damBaoDuLieuMacDinh(db);
+            Log.i(TAG, "onUpgrade: chuẩn hóa schema thành công.");
+        } catch (SQLiteException ex) {
+            Log.e(TAG, "onUpgrade: lỗi khi nâng cấp cơ sở dữ liệu.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        if (db.isReadOnly()) {
+            Log.w(TAG, "onOpen: cơ sở dữ liệu đang ở chế độ chỉ đọc, bỏ qua bước chuẩn hóa schema.");
+            return;
+        }
+
+        try {
+            Log.d(TAG, "onOpen: kiểm tra lại schema và dữ liệu mặc định.");
+            damBaoSchema(db);
+            damBaoDuLieuMacDinh(db);
+        } catch (SQLiteException ex) {
+            Log.e(TAG, "onOpen: lỗi khi kiểm tra schema lúc mở cơ sở dữ liệu.", ex);
+            throw ex;
+        }
+    }
+
+    private void damBaoSchema(SQLiteDatabase db) {
+        damBaoBangTonTai(db, TABLE_USER, taoBangNguoiDung());
+        damBaoBangTonTai(db, TABLE_DISH, taoBangMonAn());
+        damBaoBangTonTai(db, TABLE_ORDER, taoBangDonHang());
+        damBaoBangTonTai(db, TABLE_ORDER_ITEM, taoBangChiTietDonHang());
+        damBaoBangTonTai(db, TABLE_RESERVATION, taoBangDatBan());
+
+        damBaoCotTonTai(db, TABLE_USER, COL_USER_NAME, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_USER, COL_USER_EMAIL, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_USER, COL_USER_PHONE, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_USER, COL_USER_PASSWORD, "TEXT NOT NULL DEFAULT ''");
+
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_NAME, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_PRICE, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_DESCRIPTION, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_IMAGE_RES_NAME,
+                "TEXT NOT NULL DEFAULT '" + TEN_ANH_MAC_DINH + "'");
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_IS_AVAILABLE, "INTEGER NOT NULL DEFAULT 1");
+
+        damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_USER_ID, "INTEGER NOT NULL DEFAULT 0");
+        damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_CODE, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_TIME, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_TOTAL_PRICE, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_STATUS,
+                "TEXT NOT NULL DEFAULT '" + Order.Status.PENDING_CONFIRMATION.name() + "'");
+
+        damBaoCotTonTai(db, TABLE_ORDER_ITEM, COL_ORDER_ITEM_ORDER_ID, "INTEGER NOT NULL DEFAULT 0");
+        damBaoCotTonTai(db, TABLE_ORDER_ITEM, COL_ORDER_ITEM_DISH_NAME, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_ORDER_ITEM, COL_ORDER_ITEM_DISH_PRICE, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_ORDER_ITEM, COL_ORDER_ITEM_IMAGE_RES_NAME,
+                "TEXT NOT NULL DEFAULT '" + TEN_ANH_MAC_DINH + "'");
+        damBaoCotTonTai(db, TABLE_ORDER_ITEM, COL_ORDER_ITEM_IS_AVAILABLE, "INTEGER NOT NULL DEFAULT 1");
+        damBaoCotTonTai(db, TABLE_ORDER_ITEM, COL_ORDER_ITEM_QUANTITY, "INTEGER NOT NULL DEFAULT 1");
+
+        damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_USER_ID, "INTEGER NOT NULL DEFAULT 0");
+        damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_TIME, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_TABLE_NUMBER,
+                "TEXT NOT NULL DEFAULT '" + BAN_MAC_DINH + "'");
+        damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_GUEST_COUNT, "INTEGER NOT NULL DEFAULT 1");
+        damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_NOTE, "TEXT");
+        damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_STATUS,
+                "TEXT NOT NULL DEFAULT '" + Reservation.Status.PENDING_APPROVAL.name() + "'");
+    }
+
+    private void damBaoDuLieuMacDinh(SQLiteDatabase db) {
+        seedDishesIfEmpty(appContext, db);
+        ensureTestUserExists(db);
+    }
+
+    private void damBaoBangTonTai(SQLiteDatabase db, String tenBang, String cauLenhTao) {
+        boolean daTonTai = bangDaTonTai(db, tenBang);
+        Log.d(TAG, "Đảm bảo bảng " + tenBang + (daTonTai ? " đã tồn tại." : " sẽ được tạo mới."));
+        db.execSQL(cauLenhTao);
+    }
+
+    private void damBaoCotTonTai(SQLiteDatabase db, String tenBang, String tenCot, String dinhNghiaCot) {
+        if (cotDaTonTai(db, tenBang, tenCot)) {
+            Log.d(TAG, "Cột " + tenBang + "." + tenCot + " đã tồn tại.");
+            return;
+        }
+
+        String sql = "ALTER TABLE " + tenBang + " ADD COLUMN " + tenCot + " " + dinhNghiaCot;
+        Log.i(TAG, "Bổ sung cột còn thiếu: " + tenBang + "." + tenCot);
+
+        try {
+            db.execSQL(sql);
+        } catch (SQLiteException ex) {
+            if (cotDaTonTai(db, tenBang, tenCot)) {
+                Log.w(TAG, "Cột " + tenBang + "." + tenCot + " đã được thêm bởi luồng khác, bỏ qua lỗi trùng lặp.", ex);
+                return;
+            }
+            Log.e(TAG, "Không thể bổ sung cột " + tenBang + "." + tenCot, ex);
+            throw ex;
+        }
+    }
+
+    private boolean bangDaTonTai(SQLiteDatabase db, String tenBang) {
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(
+                    "SELECT name FROM sqlite_master WHERE type = ? AND name = ?",
+                    new String[]{"table", tenBang}
+            );
+            return cursor.moveToFirst();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private boolean cotDaTonTai(SQLiteDatabase db, String tenBang, String tenCot) {
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("PRAGMA table_info(" + tenBang + ")", null);
+            while (cursor.moveToNext()) {
+                String tenCotHienTai = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                if (TextUtils.equals(tenCot, tenCotHienTai)) {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private String taoBangNguoiDung() {
+        return "CREATE TABLE IF NOT EXISTS " + TABLE_USER + " ("
                 + COL_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COL_USER_NAME + " TEXT NOT NULL, "
                 + COL_USER_EMAIL + " TEXT NOT NULL UNIQUE COLLATE NOCASE, "
                 + COL_USER_PHONE + " TEXT NOT NULL, "
                 + COL_USER_PASSWORD + " TEXT NOT NULL"
-                + ")");
+                + ")";
+    }
 
-        db.execSQL("CREATE TABLE " + TABLE_DISH + " ("
+    private String taoBangMonAn() {
+        return "CREATE TABLE IF NOT EXISTS " + TABLE_DISH + " ("
                 + COL_DISH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COL_DISH_NAME + " TEXT NOT NULL, "
                 + COL_DISH_PRICE + " TEXT NOT NULL, "
                 + COL_DISH_DESCRIPTION + " TEXT NOT NULL, "
-                + COL_DISH_IMAGE_RES_NAME + " TEXT NOT NULL, "
+                + COL_DISH_IMAGE_RES_NAME + " TEXT NOT NULL DEFAULT '" + TEN_ANH_MAC_DINH + "', "
                 + COL_DISH_IS_AVAILABLE + " INTEGER NOT NULL DEFAULT 1"
-                + ")");
+                + ")";
+    }
 
-        db.execSQL("CREATE TABLE " + TABLE_ORDER + " ("
+    private String taoBangDonHang() {
+        return "CREATE TABLE IF NOT EXISTS " + TABLE_ORDER + " ("
                 + COL_ORDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COL_ORDER_USER_ID + " INTEGER NOT NULL, "
                 + COL_ORDER_CODE + " TEXT NOT NULL, "
                 + COL_ORDER_TIME + " TEXT NOT NULL, "
                 + COL_ORDER_TOTAL_PRICE + " TEXT NOT NULL, "
                 + COL_ORDER_STATUS + " TEXT NOT NULL"
-                + ")");
+                + ")";
+    }
 
-        db.execSQL("CREATE TABLE " + TABLE_ORDER_ITEM + " ("
+    private String taoBangChiTietDonHang() {
+        return "CREATE TABLE IF NOT EXISTS " + TABLE_ORDER_ITEM + " ("
                 + COL_ORDER_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COL_ORDER_ITEM_ORDER_ID + " INTEGER NOT NULL, "
                 + COL_ORDER_ITEM_DISH_NAME + " TEXT NOT NULL, "
                 + COL_ORDER_ITEM_DISH_PRICE + " TEXT NOT NULL, "
-                + COL_ORDER_ITEM_IMAGE_RES_NAME + " TEXT NOT NULL, "
+                + COL_ORDER_ITEM_IMAGE_RES_NAME + " TEXT NOT NULL DEFAULT '" + TEN_ANH_MAC_DINH + "', "
                 + COL_ORDER_ITEM_IS_AVAILABLE + " INTEGER NOT NULL DEFAULT 1, "
                 + COL_ORDER_ITEM_QUANTITY + " INTEGER NOT NULL"
-                + ")");
+                + ")";
+    }
 
-        db.execSQL("CREATE TABLE " + TABLE_RESERVATION + " ("
+    private String taoBangDatBan() {
+        return "CREATE TABLE IF NOT EXISTS " + TABLE_RESERVATION + " ("
                 + COL_RESERVATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COL_RESERVATION_USER_ID + " INTEGER NOT NULL, "
                 + COL_RESERVATION_TIME + " TEXT NOT NULL, "
-                + COL_RESERVATION_TABLE_NUMBER + " TEXT NOT NULL, "
+                + COL_RESERVATION_TABLE_NUMBER + " TEXT NOT NULL DEFAULT '" + BAN_MAC_DINH + "', "
                 + COL_RESERVATION_GUEST_COUNT + " INTEGER NOT NULL, "
                 + COL_RESERVATION_NOTE + " TEXT, "
                 + COL_RESERVATION_STATUS + " TEXT NOT NULL"
-                + ")");
-
-        seedDishesIfEmpty(appContext, db);
-        ensureTestUserExists(db);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 2) {
-            seedDishesIfEmpty(appContext, db);
-        }
-
-        if (oldVersion < 4) {
-            ensureTestUserExists(db);
-        }
-
-        if (oldVersion < 5) {
-            db.execSQL("ALTER TABLE " + TABLE_RESERVATION
-                    + " ADD COLUMN " + COL_RESERVATION_TABLE_NUMBER + " TEXT NOT NULL DEFAULT 'Bàn 01'");
-        }
+                + ")";
     }
 
     public long insertUser(String name, String email, String phone, String password) {
@@ -164,7 +321,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             return db.insertOrThrow(TABLE_USER, null, values);
         } catch (SQLiteConstraintException ex) {
+            Log.w(TAG, "insertUser: email đã tồn tại hoặc vi phạm ràng buộc. email=" + email, ex);
             return -1;
+        } catch (SQLiteException ex) {
+            Log.e(TAG, "insertUser: lỗi khi thêm người dùng. email=" + email, ex);
+            throw ex;
         }
     }
 
@@ -280,7 +441,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void seedDishesIfEmpty(Context context) {
         SQLiteDatabase db = getWritableDatabase();
-        seedDishesIfEmpty(context, db);
+        seedDishesIfEmpty(context == null ? appContext : context.getApplicationContext(), db);
     }
 
     public List<DishRecord> getAllDishes() {
@@ -550,12 +711,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return;
         }
 
+        Log.i(TAG, "Seed dữ liệu món ăn mặc định vì bảng dishes đang trống.");
         insertDish(
                 db,
                 context.getString(R.string.dish_bo_luc_lac),
                 context.getString(R.string.price_145k),
                 context.getString(R.string.menu_desc_bo_luc_lac),
-                "ic_restaurant_24",
+                TEN_ANH_MAC_DINH,
                 true
         );
         insertDish(
@@ -563,7 +725,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.dish_salad_ca_hoi),
                 context.getString(R.string.price_129k),
                 context.getString(R.string.menu_desc_salad_ca_hoi),
-                "ic_restaurant_24",
+                TEN_ANH_MAC_DINH,
                 true
         );
         insertDish(
@@ -571,7 +733,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.dish_lau_thai),
                 context.getString(R.string.price_259k),
                 context.getString(R.string.menu_desc_lau_thai),
-                "ic_restaurant_24",
+                TEN_ANH_MAC_DINH,
                 false
         );
         insertDish(
@@ -621,7 +783,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     TABLE_USER,
                     new String[]{COL_USER_ID},
                     COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?",
-                    new String[]{"kh1", "0123456789"},
+                    new String[]{EMAIL_TAI_KHOAN_TEST, SDT_TAI_KHOAN_TEST},
                     null,
                     null,
                     null,
@@ -631,11 +793,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return;
             }
 
+            Log.i(TAG, "Tạo tài khoản thử nghiệm mặc định.");
             ContentValues values = new ContentValues();
-            values.put(COL_USER_NAME, "Khách hàng Test");
-            values.put(COL_USER_EMAIL, "kh1");
-            values.put(COL_USER_PHONE, "0123456789");
-            values.put(COL_USER_PASSWORD, "1");
+            values.put(COL_USER_NAME, appContext.getString(R.string.db_test_user_name));
+            values.put(COL_USER_EMAIL, EMAIL_TAI_KHOAN_TEST);
+            values.put(COL_USER_PHONE, SDT_TAI_KHOAN_TEST);
+            values.put(COL_USER_PASSWORD, MAT_KHAU_TAI_KHOAN_TEST);
             db.insert(TABLE_USER, null, values);
         } finally {
             if (cursor != null) {
@@ -714,13 +877,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private String resolveImageResName(int imageResId) {
         if (imageResId == 0) {
-            return "ic_restaurant_24";
+            return TEN_ANH_MAC_DINH;
         }
 
         try {
             return appContext.getResources().getResourceEntryName(imageResId);
         } catch (Resources.NotFoundException ex) {
-            return "ic_restaurant_24";
+            return TEN_ANH_MAC_DINH;
         }
     }
 

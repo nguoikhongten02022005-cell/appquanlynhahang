@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(this);
+        databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
 
         etLoginEmail = findViewById(R.id.etLoginEmail);

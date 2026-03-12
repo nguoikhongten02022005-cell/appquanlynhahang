@@ -3,12 +3,14 @@ package com.example.quanlynhahang.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.quanlynhahang.R;
 import com.example.quanlynhahang.model.User;
 
 public class SessionManager {
 
+    private static final String TAG = "SessionManager";
     private static final String PREFS_AUTH = "auth_prefs";
 
     private static final String KEY_IS_LOGGED_IN = "is_logged_in";
@@ -27,7 +29,9 @@ public class SessionManager {
     }
 
     public void migrateLegacyAuthIfNeeded(DatabaseHelper databaseHelper) {
+        Log.d(TAG, "Kiểm tra migration dữ liệu đăng nhập cũ.");
         if (sharedPreferences.getBoolean(KEY_LEGACY_AUTH_MIGRATED, false)) {
+            Log.d(TAG, "Migration dữ liệu đăng nhập cũ đã chạy trước đó, bỏ qua.");
             return;
         }
 
@@ -37,6 +41,7 @@ public class SessionManager {
 
         long currentSessionUserId = sharedPreferences.getLong(KEY_CURRENT_USER_ID, -1);
         if (currentSessionUserId > 0 && databaseHelper.getUserById(currentSessionUserId) != null) {
+            Log.i(TAG, "Giữ nguyên phiên đăng nhập hiện tại vì người dùng đã tồn tại trong cơ sở dữ liệu.");
             sharedPreferences.edit()
                     .putBoolean(KEY_IS_LOGGED_IN, legacyLoggedIn)
                     .putBoolean(KEY_LEGACY_AUTH_MIGRATED, true)
@@ -47,6 +52,7 @@ public class SessionManager {
         long mappedUserId = -1;
 
         if (!TextUtils.isEmpty(legacyEmail) && !TextUtils.isEmpty(legacyPassword)) {
+            Log.i(TAG, "Tìm hoặc tạo người dùng tương ứng cho dữ liệu đăng nhập cũ. email=" + legacyEmail);
             User existingUser = databaseHelper.getUserByEmail(legacyEmail);
             if (existingUser != null) {
                 mappedUserId = existingUser.getId();
@@ -70,9 +76,11 @@ public class SessionManager {
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (legacyLoggedIn && mappedUserId > 0) {
+            Log.i(TAG, "Migration dữ liệu đăng nhập cũ thành công. userId=" + mappedUserId);
             editor.putBoolean(KEY_IS_LOGGED_IN, true);
             editor.putLong(KEY_CURRENT_USER_ID, mappedUserId);
         } else {
+            Log.i(TAG, "Không thể khôi phục phiên đăng nhập cũ, đánh dấu chưa đăng nhập.");
             editor.putBoolean(KEY_IS_LOGGED_IN, false);
             editor.remove(KEY_CURRENT_USER_ID);
         }

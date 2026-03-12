@@ -63,6 +63,7 @@ public class AccountFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         databaseHelper = new DatabaseHelper(requireContext());
         sessionManager = new SessionManager(requireContext());
+        databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
 
         return inflater.inflate(R.layout.fragment_account, container, false);

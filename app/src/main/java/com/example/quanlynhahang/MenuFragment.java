@@ -40,7 +40,6 @@ public class MenuFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
         databaseHelper = new DatabaseHelper(requireContext());
-        databaseHelper.seedDishesIfEmpty(requireContext());
 
         setupDishData();
         setupRecyclerView(view);

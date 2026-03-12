@@ -3,6 +3,7 @@ package com.example.quanlynhahang;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -20,6 +21,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private static final String TAG_HOME = "home";
     private static final String TAG_MENU = "menu";
     private static final String TAG_ACTIVITY_HUB = "activity_hub";
@@ -48,9 +50,13 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        Log.i(TAG, "Bắt đầu khởi tạo SessionManager và DatabaseHelper.");
         sessionManager = new SessionManager(this);
         databaseHelper = new DatabaseHelper(this);
+        Log.i(TAG, "Bắt đầu mở cơ sở dữ liệu và chạy migration phiên đăng nhập cũ.");
+        databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        Log.i(TAG, "Hoàn tất chuẩn bị cơ sở dữ liệu và migration phiên đăng nhập.");
 
         tvCartBadge = findViewById(R.id.tvCartBadge);
         tvGreeting = findViewById(R.id.tvGreeting);
@@ -220,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (!TextUtils.isEmpty(name)
                             && !TextUtils.equals(name, defaultName)
-                            && !TextUtils.equals(name, "Khách hàng Test")) {
+                            && !TextUtils.equals(name, getString(R.string.db_test_user_name))) {
                         displayName = name;
                     } else if (!TextUtils.isEmpty(email)) {
                         displayName = email;

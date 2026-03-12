@@ -69,7 +69,6 @@ public class RequestsFragment extends Fragment {
 
         databaseHelper = new DatabaseHelper(requireContext());
         sessionManager = new SessionManager(requireContext());
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
         embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
         initViews(view);

@@ -61,7 +61,6 @@ public class OrderFragment extends Fragment {
 
         databaseHelper = new DatabaseHelper(requireContext());
         sessionManager = new SessionManager(requireContext());
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
         embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
         rvOrders = view.findViewById(R.id.rvOrders);

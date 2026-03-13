@@ -27,11 +27,9 @@ import com.example.quanlynhahang.model.Reservation;
 import com.example.quanlynhahang.model.ServiceRequest;
 import com.google.android.material.button.MaterialButton;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -503,18 +501,6 @@ public class RequestsFragment extends Fragment {
         }
         if (tvServiceRequestEmptyState != null) {
             tvServiceRequestEmptyState.setVisibility(serviceRequests.isEmpty() ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    public long parseDateTime(String value) {
-        if (TextUtils.isEmpty(value)) {
-            return 0L;
-        }
-        try {
-            Date date = DINH_DANG_THOI_GIAN.parse(value);
-            return date == null ? 0L : date.getTime();
-        } catch (ParseException e) {
-            return 0L;
         }
     }
 }

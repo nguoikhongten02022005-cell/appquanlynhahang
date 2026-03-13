@@ -863,17 +863,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TEN_ANH_MAC_DINH,
                 true,
                 context.getString(R.string.category_main_course),
-                95
-        );
-        insertDish(
-                db,
-                context.getString(R.string.dish_salad_ca_hoi),
-                context.getString(R.string.price_129k),
-                context.getString(R.string.menu_desc_salad_ca_hoi),
-                TEN_ANH_MAC_DINH,
-                true,
-                context.getString(R.string.category_salad),
-                86
+                96
         );
         insertDish(
                 db,
@@ -883,7 +873,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TEN_ANH_MAC_DINH,
                 true,
                 context.getString(R.string.category_hotpot),
-                92
+                93
+        );
+        insertDish(
+                db,
+                context.getString(R.string.dish_salad_ca_hoi),
+                context.getString(R.string.price_129k),
+                context.getString(R.string.menu_desc_salad_ca_hoi),
+                TEN_ANH_MAC_DINH,
+                true,
+                context.getString(R.string.category_salad),
+                89
         );
         insertDish(
                 db,
@@ -893,7 +893,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TEN_ANH_DO_UONG,
                 true,
                 context.getString(R.string.category_drink),
-                84
+                82
         );
     }
 
@@ -913,22 +913,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void chuanHoaSeedMonAnSaiDanhMuc(SQLiteDatabase db) {
-        capNhatMonAnMacDinhNeuLech(
+        chuanHoaMonAnMacDinh(
+                db,
+                appContext.getString(R.string.dish_bo_luc_lac),
+                appContext.getString(R.string.category_main_course),
+                96,
+                true,
+                null
+        );
+        chuanHoaMonAnMacDinh(
+                db,
+                appContext.getString(R.string.dish_lau_thai),
+                appContext.getString(R.string.category_hotpot),
+                93,
+                true,
+                null
+        );
+        chuanHoaMonAnMacDinh(
                 db,
                 appContext.getString(R.string.dish_salad_ca_hoi),
-                appContext.getString(R.string.category_main_course),
                 appContext.getString(R.string.category_salad),
-                86,
-                true
+                89,
+                true,
+                appContext.getString(R.string.category_main_course)
+        );
+        chuanHoaMonAnMacDinh(
+                db,
+                appContext.getString(R.string.dish_tra_dao),
+                appContext.getString(R.string.category_drink),
+                82,
+                true,
+                null
         );
     }
 
-    private void capNhatMonAnMacDinhNeuLech(SQLiteDatabase db,
-                                            String tenMon,
-                                            String danhMucCuSai,
-                                            String danhMucDung,
-                                            int diemDeXuat,
-                                            boolean conPhucVu) {
+    private void chuanHoaMonAnMacDinh(SQLiteDatabase db,
+                                      String tenMon,
+                                      String danhMucDung,
+                                      int diemDeXuat,
+                                      boolean conPhucVu,
+                                      @Nullable String danhMucCuSai) {
         if (TextUtils.isEmpty(tenMon)) {
             return;
         }
@@ -938,11 +962,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_DISH_RECOMMEND_SCORE, diemDeXuat);
         values.put(COL_DISH_IS_AVAILABLE, conPhucVu ? 1 : 0);
 
+        if (!TextUtils.isEmpty(danhMucCuSai)) {
+            db.update(
+                    TABLE_DISH,
+                    values,
+                    COL_DISH_NAME + " = ? AND " + COL_DISH_CATEGORY + " = ?",
+                    new String[]{tenMon, danhMucCuSai}
+            );
+        }
+
         db.update(
                 TABLE_DISH,
                 values,
-                COL_DISH_NAME + " = ? AND " + COL_DISH_CATEGORY + " = ?",
-                new String[]{tenMon, danhMucCuSai}
+                COL_DISH_NAME + " = ?",
+                new String[]{tenMon}
         );
     }
 

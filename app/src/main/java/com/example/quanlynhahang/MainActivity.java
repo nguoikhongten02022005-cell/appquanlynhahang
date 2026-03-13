@@ -309,12 +309,11 @@ public class MainActivity extends AppCompatActivity {
     private void updateCartBadge() {
         int totalQuantity = CartManager.getInstance().getTotalQuantity();
         String badgeText = dinhDangSoLuongBadge(totalQuantity);
+        boolean hienBadge = badgeText != null;
 
         if (tvCartBadge != null) {
-            if (badgeText == null) {
-                tvCartBadge.setVisibility(View.GONE);
-            } else {
-                tvCartBadge.setVisibility(View.VISIBLE);
+            tvCartBadge.setVisibility(hienBadge ? View.VISIBLE : View.GONE);
+            if (hienBadge) {
                 tvCartBadge.setText(badgeText);
             }
         }
@@ -323,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (badgeText == null) {
+        if (!hienBadge) {
             bottomNavigationView.removeBadge(R.id.nav_cart);
             return;
         }
@@ -331,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
         BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.nav_cart);
         badgeDrawable.setVisible(true);
         badgeDrawable.setMaxCharacterCount(3);
-        badgeDrawable.setNumber(Math.min(totalQuantity, MAX_BADGE_COUNT));
+        badgeDrawable.setNumber(totalQuantity);
     }
 
     @Nullable
@@ -339,9 +338,8 @@ public class MainActivity extends AppCompatActivity {
         if (totalQuantity <= 0) {
             return null;
         }
-        if (totalQuantity > MAX_BADGE_COUNT) {
-            return getString(R.string.cart_badge_overflow);
-        }
-        return String.valueOf(totalQuantity);
+        return totalQuantity > MAX_BADGE_COUNT
+                ? getString(R.string.cart_badge_overflow)
+                : String.valueOf(totalQuantity);
     }
 }

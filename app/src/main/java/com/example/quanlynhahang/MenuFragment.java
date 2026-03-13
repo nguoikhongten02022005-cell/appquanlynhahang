@@ -109,7 +109,7 @@ public class MenuFragment extends Fragment {
                                          @Nullable String tuKhoaTimKiem) {
         tenDanhMucDangChon = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
         moTimKiemKhiMoMan = moTimKiem;
-        tuKhoaTimKiemBanDau = TextUtils.isEmpty(tuKhoaTimKiem) ? null : tuKhoaTimKiem;
+        tuKhoaTimKiemBanDau = tuKhoaTimKiem == null ? "" : tuKhoaTimKiem.trim();
         tuKhoaTimKiemDaApDung = null;
         if (isAdded()) {
             apDungTuKhoaTimKiemNeuCan();

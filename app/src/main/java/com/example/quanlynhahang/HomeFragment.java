@@ -126,13 +126,8 @@ public class HomeFragment extends Fragment {
         ));
         categories.add(new CategoryItem(
                 R.drawable.ic_calendar_24,
-                getString(R.string.category_dessert),
-                getString(R.string.category_dessert)
-        ));
-        categories.add(new CategoryItem(
-                R.drawable.ic_menu_24,
-                getString(R.string.category_combo),
-                getString(R.string.category_combo)
+                getString(R.string.category_salad),
+                getString(R.string.category_salad)
         ));
     }
 

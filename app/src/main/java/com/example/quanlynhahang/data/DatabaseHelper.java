@@ -35,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 7;
 
     private static final String TEN_ANH_MAC_DINH = "ic_restaurant_24";
+    private static final String TEN_ANH_DO_UONG = "ic_local_drink_24";
     private static final String BAN_MAC_DINH = "Bàn 01";
     private static final String EMAIL_TAI_KHOAN_TEST = "kh1";
     private static final String SDT_TAI_KHOAN_TEST = "0123456789";
@@ -204,7 +205,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void damBaoDuLieuMacDinh(SQLiteDatabase db) {
         seedDishesIfEmpty(appContext, db);
-        dongBoSeedMonAn(db);
+        chuanHoaSeedMonAnSaiDanhMuc(db);
         ensureTestUserExists(db);
     }
 
@@ -862,7 +863,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TEN_ANH_MAC_DINH,
                 true,
                 context.getString(R.string.category_main_course),
-                96
+                95
         );
         insertDish(
                 db,
@@ -871,8 +872,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.menu_desc_salad_ca_hoi),
                 TEN_ANH_MAC_DINH,
                 true,
-                context.getString(R.string.category_main_course),
-                88
+                context.getString(R.string.category_salad),
+                86
         );
         insertDish(
                 db,
@@ -882,17 +883,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TEN_ANH_MAC_DINH,
                 true,
                 context.getString(R.string.category_hotpot),
-                93
+                92
         );
         insertDish(
                 db,
                 context.getString(R.string.dish_tra_dao),
                 context.getString(R.string.price_45k),
                 context.getString(R.string.menu_desc_tra_dao),
-                "ic_local_drink_24",
+                TEN_ANH_DO_UONG,
                 true,
                 context.getString(R.string.category_drink),
-                82
+                84
         );
     }
 
@@ -911,56 +912,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void dongBoSeedMonAn(SQLiteDatabase db) {
-        capNhatMonAnMacDinh(
-                db,
-                appContext.getString(R.string.dish_bo_luc_lac),
-                appContext.getString(R.string.category_main_course),
-                96,
-                true
-        );
-        capNhatMonAnMacDinh(
+    private void chuanHoaSeedMonAnSaiDanhMuc(SQLiteDatabase db) {
+        capNhatMonAnMacDinhNeuLech(
                 db,
                 appContext.getString(R.string.dish_salad_ca_hoi),
                 appContext.getString(R.string.category_main_course),
-                88,
-                true
-        );
-        capNhatMonAnMacDinh(
-                db,
-                appContext.getString(R.string.dish_lau_thai),
-                appContext.getString(R.string.category_hotpot),
-                93,
-                true
-        );
-        capNhatMonAnMacDinh(
-                db,
-                appContext.getString(R.string.dish_tra_dao),
-                appContext.getString(R.string.category_drink),
-                82,
+                appContext.getString(R.string.category_salad),
+                86,
                 true
         );
     }
 
-    private void capNhatMonAnMacDinh(SQLiteDatabase db,
-                                     String tenMon,
-                                     String tenDanhMuc,
-                                     int diemDeXuat,
-                                     boolean conPhucVu) {
+    private void capNhatMonAnMacDinhNeuLech(SQLiteDatabase db,
+                                            String tenMon,
+                                            String danhMucCuSai,
+                                            String danhMucDung,
+                                            int diemDeXuat,
+                                            boolean conPhucVu) {
         if (TextUtils.isEmpty(tenMon)) {
             return;
         }
 
         ContentValues values = new ContentValues();
-        values.put(COL_DISH_CATEGORY, tenDanhMuc);
+        values.put(COL_DISH_CATEGORY, danhMucDung);
         values.put(COL_DISH_RECOMMEND_SCORE, diemDeXuat);
         values.put(COL_DISH_IS_AVAILABLE, conPhucVu ? 1 : 0);
 
         db.update(
                 TABLE_DISH,
                 values,
-                COL_DISH_NAME + " = ?",
-                new String[]{tenMon}
+                COL_DISH_NAME + " = ? AND " + COL_DISH_CATEGORY + " = ?",
+                new String[]{tenMon, danhMucCuSai}
         );
     }
 

@@ -39,23 +39,7 @@ public class ServiceRequest {
         return trangThai;
     }
 
-    public String getContent() {
-        return getNoiDung();
-    }
-
-    public String getSentTime() {
-        return getThoiGianGui();
-    }
-
-    public Status getStatus() {
-        return getTrangThai();
-    }
-
     public void danhDauDaXong() {
         trangThai = Status.DONE;
-    }
-
-    public void markDone() {
-        danhDauDaXong();
     }
 }

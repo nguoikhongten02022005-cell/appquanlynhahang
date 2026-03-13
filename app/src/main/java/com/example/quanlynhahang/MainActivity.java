@@ -25,6 +25,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final int MAX_BADGE_COUNT = 99;
     private static final String TAG_HOME = "home";
     private static final String TAG_MENU = "menu";
     private static final String TAG_ACTIVITY_HUB = "activity_hub";
@@ -330,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
         BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.nav_cart);
         badgeDrawable.setVisible(true);
         badgeDrawable.setMaxCharacterCount(3);
-        badgeDrawable.setNumber(totalQuantity);
+        badgeDrawable.setNumber(Math.min(totalQuantity, MAX_BADGE_COUNT));
     }
 
     @Nullable
@@ -338,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
         if (totalQuantity <= 0) {
             return null;
         }
-        if (totalQuantity > 99) {
+        if (totalQuantity > MAX_BADGE_COUNT) {
             return getString(R.string.cart_badge_overflow);
         }
         return String.valueOf(totalQuantity);

@@ -103,7 +103,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean laSoDienThoaiHopLe(String phone) {
-        return phone.matches("0\\d{9,10}");
+        return !TextUtils.isEmpty(phone)
+                && phone.length() == 10
+                && phone.startsWith("0")
+                && TextUtils.isDigitsOnly(phone);
     }
 
     private String getTrimmedText(EditText editText) {

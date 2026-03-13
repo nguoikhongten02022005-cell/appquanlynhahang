@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
@@ -110,30 +111,23 @@ public class AccountFragment extends Fragment {
     private void setupActions(View view) {
         MaterialButton btnEditProfile = view.findViewById(R.id.btnEditProfile);
         MaterialButton btnSaveProfileChanges = view.findViewById(R.id.btnSaveProfileChanges);
+        MaterialButton btnCancelEditProfile = view.findViewById(R.id.btnCancelEditProfile);
         MaterialButton btnOpenChangePassword = view.findViewById(R.id.btnOpenChangePassword);
         MaterialButton btnSubmitChangePassword = view.findViewById(R.id.btnSubmitChangePassword);
+        MaterialButton btnCancelChangePassword = view.findViewById(R.id.btnCancelChangePassword);
         MaterialButton btnContactSupport = view.findViewById(R.id.btnContactSupport);
         MaterialButton btnLogout = view.findViewById(R.id.btnLogout);
 
         btnEditProfile.setOnClickListener(v -> showEditProfileForm());
         btnSaveProfileChanges.setOnClickListener(v -> saveProfileChanges());
+        btnCancelEditProfile.setOnClickListener(v -> hideEditProfileForm());
         btnOpenChangePassword.setOnClickListener(v -> showChangePasswordForm());
         btnSubmitChangePassword.setOnClickListener(v -> submitPasswordChange());
+        btnCancelChangePassword.setOnClickListener(v -> hideChangePasswordForm());
 
         btnContactSupport.setOnClickListener(v -> openSupportChannel());
 
-        btnLogout.setOnClickListener(v -> {
-            sessionManager.clearSession();
-            clearLoggedOutUi();
-            refreshHeaderState();
-            navigateToHomeTab();
-
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.account_logout_success),
-                    Toast.LENGTH_SHORT
-            ).show();
-        });
+        btnLogout.setOnClickListener(v -> showLogoutConfirmation());
     }
 
     private void showEditProfileForm() {
@@ -143,10 +137,15 @@ public class AccountFragment extends Fragment {
         }
 
         layoutEditProfile.setVisibility(View.VISIBLE);
-        layoutChangePassword.setVisibility(View.GONE);
+        hideChangePasswordForm();
 
         etEditName.setText(currentUser.getName());
         etEditPhone.setText(currentUser.getPhone());
+    }
+
+    private void hideEditProfileForm() {
+        layoutEditProfile.setVisibility(View.GONE);
+        clearEditProfileForm();
     }
 
     private void saveProfileChanges() {
@@ -197,7 +196,7 @@ public class AccountFragment extends Fragment {
 
         currentUser = refreshedUser;
         bindUserData(currentUser);
-        layoutEditProfile.setVisibility(View.GONE);
+        hideEditProfileForm();
         refreshHeaderState();
 
         Toast.makeText(
@@ -213,7 +212,12 @@ public class AccountFragment extends Fragment {
             return;
         }
         layoutChangePassword.setVisibility(View.VISIBLE);
-        layoutEditProfile.setVisibility(View.GONE);
+        hideEditProfileForm();
+    }
+
+    private void hideChangePasswordForm() {
+        layoutChangePassword.setVisibility(View.GONE);
+        clearChangePasswordForm();
     }
 
     private void submitPasswordChange() {
@@ -284,8 +288,7 @@ public class AccountFragment extends Fragment {
             return;
         }
 
-        clearChangePasswordForm();
-        layoutChangePassword.setVisibility(View.GONE);
+        hideChangePasswordForm();
         refreshHeaderState();
 
         Toast.makeText(
@@ -308,6 +311,11 @@ public class AccountFragment extends Fragment {
                 getString(R.string.account_support_fallback, getString(R.string.account_support_phone_number_display)),
                 Toast.LENGTH_LONG
         ).show();
+    }
+
+    private void clearEditProfileForm() {
+        etEditName.setText("");
+        etEditPhone.setText("");
     }
 
     private void clearChangePasswordForm() {
@@ -370,6 +378,7 @@ public class AccountFragment extends Fragment {
         layoutAccountLoggedIn.setVisibility(View.GONE);
         layoutEditProfile.setVisibility(View.GONE);
         layoutChangePassword.setVisibility(View.GONE);
+        clearEditProfileForm();
         clearChangePasswordForm();
     }
 
@@ -394,6 +403,28 @@ public class AccountFragment extends Fragment {
         if (requireActivity() instanceof MainActivity) {
             ((MainActivity) requireActivity()).refreshHeaderState();
         }
+    }
+
+    private void showLogoutConfirmation() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.account_logout_confirm_title)
+                .setMessage(R.string.account_logout_confirm_message)
+                .setNegativeButton(R.string.account_cancel_action, null)
+                .setPositiveButton(R.string.account_logout, (dialog, which) -> performLogout())
+                .show();
+    }
+
+    private void performLogout() {
+        sessionManager.clearSession();
+        clearLoggedOutUi();
+        refreshHeaderState();
+        navigateToHomeTab();
+
+        Toast.makeText(
+                requireContext(),
+                getString(R.string.account_logout_success),
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     private boolean laSoDienThoaiHopLe(String phone) {

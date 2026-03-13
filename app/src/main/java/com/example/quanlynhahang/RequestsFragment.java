@@ -417,8 +417,14 @@ public class RequestsFragment extends Fragment {
     }
 
     private boolean isReservationTimeValid() {
-        Calendar now = Calendar.getInstance();
-        return selectedDateTime != null && selectedDateTime.after(now);
+        if (selectedDateTime == null) {
+            return false;
+        }
+        Calendar minimumTime = Calendar.getInstance();
+        minimumTime.add(Calendar.MINUTE, 15);
+        minimumTime.set(Calendar.SECOND, 0);
+        minimumTime.set(Calendar.MILLISECOND, 0);
+        return !selectedDateTime.before(minimumTime);
     }
 
     private boolean normalizeSelectedDateTime(boolean giuGioDaChon) {
@@ -478,10 +484,6 @@ public class RequestsFragment extends Fragment {
         }
 
         reservations.addAll(databaseHelper.getReservationsByUserId(userId));
-        reservations.sort((first, second) -> Long.compare(
-                parseDateTime(second.getTime()),
-                parseDateTime(first.getTime())
-        ));
     }
 
     private void loadServiceRequests() {
@@ -493,10 +495,6 @@ public class RequestsFragment extends Fragment {
         }
 
         serviceRequests.addAll(databaseHelper.getServiceRequestsByUserId(userId));
-        serviceRequests.sort((first, second) -> Long.compare(
-                parseDateTime(second.getThoiGianGui()),
-                parseDateTime(first.getThoiGianGui())
-        ));
     }
 
     private void refreshEmptyStates() {

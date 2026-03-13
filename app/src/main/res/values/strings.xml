@@ -10,16 +10,16 @@
 
     <string name="section_category">Danh mục món</string>
     <string name="section_recommended">Món đề xuất</string>
-    <string name="home_header_caption">Đặt món, đặt bàn và theo dõi yêu cầu ngay trên điện thoại</string>
+    <string name="home_header_caption">Đặt món, đặt bàn và gửi yêu cầu ngay trên điện thoại</string>
     <string name="home_hero_eyebrow">Tối nay</string>
-    <string name="home_hero_title">Chọn món ngon và giữ bàn trong một luồng gọn gàng</string>
-    <string name="home_hero_subtitle">Vào menu để tìm món theo danh mục, thêm nhanh vào giỏ hoặc chuyển sang đặt bàn.</string>
+    <string name="home_hero_title">Chọn món ngon và giữ bàn thật nhanh</string>
+    <string name="home_hero_subtitle">Mở menu để tìm món, thêm vào giỏ hoặc chuyển sang đặt bàn.</string>
     <string name="home_hero_cta">Mở menu</string>
     <string name="home_hero_meta">Nhận giữ chỗ đến 21:30</string>
-    <string name="home_quick_order_subtitle">Mở menu và tìm món nhanh</string>
-    <string name="home_quick_book_subtitle">Đặt bàn hoặc gửi yêu cầu phục vụ</string>
-    <string name="home_category_hint">Chọn danh mục để mở đúng nhóm món</string>
-    <string name="home_recommended_hint">Những món nổi bật đang phục vụ hôm nay</string>
+    <string name="home_quick_order_subtitle">Mở menu và tìm món</string>
+    <string name="home_quick_book_subtitle">Đặt bàn hoặc gọi phục vụ</string>
+    <string name="home_category_hint">Chọn danh mục để mở nhanh đúng nhóm món</string>
+    <string name="home_recommended_hint">Một vài món nổi bật đang phục vụ</string>
 
     <string name="bottom_nav_home">Trang chủ</string>
     <string name="bottom_nav_menu">Menu</string>
@@ -27,11 +27,10 @@
     <string name="bottom_nav_cart">Giỏ hàng</string>
     <string name="bottom_nav_account">Tài khoản</string>
     <string name="activity_hub_title">Lịch sử &amp; yêu cầu của bạn</string>
-    <string name="activity_hub_subtitle">Theo dõi đơn hàng, đặt bàn và yêu cầu phục vụ từ một điểm đến duy nhất.</string>
+    <string name="activity_hub_subtitle">Theo dõi đơn hàng, đặt bàn và yêu cầu phục vụ tại một nơi.</string>
     <string name="activity_hub_tab_orders">Đơn hàng</string>
     <string name="activity_hub_tab_requests">Đặt bàn &amp; yêu cầu</string>
 
-    <string name="cart_badge_count">0</string>
     <string name="cart_badge_overflow">99+</string>
     <string name="dish_status_available">Còn món</string>
     <string name="dish_status_unavailable">Hết món</string>
@@ -45,6 +44,9 @@
     <string name="menu_filter_hint_format">Đang xem danh mục: %1$s</string>
     <string name="menu_filter_hint_with_query_format">Danh mục: %1$s • Từ khóa: %2$s</string>
     <string name="menu_filter_query_hint_format">Đang tìm: %1$s</string>
+    <string name="menu_empty_title">Không tìm thấy món phù hợp</string>
+    <string name="menu_empty_with_filters">Thử đổi từ khóa hoặc chọn danh mục khác để xem thêm món.</string>
+    <string name="menu_empty_default">Hiện chưa có món nào để hiển thị.</string>
     <string name="cart_title">Giỏ hàng của bạn</string>
     <string name="cart_empty_message">Giỏ hàng của bạn đang trống</string>
     <string name="cart_total_label">Tổng tiền: %1$s</string>
@@ -65,6 +67,7 @@
     <string name="category_drink">Đồ uống</string>
     <string name="category_dessert">Tráng miệng</string>
     <string name="category_combo">Combo</string>
+    <string name="category_salad">Salad</string>
 
     <string name="dish_bo_luc_lac">Bò lúc lắc</string>
     <string name="dish_salad_ca_hoi">Salad cá hồi</string>
@@ -115,7 +118,7 @@
     <string name="reservation_note_hint">Ghi chú (nếu có)</string>
     <string name="reservation_submit">Gửi yêu cầu</string>
     <string name="reservation_cancel">Hủy</string>
-    <string name="reservation_validation_hint">Không nhận lịch trong quá khứ. Vui lòng chọn thời điểm sau hiện tại và tối đa 20 khách mỗi bàn.</string>
+    <string name="reservation_validation_hint">Vui lòng chọn thời điểm cách hiện tại ít nhất 15 phút và tối đa 20 khách mỗi bàn.</string>
 
     <string name="reservation_status_pending">Chờ duyệt</string>
     <string name="reservation_status_confirmed">Đã xác nhận</string>
@@ -128,9 +131,9 @@
     <string name="reservation_note_empty">Ghi chú: Không có</string>
     <string name="reservation_validation_guest_count">Vui lòng nhập số người hợp lệ</string>
     <string name="reservation_validation_guest_count_range">Số khách phải từ 1 đến %1$d người</string>
-    <string name="reservation_validation_future_time">Vui lòng chọn ngày giờ đặt bàn sau thời điểm hiện tại</string>
+    <string name="reservation_validation_future_time">Vui lòng chọn ngày giờ đặt bàn cách hiện tại ít nhất 15 phút</string>
     <string name="reservation_validation_area_required">Vui lòng chọn khu vực ngồi mong muốn</string>
-    <string name="reservation_time_normalized_to_future">Giờ bạn chọn đã qua, hệ thống đã chuyển sang thời điểm hợp lệ gần nhất</string>
+    <string name="reservation_time_normalized_to_future">Thời điểm đã chọn quá sát hiện tại, hệ thống đã chuyển sang mốc hợp lệ gần nhất</string>
     <string name="reservation_login_required">Vui lòng đăng nhập trước khi gửi yêu cầu đặt bàn</string>
     <string name="reservation_submit_success">Đã gửi yêu cầu đặt bàn</string>
     <string name="reservation_cancel_success">Đã hủy yêu cầu đặt bàn</string>
@@ -155,6 +158,9 @@
     <string name="account_change_password">Đổi mật khẩu</string>
     <string name="account_contact_support">Gọi hỗ trợ</string>
     <string name="account_logout">Đăng xuất</string>
+    <string name="account_cancel_action">Hủy</string>
+    <string name="account_logout_confirm_title">Đăng xuất?</string>
+    <string name="account_logout_confirm_message">Bạn có chắc muốn đăng xuất khỏi tài khoản hiện tại không?</string>
 
     <string name="account_edit_profile_title">Chỉnh sửa hồ sơ</string>
     <string name="account_name_hint">Họ và tên</string>
@@ -179,9 +185,7 @@
     <string name="account_support_fallback">Vui lòng gọi %1$s để được hỗ trợ.</string>
 
     <string name="account_default_name">Nguyễn Minh Anh</string>
-    <string name="account_default_email">minhanh@example.com</string>
     <string name="account_default_phone">0901234567</string>
-    <string name="account_default_password">123456</string>
 
     <string name="login_title">Đăng nhập</string>
     <string name="login_email_hint">Email</string>

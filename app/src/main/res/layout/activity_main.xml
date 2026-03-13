@@ -132,7 +132,7 @@
                 android:minWidth="@dimen/cart_badge_size"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
-                android:text="@string/cart_badge_count"
+                android:text=""
                 android:textColor="@color/on_error"
                 android:textSize="@dimen/cart_badge_text_size"
                 android:textStyle="bold"

@@ -73,4 +73,38 @@
         app:layout_constraintTop_toBottomOf="@id/tvMenuFilterHint"
         tools:listitem="@layout/item_menu_full" />
 
+    <LinearLayout
+        android:id="@+id/layoutMenuEmptyState"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMenuFilterHint"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/tvMenuEmptyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_empty_title"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMenuEmptyMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:gravity="center"
+            android:text="@string/menu_empty_with_filters"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
+            tools:text="Thử đổi từ khóa hoặc chọn danh mục khác để xem thêm món." />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

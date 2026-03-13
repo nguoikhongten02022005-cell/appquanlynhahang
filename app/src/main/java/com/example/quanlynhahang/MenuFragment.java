@@ -43,6 +43,8 @@ public class MenuFragment extends Fragment {
     private MenuAdapter menuAdapter;
     private EditText etMenuSearch;
     private TextView tvMenuFilterHint;
+    private View layoutMenuEmptyState;
+    private TextView tvMenuEmptyMessage;
 
     private String tenDanhMucDangChon;
     private boolean moTimKiemKhiMoMan;
@@ -152,6 +154,8 @@ public class MenuFragment extends Fragment {
 
         rvMenu.setAdapter(menuAdapter);
         tvMenuFilterHint = view.findViewById(R.id.tvMenuFilterHint);
+        layoutMenuEmptyState = view.findViewById(R.id.layoutMenuEmptyState);
+        tvMenuEmptyMessage = view.findViewById(R.id.tvMenuEmptyMessage);
     }
 
     private void setupSearch(View view) {
@@ -204,21 +208,22 @@ public class MenuFragment extends Fragment {
             RecommendedDishItem dish = allDishes.get(i);
             String description = allDescriptions.get(i);
 
-            String tenMonLower = dish.getTenMon().toLowerCase(Locale.ROOT);
-            String descriptionLower = description.toLowerCase(Locale.ROOT);
-            String danhMucLower = dish.getTenDanhMuc().toLowerCase(Locale.ROOT);
+            String tenMonLower = giaTriLowerAnToan(dish == null ? null : dish.getTenMon());
+            String descriptionLower = giaTriLowerAnToan(description);
+            String danhMucLower = giaTriLowerAnToan(dish == null ? null : dish.getTenDanhMuc());
 
             if (TextUtils.isEmpty(tuKhoa)
                     || tenMonLower.contains(tuKhoa)
                     || descriptionLower.contains(tuKhoa)
                     || danhMucLower.contains(tuKhoa)) {
                 filteredDishes.add(dish);
-                filteredDescriptions.add(description);
+                filteredDescriptions.add(description == null ? "" : description);
             }
         }
 
         menuAdapter.updateData(filteredDishes, filteredDescriptions);
         capNhatHintBoLoc();
+        capNhatEmptyState();
     }
 
     private void capNhatHintBoLoc() {
@@ -245,6 +250,24 @@ public class MenuFragment extends Fragment {
             return;
         }
         tvMenuFilterHint.setText(getString(R.string.menu_filter_query_hint_format, tuKhoa));
+    }
+
+    private void capNhatEmptyState() {
+        if (layoutMenuEmptyState == null || tvMenuEmptyMessage == null) {
+            return;
+        }
+
+        boolean coKetQua = !filteredDishes.isEmpty();
+        layoutMenuEmptyState.setVisibility(coKetQua ? View.GONE : View.VISIBLE);
+
+        boolean coBoLoc = !TextUtils.isEmpty(tenDanhMucDangChon) || !TextUtils.isEmpty(layTuKhoaHienTai());
+        tvMenuEmptyMessage.setText(coBoLoc
+                ? R.string.menu_empty_with_filters
+                : R.string.menu_empty_default);
+    }
+
+    private String giaTriLowerAnToan(@Nullable String value) {
+        return value == null ? "" : value.toLowerCase(Locale.ROOT);
     }
 
     private void apDungTuKhoaTimKiemNeuCan() {

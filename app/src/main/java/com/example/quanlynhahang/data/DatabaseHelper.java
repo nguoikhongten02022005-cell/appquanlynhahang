@@ -19,6 +19,7 @@ import com.example.quanlynhahang.model.RecommendedDishItem;
 import com.example.quanlynhahang.model.Reservation;
 import com.example.quanlynhahang.model.ServiceRequest;
 import com.example.quanlynhahang.model.User;
+import com.example.quanlynhahang.model.UserRole;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,13 +33,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
 
     private static final String DATABASE_NAME = "restaurant.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     private static final String TEN_ANH_MAC_DINH = "ic_restaurant_24";
     private static final String TEN_ANH_DO_UONG = "ic_local_drink_24";
     private static final String BAN_MAC_DINH = "Bàn 01";
-    private static final String EMAIL_TAI_KHOAN_TEST = "kh1";
-    private static final String SDT_TAI_KHOAN_TEST = "0123456789";
+    private static final String EMAIL_TAI_KHOAN_TEST_KHACH_HANG = "kh1";
+    private static final String SDT_TAI_KHOAN_TEST_KHACH_HANG = "0123456789";
+    private static final String EMAIL_TAI_KHOAN_TEST_NHAN_VIEN = "nv1";
+    private static final String SDT_TAI_KHOAN_TEST_NHAN_VIEN = "0123456790";
+    private static final String EMAIL_TAI_KHOAN_TEST_ADMIN = "admin1";
+    private static final String SDT_TAI_KHOAN_TEST_ADMIN = "0123456791";
     private static final String MAT_KHAU_TAI_KHOAN_TEST = "1";
     private static final int SO_KHACH_DAT_BAN_TOI_DA = 20;
 
@@ -54,6 +59,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL_USER_EMAIL = "email";
     private static final String COL_USER_PHONE = "phone";
     private static final String COL_USER_PASSWORD = "password";
+    private static final String COL_USER_ROLE = "role";
+    private static final String COL_USER_IS_ACTIVE = "is_active";
 
     private static final String COL_DISH_ID = "id";
     private static final String COL_DISH_NAME = "name";
@@ -162,6 +169,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoCotTonTai(db, TABLE_USER, COL_USER_EMAIL, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_USER, COL_USER_PHONE, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_USER, COL_USER_PASSWORD, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_USER, COL_USER_ROLE, "TEXT NOT NULL DEFAULT 'KHACH_HANG'");
+        damBaoCotTonTai(db, TABLE_USER, COL_USER_IS_ACTIVE, "INTEGER NOT NULL DEFAULT 1");
+        chuanHoaDuLieuNguoiDung(db);
 
         damBaoCotTonTai(db, TABLE_DISH, COL_DISH_NAME, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_DISH, COL_DISH_PRICE, "TEXT NOT NULL DEFAULT ''");
@@ -275,8 +285,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_USER_NAME + " TEXT NOT NULL, "
                 + COL_USER_EMAIL + " TEXT NOT NULL UNIQUE COLLATE NOCASE, "
                 + COL_USER_PHONE + " TEXT NOT NULL, "
-                + COL_USER_PASSWORD + " TEXT NOT NULL"
+                + COL_USER_PASSWORD + " TEXT NOT NULL, "
+                + COL_USER_ROLE + " TEXT NOT NULL DEFAULT 'KHACH_HANG', "
+                + COL_USER_IS_ACTIVE + " INTEGER NOT NULL DEFAULT 1"
                 + ")";
+    }
+
+    private void chuanHoaDuLieuNguoiDung(SQLiteDatabase db) {
+        ContentValues valuesVaiTro = new ContentValues();
+        valuesVaiTro.put(COL_USER_ROLE, UserRole.KHACH_HANG.name());
+        db.update(
+                TABLE_USER,
+                valuesVaiTro,
+                COL_USER_ROLE + " IS NULL OR TRIM(" + COL_USER_ROLE + ") = '' OR UPPER(TRIM(" + COL_USER_ROLE + ")) NOT IN (?, ?, ?)",
+                new String[]{
+                        UserRole.KHACH_HANG.name(),
+                        UserRole.NHAN_VIEN.name(),
+                        UserRole.ADMIN.name()
+                }
+        );
+
+        ContentValues valuesTrangThai = new ContentValues();
+        valuesTrangThai.put(COL_USER_IS_ACTIVE, 1);
+        db.update(
+                TABLE_USER,
+                valuesTrangThai,
+                COL_USER_IS_ACTIVE + " IS NULL",
+                null
+        );
     }
 
     private String taoBangMonAn() {
@@ -338,6 +374,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public long insertUser(String name, String email, String phone, String password) {
+        return insertUser(name, email, phone, password, UserRole.KHACH_HANG, true);
+    }
+
+    public long insertUser(String name, String email, String phone, String password, UserRole role, boolean isActive) {
         if (TextUtils.isEmpty(name)
                 || TextUtils.isEmpty(email)
                 || TextUtils.isEmpty(phone)
@@ -346,11 +386,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         SQLiteDatabase db = getWritableDatabase();
+        return insertUser(db, name, email, phone, password, role, isActive);
+    }
+
+    private long insertUser(SQLiteDatabase db, String name, String email, String phone, String password, UserRole role, boolean isActive) {
         ContentValues values = new ContentValues();
         values.put(COL_USER_NAME, name);
         values.put(COL_USER_EMAIL, email);
         values.put(COL_USER_PHONE, phone);
         values.put(COL_USER_PASSWORD, password);
+        values.put(COL_USER_ROLE, role != null ? role.name() : UserRole.KHACH_HANG.name());
+        values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
 
         try {
             return db.insertOrThrow(TABLE_USER, null, values);
@@ -370,7 +416,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             cursor = db.query(
                     TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE},
+                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
                     COL_USER_EMAIL + " = ?",
                     new String[]{email},
                     null,
@@ -397,7 +443,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             cursor = db.query(
                     TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE},
+                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
                     COL_USER_ID + " = ?",
                     new String[]{String.valueOf(userId)},
                     null,
@@ -424,8 +470,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             cursor = db.query(
                     TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE},
-                    "(" + COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?) AND " + COL_USER_PASSWORD + " = ?",
+                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
+                    "(" + COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?) AND " + COL_USER_PASSWORD + " = ? AND " + COL_USER_IS_ACTIVE + " = 1",
                     new String[]{usernameOrEmail, usernameOrEmail, password},
                     null,
                     null,
@@ -999,29 +1045,70 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void ensureTestUserExists(SQLiteDatabase db) {
+        ensureSeedUser(
+                db,
+                appContext.getString(R.string.db_test_customer_name),
+                EMAIL_TAI_KHOAN_TEST_KHACH_HANG,
+                SDT_TAI_KHOAN_TEST_KHACH_HANG,
+                MAT_KHAU_TAI_KHOAN_TEST,
+                UserRole.KHACH_HANG,
+                true
+        );
+        ensureSeedUser(
+                db,
+                appContext.getString(R.string.db_test_employee_name),
+                EMAIL_TAI_KHOAN_TEST_NHAN_VIEN,
+                SDT_TAI_KHOAN_TEST_NHAN_VIEN,
+                MAT_KHAU_TAI_KHOAN_TEST,
+                UserRole.NHAN_VIEN,
+                true
+        );
+        ensureSeedUser(
+                db,
+                appContext.getString(R.string.db_test_admin_name),
+                EMAIL_TAI_KHOAN_TEST_ADMIN,
+                SDT_TAI_KHOAN_TEST_ADMIN,
+                MAT_KHAU_TAI_KHOAN_TEST,
+                UserRole.ADMIN,
+                true
+        );
+    }
+
+    private void ensureSeedUser(SQLiteDatabase db,
+                                String name,
+                                String email,
+                                String phone,
+                                String password,
+                                UserRole role,
+                                boolean isActive) {
         Cursor cursor = null;
         try {
             cursor = db.query(
                     TABLE_USER,
-                    new String[]{COL_USER_ID},
+                    new String[]{COL_USER_ID, COL_USER_ROLE, COL_USER_IS_ACTIVE},
                     COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?",
-                    new String[]{EMAIL_TAI_KHOAN_TEST, SDT_TAI_KHOAN_TEST},
+                    new String[]{email, phone},
                     null,
                     null,
                     null,
                     "1"
             );
             if (cursor.moveToFirst()) {
+                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_USER_ID));
+                ContentValues values = new ContentValues();
+                values.put(COL_USER_ROLE, role.name());
+                values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
+                db.update(
+                        TABLE_USER,
+                        values,
+                        COL_USER_ID + " = ?",
+                        new String[]{String.valueOf(userId)}
+                );
                 return;
             }
 
-            Log.i(TAG, "Tạo tài khoản thử nghiệm mặc định.");
-            ContentValues values = new ContentValues();
-            values.put(COL_USER_NAME, appContext.getString(R.string.db_test_user_name));
-            values.put(COL_USER_EMAIL, EMAIL_TAI_KHOAN_TEST);
-            values.put(COL_USER_PHONE, SDT_TAI_KHOAN_TEST);
-            values.put(COL_USER_PASSWORD, MAT_KHAU_TAI_KHOAN_TEST);
-            db.insert(TABLE_USER, null, values);
+            Log.i(TAG, "Tạo tài khoản thử nghiệm: " + email);
+            insertUser(db, name, email, phone, password, role, isActive);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -1035,7 +1122,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_NAME));
         String email = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_EMAIL));
         String phone = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PHONE));
-        return new User(id, name, email, phone);
+        String roleValue = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_ROLE));
+        boolean isActive = cursor.getInt(cursor.getColumnIndexOrThrow(COL_USER_IS_ACTIVE)) == 1;
+        return new User(id, name, email, phone, UserRole.tuChuoi(roleValue), isActive);
     }
 
     private List<Order.OrderDish> getOrderItemsByOrderId(long orderId) {

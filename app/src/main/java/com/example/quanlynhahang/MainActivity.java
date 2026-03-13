@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.User;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -66,6 +67,13 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "Bắt đầu mở cơ sở dữ liệu và chạy migration phiên đăng nhập cũ.");
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        sessionManager.damBaoVaiTroSession(databaseHelper);
+        if (sessionManager.isLoggedIn() && !sessionManager.laKhachHang()) {
+            startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.getVaiTroHienTai())
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            finish();
+            return;
+        }
         Log.i(TAG, "Hoàn tất chuẩn bị cơ sở dữ liệu và migration phiên đăng nhập.");
 
         tvCartBadge = findViewById(R.id.tvCartBadge);
@@ -294,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (!TextUtils.isEmpty(name)
                             && !TextUtils.equals(name, defaultName)
-                            && !TextUtils.equals(name, getString(R.string.db_test_user_name))) {
+                            && !TextUtils.equals(name, getString(R.string.db_test_customer_name))) {
                         displayName = name;
                     } else if (!TextUtils.isEmpty(email)) {
                         displayName = email;

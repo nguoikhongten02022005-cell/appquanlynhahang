@@ -18,8 +18,16 @@
 
         <activity android:name=".CartActivity" />
 
+        <activity android:name=".EmployeeActivity" />
+
+        <activity android:name=".AdminActivity" />
+
         <activity
             android:name=".MainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".LauncherActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

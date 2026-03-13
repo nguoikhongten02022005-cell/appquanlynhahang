@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.User;
 import com.google.android.material.button.MaterialButton;
 
@@ -58,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        sessionManager.saveLoginSession(authenticatedUser.getId());
+        sessionManager.saveLoginSession(authenticatedUser.getId(), authenticatedUser.getRole());
 
         Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
 
@@ -68,7 +69,9 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        startActivity(new Intent(this, MainActivity.class));
+        Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, authenticatedUser.getRole());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
         finish();
     }
 

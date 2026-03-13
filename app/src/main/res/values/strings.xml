@@ -214,5 +214,25 @@
     <string name="db_operation_failed">Không thể lưu dữ liệu, vui lòng thử lại</string>
     <string name="session_invalid">Phiên đăng nhập không hợp lệ, vui lòng đăng nhập lại</string>
     <string name="account_logout_success">Đăng xuất thành công</string>
-    <string name="db_test_user_name">Khách hàng thử nghiệm</string>
+    <string name="db_test_customer_name">Khách hàng thử nghiệm</string>
+    <string name="db_test_employee_name">Nhân viên thử nghiệm</string>
+    <string name="db_test_admin_name">Quản trị viên thử nghiệm</string>
+    <string name="employee_title">Khu vực nhân viên</string>
+    <string name="employee_subtitle">Skeleton riêng cho nhân viên để xử lý yêu cầu phục vụ, đặt bàn và đơn hàng.</string>
+    <string name="employee_section_requests">Xử lý yêu cầu phục vụ</string>
+    <string name="employee_section_requests_desc">Theo dõi và phản hồi các yêu cầu gọi nhân viên, thêm nước và thanh toán.</string>
+    <string name="employee_section_reservations">Xem đặt bàn</string>
+    <string name="employee_section_reservations_desc">Kiểm tra các lượt đặt bàn mới, trạng thái duyệt và thông tin khu vực ngồi.</string>
+    <string name="employee_section_orders">Xem đơn hàng</string>
+    <string name="employee_section_orders_desc">Quan sát danh sách đơn đang chờ xác nhận hoặc đang phục vụ.</string>
+    <string name="admin_title">Khu vực quản trị</string>
+    <string name="admin_subtitle">Skeleton riêng cho admin để quản lý món ăn, tài khoản và tổng quan hệ thống.</string>
+    <string name="admin_section_dishes">Quản lý món ăn</string>
+    <string name="admin_section_dishes_desc">Điểm vào cho quản lý menu, trạng thái phục vụ và danh mục món.</string>
+    <string name="admin_section_accounts">Quản lý tài khoản</string>
+    <string name="admin_section_accounts_desc">Điểm vào cho quản trị người dùng, vai trò và trạng thái hoạt động.</string>
+    <string name="admin_section_overview">Tổng quan / thống kê</string>
+    <string name="admin_section_overview_desc">Không gian dành cho dashboard vận hành và số liệu nhà hàng.</string>
+    <string name="role_guard_employee_denied">Tài khoản hiện tại không có quyền vào khu vực nhân viên</string>
+    <string name="role_guard_admin_denied">Tài khoản hiện tại không có quyền vào khu vực quản trị</string>
 </resources>

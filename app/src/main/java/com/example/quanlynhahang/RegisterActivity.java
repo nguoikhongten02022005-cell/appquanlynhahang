@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.model.UserRole;
 import com.google.android.material.button.MaterialButton;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -85,7 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        long newUserId = databaseHelper.insertUser(fullName, email, phone, password);
+        long newUserId = databaseHelper.insertUser(fullName, email, phone, password, UserRole.KHACH_HANG, true);
         if (newUserId <= 0) {
             Toast.makeText(this, getString(R.string.register_email_exists), Toast.LENGTH_SHORT).show();
             return;

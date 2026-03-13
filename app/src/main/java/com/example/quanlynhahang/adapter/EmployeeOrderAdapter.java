@@ -5,11 +5,13 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
@@ -63,9 +65,13 @@ public class EmployeeOrderAdapter extends RecyclerView.Adapter<EmployeeOrderAdap
         private final TextView tvOrderTime;
         private final TextView tvOrderTotal;
         private final TextView tvOrderStatus;
+        private final TextView tvToggleDetails;
+        private final LinearLayout layoutOrderDetails;
+        private final TextView tvEmptyDishes;
         private final TextView btnConfirm;
         private final TextView btnComplete;
         private final TextView btnCancel;
+        private final OrderDishAdapter orderDishAdapter;
 
         EmployeeOrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -73,9 +79,18 @@ public class EmployeeOrderAdapter extends RecyclerView.Adapter<EmployeeOrderAdap
             tvOrderTime = itemView.findViewById(R.id.tvEmployeeOrderTime);
             tvOrderTotal = itemView.findViewById(R.id.tvEmployeeOrderTotal);
             tvOrderStatus = itemView.findViewById(R.id.tvEmployeeOrderStatus);
+            tvToggleDetails = itemView.findViewById(R.id.tvEmployeeOrderToggleDetails);
+            layoutOrderDetails = itemView.findViewById(R.id.layoutEmployeeOrderDetails);
+            tvEmptyDishes = itemView.findViewById(R.id.tvEmployeeOrderEmptyDishes);
             btnConfirm = itemView.findViewById(R.id.btnEmployeeOrderConfirm);
             btnComplete = itemView.findViewById(R.id.btnEmployeeOrderComplete);
             btnCancel = itemView.findViewById(R.id.btnEmployeeOrderCancel);
+
+            RecyclerView rvOrderDishes = itemView.findViewById(R.id.rvEmployeeOrderDishes);
+            rvOrderDishes.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
+            rvOrderDishes.setNestedScrollingEnabled(false);
+            orderDishAdapter = new OrderDishAdapter(new ArrayList<>());
+            rvOrderDishes.setAdapter(orderDishAdapter);
         }
 
         void bind(Order order) {
@@ -86,9 +101,25 @@ public class EmployeeOrderAdapter extends RecyclerView.Adapter<EmployeeOrderAdap
             tvOrderStatus.setText(getStatusText(order.getStatus()));
             ViewCompat.setBackgroundTintList(tvOrderStatus, ColorStateList.valueOf(ContextCompat.getColor(context, getStatusColor(order.getStatus()))));
 
+            orderDishAdapter.updateData(order.getDishes());
+            boolean hasDishes = !order.getDishes().isEmpty();
+            tvEmptyDishes.setVisibility(hasDishes ? View.GONE : View.VISIBLE);
+            layoutOrderDetails.setVisibility(order.isExpanded() ? View.VISIBLE : View.GONE);
+            tvToggleDetails.setText(order.isExpanded() ? R.string.employee_order_toggle_hide : R.string.employee_order_toggle_view);
+            tvToggleDetails.setOnClickListener(v -> toggleDetails(order));
+
             bindAction(btnConfirm, order.getStatus() == Order.Status.PENDING_CONFIRMATION, v -> actionListener.onConfirm(order));
             bindAction(btnComplete, order.getStatus() == Order.Status.CONFIRMED, v -> actionListener.onComplete(order));
             bindAction(btnCancel, order.getStatus() == Order.Status.PENDING_CONFIRMATION || order.getStatus() == Order.Status.CONFIRMED, v -> actionListener.onCancel(order));
+        }
+
+        private void toggleDetails(Order order) {
+            int adapterPosition = getBindingAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                return;
+            }
+            order.setExpanded(!order.isExpanded());
+            notifyItemChanged(adapterPosition);
         }
 
         private void bindAction(TextView view, boolean visible, View.OnClickListener onClickListener) {

@@ -86,9 +86,14 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        if (databaseHelper.getUserByPhone(phone) != null) {
+            Toast.makeText(this, getString(R.string.register_phone_exists), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         long newUserId = databaseHelper.insertUser(fullName, email, phone, password, UserRole.KHACH_HANG, true);
         if (newUserId <= 0) {
-            Toast.makeText(this, getString(R.string.register_email_exists), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.register_failed_generic), Toast.LENGTH_SHORT).show();
             return;
         }
 

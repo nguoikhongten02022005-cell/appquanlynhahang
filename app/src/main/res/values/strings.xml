@@ -173,6 +173,7 @@
 
     <string name="account_profile_validation_required">Vui lòng nhập đầy đủ tên và số điện thoại</string>
     <string name="account_profile_update_success">Đã cập nhật hồ sơ</string>
+    <string name="account_phone_in_use">Số điện thoại này đã được sử dụng</string>
     <string name="account_password_validation_required">Vui lòng nhập đầy đủ thông tin mật khẩu</string>
     <string name="account_password_validation_old_wrong">Mật khẩu cũ không đúng</string>
     <string name="account_password_validation_same_as_old">Mật khẩu mới không được trùng mật khẩu hiện tại</string>
@@ -207,6 +208,8 @@
     <string name="register_password_mismatch">Mật khẩu xác nhận không khớp</string>
     <string name="register_success">Đăng ký thành công, vui lòng đăng nhập</string>
     <string name="register_email_exists">Email đã tồn tại, vui lòng dùng email khác</string>
+    <string name="register_phone_exists">Số điện thoại đã tồn tại, vui lòng dùng số khác</string>
+    <string name="register_failed_generic">Không thể tạo tài khoản, vui lòng kiểm tra lại email hoặc số điện thoại</string>
     <string name="validation_email_invalid">Email chưa đúng định dạng</string>
     <string name="validation_phone_invalid">Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0</string>
     <string name="validation_password_too_short">Mật khẩu cần ít nhất %1$d ký tự</string>
@@ -246,6 +249,10 @@
     <string name="employee_empty_service_requests">Không có yêu cầu phục vụ nào trong danh sách này.</string>
     <string name="employee_order_customer_format">Khách hàng #%1$d</string>
     <string name="employee_order_actions">Xử lý đơn hàng</string>
+    <string name="employee_order_toggle_view">Xem chi tiết món</string>
+    <string name="employee_order_toggle_hide">Ẩn chi tiết món</string>
+    <string name="employee_order_dishes_title">Món trong đơn</string>
+    <string name="employee_order_empty_dishes">Đơn này chưa có dữ liệu món.</string>
     <string name="employee_reservation_actions">Xử lý đặt bàn</string>
     <string name="employee_service_request_actions">Xử lý yêu cầu</string>
     <string name="employee_mark_confirmed">Xác nhận</string>
@@ -310,7 +317,7 @@
     <string name="admin_delete_confirm_message">Món ăn này sẽ bị xoá khỏi danh sách quản lý.</string>
     <string name="admin_change_role_title">Đổi vai trò tài khoản</string>
     <string name="admin_change_role_message">Chọn vai trò mới cho tài khoản này.</string>
-    <string name="admin_dish_validation_required">Vui lòng nhập đầy đủ tên món, giá bán và mô tả.</string>
+    <string name="admin_dish_validation_required">Vui lòng nhập đầy đủ tên món, giá bán, danh mục và mô tả.</string>
     <string name="admin_dish_validation_score">Điểm đề xuất phải là số nguyên không âm.</string>
     <string name="admin_dish_create_success">Đã thêm món ăn mới</string>
     <string name="admin_dish_update_success">Đã cập nhật món ăn</string>

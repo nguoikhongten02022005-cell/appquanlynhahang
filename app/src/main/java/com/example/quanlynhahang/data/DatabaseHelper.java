@@ -23,6 +23,9 @@ import com.example.quanlynhahang.model.ServiceRequest;
 import com.example.quanlynhahang.model.User;
 import com.example.quanlynhahang.model.UserRole;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,6 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String EMAIL_TAI_KHOAN_TEST_ADMIN = "admin1";
     private static final String SDT_TAI_KHOAN_TEST_ADMIN = "0123456791";
     private static final String MAT_KHAU_TAI_KHOAN_TEST = "1";
+    private static final String PASSWORD_PREFIX_SHA256 = "sha256:";
     private static final int SO_KHACH_DAT_BAN_TOI_DA = 20;
 
     public static final String TABLE_USER = "users";
@@ -392,11 +396,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private long insertUser(SQLiteDatabase db, String name, String email, String phone, String password, UserRole role, boolean isActive) {
+        if (isPhoneInUse(phone, -1)) {
+            return -1;
+        }
+
         ContentValues values = new ContentValues();
         values.put(COL_USER_NAME, name);
         values.put(COL_USER_EMAIL, email);
         values.put(COL_USER_PHONE, phone);
-        values.put(COL_USER_PASSWORD, password);
+        values.put(COL_USER_PASSWORD, hashPassword(password));
         values.put(COL_USER_ROLE, role != null ? role.name() : UserRole.KHACH_HANG.name());
         values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
 
@@ -466,15 +474,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Nullable
-    public User checkLogin(String usernameOrEmail, String password) {
+    public User getUserByPhone(String phone) {
+        if (TextUtils.isEmpty(phone)) {
+            return null;
+        }
+
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
             cursor = db.query(
                     TABLE_USER,
                     new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
-                    "(" + COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?) AND " + COL_USER_PASSWORD + " = ? AND " + COL_USER_IS_ACTIVE + " = 1",
-                    new String[]{usernameOrEmail, usernameOrEmail, password},
+                    COL_USER_PHONE + " = ?",
+                    new String[]{phone},
                     null,
                     null,
                     null,
@@ -492,7 +504,82 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean isPhoneInUse(String phone, long excludeUserId) {
+        if (TextUtils.isEmpty(phone)) {
+            return false;
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            String selection = COL_USER_PHONE + " = ?";
+            List<String> selectionArgs = new ArrayList<>();
+            selectionArgs.add(phone);
+            if (excludeUserId > 0) {
+                selection += " AND " + COL_USER_ID + " != ?";
+                selectionArgs.add(String.valueOf(excludeUserId));
+            }
+
+            cursor = db.query(
+                    TABLE_USER,
+                    new String[]{COL_USER_ID},
+                    selection,
+                    selectionArgs.toArray(new String[0]),
+                    null,
+                    null,
+                    null,
+                    "1"
+            );
+            return cursor.moveToFirst();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    @Nullable
+    public User checkLogin(String usernameOrEmail, String password) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(
+                    TABLE_USER,
+                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE, COL_USER_PASSWORD},
+                    "(" + COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?) AND " + COL_USER_IS_ACTIVE + " = 1",
+                    new String[]{usernameOrEmail, usernameOrEmail},
+                    null,
+                    null,
+                    null,
+                    "1"
+            );
+
+            if (!cursor.moveToFirst()) {
+                return null;
+            }
+
+            String storedPassword = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PASSWORD));
+            if (!verifyPassword(password, storedPassword)) {
+                return null;
+            }
+
+            User user = mapUser(cursor);
+            if (user != null && !isHashedPassword(storedPassword)) {
+                migrateLegacyPasswordHash(user.getId(), password);
+            }
+            return user;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
     public boolean updateUserProfile(long userId, String name, String phone) {
+        if (isPhoneInUse(phone, userId)) {
+            return false;
+        }
+
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_USER_NAME, name);
@@ -510,7 +597,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean updateUserPassword(long userId, String newPassword) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_USER_PASSWORD, newPassword);
+        values.put(COL_USER_PASSWORD, hashPassword(newPassword));
 
         int rows = db.update(
                 TABLE_USER,
@@ -619,7 +706,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                  boolean isAvailable,
                                  @Nullable String category,
                                  int recommendScore) {
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description)) {
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)) {
             return -1;
         }
         SQLiteDatabase db = getWritableDatabase();
@@ -635,7 +722,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     boolean isAvailable,
                                     @Nullable String category,
                                     int recommendScore) {
-        if (dishId <= 0 || TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description)) {
+        if (dishId <= 0 || TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)) {
             return false;
         }
         SQLiteDatabase db = getWritableDatabase();
@@ -839,6 +926,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (orderId <= 0 || status == null) {
             return false;
         }
+
+        Order.Status currentStatus = getOrderStatusById(orderId);
+        if (currentStatus == null || !canTransitionOrderStatus(currentStatus, status)) {
+            return false;
+        }
+
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_ORDER_STATUS, status.name());
@@ -887,6 +980,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (reservationId <= 0 || status == null) {
             return false;
         }
+
+        Reservation.Status currentStatus = getReservationStatusById(reservationId);
+        if (currentStatus == null || !canTransitionReservationStatus(currentStatus, status)) {
+            return false;
+        }
+
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_RESERVATION_STATUS, status.name());
@@ -969,6 +1068,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (requestId <= 0 || status == null) {
             return false;
         }
+
+        ServiceRequest.Status currentStatus = getServiceRequestStatusById(requestId);
+        if (currentStatus == null || !canTransitionServiceRequestStatus(currentStatus, status)) {
+            return false;
+        }
+
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_SERVICE_REQUEST_STATUS, status.name());
@@ -995,6 +1100,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 countReservationsByStatus(Reservation.Status.PENDING_APPROVAL),
                 countServiceRequestsByStatus(ServiceRequest.Status.PROCESSING)
         );
+    }
+
+    @Nullable
+    private Order.Status getOrderStatusById(long orderId) {
+        return getEnumStatusById(TABLE_ORDER, COL_ORDER_ID, COL_ORDER_STATUS, orderId, Order.Status::valueOf);
+    }
+
+    @Nullable
+    private Reservation.Status getReservationStatusById(long reservationId) {
+        return getEnumStatusById(TABLE_RESERVATION, COL_RESERVATION_ID, COL_RESERVATION_STATUS, reservationId, Reservation.Status::valueOf);
+    }
+
+    @Nullable
+    private ServiceRequest.Status getServiceRequestStatusById(long requestId) {
+        return getEnumStatusById(TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_ID, COL_SERVICE_REQUEST_STATUS, requestId, ServiceRequest.Status::valueOf);
+    }
+
+    private boolean canTransitionOrderStatus(@Nullable Order.Status current, @Nullable Order.Status next) {
+        if (current == null || next == null || current == next) {
+            return false;
+        }
+        if (current == Order.Status.PENDING_CONFIRMATION) {
+            return next == Order.Status.CONFIRMED || next == Order.Status.CANCELED;
+        }
+        if (current == Order.Status.CONFIRMED) {
+            return next == Order.Status.COMPLETED || next == Order.Status.CANCELED;
+        }
+        return false;
+    }
+
+    private boolean canTransitionReservationStatus(@Nullable Reservation.Status current, @Nullable Reservation.Status next) {
+        if (current == null || next == null || current == next) {
+            return false;
+        }
+        if (current == Reservation.Status.PENDING_APPROVAL) {
+            return next == Reservation.Status.CONFIRMED || next == Reservation.Status.CANCELED;
+        }
+        if (current == Reservation.Status.CONFIRMED) {
+            return next == Reservation.Status.COMPLETED || next == Reservation.Status.CANCELED;
+        }
+        return false;
+    }
+
+    private boolean canTransitionServiceRequestStatus(@Nullable ServiceRequest.Status current, @Nullable ServiceRequest.Status next) {
+        return current == ServiceRequest.Status.PROCESSING && next == ServiceRequest.Status.DONE;
     }
 
     public EmployeeDashboardStats getEmployeeDashboardStats() {
@@ -1254,6 +1404,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    private boolean isHashedPassword(@Nullable String stored) {
+        return stored != null && stored.startsWith(PASSWORD_PREFIX_SHA256);
+    }
+
+    private String hashPassword(String raw) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = digest.digest((raw == null ? "" : raw).getBytes(StandardCharsets.UTF_8));
+            StringBuilder builder = new StringBuilder(PASSWORD_PREFIX_SHA256);
+            for (byte b : bytes) {
+                builder.append(String.format(Locale.US, "%02x", b));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("SHA-256 không khả dụng", ex);
+        }
+    }
+
+    private boolean verifyPassword(String input, @Nullable String stored) {
+        if (stored == null) {
+            return false;
+        }
+        if (isHashedPassword(stored)) {
+            return TextUtils.equals(hashPassword(input), stored);
+        }
+        return TextUtils.equals(input, stored);
+    }
+
+    private void migrateLegacyPasswordHash(long userId, String rawPassword) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_USER_PASSWORD, hashPassword(rawPassword));
+        db.update(TABLE_USER, values, COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+    }
+
     @Nullable
     private User mapUser(Cursor cursor) {
         long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_USER_ID));
@@ -1400,6 +1585,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    @Nullable
+    private <T> T getEnumStatusById(String table,
+                                    String idColumn,
+                                    String statusColumn,
+                                    long id,
+                                    EnumParser<T> parser) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(
+                    table,
+                    new String[]{statusColumn},
+                    idColumn + " = ?",
+                    new String[]{String.valueOf(id)},
+                    null,
+                    null,
+                    null,
+                    "1"
+            );
+            if (!cursor.moveToFirst()) {
+                return null;
+            }
+
+            String rawStatus = cursor.getString(cursor.getColumnIndexOrThrow(statusColumn));
+            return parser.parse(rawStatus);
+        } catch (IllegalArgumentException ex) {
+            Log.w(TAG, "getEnumStatusById: trạng thái không hợp lệ cho bảng " + table + ", id=" + id, ex);
+            return null;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
     private List<Order.OrderDish> getOrderItemsByOrderId(long orderId) {
         List<Order.OrderDish> dishes = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -1446,6 +1666,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return dishes;
+    }
+
+    private interface EnumParser<T> {
+        T parse(String rawValue) throws IllegalArgumentException;
     }
 
     private int resolveImageResId(String imageResName) {

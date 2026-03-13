@@ -50,6 +50,9 @@ public class AdminActivity extends AppCompatActivity {
     private TextView tvPendingOrdersCount;
     private TextView tvPendingReservationsCount;
     private TextView tvProcessingRequestsCount;
+    private TextView tvCustomerCount;
+    private TextView tvEmployeeCount;
+    private TextView tvAdminCount;
     private EditText etDishSearch;
     private Spinner spinnerRoleFilter;
     private TextView tvDishesEmpty;
@@ -102,6 +105,9 @@ public class AdminActivity extends AppCompatActivity {
         tvPendingOrdersCount = findViewById(R.id.tvAdminPendingOrdersCount);
         tvPendingReservationsCount = findViewById(R.id.tvAdminPendingReservationsCount);
         tvProcessingRequestsCount = findViewById(R.id.tvAdminProcessingRequestsCount);
+        tvCustomerCount = findViewById(R.id.tvAdminCustomerCount);
+        tvEmployeeCount = findViewById(R.id.tvAdminEmployeeCount);
+        tvAdminCount = findViewById(R.id.tvAdminAdminCount);
         etDishSearch = findViewById(R.id.etAdminDishSearch);
         spinnerRoleFilter = findViewById(R.id.spinnerAdminUserRoleFilter);
         tvDishesEmpty = findViewById(R.id.tvAdminDishesEmpty);
@@ -236,6 +242,9 @@ public class AdminActivity extends AppCompatActivity {
         tvPendingOrdersCount.setText(String.valueOf(stats.getPendingOrders()));
         tvPendingReservationsCount.setText(String.valueOf(stats.getPendingReservations()));
         tvProcessingRequestsCount.setText(String.valueOf(stats.getProcessingServiceRequests()));
+        tvCustomerCount.setText(String.valueOf(stats.getCustomerCount()));
+        tvEmployeeCount.setText(String.valueOf(stats.getEmployeeCount()));
+        tvAdminCount.setText(String.valueOf(stats.getAdminCount()));
     }
 
     private void loadDishes() {
@@ -314,7 +323,7 @@ public class AdminActivity extends AppCompatActivity {
             String description = etDescription.getText().toString().trim();
             String image = etImage.getText().toString().trim();
             String scoreRaw = etScore.getText().toString().trim();
-            if (name.isEmpty() || price.isEmpty() || description.isEmpty()) {
+            if (name.isEmpty() || price.isEmpty() || category.isEmpty() || description.isEmpty()) {
                 Toast.makeText(this, R.string.admin_dish_validation_required, Toast.LENGTH_SHORT).show();
                 return;
             }

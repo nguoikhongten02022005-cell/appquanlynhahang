@@ -175,6 +175,15 @@ public class AccountFragment extends Fragment {
             return;
         }
 
+        if (databaseHelper.isPhoneInUse(phone, currentUser.getId())) {
+            Toast.makeText(
+                    requireContext(),
+                    getString(R.string.account_phone_in_use),
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
         boolean isUpdated = databaseHelper.updateUserProfile(currentUser.getId(), name, phone);
         if (!isUpdated) {
             Toast.makeText(

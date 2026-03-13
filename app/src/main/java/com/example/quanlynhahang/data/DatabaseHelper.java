@@ -14,6 +14,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.model.AdminDashboardStats;
+import com.example.quanlynhahang.model.EmployeeDashboardStats;
 import com.example.quanlynhahang.model.Order;
 import com.example.quanlynhahang.model.RecommendedDishItem;
 import com.example.quanlynhahang.model.Reservation;
@@ -519,12 +521,154 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
+    public List<User> getAllUsers() {
+        return getUsersByRole(null);
+    }
+
+    public List<User> getUsersByRole(@Nullable UserRole role) {
+        List<User> users = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            String selection = null;
+            String[] selectionArgs = null;
+            if (role != null) {
+                selection = COL_USER_ROLE + " = ?";
+                selectionArgs = new String[]{role.name()};
+            }
+
+            cursor = db.query(
+                    TABLE_USER,
+                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    COL_USER_ROLE + " ASC, " + COL_USER_NAME + " COLLATE NOCASE ASC, " + COL_USER_ID + " ASC"
+            );
+
+            while (cursor.moveToNext()) {
+                users.add(mapUser(cursor));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return users;
+    }
+
+    public boolean updateUserRole(long userId, UserRole role) {
+        if (userId <= 0 || role == null) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_USER_ROLE, role.name());
+        int rows = db.update(TABLE_USER, values, COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        return rows > 0;
+    }
+
+    public boolean updateUserActive(long userId, boolean isActive) {
+        if (userId <= 0) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
+        int rows = db.update(TABLE_USER, values, COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        return rows > 0;
+    }
+
+    public int countAllUsers() {
+        return demSoBanGhi(TABLE_USER, null, null);
+    }
+
+    public int countUsersByRole(UserRole role) {
+        if (role == null) {
+            return countAllUsers();
+        }
+        return demSoBanGhi(TABLE_USER, COL_USER_ROLE + " = ?", new String[]{role.name()});
+    }
+
     public void seedDishesIfEmpty(Context context) {
         SQLiteDatabase db = getWritableDatabase();
         seedDishesIfEmpty(context == null ? appContext : context.getApplicationContext(), db);
     }
 
     public List<DishRecord> getAllDishes() {
+        return queryDishes(null, null);
+    }
+
+    public List<DishRecord> searchDishes(@Nullable String keyword) {
+        if (TextUtils.isEmpty(keyword)) {
+            return getAllDishes();
+        }
+        String trimmedKeyword = keyword.trim();
+        String likeValue = "%" + trimmedKeyword + "%";
+        return queryDishes(
+                COL_DISH_NAME + " LIKE ? OR " + COL_DISH_CATEGORY + " LIKE ? OR " + COL_DISH_DESCRIPTION + " LIKE ?",
+                new String[]{likeValue, likeValue, likeValue}
+        );
+    }
+
+    public long insertDishRecord(String name,
+                                 String price,
+                                 String description,
+                                 @Nullable String imageResName,
+                                 boolean isAvailable,
+                                 @Nullable String category,
+                                 int recommendScore) {
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description)) {
+            return -1;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, category, recommendScore);
+        return db.insert(TABLE_DISH, null, values);
+    }
+
+    public boolean updateDishRecord(long dishId,
+                                    String name,
+                                    String price,
+                                    String description,
+                                    @Nullable String imageResName,
+                                    boolean isAvailable,
+                                    @Nullable String category,
+                                    int recommendScore) {
+        if (dishId <= 0 || TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description)) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, category, recommendScore);
+        int rows = db.update(TABLE_DISH, values, COL_DISH_ID + " = ?", new String[]{String.valueOf(dishId)});
+        return rows > 0;
+    }
+
+    public boolean deleteDishById(long dishId) {
+        if (dishId <= 0) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        int rows = db.delete(TABLE_DISH, COL_DISH_ID + " = ?", new String[]{String.valueOf(dishId)});
+        return rows > 0;
+    }
+
+    public boolean updateDishAvailability(long dishId, boolean isAvailable) {
+        if (dishId <= 0) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_DISH_IS_AVAILABLE, isAvailable ? 1 : 0);
+        int rows = db.update(TABLE_DISH, values, COL_DISH_ID + " = ?", new String[]{String.valueOf(dishId)});
+        return rows > 0;
+    }
+
+    public int countAllDishes() {
+        return demSoBanGhi(TABLE_DISH, null, null);
+    }
+
+    private List<DishRecord> queryDishes(@Nullable String selection, @Nullable String[] selectionArgs) {
         List<DishRecord> dishRecords = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
@@ -533,6 +677,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor = db.query(
                     TABLE_DISH,
                     new String[]{
+                            COL_DISH_ID,
                             COL_DISH_NAME,
                             COL_DISH_PRICE,
                             COL_DISH_DESCRIPTION,
@@ -541,14 +686,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             COL_DISH_CATEGORY,
                             COL_DISH_RECOMMEND_SCORE
                     },
-                    null,
-                    null,
+                    selection,
+                    selectionArgs,
                     null,
                     null,
                     COL_DISH_ID + " ASC"
             );
 
             while (cursor.moveToNext()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_DISH_ID));
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_NAME));
                 String price = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_PRICE));
                 String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_DESCRIPTION));
@@ -566,7 +712,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         category,
                         recommendScore
                 );
-                dishRecords.add(new DishRecord(dishItem, description));
+                dishRecords.add(new DishRecord(id, dishItem, description, imageResName));
             }
         } finally {
             if (cursor != null) {
@@ -682,43 +828,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<Order> getOrdersByUserId(long userId) {
-        List<Order> orders = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = null;
+        return queryOrders(COL_ORDER_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+    }
 
-        try {
-            cursor = db.query(
-                    TABLE_ORDER,
-                    new String[]{COL_ORDER_ID, COL_ORDER_CODE, COL_ORDER_TIME, COL_ORDER_TOTAL_PRICE, COL_ORDER_STATUS},
-                    COL_ORDER_USER_ID + " = ?",
-                    new String[]{String.valueOf(userId)},
-                    null,
-                    null,
-                    COL_ORDER_ID + " DESC"
-            );
+    public List<Order> getAllOrders() {
+        return queryOrders(null, null);
+    }
 
-            while (cursor.moveToNext()) {
-                long orderId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ORDER_ID));
-                String code = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_CODE));
-                String time = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_TIME));
-                String totalPrice = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_TOTAL_PRICE));
-                String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_STATUS));
-
-                List<Order.OrderDish> dishes = getOrderItemsByOrderId(orderId);
-                orders.add(new Order(orderId, code, time, totalPrice, parseOrderStatus(statusRaw), dishes));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+    public boolean updateOrderStatus(long orderId, Order.Status status) {
+        if (orderId <= 0 || status == null) {
+            return false;
         }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_ORDER_STATUS, status.name());
+        int rows = db.update(TABLE_ORDER, values, COL_ORDER_ID + " = ?", new String[]{String.valueOf(orderId)});
+        return rows > 0;
+    }
 
-        orders.sort((first, second) -> Long.compare(
-                parseOrderTimeToMillis(second.getTime()),
-                parseOrderTimeToMillis(first.getTime())
-        ));
+    public int countAllOrders() {
+        return demSoBanGhi(TABLE_ORDER, null, null);
+    }
 
-        return orders;
+    public int countOrdersByStatus(Order.Status status) {
+        if (status == null) {
+            return countAllOrders();
+        }
+        return demSoBanGhi(TABLE_ORDER, COL_ORDER_STATUS + " = ?", new String[]{status.name()});
     }
 
     public boolean cancelOrder(long orderId) {
@@ -740,45 +876,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<Reservation> getReservationsByUserId(long userId) {
-        List<Reservation> reservations = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = null;
+        return queryReservations(COL_RESERVATION_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+    }
 
-        try {
-            cursor = db.query(
-                    TABLE_RESERVATION,
-                    new String[]{
-                            COL_RESERVATION_ID,
-                            COL_RESERVATION_TIME,
-                            COL_RESERVATION_TABLE_NUMBER,
-                            COL_RESERVATION_GUEST_COUNT,
-                            COL_RESERVATION_NOTE,
-                            COL_RESERVATION_STATUS
-                    },
-                    COL_RESERVATION_USER_ID + " = ?",
-                    new String[]{String.valueOf(userId)},
-                    null,
-                    null,
-                    COL_RESERVATION_ID + " DESC"
-            );
+    public List<Reservation> getAllReservations() {
+        return queryReservations(null, null);
+    }
 
-            while (cursor.moveToNext()) {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_RESERVATION_ID));
-                String time = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_TIME));
-                String tableNumber = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_TABLE_NUMBER));
-                int guestCount = cursor.getInt(cursor.getColumnIndexOrThrow(COL_RESERVATION_GUEST_COUNT));
-                String note = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_NOTE));
-                String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_STATUS));
-
-                reservations.add(new Reservation(id, time, tableNumber, guestCount, note, parseReservationStatus(statusRaw)));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+    public boolean updateReservationStatus(long reservationId, Reservation.Status status) {
+        if (reservationId <= 0 || status == null) {
+            return false;
         }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_RESERVATION_STATUS, status.name());
+        int rows = db.update(TABLE_RESERVATION, values, COL_RESERVATION_ID + " = ?", new String[]{String.valueOf(reservationId)});
+        return rows > 0;
+    }
 
-        return reservations;
+    public int countReservationsByStatus(Reservation.Status status) {
+        if (status == null) {
+            return demSoBanGhi(TABLE_RESERVATION, null, null);
+        }
+        return demSoBanGhi(TABLE_RESERVATION, COL_RESERVATION_STATUS + " = ?", new String[]{status.name()});
     }
 
     public long insertReservation(int userId,
@@ -838,44 +958,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<ServiceRequest> getServiceRequestsByUserId(long userId) {
-        List<ServiceRequest> requests = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = null;
+        return queryServiceRequests(COL_SERVICE_REQUEST_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+    }
 
-        try {
-            cursor = db.query(
-                    TABLE_SERVICE_REQUEST,
-                    new String[]{
-                            COL_SERVICE_REQUEST_ID,
-                            COL_SERVICE_REQUEST_CONTENT,
-                            COL_SERVICE_REQUEST_SENT_TIME,
-                            COL_SERVICE_REQUEST_STATUS
-                    },
-                    COL_SERVICE_REQUEST_USER_ID + " = ?",
-                    new String[]{String.valueOf(userId)},
-                    null,
-                    null,
-                    null
-            );
+    public List<ServiceRequest> getAllServiceRequests() {
+        return queryServiceRequests(null, null);
+    }
 
-            while (cursor.moveToNext()) {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_ID));
-                String content = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_CONTENT));
-                String sentTime = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_SENT_TIME));
-                String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_STATUS));
-                requests.add(new ServiceRequest(id, content, sentTime, parseServiceRequestStatus(statusRaw)));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+    public boolean updateServiceRequestStatus(long requestId, ServiceRequest.Status status) {
+        if (requestId <= 0 || status == null) {
+            return false;
         }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_SERVICE_REQUEST_STATUS, status.name());
+        int rows = db.update(TABLE_SERVICE_REQUEST, values, COL_SERVICE_REQUEST_ID + " = ?", new String[]{String.valueOf(requestId)});
+        return rows > 0;
+    }
 
-        requests.sort((first, second) -> Long.compare(
-                parseOrderTimeToMillis(second.getThoiGianGui()),
-                parseOrderTimeToMillis(first.getThoiGianGui())
-        ));
-        return requests;
+    public int countServiceRequestsByStatus(ServiceRequest.Status status) {
+        if (status == null) {
+            return demSoBanGhi(TABLE_SERVICE_REQUEST, null, null);
+        }
+        return demSoBanGhi(TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_STATUS + " = ?", new String[]{status.name()});
+    }
+
+    public AdminDashboardStats getAdminDashboardStats() {
+        return new AdminDashboardStats(
+                countAllUsers(),
+                countUsersByRole(UserRole.KHACH_HANG),
+                countUsersByRole(UserRole.NHAN_VIEN),
+                countUsersByRole(UserRole.ADMIN),
+                countAllDishes(),
+                countAllOrders(),
+                countOrdersByStatus(Order.Status.PENDING_CONFIRMATION),
+                countReservationsByStatus(Reservation.Status.PENDING_APPROVAL),
+                countServiceRequestsByStatus(ServiceRequest.Status.PROCESSING)
+        );
+    }
+
+    public EmployeeDashboardStats getEmployeeDashboardStats() {
+        return new EmployeeDashboardStats(
+                countOrdersByStatus(Order.Status.PENDING_CONFIRMATION),
+                countReservationsByStatus(Reservation.Status.PENDING_APPROVAL),
+                countServiceRequestsByStatus(ServiceRequest.Status.PROCESSING)
+        );
     }
 
     public long insertServiceRequest(long userId,
@@ -1033,15 +1160,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             boolean isAvailable,
                             String tenDanhMuc,
                             int diemDeXuat) {
-        ContentValues values = new ContentValues();
-        values.put(COL_DISH_NAME, name);
-        values.put(COL_DISH_PRICE, price);
-        values.put(COL_DISH_DESCRIPTION, description);
-        values.put(COL_DISH_IMAGE_RES_NAME, imageResName);
-        values.put(COL_DISH_IS_AVAILABLE, isAvailable ? 1 : 0);
-        values.put(COL_DISH_CATEGORY, tenDanhMuc);
-        values.put(COL_DISH_RECOMMEND_SCORE, diemDeXuat);
+        ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, tenDanhMuc, diemDeXuat);
         db.insert(TABLE_DISH, null, values);
+    }
+
+    private ContentValues taoGiaTriMonAn(String name,
+                                         String price,
+                                         String description,
+                                         @Nullable String imageResName,
+                                         boolean isAvailable,
+                                         @Nullable String category,
+                                         int recommendScore) {
+        ContentValues values = new ContentValues();
+        values.put(COL_DISH_NAME, name != null ? name.trim() : "");
+        values.put(COL_DISH_PRICE, price != null ? price.trim() : "");
+        values.put(COL_DISH_DESCRIPTION, description != null ? description.trim() : "");
+        values.put(COL_DISH_IMAGE_RES_NAME, TextUtils.isEmpty(imageResName) ? TEN_ANH_MAC_DINH : imageResName.trim());
+        values.put(COL_DISH_IS_AVAILABLE, isAvailable ? 1 : 0);
+        values.put(COL_DISH_CATEGORY, category != null ? category.trim() : "");
+        values.put(COL_DISH_RECOMMEND_SCORE, Math.max(recommendScore, 0));
+        return values;
     }
 
     private void ensureTestUserExists(SQLiteDatabase db) {
@@ -1125,6 +1263,141 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String roleValue = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_ROLE));
         boolean isActive = cursor.getInt(cursor.getColumnIndexOrThrow(COL_USER_IS_ACTIVE)) == 1;
         return new User(id, name, email, phone, UserRole.tuChuoi(roleValue), isActive);
+    }
+
+    private List<Order> queryOrders(@Nullable String selection, @Nullable String[] selectionArgs) {
+        List<Order> orders = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(
+                    TABLE_ORDER,
+                    new String[]{COL_ORDER_ID, COL_ORDER_CODE, COL_ORDER_TIME, COL_ORDER_TOTAL_PRICE, COL_ORDER_STATUS},
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    COL_ORDER_ID + " DESC"
+            );
+
+            while (cursor.moveToNext()) {
+                long orderId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ORDER_ID));
+                String code = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_CODE));
+                String time = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_TIME));
+                String totalPrice = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_TOTAL_PRICE));
+                String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_STATUS));
+                List<Order.OrderDish> dishes = getOrderItemsByOrderId(orderId);
+                orders.add(new Order(orderId, code, time, totalPrice, parseOrderStatus(statusRaw), dishes));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        orders.sort((first, second) -> Long.compare(
+                parseOrderTimeToMillis(second.getTime()),
+                parseOrderTimeToMillis(first.getTime())
+        ));
+        return orders;
+    }
+
+    private List<Reservation> queryReservations(@Nullable String selection, @Nullable String[] selectionArgs) {
+        List<Reservation> reservations = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(
+                    TABLE_RESERVATION,
+                    new String[]{
+                            COL_RESERVATION_ID,
+                            COL_RESERVATION_TIME,
+                            COL_RESERVATION_TABLE_NUMBER,
+                            COL_RESERVATION_GUEST_COUNT,
+                            COL_RESERVATION_NOTE,
+                            COL_RESERVATION_STATUS
+                    },
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    COL_RESERVATION_ID + " DESC"
+            );
+
+            while (cursor.moveToNext()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_RESERVATION_ID));
+                String time = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_TIME));
+                String tableNumber = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_TABLE_NUMBER));
+                int guestCount = cursor.getInt(cursor.getColumnIndexOrThrow(COL_RESERVATION_GUEST_COUNT));
+                String note = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_NOTE));
+                String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_STATUS));
+                reservations.add(new Reservation(id, time, tableNumber, guestCount, note, parseReservationStatus(statusRaw)));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return reservations;
+    }
+
+    private List<ServiceRequest> queryServiceRequests(@Nullable String selection, @Nullable String[] selectionArgs) {
+        List<ServiceRequest> requests = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(
+                    TABLE_SERVICE_REQUEST,
+                    new String[]{
+                            COL_SERVICE_REQUEST_ID,
+                            COL_SERVICE_REQUEST_CONTENT,
+                            COL_SERVICE_REQUEST_SENT_TIME,
+                            COL_SERVICE_REQUEST_STATUS
+                    },
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    COL_SERVICE_REQUEST_ID + " DESC"
+            );
+
+            while (cursor.moveToNext()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_ID));
+                String content = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_CONTENT));
+                String sentTime = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_SENT_TIME));
+                String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_STATUS));
+                requests.add(new ServiceRequest(id, content, sentTime, parseServiceRequestStatus(statusRaw)));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        requests.sort((first, second) -> Long.compare(
+                parseOrderTimeToMillis(second.getThoiGianGui()),
+                parseOrderTimeToMillis(first.getThoiGianGui())
+        ));
+        return requests;
+    }
+
+    private int demSoBanGhi(String table, @Nullable String selection, @Nullable String[] selectionArgs) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(table, new String[]{"COUNT(*)"}, selection, selectionArgs, null, null, null);
+            if (cursor.moveToFirst()) {
+                return cursor.getInt(0);
+            }
+            return 0;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     private List<Order.OrderDish> getOrderItemsByOrderId(long orderId) {
@@ -1250,12 +1523,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public static class DishRecord {
+        private final long id;
         private final RecommendedDishItem dishItem;
         private final String description;
+        private final String imageResName;
 
-        public DishRecord(RecommendedDishItem dishItem, String description) {
+        public DishRecord(long id, RecommendedDishItem dishItem, String description, String imageResName) {
+            this.id = id;
             this.dishItem = dishItem;
             this.description = description;
+            this.imageResName = imageResName;
+        }
+
+        public long getId() {
+            return id;
         }
 
         public RecommendedDishItem getDishItem() {
@@ -1264,6 +1545,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         public String getDescription() {
             return description;
+        }
+
+        public String getImageResName() {
+            return imageResName;
         }
     }
 }

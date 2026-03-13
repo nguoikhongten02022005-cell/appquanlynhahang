@@ -10,16 +10,16 @@
 
     <string name="section_category">Danh mục món</string>
     <string name="section_recommended">Món đề xuất</string>
-    <string name="home_header_caption">Đặt món, giữ bàn và theo dõi yêu cầu nhanh gọn trên điện thoại</string>
-    <string name="home_hero_eyebrow">Ưu đãi tối nay</string>
-    <string name="home_hero_title">Bữa tối chuẩn vị nhà hàng, chọn món và giữ bàn trong một luồng mượt mà</string>
-    <string name="home_hero_subtitle">Vào menu để tìm món theo danh mục, thêm món nổi bật vào giỏ và chuyển nhanh sang đặt bàn khi cần.</string>
-    <string name="home_hero_cta">Mở menu ngay</string>
-    <string name="home_hero_meta">Tối nay còn nhận giữ chỗ đến 21:30</string>
-    <string name="home_quick_order_subtitle">Mở menu với ô tìm kiếm sẵn sàng để chọn món nhanh</string>
-    <string name="home_quick_book_subtitle">Qua khu hoạt động để đặt bàn và gửi yêu cầu phục vụ</string>
-    <string name="home_category_hint">Chọn danh mục để mở menu đúng nhóm món bạn đang muốn xem</string>
-    <string name="home_recommended_hint">Gợi ý từ các món đang phục vụ có điểm đề xuất cao nhất hôm nay</string>
+    <string name="home_header_caption">Đặt món, đặt bàn và theo dõi yêu cầu ngay trên điện thoại</string>
+    <string name="home_hero_eyebrow">Tối nay</string>
+    <string name="home_hero_title">Chọn món ngon và giữ bàn trong một luồng gọn gàng</string>
+    <string name="home_hero_subtitle">Vào menu để tìm món theo danh mục, thêm nhanh vào giỏ hoặc chuyển sang đặt bàn.</string>
+    <string name="home_hero_cta">Mở menu</string>
+    <string name="home_hero_meta">Nhận giữ chỗ đến 21:30</string>
+    <string name="home_quick_order_subtitle">Mở menu và tìm món nhanh</string>
+    <string name="home_quick_book_subtitle">Đặt bàn hoặc gửi yêu cầu phục vụ</string>
+    <string name="home_category_hint">Chọn danh mục để mở đúng nhóm món</string>
+    <string name="home_recommended_hint">Những món nổi bật đang phục vụ hôm nay</string>
 
     <string name="bottom_nav_home">Trang chủ</string>
     <string name="bottom_nav_menu">Menu</string>
@@ -206,7 +206,7 @@
     <string name="register_success">Đăng ký thành công, vui lòng đăng nhập</string>
     <string name="register_email_exists">Email đã tồn tại, vui lòng dùng email khác</string>
     <string name="validation_email_invalid">Email chưa đúng định dạng</string>
-    <string name="validation_phone_invalid">Số điện thoại chưa hợp lệ</string>
+    <string name="validation_phone_invalid">Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0</string>
     <string name="validation_password_too_short">Mật khẩu cần ít nhất %1$d ký tự</string>
     <string name="account_user_not_found">Không tìm thấy người dùng hiện tại</string>
     <string name="db_operation_failed">Không thể lưu dữ liệu, vui lòng thử lại</string>

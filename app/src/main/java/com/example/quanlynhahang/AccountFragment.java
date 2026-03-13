@@ -26,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class AccountFragment extends Fragment {
 
     private static final int DO_DAI_MAT_KHAU_TOI_THIEU = 6;
+    private static final int DO_DAI_SO_DIEN_THOAI = 10;
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
@@ -285,6 +286,7 @@ public class AccountFragment extends Fragment {
 
         clearChangePasswordForm();
         layoutChangePassword.setVisibility(View.GONE);
+        refreshHeaderState();
 
         Toast.makeText(
                 requireContext(),
@@ -395,7 +397,10 @@ public class AccountFragment extends Fragment {
     }
 
     private boolean laSoDienThoaiHopLe(String phone) {
-        return phone.matches("0\\d{9,10}");
+        return !TextUtils.isEmpty(phone)
+                && phone.length() == DO_DAI_SO_DIEN_THOAI
+                && phone.startsWith("0")
+                && TextUtils.isDigitsOnly(phone);
     }
 
     private String getTrimmedText(EditText editText) {

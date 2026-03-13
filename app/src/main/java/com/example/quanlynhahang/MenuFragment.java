@@ -47,6 +47,7 @@ public class MenuFragment extends Fragment {
     private String tenDanhMucDangChon;
     private boolean moTimKiemKhiMoMan;
     private String tuKhoaTimKiemBanDau;
+    private String tuKhoaTimKiemDaApDung;
     private boolean dangCapNhatTimKiemNoiBo;
 
     public static MenuFragment newInstance(@Nullable String tenDanhMuc, boolean moTimKiem) {
@@ -107,6 +108,7 @@ public class MenuFragment extends Fragment {
         tenDanhMucDangChon = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
         moTimKiemKhiMoMan = moTimKiem;
         tuKhoaTimKiemBanDau = TextUtils.isEmpty(tuKhoaTimKiem) ? null : tuKhoaTimKiem;
+        tuKhoaTimKiemDaApDung = null;
         if (isAdded()) {
             apDungTuKhoaTimKiemNeuCan();
             taiDuLieuMonAn();
@@ -128,6 +130,7 @@ public class MenuFragment extends Fragment {
         tenDanhMucDangChon = source.getString(ARG_TEN_DANH_MUC);
         moTimKiemKhiMoMan = source.getBoolean(ARG_MO_TIM_KIEM, false);
         tuKhoaTimKiemBanDau = source.getString(ARG_TU_KHOA_TIM_KIEM);
+        tuKhoaTimKiemDaApDung = null;
     }
 
     private void setupRecyclerView(View view) {
@@ -245,18 +248,30 @@ public class MenuFragment extends Fragment {
     }
 
     private void apDungTuKhoaTimKiemNeuCan() {
-        if (etMenuSearch == null || tuKhoaTimKiemBanDau == null) {
+        if (etMenuSearch == null) {
             return;
         }
+
+        String tuKhoaMucTieu = tuKhoaTimKiemBanDau;
+        if (tuKhoaMucTieu == null) {
+            if (tuKhoaTimKiemDaApDung == null) {
+                return;
+            }
+            tuKhoaMucTieu = "";
+        }
+
         String tuKhoaHienTai = layTuKhoaHienTai();
-        if (TextUtils.equals(tuKhoaTimKiemBanDau, tuKhoaHienTai)) {
+        if (TextUtils.equals(tuKhoaMucTieu, tuKhoaHienTai)) {
+            tuKhoaTimKiemDaApDung = tuKhoaMucTieu;
             tuKhoaTimKiemBanDau = null;
             return;
         }
+
         dangCapNhatTimKiemNoiBo = true;
-        etMenuSearch.setText(tuKhoaTimKiemBanDau);
+        etMenuSearch.setText(tuKhoaMucTieu);
         etMenuSearch.setSelection(etMenuSearch.length());
         dangCapNhatTimKiemNoiBo = false;
+        tuKhoaTimKiemDaApDung = tuKhoaMucTieu;
         tuKhoaTimKiemBanDau = null;
     }
 

@@ -85,11 +85,11 @@ public class RequestsFragment extends Fragment {
                 titleView.setVisibility(View.GONE);
             }
         }
-        loadReservations();
-        loadServiceRequests();
         setupDateTimePicker();
         setupReservationList(view);
         setupServiceRequestList(view);
+        loadReservations();
+        loadServiceRequests();
         setupActions(view);
         refreshEmptyStates();
     }
@@ -328,8 +328,8 @@ public class RequestsFragment extends Fragment {
         }
 
         String selectedArea = spinnerReservationArea.getSelectedItem() == null
-                ? getString(R.string.reservation_area_ground_floor)
-                : spinnerReservationArea.getSelectedItem().toString();
+                ? ""
+                : spinnerReservationArea.getSelectedItem().toString().trim();
         if (TextUtils.isEmpty(selectedArea)) {
             Toast.makeText(
                     requireContext(),
@@ -361,7 +361,9 @@ public class RequestsFragment extends Fragment {
         }
 
         loadReservations();
-        reservationAdapter.setReservations(reservations);
+        if (reservationAdapter != null) {
+            reservationAdapter.setReservations(reservations);
+        }
         refreshEmptyStates();
 
         etGuestCount.setText("");
@@ -402,7 +404,9 @@ public class RequestsFragment extends Fragment {
         }
 
         loadServiceRequests();
-        serviceRequestAdapter.capNhatDanhSach(serviceRequests);
+        if (serviceRequestAdapter != null) {
+            serviceRequestAdapter.capNhatDanhSach(serviceRequests);
+        }
         refreshEmptyStates();
 
         Toast.makeText(

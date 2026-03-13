@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG_ACTIVITY_HUB = "activity_hub";
     private static final String TAG_ACCOUNT = "account";
     private static final String KEY_PENDING_ACTIVITY_TAB = "pending_activity_tab";
+    private static final String KEY_HAS_PENDING_MENU_NAVIGATION = "has_pending_menu_navigation";
 
     private TextView tvCartBadge;
     private TextView tvGreeting;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private String pendingMenuCategory;
     private boolean pendingMenuSearchFocus;
     private String pendingMenuQuery;
+    private boolean hasPendingMenuNavigation;
 
     private final CartManager.CartListener cartListener = this::updateCartBadge;
 
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             pendingMenuCategory = savedInstanceState.getString(MenuFragment.ARG_TEN_DANH_MUC);
             pendingMenuSearchFocus = savedInstanceState.getBoolean(MenuFragment.ARG_MO_TIM_KIEM, false);
             pendingMenuQuery = savedInstanceState.getString(MenuFragment.ARG_TU_KHOA_TIM_KIEM);
+            hasPendingMenuNavigation = savedInstanceState.getBoolean(KEY_HAS_PENDING_MENU_NAVIGATION, false);
             pendingActivityHubTab = savedInstanceState.getInt(KEY_PENDING_ACTIVITY_TAB, ActivityHubFragment.TAB_ORDERS);
         }
 
@@ -105,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putString(MenuFragment.ARG_TEN_DANH_MUC, pendingMenuCategory);
         outState.putBoolean(MenuFragment.ARG_MO_TIM_KIEM, pendingMenuSearchFocus);
         outState.putString(MenuFragment.ARG_TU_KHOA_TIM_KIEM, pendingMenuQuery);
+        outState.putBoolean(KEY_HAS_PENDING_MENU_NAVIGATION, hasPendingMenuNavigation);
         outState.putInt(KEY_PENDING_ACTIVITY_TAB, pendingActivityHubTab);
     }
 
@@ -171,8 +175,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void showMenu() {
         MenuFragment fragment = findOrCreateMenuFragment();
-        fragment.applyHomeNavigationState(pendingMenuCategory, pendingMenuSearchFocus, pendingMenuQuery);
+        if (hasPendingMenuNavigation) {
+            fragment.applyHomeNavigationState(pendingMenuCategory, pendingMenuSearchFocus, pendingMenuQuery);
+        }
         showFragment(fragment, TAG_MENU);
+        hasPendingMenuNavigation = false;
     }
 
     private void showActivityHub() {
@@ -242,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
         pendingMenuCategory = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
         pendingMenuSearchFocus = moTimKiem;
         pendingMenuQuery = TextUtils.isEmpty(tuKhoaTimKiem) ? null : tuKhoaTimKiem;
+        hasPendingMenuNavigation = true;
         if (bottomNavigationView.getSelectedItemId() == R.id.nav_menu) {
             showMenu();
             return;

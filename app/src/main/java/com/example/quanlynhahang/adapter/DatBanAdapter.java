@@ -29,7 +29,7 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.Reservatio
     private final OnHuyDatBanClickListener onHuyDatBanClickListener;
 
     public DatBanAdapter(List<DatBan> danhSachDatBan,
-                              OnHuyDatBanClickListener onHuyDatBanClickListener) {
+                         OnHuyDatBanClickListener onHuyDatBanClickListener) {
         this.danhSachDatBan.addAll(danhSachDatBan);
         this.onHuyDatBanClickListener = onHuyDatBanClickListener;
     }
@@ -65,6 +65,7 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.Reservatio
 
     class ReservationViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvReservationTime;
+        private final TextView tvReservationCode;
         private final TextView tvReservationTable;
         private final TextView tvReservationGuestCount;
         private final TextView tvReservationNote;
@@ -74,6 +75,7 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.Reservatio
         ReservationViewHolder(@NonNull View itemView) {
             super(itemView);
             tvReservationTime = itemView.findViewById(R.id.tvReservationTime);
+            tvReservationCode = itemView.findViewById(R.id.tvReservationCode);
             tvReservationTable = itemView.findViewById(R.id.tvReservationTable);
             tvReservationGuestCount = itemView.findViewById(R.id.tvReservationGuestCount);
             tvReservationNote = itemView.findViewById(R.id.tvReservationNote);
@@ -84,6 +86,10 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.Reservatio
         void ganDuLieu(DatBan datBan) {
             Context context = itemView.getContext();
             tvReservationTime.setText(datBan.layThoiGian());
+            tvReservationCode.setText(datBan.coMaDatBan()
+                    ? context.getString(R.string.reservation_code_format, datBan.layMaDatBan())
+                    : "");
+            tvReservationCode.setVisibility(datBan.coMaDatBan() ? View.VISIBLE : View.GONE);
             tvReservationTable.setText(
                     context.getString(R.string.reservation_table_format_display, datBan.laySoBan())
             );
@@ -91,13 +97,10 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.Reservatio
                     context.getString(R.string.reservation_guest_count_format, datBan.laySoKhach())
             );
 
-            String ghiChu = datBan.layGhiChu();
-            if (ghiChu == null || ghiChu.trim().isEmpty()) {
-                tvReservationNote.setText(context.getString(R.string.reservation_note_empty));
+            if (datBan.coGhiChu()) {
+                tvReservationNote.setText(context.getString(R.string.reservation_note_format, datBan.layGhiChu()));
             } else {
-                tvReservationNote.setText(
-                        context.getString(R.string.reservation_note_format, ghiChu)
-                );
+                tvReservationNote.setText(context.getString(R.string.reservation_note_empty));
             }
 
             tvReservationStatus.setText(layTextTrangThai(datBan.layTrangThai()));
@@ -116,28 +119,28 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.Reservatio
     }
 
     private int layTextTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.PENDING_APPROVAL) {
+        if (trangThai == DatBan.TrangThai.CHO_XAC_NHAN) {
             return R.string.reservation_status_pending;
         }
-        if (trangThai == DatBan.TrangThai.CONFIRMED) {
+        if (trangThai == DatBan.TrangThai.DA_XAC_NHAN) {
             return R.string.reservation_status_confirmed;
         }
-        if (trangThai == DatBan.TrangThai.COMPLETED) {
+        if (trangThai == DatBan.TrangThai.DA_PHUC_VU) {
             return R.string.reservation_status_completed;
         }
         return R.string.reservation_status_canceled;
     }
 
     private int layMauTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.PENDING_APPROVAL) {
-            return R.color.brand_orange;
+        if (trangThai == DatBan.TrangThai.CHO_XAC_NHAN) {
+            return R.color.warning;
         }
-        if (trangThai == DatBan.TrangThai.CONFIRMED) {
-            return R.color.brand_green;
+        if (trangThai == DatBan.TrangThai.DA_XAC_NHAN) {
+            return R.color.success;
         }
-        if (trangThai == DatBan.TrangThai.COMPLETED) {
-            return R.color.hero_top;
+        if (trangThai == DatBan.TrangThai.DA_PHUC_VU) {
+            return R.color.primary;
         }
-        return R.color.brand_red;
+        return R.color.error;
     }
 }

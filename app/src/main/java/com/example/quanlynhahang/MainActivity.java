@@ -26,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    public static final String EXTRA_MO_TAB_TRUNG_TAM_HOAT_DONG = "extra_open_activity_hub_tab";
     private static final int SO_LUONG_BADGE_TOI_DA = 99;
     private static final String TAG_TRANG_CHU = "home";
     private static final String TAG_MENU = "menu";
@@ -86,6 +87,11 @@ public class MainActivity extends AppCompatActivity {
             tuKhoaMenuCho = savedInstanceState.getString(ThucDonFragment.ARG_TU_KHOA_TIM_KIEM);
             coDieuHuongMenuCho = savedInstanceState.getBoolean(KEY_CO_DIEU_HUONG_MENU_CHO, false);
             tabTrungTamHoatDongCho = savedInstanceState.getInt(KEY_TAB_HOAT_DONG_CHO, TrungTamHoatDongFragment.TAB_ORDERS);
+        } else {
+            tabTrungTamHoatDongCho = getIntent().getIntExtra(
+                    EXTRA_MO_TAB_TRUNG_TAM_HOAT_DONG,
+                    TrungTamHoatDongFragment.TAB_ORDERS
+            );
         }
 
         thietLapDieuHuongDuoi();
@@ -273,6 +279,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         bottomNavigationView.setSelectedItemId(R.id.nav_orders);
+    }
+
+    public void moTrungTamTheoDoi() {
+        moTrungTamHoatDong(TrungTamHoatDongFragment.TAB_ORDERS);
     }
 
     public void lamMoiTrangThaiHeader() {

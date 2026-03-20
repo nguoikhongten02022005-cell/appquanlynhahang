@@ -16,14 +16,17 @@ import com.google.android.material.button.MaterialButton;
 public class TrungTamHoatDongFragment extends Fragment {
 
     public static final int TAB_ORDERS = 0;
-    public static final int TAB_REQUESTS = 1;
+    public static final int TAB_RESERVATIONS = 1;
+    public static final int TAB_SERVICE_REQUESTS = 2;
 
     private static final String ARG_TAB_BAN_DAU = "initial_tab";
     private static final String TAG_DON_HANG = "orders";
-    private static final String TAG_YEU_CAU = "requests";
+    private static final String TAG_DAT_BAN = "reservations";
+    private static final String TAG_YEU_CAU = "service_requests";
 
     private MaterialButton btnTabDonHangs;
     private MaterialButton btnTabRequests;
+    private MaterialButton btnTabServiceRequests;
     private int tabDangChon = TAB_ORDERS;
 
     public static TrungTamHoatDongFragment newInstance(int tabBanDau) {
@@ -48,6 +51,7 @@ public class TrungTamHoatDongFragment extends Fragment {
 
         btnTabDonHangs = view.findViewById(R.id.btnTabDonHangs);
         btnTabRequests = view.findViewById(R.id.btnTabRequests);
+        btnTabServiceRequests = view.findViewById(R.id.btnTabServiceRequests);
 
         if (savedInstanceState != null) {
             tabDangChon = savedInstanceState.getInt(ARG_TAB_BAN_DAU, TAB_ORDERS);
@@ -56,7 +60,8 @@ public class TrungTamHoatDongFragment extends Fragment {
         }
 
         btnTabDonHangs.setOnClickListener(v -> chonTab(TAB_ORDERS));
-        btnTabRequests.setOnClickListener(v -> chonTab(TAB_REQUESTS));
+        btnTabRequests.setOnClickListener(v -> chonTab(TAB_RESERVATIONS));
+        btnTabServiceRequests.setOnClickListener(v -> chonTab(TAB_SERVICE_REQUESTS));
 
         chonTab(tabDangChon);
     }
@@ -68,29 +73,41 @@ public class TrungTamHoatDongFragment extends Fragment {
     }
 
     public void chonTab(int tab) {
-        tabDangChon = tab == TAB_REQUESTS ? TAB_REQUESTS : TAB_ORDERS;
+        if (tab == TAB_RESERVATIONS) {
+            tabDangChon = TAB_RESERVATIONS;
+        } else if (tab == TAB_SERVICE_REQUESTS) {
+            tabDangChon = TAB_SERVICE_REQUESTS;
+        } else {
+            tabDangChon = TAB_ORDERS;
+        }
         capNhatTrangThaiNutChuyen();
         hienNoiDungDangChon();
     }
 
     private void capNhatTrangThaiNutChuyen() {
-        if (btnTabDonHangs == null || btnTabRequests == null) {
+        if (btnTabDonHangs == null || btnTabRequests == null || btnTabServiceRequests == null) {
             return;
         }
 
-        boolean hienDonHang = tabDangChon == TAB_ORDERS;
         int nenDangChon = ContextCompat.getColor(requireContext(), R.color.surface);
         int nenKhongChon = ContextCompat.getColor(requireContext(), R.color.surface_variant);
         int chuDangChon = ContextCompat.getColor(requireContext(), R.color.on_surface);
         int chuKhongChon = ContextCompat.getColor(requireContext(), R.color.on_surface_variant);
 
-        btnTabDonHangs.setSelected(hienDonHang);
-        btnTabDonHangs.setBackgroundTintList(ColorStateList.valueOf(hienDonHang ? nenDangChon : nenKhongChon));
-        btnTabDonHangs.setTextColor(hienDonHang ? chuDangChon : chuKhongChon);
+        capNhatNutTab(btnTabDonHangs, tabDangChon == TAB_ORDERS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
+        capNhatNutTab(btnTabRequests, tabDangChon == TAB_RESERVATIONS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
+        capNhatNutTab(btnTabServiceRequests, tabDangChon == TAB_SERVICE_REQUESTS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
+    }
 
-        btnTabRequests.setSelected(!hienDonHang);
-        btnTabRequests.setBackgroundTintList(ColorStateList.valueOf(hienDonHang ? nenKhongChon : nenDangChon));
-        btnTabRequests.setTextColor(hienDonHang ? chuKhongChon : chuDangChon);
+    private void capNhatNutTab(MaterialButton button,
+                               boolean dangChon,
+                               int nenDangChon,
+                               int nenKhongChon,
+                               int chuDangChon,
+                               int chuKhongChon) {
+        button.setSelected(dangChon);
+        button.setBackgroundTintList(ColorStateList.valueOf(dangChon ? nenDangChon : nenKhongChon));
+        button.setTextColor(dangChon ? chuDangChon : chuKhongChon);
     }
 
     private void hienNoiDungDangChon() {
@@ -98,10 +115,18 @@ public class TrungTamHoatDongFragment extends Fragment {
             return;
         }
 
-        Fragment fragment = tabDangChon == TAB_REQUESTS
-                ? timHoacTaoYeuCauFragment()
-                : timHoacTaoDonHangsFragment();
-        String tag = tabDangChon == TAB_REQUESTS ? TAG_YEU_CAU : TAG_DON_HANG;
+        Fragment fragment;
+        String tag;
+        if (tabDangChon == TAB_RESERVATIONS) {
+            fragment = timHoacTaoDatBanFragment();
+            tag = TAG_DAT_BAN;
+        } else if (tabDangChon == TAB_SERVICE_REQUESTS) {
+            fragment = timHoacTaoYeuCauFragment();
+            tag = TAG_YEU_CAU;
+        } else {
+            fragment = timHoacTaoDonHangsFragment();
+            tag = TAG_DON_HANG;
+        }
 
         Fragment fragmentHienTai = getChildFragmentManager().findFragmentById(R.id.activityHubContentContainer);
         if (fragmentHienTai != null && tag.equals(fragmentHienTai.getTag())) {
@@ -124,6 +149,18 @@ public class TrungTamHoatDongFragment extends Fragment {
         args.putBoolean(DonHangFragment.ARG_EMBEDDED, true);
         orderFragment.setArguments(args);
         return orderFragment;
+    }
+
+    private Fragment timHoacTaoDatBanFragment() {
+        Fragment fragment = getChildFragmentManager().findFragmentByTag(TAG_DAT_BAN);
+        if (fragment instanceof DatBanFragment) {
+            return fragment;
+        }
+        DatBanFragment reservationsFragment = new DatBanFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(DatBanFragment.ARG_EMBEDDED, true);
+        reservationsFragment.setArguments(args);
+        return reservationsFragment;
     }
 
     private Fragment timHoacTaoYeuCauFragment() {

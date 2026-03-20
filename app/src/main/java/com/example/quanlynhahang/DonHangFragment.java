@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -131,6 +132,15 @@ public class DonHangFragment extends Fragment {
     }
 
     private void huyDonHang(DonHang donHang, int viTri) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.order_cancel_confirm_title)
+                .setMessage(R.string.order_cancel_confirm_message)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.order_cancel, (dialog, which) -> thucHienHuyDon(donHang, viTri))
+                .show();
+    }
+
+    private void thucHienHuyDon(DonHang donHang, int viTri) {
         boolean daHuy = databaseHelper.huyDonHang(donHang.layId());
         if (!daHuy) {
             Toast.makeText(requireContext(), getString(R.string.db_operation_failed), Toast.LENGTH_SHORT).show();

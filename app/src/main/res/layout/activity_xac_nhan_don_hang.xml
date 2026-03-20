@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/screen_padding_horizontal"
+        android:paddingTop="@dimen/space_lg"
+        android:paddingEnd="@dimen/screen_padding_horizontal"
+        android:paddingBottom="@dimen/space_lg">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/order_confirmation_title"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.PageTitle" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="@string/order_confirmation_subtitle"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Quanlynhahang.SurfaceCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            app:cardUseCompatPadding="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/space_lg">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/order_context_title"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
+
+                <TextView
+                    android:id="@+id/tvConfirmOrderType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.CardTitle"
+                    tools:text="Ăn tại quán" />
+
+                <TextView
+                    android:id="@+id/tvConfirmTableNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
+                    tools:text="Bàn: Bàn 03" />
+
+                <TextView
+                    android:id="@+id/tvConfirmNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
+                    tools:text="Ghi chú: Ít cay" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            android:text="@string/order_detail_dishes_title"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvConfirmOrderItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/item_mon_trong_don" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Quanlynhahang.SurfaceCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            app:cardUseCompatPadding="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/space_lg">
+
+                <TextView
+                    android:id="@+id/tvConfirmSubtotal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
+                    tools:text="Tạm tính: 274.000 đ" />
+
+                <TextView
+                    android:id="@+id/tvConfirmTotal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.CardTitle"
+                    tools:text="Tổng tiền: 274.000 đ" />
+
+                <TextView
+                    android:id="@+id/tvConfirmPaymentHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
+                    tools:text="Bạn có thể gửi đơn trước rồi thanh toán sau khi dùng bữa." />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSendOrder"
+            style="@style/Widget.Quanlynhahang.FilledButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            android:text="@string/order_send" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPayNow"
+            style="@style/Widget.Quanlynhahang.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/order_pay_now" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRequestPayment"
+            style="@style/Widget.Quanlynhahang.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/order_request_payment" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

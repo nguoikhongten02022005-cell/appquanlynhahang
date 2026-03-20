@@ -34,19 +34,23 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvReservationStatus"
+                style="@style/Widget.Quanlynhahang.StatusChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_button_green"
-                android:paddingStart="@dimen/space_md"
-                android:paddingTop="@dimen/space_xs"
-                android:paddingEnd="@dimen/space_md"
-                android:paddingBottom="@dimen/space_xs"
                 android:text="@string/reservation_status_pending"
                 android:textColor="@color/text_on_color"
-                android:textSize="12sp"
-                android:textStyle="bold"
                 app:backgroundTint="@color/brand_orange" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvReservationCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            tools:text="Mã giữ bàn: #GB12031" />
 
         <TextView
             android:id="@+id/tvReservationTable"
@@ -55,7 +59,7 @@
             android:layout_marginTop="@dimen/space_xs"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
-            tools:text="Khu vực: Tầng trệt" />
+            tools:text="Bàn: Bàn 03" />
 
         <TextView
             android:id="@+id/tvReservationGuestCount"
@@ -73,7 +77,6 @@
             android:layout_marginTop="@dimen/space_xs"
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
-            tools:ignore="TextContrastCheck"
             tools:text="Ghi chú: Gần cửa sổ" />
 
         <Button

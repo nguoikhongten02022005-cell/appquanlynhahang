@@ -23,6 +23,13 @@
         android:text="@string/activity_hub_subtitle"
         android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_sm"
+        android:text="@string/activity_hub_demo_hint"
+        android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/hub_toggle_height"
@@ -33,24 +40,54 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTabDonHangs"
-            style="@style/Widget.Quanlynhahang.TonalButton"
+            style="@style/Widget.Quanlynhahang.HubTabButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:backgroundTint="@color/surface"
+            android:ellipsize="end"
+            app:icon="@drawable/ic_receipt_24"
+            app:iconGravity="textStart"
+            app:iconPadding="4dp"
+            app:iconSize="16dp"
+            android:maxLines="1"
             android:text="@string/activity_hub_tab_orders"
             android:textStyle="bold"
             app:strokeWidth="0dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTabRequests"
-            style="@style/Widget.Quanlynhahang.TonalButton"
+            style="@style/Widget.Quanlynhahang.HubTabButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/space_sm"
+            android:layout_marginStart="6dp"
             android:layout_weight="1"
             android:backgroundTint="@color/surface_variant"
+            android:ellipsize="end"
+            app:icon="@drawable/ic_calendar_24"
+            app:iconGravity="textStart"
+            app:iconPadding="4dp"
+            app:iconSize="16dp"
+            android:maxLines="1"
             android:text="@string/activity_hub_tab_requests"
+            android:textStyle="bold"
+            app:strokeWidth="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTabServiceRequests"
+            style="@style/Widget.Quanlynhahang.HubTabButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/surface_variant"
+            android:ellipsize="end"
+            app:icon="@drawable/ic_person_24"
+            app:iconGravity="textStart"
+            app:iconPadding="4dp"
+            app:iconSize="16dp"
+            android:maxLines="1"
+            android:text="@string/activity_hub_tab_service_requests"
             android:textStyle="bold"
             app:strokeWidth="0dp" />
     </LinearLayout>

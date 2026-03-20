@@ -2,6 +2,7 @@ package com.example.quanlynhahang.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,15 +87,15 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
             tvTable.setText(context.getString(R.string.reservation_table_format_display, datBan.laySoBan()));
             tvGuestCount.setText(context.getString(R.string.reservation_guest_count_format, datBan.laySoKhach()));
             String ghiChu = datBan.layGhiChu();
-            tvNote.setText(ghiChu == null || ghiChu.trim().isEmpty()
+            tvNote.setText(TextUtils.isEmpty(ghiChu)
                     ? context.getString(R.string.reservation_note_empty)
                     : context.getString(R.string.reservation_note_format, ghiChu));
             tvStatus.setText(layTextTrangThai(datBan.layTrangThai()));
             ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, layMauTrangThai(datBan.layTrangThai()))));
 
-            ganHanhDong(btnConfirm, datBan.layTrangThai() == DatBan.TrangThai.PENDING_APPROVAL, v -> hanhDongListener.khiXacNhan(datBan));
-            ganHanhDong(btnComplete, datBan.layTrangThai() == DatBan.TrangThai.CONFIRMED, v -> hanhDongListener.khiHoanTat(datBan));
-            ganHanhDong(btnCancel, datBan.layTrangThai() == DatBan.TrangThai.PENDING_APPROVAL || datBan.layTrangThai() == DatBan.TrangThai.CONFIRMED, v -> hanhDongListener.khiHuy(datBan));
+            ganHanhDong(btnConfirm, datBan.coTheXacNhan(), v -> hanhDongListener.khiXacNhan(datBan));
+            ganHanhDong(btnComplete, datBan.coTheHoanTat(), v -> hanhDongListener.khiHoanTat(datBan));
+            ganHanhDong(btnCancel, datBan.coTheHuy(), v -> hanhDongListener.khiHuy(datBan));
         }
 
         private void ganHanhDong(TextView view, boolean hienThi, View.OnClickListener suKienClick) {
@@ -104,26 +105,26 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
     }
 
     private int layTextTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.PENDING_APPROVAL) {
+        if (trangThai == DatBan.TrangThai.CHO_XAC_NHAN) {
             return R.string.reservation_status_pending;
         }
-        if (trangThai == DatBan.TrangThai.CONFIRMED) {
+        if (trangThai == DatBan.TrangThai.DA_XAC_NHAN) {
             return R.string.reservation_status_confirmed;
         }
-        if (trangThai == DatBan.TrangThai.COMPLETED) {
+        if (trangThai == DatBan.TrangThai.DA_PHUC_VU) {
             return R.string.reservation_status_completed;
         }
         return R.string.reservation_status_canceled;
     }
 
     private int layMauTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.PENDING_APPROVAL) {
+        if (trangThai == DatBan.TrangThai.CHO_XAC_NHAN) {
             return R.color.warning;
         }
-        if (trangThai == DatBan.TrangThai.CONFIRMED) {
+        if (trangThai == DatBan.TrangThai.DA_XAC_NHAN) {
             return R.color.success;
         }
-        if (trangThai == DatBan.TrangThai.COMPLETED) {
+        if (trangThai == DatBan.TrangThai.DA_PHUC_VU) {
             return R.color.primary;
         }
         return R.color.error;

@@ -26,6 +26,15 @@
             tools:text="Gọi nhân viên" />
 
         <TextView
+            android:id="@+id/tvServiceRequestType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="Loại: Gọi nhân viên" />
+
+        <TextView
             android:id="@+id/tvServiceRequestTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,17 +46,12 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvServiceRequestStatus"
+        style="@style/Widget.Quanlynhahang.StatusChip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_button_green"
-        android:paddingStart="@dimen/space_md"
-        android:paddingTop="@dimen/space_xs"
-        android:paddingEnd="@dimen/space_md"
-        android:paddingBottom="@dimen/space_xs"
         android:text="@string/service_request_status_processing"
         android:textColor="@color/text_on_color"
-        android:textSize="12sp"
-        android:textStyle="bold"
         app:backgroundTint="@color/brand_orange" />
 
 </LinearLayout>

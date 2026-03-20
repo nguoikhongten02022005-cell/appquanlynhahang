@@ -33,16 +33,11 @@
 
             <TextView
                 android:id="@+id/tvEmployeeDonHangStatus"
+                style="@style/Widget.Quanlynhahang.StatusChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_button_green"
-                android:paddingStart="12dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="6dp"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:textColor="@color/white" />
         </LinearLayout>
 
         <TextView
@@ -52,6 +47,39 @@
             android:layout_marginTop="8dp"
             android:textColor="@color/on_surface_variant"
             android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvEmployeeDonHangType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/on_surface"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvEmployeeDonHangTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvEmployeeDonHangPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvEmployeeDonHangNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/tvEmployeeDonHangTotal"

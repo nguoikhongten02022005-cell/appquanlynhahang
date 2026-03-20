@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/screen_padding_horizontal"
+        android:paddingTop="@dimen/space_md"
+        android:paddingEnd="@dimen/screen_padding_horizontal"
+        android:paddingBottom="@dimen/space_md">
+
+        <TextView
+            android:id="@+id/tvReservationsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reservations_screen_title"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.PageTitle" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            android:text="@string/reservation_section_title"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="@string/reservation_section_subtitle"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
+
+        <include
+            android:id="@+id/layoutReservationForm"
+            layout="@layout/layout_form_dat_ban"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            android:text="@string/reservation_list_title"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvReservations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:nestedScrollingEnabled="false"
+            tools:listitem="@layout/item_trang_thai_dat_ban" />
+
+        <TextView
+            android:id="@+id/tvReservationEmptyState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:gravity="center"
+            android:text="@string/reservation_empty_message"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:text="@string/reservation_demo_hint"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

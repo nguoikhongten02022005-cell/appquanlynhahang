@@ -57,12 +57,14 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
 
     static class ServiceRequestViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvServiceRequestContent;
+        private final TextView tvServiceRequestType;
         private final TextView tvServiceRequestTime;
         private final TextView tvServiceRequestStatus;
 
         ServiceRequestViewHolder(@NonNull View itemView) {
             super(itemView);
             tvServiceRequestContent = itemView.findViewById(R.id.tvServiceRequestContent);
+            tvServiceRequestType = itemView.findViewById(R.id.tvServiceRequestType);
             tvServiceRequestTime = itemView.findViewById(R.id.tvServiceRequestTime);
             tvServiceRequestStatus = itemView.findViewById(R.id.tvServiceRequestStatus);
         }
@@ -70,17 +72,28 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
         void ganDuLieu(YeuCauPhucVu yeuCau) {
             Context context = itemView.getContext();
             tvServiceRequestContent.setText(yeuCau.layNoiDung());
+            tvServiceRequestType.setText(layTextLoaiYeuCau(context, yeuCau.layLoaiYeuCau()));
             tvServiceRequestTime.setText(yeuCau.layThoiGianGui());
 
-            if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.PROCESSING) {
+            if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY) {
                 tvServiceRequestStatus.setText(R.string.service_request_status_processing);
-                int mauDangXuLy = ContextCompat.getColor(context, R.color.brand_orange);
+                int mauDangXuLy = ContextCompat.getColor(context, R.color.warning);
                 ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauDangXuLy));
             } else {
                 tvServiceRequestStatus.setText(R.string.service_request_status_done);
-                int mauDaXong = ContextCompat.getColor(context, R.color.brand_green);
+                int mauDaXong = ContextCompat.getColor(context, R.color.success);
                 ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauDaXong));
             }
+        }
+
+        private String layTextLoaiYeuCau(Context context, YeuCauPhucVu.LoaiYeuCau loaiYeuCau) {
+            if (loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THEM_NUOC) {
+                return context.getString(R.string.service_request_type_more_water);
+            }
+            if (loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THANH_TOAN) {
+                return context.getString(R.string.service_request_type_payment);
+            }
+            return context.getString(R.string.service_request_type_call_staff);
         }
     }
 }

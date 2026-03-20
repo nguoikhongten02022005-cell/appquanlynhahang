@@ -26,55 +26,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_lg"
-            android:text="@string/reservation_section_title"
-            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
-
-        <include
-            android:id="@+id/layoutReservationForm"
-            layout="@layout/layout_form_dat_ban"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_lg"
-            android:text="@string/reservation_list_title"
-            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvReservations"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
-            android:nestedScrollingEnabled="false"
-            tools:listitem="@layout/item_trang_thai_dat_ban" />
-
-        <TextView
-            android:id="@+id/tvReservationEmptyState"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
-            android:gravity="center"
-            android:text="@string/reservation_empty_message"
-            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/space_sm"
-            android:background="@color/stroke" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_lg"
+            android:layout_marginTop="@dimen/space_md"
             android:text="@string/service_request_section_title"
             android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="@string/service_request_section_caption"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"

@@ -146,7 +146,7 @@ public class TrangChuFragment extends Fragment {
 
     private void dieuHuongDenYeuCau() {
         if (requireActivity() instanceof MainActivity) {
-            ((MainActivity) requireActivity()).moTrungTamHoatDong(TrungTamHoatDongFragment.TAB_REQUESTS);
+            ((MainActivity) requireActivity()).moTrungTamHoatDong(TrungTamHoatDongFragment.TAB_RESERVATIONS);
         }
     }
 }

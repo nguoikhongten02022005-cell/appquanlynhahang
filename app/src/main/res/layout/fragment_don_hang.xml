@@ -19,6 +19,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tvDonHangCaption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_xs"
+        android:text="@string/order_screen_caption"
+        android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDonHangTitle" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDonHangs"
         android:layout_width="0dp"
@@ -30,7 +41,7 @@
         app:layout_constraintBottom_toTopOf="@id/layoutCartFooter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvDonHangTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvDonHangCaption"
         tools:listitem="@layout/item_mon_trong_don" />
 
     <TextView
@@ -39,13 +50,12 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/cart_empty_message"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/layoutCartFooter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvDonHangTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvDonHangCaption" />
 
     <LinearLayout
         android:id="@+id/layoutCartFooter"

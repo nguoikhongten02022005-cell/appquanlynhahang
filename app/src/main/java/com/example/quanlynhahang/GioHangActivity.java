@@ -2,8 +2,12 @@ package com.example.quanlynhahang;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,19 +25,24 @@ import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.DonHang;
-import com.example.quanlynhahang.model.MonAnDeXuat;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class GioHangActivity extends AppCompatActivity {
 
     private RecyclerView rvCartItems;
+    private TextView tvCartSubtitle;
     private TextView tvCartTotal;
+    private TextView tvCartSubtotal;
+    private TextView tvCartContextHint;
     private TextView tvCartEmpty;
+    private View layoutTableNumber;
+    private RadioGroup rgCartOrderType;
+    private RadioButton rbCartDineIn;
+    private RadioButton rbCartTakeAway;
+    private EditText etCartTableNumber;
+    private EditText etCartNote;
     private Button btnCheckout;
     private Button btnClearCart;
     private Button btnContinueShopping;
@@ -43,18 +52,19 @@ public class GioHangActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
 
-    private boolean choDatHangSauDangNhap;
+    private boolean choXacNhanSauDangNhap;
 
     private final ActivityResultLauncher<Intent> boMoDangNhap = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (choDatHangSauDangNhap && sessionManager.daDangNhap()) {
-                    choDatHangSauDangNhap = false;
-                    xuLyDatHang();
+                if (choXacNhanSauDangNhap && sessionManager.daDangNhap()) {
+                    choXacNhanSauDangNhap = false;
+                    moManXacNhanDonHang();
                     return;
                 }
-                choDatHangSauDangNhap = false;
+                choXacNhanSauDangNhap = false;
                 capNhatHienThiGioHang();
+                dongBoNguCanhLenForm();
             }
     );
 
@@ -71,8 +81,10 @@ public class GioHangActivity extends AppCompatActivity {
 
         khoiTaoView();
         thietLapRecyclerView();
+        thietLapNguCanhDonHang();
         thietLapNutDatHang();
         thietLapNutHanhDong();
+        dongBoNguCanhLenForm();
         capNhatHienThiGioHang();
     }
 
@@ -80,12 +92,22 @@ public class GioHangActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         capNhatHienThiGioHang();
+        dongBoNguCanhLenForm();
     }
 
     private void khoiTaoView() {
         rvCartItems = findViewById(R.id.rvCartItems);
+        tvCartSubtitle = findViewById(R.id.tvCartSubtitle);
         tvCartTotal = findViewById(R.id.tvCartTotal);
+        tvCartSubtotal = findViewById(R.id.tvCartSubtotal);
+        tvCartContextHint = findViewById(R.id.tvCartContextHint);
         tvCartEmpty = findViewById(R.id.tvCartEmpty);
+        layoutTableNumber = findViewById(R.id.layoutTableNumber);
+        rgCartOrderType = findViewById(R.id.rgCartOrderType);
+        rbCartDineIn = findViewById(R.id.rbCartDineIn);
+        rbCartTakeAway = findViewById(R.id.rbCartTakeAway);
+        etCartTableNumber = findViewById(R.id.etCartTableNumber);
+        etCartNote = findViewById(R.id.etCartNote);
         btnCheckout = findViewById(R.id.btnCheckout);
         btnClearCart = findViewById(R.id.btnClearCart);
         btnContinueShopping = findViewById(R.id.btnContinueShopping);
@@ -99,15 +121,13 @@ public class GioHangActivity extends AppCompatActivity {
                 new MonTrongGioAdapter.OnHanhDongSoLuongListener() {
                     @Override
                     public void khiTangSoLuong(CartManager.CartItem item) {
-                        String key = cartManager.layKhoaMon(item);
-                        cartManager.tangSoLuong(key);
+                        cartManager.tangSoLuong(cartManager.layKhoaMon(item));
                         capNhatHienThiGioHang();
                     }
 
                     @Override
                     public void khiGiamSoLuong(CartManager.CartItem item) {
-                        String key = cartManager.layKhoaMon(item);
-                        cartManager.giamSoLuong(key);
+                        cartManager.giamSoLuong(cartManager.layKhoaMon(item));
                         capNhatHienThiGioHang();
                     }
 
@@ -121,8 +141,15 @@ public class GioHangActivity extends AppCompatActivity {
         rvCartItems.setAdapter(cartAdapter);
     }
 
+    private void thietLapNguCanhDonHang() {
+        rgCartOrderType.setOnCheckedChangeListener((group, checkedId) -> {
+            boolean dangAnTaiQuan = checkedId == R.id.rbCartDineIn;
+            capNhatHienThiTheoHinhThucDon(dangAnTaiQuan, true);
+        });
+    }
+
     private void thietLapNutDatHang() {
-        btnCheckout.setOnClickListener(v -> xuLyDatHang());
+        btnCheckout.setOnClickListener(v -> moManXacNhanDonHang());
     }
 
     private void thietLapNutHanhDong() {
@@ -130,12 +157,36 @@ public class GioHangActivity extends AppCompatActivity {
         btnContinueShopping.setOnClickListener(v -> finish());
     }
 
+    private void dongBoNguCanhLenForm() {
+        CartManager.NguCanhDonHang nguCanhDonHang = cartManager.layNguCanhDonHang();
+        if (nguCanhDonHang.layHinhThucDon() == DonHang.HinhThucDon.AN_TAI_QUAN) {
+            rbCartDineIn.setChecked(true);
+        } else {
+            rbCartTakeAway.setChecked(true);
+        }
+        etCartTableNumber.setText(nguCanhDonHang.laySoBan());
+        etCartNote.setText(nguCanhDonHang.layGhiChu());
+        capNhatHienThiTheoHinhThucDon(nguCanhDonHang.laAnTaiQuan(), false);
+    }
+
+    private void capNhatHienThiTheoHinhThucDon(boolean dangAnTaiQuan, boolean xoaSoBanNeuKhongCan) {
+        layoutTableNumber.setVisibility(dangAnTaiQuan ? View.VISIBLE : View.GONE);
+        if (!dangAnTaiQuan && xoaSoBanNeuKhongCan) {
+            etCartTableNumber.setText("");
+        }
+        tvCartContextHint.setText(getString(
+                dangAnTaiQuan ? R.string.cart_context_hint_dine_in : R.string.cart_context_hint_takeaway
+        ));
+    }
+
     private void capNhatHienThiGioHang() {
         List<CartManager.CartItem> danhSachMon = cartManager.layDanhSachMon();
         cartAdapter.capNhatDuLieu(danhSachMon);
 
         long tongTien = tinhTongTien(danhSachMon);
-        tvCartTotal.setText(getString(R.string.cart_total_label, dinhDangGia(tongTien)));
+        String tongTienDaDinhDang = dinhDangGia(tongTien);
+        tvCartSubtotal.setText(getString(R.string.cart_subtotal_label, tongTienDaDinhDang));
+        tvCartTotal.setText(getString(R.string.cart_total_label, tongTienDaDinhDang));
 
         boolean gioHangRong = danhSachMon.isEmpty();
         rvCartItems.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
@@ -144,6 +195,7 @@ public class GioHangActivity extends AppCompatActivity {
         btnClearCart.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
         btnCheckout.setEnabled(!gioHangRong);
         btnCheckout.setAlpha(gioHangRong ? 0.5f : 1f);
+        tvCartSubtitle.setText(getString(R.string.cart_subtitle));
     }
 
     private long tinhTongTien(List<CartManager.CartItem> danhSachMon) {
@@ -174,8 +226,7 @@ public class GioHangActivity extends AppCompatActivity {
 
     private void xoaTungMon(@NonNull CartManager.CartItem monTrongGio) {
         String tenMon = monTrongGio.layMonAn().layTen();
-        String khoaMon = cartManager.layKhoaMon(monTrongGio);
-        cartManager.xoaMon(khoaMon);
+        cartManager.xoaMon(cartManager.layKhoaMon(monTrongGio));
         capNhatHienThiGioHang();
         Toast.makeText(this, getString(R.string.cart_item_removed, tenMon), Toast.LENGTH_SHORT).show();
     }
@@ -187,9 +238,11 @@ public class GioHangActivity extends AppCompatActivity {
         }
 
         new AlertDialog.Builder(this)
-                .setMessage(R.string.cart_clear)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                .setTitle(R.string.cart_clear_confirm_title)
+                .setMessage(R.string.cart_clear_confirm_message)
+                .setPositiveButton(R.string.cart_clear_confirm_action, (dialog, which) -> {
                     cartManager.xoaToanBoGio();
+                    dongBoNguCanhLenForm();
                     capNhatHienThiGioHang();
                     Toast.makeText(this, R.string.cart_cleared, Toast.LENGTH_SHORT).show();
                 })
@@ -197,7 +250,7 @@ public class GioHangActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void xuLyDatHang() {
+    private void moManXacNhanDonHang() {
         List<CartManager.CartItem> danhSachMon = cartManager.layDanhSachMon();
         if (danhSachMon.isEmpty()) {
             Toast.makeText(this, R.string.cart_empty_message, Toast.LENGTH_SHORT).show();
@@ -205,8 +258,10 @@ public class GioHangActivity extends AppCompatActivity {
             return;
         }
 
+        luuNguCanhDonHangTuForm(false);
+
         if (!sessionManager.daDangNhap()) {
-            choDatHangSauDangNhap = true;
+            choXacNhanSauDangNhap = true;
             Toast.makeText(this, R.string.cart_checkout_requires_login, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, DangNhapActivity.class);
             intent.putExtra(DangNhapActivity.EXTRA_RETURN_TO_CALLER, true);
@@ -216,7 +271,7 @@ public class GioHangActivity extends AppCompatActivity {
 
         long idNguoiDung = sessionManager.layIdNguoiDungHienTai();
         if (idNguoiDung <= 0) {
-            choDatHangSauDangNhap = true;
+            choXacNhanSauDangNhap = true;
             sessionManager.xoaPhienDangNhap();
             Toast.makeText(this, R.string.session_invalid, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, DangNhapActivity.class);
@@ -225,44 +280,35 @@ public class GioHangActivity extends AppCompatActivity {
             return;
         }
 
-        String maDonHang = taoMaDonHang();
-        String thoiGianDat = layThoiGianHienTai();
-        long tongTien = tinhTongTien(danhSachMon);
-        String chuoiTongTien = dinhDangGia(tongTien);
-
-        List<DonHang.MonTrongDon> danhSachMonDat = new ArrayList<>();
-        for (CartManager.CartItem monTrongGio : danhSachMon) {
-            MonAnDeXuat monAn = monTrongGio.layMonAn();
-            danhSachMonDat.add(new DonHang.MonTrongDon(monAn, monTrongGio.laySoLuong()));
+        if (!luuNguCanhDonHangTuForm(true)) {
+            return;
         }
 
-        long idDonHang = databaseHelper.themDonHang(
-                (int) idNguoiDung,
-                maDonHang,
-                thoiGianDat,
-                chuoiTongTien,
-                DonHang.TrangThai.PENDING_CONFIRMATION,
-                danhSachMonDat
-        );
+        startActivity(new Intent(this, XacNhanDonHangActivity.class));
+    }
 
-        if (idDonHang > 0) {
-            choDatHangSauDangNhap = false;
-            Toast.makeText(this, R.string.cart_checkout_success, Toast.LENGTH_SHORT).show();
-            cartManager.xoaToanBoGio();
-            capNhatHienThiGioHang();
-            finish();
-        } else {
-            Toast.makeText(this, R.string.db_operation_failed, Toast.LENGTH_SHORT).show();
+    private boolean luuNguCanhDonHangTuForm(boolean kiemTraBatBuoc) {
+        DonHang.HinhThucDon hinhThucDon = rbCartDineIn.isChecked()
+                ? DonHang.HinhThucDon.AN_TAI_QUAN
+                : DonHang.HinhThucDon.MANG_DI;
+        String soBan = layTextDaCatKhoangTrang(etCartTableNumber);
+        String ghiChu = layTextDaCatKhoangTrang(etCartNote);
+
+        if (hinhThucDon == DonHang.HinhThucDon.AN_TAI_QUAN && TextUtils.isEmpty(soBan)) {
+            if (kiemTraBatBuoc) {
+                Toast.makeText(this, R.string.cart_validation_table_required, Toast.LENGTH_SHORT).show();
+            }
+            return false;
         }
+
+        cartManager.capNhatNguCanhDonHang(hinhThucDon, soBan, ghiChu);
+        return true;
     }
 
-    private String taoMaDonHang() {
-        long dauThoiGian = System.currentTimeMillis();
-        return getString(R.string.cart_order_code_prefix) + dauThoiGian % 100000;
-    }
-
-    private String layThoiGianHienTai() {
-        SimpleDateFormat dinhDangNgayGio = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        return dinhDangNgayGio.format(new Date());
+    private String layTextDaCatKhoangTrang(EditText editText) {
+        if (editText.getText() == null) {
+            return "";
+        }
+        return editText.getText().toString().trim();
     }
 }

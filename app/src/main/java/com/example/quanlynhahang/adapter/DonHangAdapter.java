@@ -68,6 +68,10 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
         private final TextView tvDonHangTime;
         private final TextView tvDonHangTotal;
         private final TextView tvDonHangStatus;
+        private final TextView tvDonHangType;
+        private final TextView tvDonHangTable;
+        private final TextView tvDonHangPayment;
+        private final TextView tvDonHangNote;
         private final Button btnDonHangDetail;
         private final Button btnDonHangCancel;
         private final LinearLayout layoutDonHangDetails;
@@ -79,6 +83,10 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
             tvDonHangTime = itemView.findViewById(R.id.tvDonHangTime);
             tvDonHangTotal = itemView.findViewById(R.id.tvDonHangTotal);
             tvDonHangStatus = itemView.findViewById(R.id.tvDonHangStatus);
+            tvDonHangType = itemView.findViewById(R.id.tvDonHangType);
+            tvDonHangTable = itemView.findViewById(R.id.tvDonHangTable);
+            tvDonHangPayment = itemView.findViewById(R.id.tvDonHangPayment);
+            tvDonHangNote = itemView.findViewById(R.id.tvDonHangNote);
             btnDonHangDetail = itemView.findViewById(R.id.btnDonHangDetail);
             btnDonHangCancel = itemView.findViewById(R.id.btnDonHangCancel);
             layoutDonHangDetails = itemView.findViewById(R.id.layoutDonHangDetails);
@@ -98,6 +106,14 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
             tvDonHangTime.setText(donHang.layThoiGian());
             tvDonHangTotal.setText(dinhDangGia(donHang.layTongTien()));
             tvDonHangStatus.setText(layTextTrangThai(donHang.layTrangThai()));
+            tvDonHangType.setText(layTextHinhThuc(context, donHang));
+            tvDonHangTable.setText(donHang.coBanAn()
+                    ? context.getString(R.string.order_table_format, donHang.laySoBan())
+                    : context.getString(R.string.order_table_not_required));
+            tvDonHangPayment.setText(layTextThanhToan(context, donHang));
+            tvDonHangNote.setText(donHang.coGhiChu()
+                    ? context.getString(R.string.order_note_format, donHang.layGhiChu())
+                    : context.getString(R.string.order_note_empty));
 
             int mauTrangThai = ContextCompat.getColor(context, layMauTrangThai(donHang.layTrangThai()));
             ViewCompat.setBackgroundTintList(tvDonHangStatus, ColorStateList.valueOf(mauTrangThai));
@@ -153,29 +169,51 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
         return dinhDangSo.format(soTien) + "đ";
     }
 
+    private String layTextHinhThuc(Context context, DonHang donHang) {
+        return context.getString(donHang.laAnTaiQuan()
+                ? R.string.order_type_dine_in
+                : R.string.order_type_take_away);
+    }
+
+    private String layTextThanhToan(Context context, DonHang donHang) {
+        if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG) {
+            return context.getString(R.string.order_payment_status_paid_mock);
+        }
+        if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_GOI_THANH_TOAN) {
+            return context.getString(R.string.order_payment_status_requested);
+        }
+        return context.getString(R.string.order_payment_status_unpaid);
+    }
+
     private int layTextTrangThai(DonHang.TrangThai trangThai) {
-        if (trangThai == DonHang.TrangThai.PENDING_CONFIRMATION) {
+        if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
             return R.string.order_status_pending;
         }
-        if (trangThai == DonHang.TrangThai.CONFIRMED) {
-            return R.string.order_status_confirmed;
+        if (trangThai == DonHang.TrangThai.DANG_CHUAN_BI) {
+            return R.string.order_status_preparing;
         }
-        if (trangThai == DonHang.TrangThai.COMPLETED) {
+        if (trangThai == DonHang.TrangThai.SAN_SANG_PHUC_VU) {
+            return R.string.order_status_ready;
+        }
+        if (trangThai == DonHang.TrangThai.HOAN_THANH) {
             return R.string.order_status_completed;
         }
         return R.string.order_status_canceled;
     }
 
     private int layMauTrangThai(DonHang.TrangThai trangThai) {
-        if (trangThai == DonHang.TrangThai.PENDING_CONFIRMATION) {
+        if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
+            return R.color.warning;
+        }
+        if (trangThai == DonHang.TrangThai.DANG_CHUAN_BI) {
             return R.color.brand_orange;
         }
-        if (trangThai == DonHang.TrangThai.CONFIRMED) {
-            return R.color.brand_green;
+        if (trangThai == DonHang.TrangThai.SAN_SANG_PHUC_VU) {
+            return R.color.primary;
         }
-        if (trangThai == DonHang.TrangThai.COMPLETED) {
-            return R.color.hero_top;
+        if (trangThai == DonHang.TrangThai.HOAN_THANH) {
+            return R.color.success;
         }
-        return R.color.brand_red;
+        return R.color.error;
     }
 }

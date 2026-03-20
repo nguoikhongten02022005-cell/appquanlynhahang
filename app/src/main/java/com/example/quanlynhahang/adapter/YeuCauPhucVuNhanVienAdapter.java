@@ -72,7 +72,7 @@ public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhuc
             Context context = itemView.getContext();
             tvContent.setText(yeuCau.layNoiDung());
             tvTime.setText(yeuCau.layThoiGianGui());
-            boolean dangXuLy = yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.PROCESSING;
+            boolean dangXuLy = yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY;
             tvStatus.setText(dangXuLy ? R.string.service_request_status_processing : R.string.service_request_status_done);
             ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, dangXuLy ? R.color.warning : R.color.success)));
             btnDone.setVisibility(dangXuLy ? View.VISIBLE : View.GONE);

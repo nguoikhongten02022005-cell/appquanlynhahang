@@ -39,10 +39,10 @@
     <color name="outline">#D9CBBE</color>
     <color name="outline_variant">#EADFD5</color>
 
-    <color name="success">#D78A48</color>
+    <color name="success">#2E7D32</color>
     <color name="on_success">@color/white</color>
-    <color name="warning">#E09A4D</color>
-    <color name="on_warning">#4A2A0A</color>
+    <color name="warning">#B7791F</color>
+    <color name="on_warning">@color/white</color>
     <color name="error">#C85A48</color>
     <color name="on_error">@color/white</color>
 

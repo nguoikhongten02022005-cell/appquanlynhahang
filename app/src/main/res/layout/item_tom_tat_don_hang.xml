@@ -34,17 +34,12 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDonHangStatus"
+                style="@style/Widget.Quanlynhahang.StatusChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_button_green"
-                android:paddingStart="@dimen/space_md"
-                android:paddingTop="@dimen/space_xs"
-                android:paddingEnd="@dimen/space_md"
-                android:paddingBottom="@dimen/space_xs"
                 android:text="@string/order_status_pending"
                 android:textColor="@color/text_on_color"
-                android:textSize="12sp"
-                android:textStyle="bold"
                 app:backgroundTint="@color/brand_orange" />
         </LinearLayout>
 
@@ -56,6 +51,43 @@
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             tools:text="12/03/2026 10:30" />
+
+        <TextView
+            android:id="@+id/tvDonHangType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Ăn tại quán" />
+
+        <TextView
+            android:id="@+id/tvDonHangTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            tools:text="Bàn: Bàn 03" />
+
+        <TextView
+            android:id="@+id/tvDonHangPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            tools:text="Thanh toán: Chưa thanh toán" />
+
+        <TextView
+            android:id="@+id/tvDonHangNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            tools:text="Ghi chú: Ít cay" />
 
         <TextView
             android:id="@+id/tvDonHangTotal"

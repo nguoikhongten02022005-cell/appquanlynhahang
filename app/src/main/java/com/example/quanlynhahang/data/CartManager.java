@@ -1,5 +1,6 @@
 package com.example.quanlynhahang.data;
 
+import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 
 import java.util.ArrayList;
@@ -57,10 +58,50 @@ public class CartManager {
         }
     }
 
+    public static class NguCanhDonHang {
+        private DonHang.HinhThucDon hinhThucDon = DonHang.HinhThucDon.MANG_DI;
+        private String soBan = "";
+        private String ghiChu = "";
+
+        public DonHang.HinhThucDon layHinhThucDon() {
+            return hinhThucDon;
+        }
+
+        public String laySoBan() {
+            return soBan;
+        }
+
+        public String layGhiChu() {
+            return ghiChu;
+        }
+
+        public boolean laAnTaiQuan() {
+            return hinhThucDon == DonHang.HinhThucDon.AN_TAI_QUAN;
+        }
+
+        public boolean hopLeDeDatHang() {
+            return !laAnTaiQuan() || !soBan.trim().isEmpty();
+        }
+
+        private void capNhat(DonHang.HinhThucDon hinhThucDon, String soBan, String ghiChu) {
+            this.hinhThucDon = hinhThucDon == null ? DonHang.HinhThucDon.MANG_DI : hinhThucDon;
+            this.soBan = soBan == null ? "" : soBan.trim();
+            this.ghiChu = ghiChu == null ? "" : ghiChu.trim();
+            if (this.hinhThucDon == DonHang.HinhThucDon.MANG_DI) {
+                this.soBan = "";
+            }
+        }
+
+        private void datMacDinh() {
+            capNhat(DonHang.HinhThucDon.MANG_DI, "", "");
+        }
+    }
+
     private static CartManager instance;
 
     private final Map<String, CartItem> itemMap = new LinkedHashMap<>();
     private final List<CartListener> listeners = new ArrayList<>();
+    private final NguCanhDonHang nguCanhDonHang = new NguCanhDonHang();
 
     private CartManager() {
     }
@@ -135,11 +176,12 @@ public class CartManager {
     }
 
     public synchronized void clearCart() {
-        if (itemMap.isEmpty()) {
+        if (itemMap.isEmpty() && laNguCanhMacDinh()) {
             return;
         }
 
         itemMap.clear();
+        nguCanhDonHang.datMacDinh();
         notifyCartChanged();
     }
 
@@ -200,6 +242,28 @@ public class CartManager {
 
     public synchronized String layKhoaMon(CartItem item) {
         return getDishKey(item);
+    }
+
+    public synchronized void capNhatNguCanhDonHang(DonHang.HinhThucDon hinhThucDon, String soBan, String ghiChu) {
+        nguCanhDonHang.capNhat(hinhThucDon, soBan, ghiChu);
+        notifyCartChanged();
+    }
+
+    public synchronized NguCanhDonHang layNguCanhDonHang() {
+        NguCanhDonHang banSao = new NguCanhDonHang();
+        banSao.capNhat(nguCanhDonHang.layHinhThucDon(), nguCanhDonHang.laySoBan(), nguCanhDonHang.layGhiChu());
+        return banSao;
+    }
+
+    public synchronized void datNguCanhMacDinh() {
+        nguCanhDonHang.datMacDinh();
+        notifyCartChanged();
+    }
+
+    private boolean laNguCanhMacDinh() {
+        return nguCanhDonHang.layHinhThucDon() == DonHang.HinhThucDon.MANG_DI
+                && nguCanhDonHang.laySoBan().isEmpty()
+                && nguCanhDonHang.layGhiChu().isEmpty();
     }
 
     private String buildDishKey(MonAnDeXuat dish) {

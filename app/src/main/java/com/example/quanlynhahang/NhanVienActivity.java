@@ -98,36 +98,39 @@ public class NhanVienActivity extends AppCompatActivity {
         orderAdapter = new DonHangNhanVienAdapter(new DonHangNhanVienAdapter.HanhDongListener() {
             @Override
             public void khiXacNhan(DonHang order) {
-                xuLyTrangThaiDonHang(order, DonHang.TrangThai.CONFIRMED);
+                xuLyTrangThaiDonHang(order, DonHang.TrangThai.DANG_CHUAN_BI);
             }
 
             @Override
             public void khiHoanTat(DonHang order) {
-                xuLyTrangThaiDonHang(order, DonHang.TrangThai.COMPLETED);
+                DonHang.TrangThai trangThaiDich = order.layTrangThai() == DonHang.TrangThai.DANG_CHUAN_BI
+                        ? DonHang.TrangThai.SAN_SANG_PHUC_VU
+                        : DonHang.TrangThai.HOAN_THANH;
+                xuLyTrangThaiDonHang(order, trangThaiDich);
             }
 
             @Override
             public void khiHuy(DonHang order) {
-                xuLyTrangThaiDonHang(order, DonHang.TrangThai.CANCELED);
+                xuLyTrangThaiDonHang(order, DonHang.TrangThai.DA_HUY);
             }
         });
         reservationAdapter = new DatBanNhanVienAdapter(new DatBanNhanVienAdapter.HanhDongListener() {
             @Override
             public void khiXacNhan(DatBan reservation) {
-                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.CONFIRMED);
+                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.DA_XAC_NHAN);
             }
 
             @Override
             public void khiHoanTat(DatBan reservation) {
-                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.COMPLETED);
+                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.DA_PHUC_VU);
             }
 
             @Override
             public void khiHuy(DatBan reservation) {
-                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.CANCELED);
+                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.DA_HUY);
             }
         });
-        serviceRequestAdapter = new YeuCauPhucVuNhanVienAdapter(request -> xuLyTrangThaiYeuCau(request, YeuCauPhucVu.TrangThai.DONE));
+        serviceRequestAdapter = new YeuCauPhucVuNhanVienAdapter(request -> xuLyTrangThaiYeuCau(request, YeuCauPhucVu.TrangThai.DA_XU_LY));
 
         rvDonHangs.setAdapter(orderAdapter);
         rvReservations.setAdapter(reservationAdapter);

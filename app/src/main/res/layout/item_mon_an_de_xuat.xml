@@ -63,17 +63,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
+                    android:gravity="top"
                     android:maxLines="2"
+                    android:minLines="2"
                     android:text="@string/dish_bo_luc_lac"
                     android:textColor="@color/on_surface"
-                    android:textSize="15sp"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvDishPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_sm"
+                    android:layout_marginTop="@dimen/space_xs"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="@string/price_145k"
@@ -89,7 +91,9 @@
                 android:layout_marginStart="@dimen/space_md"
                 android:background="@drawable/bg_add_button"
                 android:contentDescription="@string/cd_add_dish"
-                android:padding="@dimen/space_sm"
+                android:translationY="2dp"
+                android:padding="0dp"
+                android:scaleType="center"
                 android:src="@drawable/ic_add_24"
                 app:tint="@color/add_button_icon_enabled" />
         </LinearLayout>

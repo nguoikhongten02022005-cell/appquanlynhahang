@@ -6,7 +6,7 @@
     android:padding="20dp">
 
     <RadioGroup
-        android:id="@+id/radioGroupAdminUserRole"
+        android:id="@+id/radioGroupAdminVaiTroNguoiDung"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

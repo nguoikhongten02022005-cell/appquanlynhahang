@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_sm"
+    android:background="@drawable/bg_dish_card"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/space_sm">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp">
+
+        <ImageView
+            android:id="@+id/ivMonTrongDonImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_dish_image_placeholder"
+            android:contentDescription="@string/cd_dish_image"
+            android:scaleType="fitCenter"
+            android:src="@drawable/menu_1" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_sm"
+        android:layout_marginEnd="@dimen/space_sm"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvMonTrongDonName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/dish_bo_luc_lac"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMonTrongDonQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="Số lượng: 2" />
+
+        <TextView
+            android:id="@+id/tvMonTrongDonPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/brand_orange"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Giá: 145.000 đ" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutMonTrongDonActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/btnMonTrongDonDecrease"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_icon_circle"
+            android:contentDescription="@string/cd_cart_decrease"
+            android:padding="8dp"
+            android:src="@drawable/ic_remove_24"
+            app:tint="@color/text_primary" />
+
+        <ImageButton
+            android:id="@+id/btnMonTrongDonIncrease"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/space_xs"
+            android:background="@drawable/bg_add_button"
+            android:contentDescription="@string/cd_cart_increase"
+            android:padding="8dp"
+            android:src="@drawable/ic_add_24"
+            app:tint="@color/text_on_color" />
+
+        <ImageButton
+            android:id="@+id/btnMonTrongDonRemove"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="@dimen/space_xs"
+            android:background="@drawable/bg_icon_circle"
+            android:contentDescription="@string/cd_cart_remove"
+            android:padding="8dp"
+            android:src="@drawable/ic_remove_24"
+            app:tint="@color/brand_red" />
+    </LinearLayout>
+
+</LinearLayout>

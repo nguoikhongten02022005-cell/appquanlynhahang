@@ -13,16 +13,15 @@
     <string name="home_header_caption">Đặt món, đặt bàn và gọi phục vụ nhanh</string>
     <string name="home_hero_eyebrow">Tối nay</string>
     <string name="home_hero_title">Chọn món và giữ bàn thật nhanh</string>
-    <string name="home_hero_subtitle">Mở menu để tìm món hoặc chuyển sang đặt bàn.</string>
-    <string name="home_hero_cta">Mở menu</string>
+    <string name="home_hero_subtitle">Mở thực đơn để tìm món hoặc chuyển sang đặt bàn.</string>
     <string name="home_hero_meta">Nhận giữ chỗ đến 21:30</string>
-    <string name="home_quick_order_subtitle">Mở menu để chọn món</string>
+    <string name="home_quick_order_subtitle">Mở thực đơn để chọn món</string>
     <string name="home_quick_book_subtitle">Đặt bàn hoặc gửi yêu cầu</string>
     <string name="home_category_hint">Mở nhanh đúng nhóm món bạn muốn</string>
     <string name="home_recommended_hint">Các món nổi bật đang phục vụ</string>
 
     <string name="bottom_nav_home">Trang chủ</string>
-    <string name="bottom_nav_menu">Menu</string>
+    <string name="bottom_nav_menu">Thực đơn</string>
     <string name="bottom_nav_orders">Đơn &amp; Đặt bàn</string>
     <string name="bottom_nav_cart">Giỏ hàng</string>
     <string name="bottom_nav_account">Tài khoản</string>
@@ -227,11 +226,11 @@
     <string name="employee_section_orders">Xem đơn hàng</string>
     <string name="employee_section_orders_desc">Quan sát danh sách đơn đang chờ xác nhận hoặc đang phục vụ.</string>
     <string name="admin_section_dishes">Quản lý món ăn</string>
-    <string name="admin_section_dishes_desc">Điểm vào cho quản lý menu, trạng thái phục vụ và danh mục món.</string>
+    <string name="admin_section_dishes_desc">Điểm vào cho quản lý thực đơn, trạng thái phục vụ và danh mục món.</string>
     <string name="admin_section_accounts">Quản lý tài khoản</string>
     <string name="admin_section_accounts_desc">Điểm vào cho quản trị người dùng, vai trò và trạng thái hoạt động.</string>
     <string name="admin_section_overview">Tổng quan / thống kê</string>
-    <string name="admin_section_overview_desc">Không gian dành cho dashboard vận hành và số liệu nhà hàng.</string>
+    <string name="admin_section_overview_desc">Không gian dành cho bảng điều khiển vận hành và số liệu nhà hàng.</string>
 
     <string name="employee_title">Bảng điều khiển nhân viên</string>
     <string name="employee_subtitle">Theo dõi đơn hàng, đặt bàn và yêu cầu phục vụ cần xử lý.</string>
@@ -265,7 +264,7 @@
     <string name="employee_status_update_failed">Không thể cập nhật trạng thái, vui lòng thử lại</string>
 
     <string name="admin_title">Bảng điều khiển quản trị</string>
-    <string name="admin_subtitle">Quản lý tổng quan vận hành, menu món ăn và tài khoản người dùng.</string>
+    <string name="admin_subtitle">Quản lý tổng quan vận hành, thực đơn món ăn và tài khoản người dùng.</string>
     <string name="admin_tab_overview">Tổng quan</string>
     <string name="admin_tab_dishes">Món ăn</string>
     <string name="admin_tab_users">Tài khoản</string>
@@ -293,7 +292,7 @@
     <string name="admin_filter_customers">Khách hàng</string>
     <string name="admin_filter_employees">Nhân viên</string>
     <string name="admin_filter_admins">Quản trị viên</string>
-    <string name="admin_change_role">Đổi role</string>
+    <string name="admin_change_role">Đổi vai trò</string>
     <string name="admin_lock_user">Khoá</string>
     <string name="admin_unlock_user">Mở khoá</string>
     <string name="admin_user_status_active">Đang hoạt động</string>
@@ -309,7 +308,7 @@
     <string name="admin_dish_price_hint">Giá bán</string>
     <string name="admin_dish_category_hint">Danh mục</string>
     <string name="admin_dish_description_hint">Mô tả món ăn</string>
-    <string name="admin_dish_image_hint">Tên drawable ảnh (tuỳ chọn)</string>
+    <string name="admin_dish_image_hint">Tên tài nguyên ảnh (tuỳ chọn)</string>
     <string name="admin_dish_score_hint">Điểm đề xuất</string>
     <string name="admin_dish_available_switch">Đang phục vụ</string>
     <string name="admin_save">Lưu</string>

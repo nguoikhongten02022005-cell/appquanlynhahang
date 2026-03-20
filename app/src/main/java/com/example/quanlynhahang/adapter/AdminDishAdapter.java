@@ -20,24 +20,24 @@ import java.util.List;
 
 public class AdminDishAdapter extends RecyclerView.Adapter<AdminDishAdapter.AdminDishViewHolder> {
 
-    public interface ActionListener {
-        void onEdit(DatabaseHelper.DishRecord dishRecord);
+    public interface HanhDongListener {
+        void khiSua(DatabaseHelper.DishRecord dishRecord);
 
-        void onDelete(DatabaseHelper.DishRecord dishRecord);
+        void khiXoa(DatabaseHelper.DishRecord dishRecord);
 
-        void onToggleAvailability(DatabaseHelper.DishRecord dishRecord);
+        void khiBatTatTrangThaiPhucVu(DatabaseHelper.DishRecord dishRecord);
     }
 
-    private final List<DatabaseHelper.DishRecord> dishes = new ArrayList<>();
-    private final ActionListener actionListener;
+    private final List<DatabaseHelper.DishRecord> danhSachMon = new ArrayList<>();
+    private final HanhDongListener hanhDongListener;
 
-    public AdminDishAdapter(ActionListener actionListener) {
-        this.actionListener = actionListener;
+    public AdminDishAdapter(HanhDongListener hanhDongListener) {
+        this.hanhDongListener = hanhDongListener;
     }
 
-    public void submitList(List<DatabaseHelper.DishRecord> newDishes) {
-        dishes.clear();
-        dishes.addAll(newDishes);
+    public void capNhatDanhSach(List<DatabaseHelper.DishRecord> danhSachMoi) {
+        danhSachMon.clear();
+        danhSachMon.addAll(danhSachMoi);
         notifyDataSetChanged();
     }
 
@@ -50,12 +50,12 @@ public class AdminDishAdapter extends RecyclerView.Adapter<AdminDishAdapter.Admi
 
     @Override
     public void onBindViewHolder(@NonNull AdminDishViewHolder holder, int position) {
-        holder.bind(dishes.get(position));
+        holder.ganDuLieu(danhSachMon.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return dishes.size();
+        return danhSachMon.size();
     }
 
     class AdminDishViewHolder extends RecyclerView.ViewHolder {
@@ -80,19 +80,19 @@ public class AdminDishAdapter extends RecyclerView.Adapter<AdminDishAdapter.Admi
             btnToggle = itemView.findViewById(R.id.btnAdminDishToggle);
         }
 
-        void bind(DatabaseHelper.DishRecord dishRecord) {
+        void ganDuLieu(DatabaseHelper.DishRecord banGhiMon) {
             Context context = itemView.getContext();
-            tvName.setText(dishRecord.getDishItem().getTenMon());
-            tvPrice.setText(dishRecord.getDishItem().getGiaBan());
-            tvCategory.setText(context.getString(R.string.admin_dish_category_format, dishRecord.getDishItem().getTenDanhMuc()));
-            tvDescription.setText(dishRecord.getDescription());
-            boolean available = dishRecord.getDishItem().isConPhucVu();
-            tvStatus.setText(available ? R.string.dish_status_available : R.string.dish_status_unavailable);
-            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, available ? R.color.success : R.color.error)));
-            btnToggle.setText(available ? R.string.admin_toggle_dish_unavailable : R.string.admin_toggle_dish_available);
-            btnEdit.setOnClickListener(v -> actionListener.onEdit(dishRecord));
-            btnDelete.setOnClickListener(v -> actionListener.onDelete(dishRecord));
-            btnToggle.setOnClickListener(v -> actionListener.onToggleAvailability(dishRecord));
+            tvName.setText(banGhiMon.layMonAn().layTenMon());
+            tvPrice.setText(banGhiMon.layMonAn().layGiaBan());
+            tvCategory.setText(context.getString(R.string.admin_dish_category_format, banGhiMon.layMonAn().layTenDanhMuc()));
+            tvDescription.setText(banGhiMon.layMoTa());
+            boolean conPhucVu = banGhiMon.layMonAn().laConPhucVu();
+            tvStatus.setText(conPhucVu ? R.string.dish_status_available : R.string.dish_status_unavailable);
+            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, conPhucVu ? R.color.success : R.color.error)));
+            btnToggle.setText(conPhucVu ? R.string.admin_toggle_dish_unavailable : R.string.admin_toggle_dish_available);
+            btnEdit.setOnClickListener(v -> hanhDongListener.khiSua(banGhiMon));
+            btnDelete.setOnClickListener(v -> hanhDongListener.khiXoa(banGhiMon));
+            btnToggle.setOnClickListener(v -> hanhDongListener.khiBatTatTrangThaiPhucVu(banGhiMon));
         }
     }
 }

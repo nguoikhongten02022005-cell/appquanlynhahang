@@ -12,22 +12,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quanlynhahang">
 
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".DangKyActivity" />
 
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".DangNhapActivity" />
 
-        <activity android:name=".CartActivity" />
+        <activity android:name=".GioHangActivity" />
 
-        <activity android:name=".EmployeeActivity" />
+        <activity android:name=".NhanVienActivity" />
 
-        <activity android:name=".AdminActivity" />
+        <activity android:name=".QuanTriActivity" />
 
         <activity
             android:name=".MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".LauncherActivity"
+            android:name=".KhoiDongActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

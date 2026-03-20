@@ -3,27 +3,27 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="brand_primary">#78B383</color>
-    <color name="brand_primary_dark">#4E8559</color>
-    <color name="brand_primary_container">#193421</color>
-    <color name="brand_secondary">#F2A44E</color>
-    <color name="brand_secondary_dark">#D2872F</color>
-    <color name="brand_secondary_container">#4D2D08</color>
-    <color name="brand_tertiary">#D9B06C</color>
-    <color name="brand_tertiary_container">#493314</color>
+    <color name="brand_primary">#F0A876</color>
+    <color name="brand_primary_dark">#C97A46</color>
+    <color name="brand_primary_container">#4A2410</color>
+    <color name="brand_secondary">#F2A45F</color>
+    <color name="brand_secondary_dark">#D78946</color>
+    <color name="brand_secondary_container">#5A3417</color>
+    <color name="brand_tertiary">#E6B27D</color>
+    <color name="brand_tertiary_container">#5B391A</color>
 
     <color name="primary">@color/brand_primary</color>
-    <color name="on_primary">#103017</color>
+    <color name="on_primary">#4A2209</color>
     <color name="primary_container">@color/brand_primary_container</color>
-    <color name="on_primary_container">#D5E9D7</color>
+    <color name="on_primary_container">#FFE1CC</color>
     <color name="secondary">@color/brand_secondary</color>
-    <color name="on_secondary">#442100</color>
+    <color name="on_secondary">#4B250A</color>
     <color name="secondary_container">@color/brand_secondary_container</color>
-    <color name="on_secondary_container">#FFE2C4</color>
+    <color name="on_secondary_container">#FFE3CC</color>
     <color name="tertiary">@color/brand_tertiary</color>
-    <color name="on_tertiary">#3A2507</color>
+    <color name="on_tertiary">#482708</color>
     <color name="tertiary_container">@color/brand_tertiary_container</color>
-    <color name="on_tertiary_container">#F9E4C2</color>
+    <color name="on_tertiary_container">#FFE5CC</color>
 
     <color name="background">#111511</color>
     <color name="on_background">#E8ECE5</color>
@@ -36,46 +36,46 @@
     <color name="inverse_surface">#E6EAE3</color>
     <color name="inverse_on_surface">#1A1F1A</color>
 
-    <color name="outline">#435043</color>
-    <color name="outline_variant">#324032</color>
+    <color name="outline">#5B4A40</color>
+    <color name="outline_variant">#493A32</color>
 
-    <color name="success">#74C47A</color>
-    <color name="on_success">#123816</color>
-    <color name="warning">#F0B25C</color>
-    <color name="on_warning">#422700</color>
-    <color name="error">#F19C91</color>
+    <color name="success">#F1B282</color>
+    <color name="on_success">#4C240B</color>
+    <color name="warning">#F3B56D</color>
+    <color name="on_warning">#4A2807</color>
+    <color name="error">#F1A095</color>
     <color name="on_error">#561D16</color>
 
     <color name="nav_selected">@color/primary</color>
-    <color name="nav_unselected">#8C978B</color>
-    <color name="nav_indicator">#233B29</color>
+    <color name="nav_unselected">#A9968A</color>
+    <color name="nav_indicator">#4C2A16</color>
 
-    <color name="ripple_brand">#3378B383</color>
-    <color name="ripple_accent">#33F2A44E</color>
+    <color name="ripple_brand">#33F0A876</color>
+    <color name="ripple_accent">#33F2A45F</color>
     <color name="ripple_neutral">#1FE8ECE5</color>
 
-    <color name="hero_gradient_start">#193421</color>
-    <color name="hero_gradient_center">#2A5633</color>
-    <color name="hero_gradient_end">#7A4B11</color>
+    <color name="hero_gradient_start">#4C2712</color>
+    <color name="hero_gradient_center">#7C4523</color>
+    <color name="hero_gradient_end">#A7642F</color>
     <color name="hero_overlay">#1F000000</color>
     <color name="hero_glow">#1FFFFFFF</color>
     <color name="hero_decor_light">#17FFFFFF</color>
     <color name="hero_decor_dark">#22000000</color>
 
-    <color name="category_selected_bg">#233B29</color>
-    <color name="category_unselected_bg">#1D231D</color>
-    <color name="category_selected_icon">#9FD4A7</color>
-    <color name="category_unselected_icon">#94A196</color>
+    <color name="category_selected_bg">#4A2815</color>
+    <color name="category_unselected_bg">#1D1917</color>
+    <color name="category_selected_icon">#F2B184</color>
+    <color name="category_unselected_icon">#B09E93</color>
 
-    <color name="status_available_bg">#1D3820</color>
-    <color name="status_available_text">#8FD796</color>
+    <color name="status_available_bg">#4A2815</color>
+    <color name="status_available_text">#F1B68B</color>
     <color name="status_unavailable_bg">#44221F</color>
     <color name="status_unavailable_text">#F2A9A0</color>
 
-    <color name="add_button_enabled">@color/primary</color>
-    <color name="add_button_disabled">#344134</color>
-    <color name="add_button_icon_enabled">#123018</color>
-    <color name="add_button_icon_disabled">#8B9A8C</color>
+    <color name="add_button_enabled">@color/secondary</color>
+    <color name="add_button_disabled">#4B3D37</color>
+    <color name="add_button_icon_enabled">#4B250A</color>
+    <color name="add_button_icon_disabled">#A89589</color>
 
     <color name="brand_green">@color/brand_primary</color>
     <color name="brand_orange">@color/brand_secondary</color>

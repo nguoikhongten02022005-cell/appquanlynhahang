@@ -1,6 +1,6 @@
 package com.example.quanlynhahang.data;
 
-import com.example.quanlynhahang.model.RecommendedDishItem;
+import com.example.quanlynhahang.model.MonAnDeXuat;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -14,30 +14,46 @@ public class CartManager {
     }
 
     public static class CartItem {
-        private final RecommendedDishItem dish;
+        private final MonAnDeXuat dish;
         private int quantity;
 
-        public CartItem(RecommendedDishItem dish, int quantity) {
+        public CartItem(MonAnDeXuat dish, int quantity) {
             this.dish = dish;
             this.quantity = quantity;
         }
 
-        public RecommendedDishItem getDish() {
+        public MonAnDeXuat getDish() {
             return dish;
+        }
+
+        public MonAnDeXuat layMonAn() {
+            return getDish();
         }
 
         public int getQuantity() {
             return quantity;
         }
 
+        public int laySoLuong() {
+            return getQuantity();
+        }
+
         public void increaseQuantity() {
             quantity++;
+        }
+
+        public void tangSoLuong() {
+            increaseQuantity();
         }
 
         public void decreaseQuantity() {
             if (quantity > 0) {
                 quantity--;
             }
+        }
+
+        public void giamSoLuong() {
+            decreaseQuantity();
         }
     }
 
@@ -56,7 +72,7 @@ public class CartManager {
         return instance;
     }
 
-    public synchronized void addToCart(RecommendedDishItem dish) {
+    public synchronized void addToCart(MonAnDeXuat dish) {
         if (dish == null) {
             return;
         }
@@ -72,6 +88,10 @@ public class CartManager {
         notifyCartChanged();
     }
 
+    public synchronized void themVaoGio(MonAnDeXuat dish) {
+        addToCart(dish);
+    }
+
     public synchronized void increaseQuantity(String dishKey) {
         CartItem item = itemMap.get(dishKey);
         if (item == null) {
@@ -82,6 +102,10 @@ public class CartManager {
         notifyCartChanged();
     }
 
+    public synchronized void tangSoLuong(String dishKey) {
+        increaseQuantity(dishKey);
+    }
+
     public synchronized void decreaseQuantity(String dishKey) {
         CartItem item = itemMap.get(dishKey);
         if (item == null) {
@@ -89,17 +113,25 @@ public class CartManager {
         }
 
         item.decreaseQuantity();
-        if (item.getQuantity() <= 0) {
+        if (item.laySoLuong() <= 0) {
             itemMap.remove(dishKey);
         }
 
         notifyCartChanged();
     }
 
+    public synchronized void giamSoLuong(String dishKey) {
+        decreaseQuantity(dishKey);
+    }
+
     public synchronized void removeItem(String dishKey) {
         if (itemMap.remove(dishKey) != null) {
             notifyCartChanged();
         }
+    }
+
+    public synchronized void xoaMon(String dishKey) {
+        removeItem(dishKey);
     }
 
     public synchronized void clearCart() {
@@ -111,20 +143,36 @@ public class CartManager {
         notifyCartChanged();
     }
 
+    public synchronized void xoaToanBoGio() {
+        clearCart();
+    }
+
     public synchronized List<CartItem> getItems() {
         return new ArrayList<>(itemMap.values());
+    }
+
+    public synchronized List<CartItem> layDanhSachMon() {
+        return getItems();
     }
 
     public synchronized int getTotalQuantity() {
         int total = 0;
         for (CartItem item : itemMap.values()) {
-            total += item.getQuantity();
+            total += item.laySoLuong();
         }
         return total;
     }
 
+    public synchronized int layTongSoLuong() {
+        return getTotalQuantity();
+    }
+
     public synchronized boolean isEmpty() {
         return itemMap.isEmpty();
+    }
+
+    public synchronized boolean laGioHangRong() {
+        return isEmpty();
     }
 
     public synchronized void addListener(CartListener listener) {
@@ -134,16 +182,28 @@ public class CartManager {
         listeners.add(listener);
     }
 
+    public synchronized void themLangNghe(CartListener listener) {
+        addListener(listener);
+    }
+
     public synchronized void removeListener(CartListener listener) {
         listeners.remove(listener);
+    }
+
+    public synchronized void xoaLangNghe(CartListener listener) {
+        removeListener(listener);
     }
 
     public synchronized String getDishKey(CartItem item) {
         return buildDishKey(item.getDish());
     }
 
-    private String buildDishKey(RecommendedDishItem dish) {
-        return dish.getName() + "|" + dish.getPrice();
+    public synchronized String layKhoaMon(CartItem item) {
+        return getDishKey(item);
+    }
+
+    private String buildDishKey(MonAnDeXuat dish) {
+        return dish.layTenMon() + "|" + dish.layGiaBan();
     }
 
     private void notifyCartChanged() {

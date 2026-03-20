@@ -62,7 +62,7 @@
             android:textSize="13sp" />
 
         <TextView
-            android:id="@+id/tvAdminUserRole"
+            android:id="@+id/tvAdminVaiTroNguoiDung"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -76,7 +76,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/btnAdminUserRole"
+                android:id="@+id/btnAdminVaiTroNguoiDung"
                 style="@style/Widget.Quanlynhahang.FilledButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

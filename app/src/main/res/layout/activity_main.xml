@@ -39,7 +39,7 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/account_avatar_content_description"
                 android:src="@drawable/ic_person_24"
-                app:tint="@color/primary" />
+                app:tint="@color/brand_orange" />
         </FrameLayout>
 
         <LinearLayout

@@ -3,24 +3,24 @@ package com.example.quanlynhahang.helper;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.quanlynhahang.AdminActivity;
-import com.example.quanlynhahang.EmployeeActivity;
+import com.example.quanlynhahang.QuanTriActivity;
+import com.example.quanlynhahang.NhanVienActivity;
 import com.example.quanlynhahang.MainActivity;
-import com.example.quanlynhahang.model.UserRole;
+import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
 public final class DieuHuongVaiTroHelper {
 
     private DieuHuongVaiTroHelper() {
     }
 
-    public static Intent taoIntentTheoVaiTro(Context context, UserRole vaiTro) {
+    public static Intent taoIntentTheoVaiTro(Context context, VaiTroNguoiDung vaiTro) {
         Class<?> dichDen = MainActivity.class;
-        UserRole vaiTroHienTai = vaiTro != null ? vaiTro : UserRole.KHACH_HANG;
+        VaiTroNguoiDung vaiTroHienTai = vaiTro != null ? vaiTro : VaiTroNguoiDung.KHACH_HANG;
 
-        if (vaiTroHienTai == UserRole.NHAN_VIEN) {
-            dichDen = EmployeeActivity.class;
-        } else if (vaiTroHienTai == UserRole.ADMIN) {
-            dichDen = AdminActivity.class;
+        if (vaiTroHienTai == VaiTroNguoiDung.NHAN_VIEN) {
+            dichDen = NhanVienActivity.class;
+        } else if (vaiTroHienTai == VaiTroNguoiDung.ADMIN) {
+            dichDen = QuanTriActivity.class;
         }
 
         return new Intent(context, dichDen);

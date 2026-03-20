@@ -14,14 +14,14 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.quanlynhahang.R;
-import com.example.quanlynhahang.model.AdminDashboardStats;
-import com.example.quanlynhahang.model.EmployeeDashboardStats;
-import com.example.quanlynhahang.model.Order;
-import com.example.quanlynhahang.model.RecommendedDishItem;
-import com.example.quanlynhahang.model.Reservation;
-import com.example.quanlynhahang.model.ServiceRequest;
-import com.example.quanlynhahang.model.User;
-import com.example.quanlynhahang.model.UserRole;
+import com.example.quanlynhahang.model.ThongKeTongQuanAdmin;
+import com.example.quanlynhahang.model.ThongKeTongQuanNhanVien;
+import com.example.quanlynhahang.model.DonHang;
+import com.example.quanlynhahang.model.MonAnDeXuat;
+import com.example.quanlynhahang.model.DatBan;
+import com.example.quanlynhahang.model.YeuCauPhucVu;
+import com.example.quanlynhahang.model.NguoiDung;
+import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -40,8 +40,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "restaurant.db";
     private static final int DATABASE_VERSION = 8;
 
-    private static final String TEN_ANH_MAC_DINH = "ic_restaurant_24";
-    private static final String TEN_ANH_DO_UONG = "ic_local_drink_24";
+    private static final String TEN_ANH_MAC_DINH = "menu_1";
+    private static final String TEN_ANH_MON_LAU = "dish_6";
+    private static final String TEN_ANH_SALAD = "menu_2";
+    private static final String TEN_ANH_DO_UONG = "image3";
     private static final String BAN_MAC_DINH = "Bàn 01";
     private static final String EMAIL_TAI_KHOAN_TEST_KHACH_HANG = "kh1";
     private static final String SDT_TAI_KHOAN_TEST_KHACH_HANG = "0123456789";
@@ -193,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_TIME, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_TOTAL_PRICE, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_STATUS,
-                "TEXT NOT NULL DEFAULT '" + Order.Status.PENDING_CONFIRMATION.name() + "'");
+                "TEXT NOT NULL DEFAULT '" + DonHang.TrangThai.PENDING_CONFIRMATION.name() + "'");
 
         damBaoCotTonTai(db, TABLE_ORDER_ITEM, COL_ORDER_ITEM_ORDER_ID, "INTEGER NOT NULL DEFAULT 0");
         damBaoCotTonTai(db, TABLE_ORDER_ITEM, COL_ORDER_ITEM_DISH_NAME, "TEXT NOT NULL DEFAULT ''");
@@ -210,13 +212,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_GUEST_COUNT, "INTEGER NOT NULL DEFAULT 1");
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_NOTE, "TEXT");
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_STATUS,
-                "TEXT NOT NULL DEFAULT '" + Reservation.Status.PENDING_APPROVAL.name() + "'");
+                "TEXT NOT NULL DEFAULT '" + DatBan.TrangThai.PENDING_APPROVAL.name() + "'");
 
         damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_USER_ID, "INTEGER NOT NULL DEFAULT 0");
         damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_CONTENT, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_SENT_TIME, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_STATUS,
-                "TEXT NOT NULL DEFAULT '" + ServiceRequest.Status.PROCESSING.name() + "'");
+                "TEXT NOT NULL DEFAULT '" + YeuCauPhucVu.TrangThai.PROCESSING.name() + "'");
     }
 
     private void damBaoDuLieuMacDinh(SQLiteDatabase db) {
@@ -299,15 +301,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void chuanHoaDuLieuNguoiDung(SQLiteDatabase db) {
         ContentValues valuesVaiTro = new ContentValues();
-        valuesVaiTro.put(COL_USER_ROLE, UserRole.KHACH_HANG.name());
+        valuesVaiTro.put(COL_USER_ROLE, VaiTroNguoiDung.KHACH_HANG.name());
         db.update(
                 TABLE_USER,
                 valuesVaiTro,
                 COL_USER_ROLE + " IS NULL OR TRIM(" + COL_USER_ROLE + ") = '' OR UPPER(TRIM(" + COL_USER_ROLE + ")) NOT IN (?, ?, ?)",
                 new String[]{
-                        UserRole.KHACH_HANG.name(),
-                        UserRole.NHAN_VIEN.name(),
-                        UserRole.ADMIN.name()
+                        VaiTroNguoiDung.KHACH_HANG.name(),
+                        VaiTroNguoiDung.NHAN_VIEN.name(),
+                        VaiTroNguoiDung.ADMIN.name()
                 }
         );
 
@@ -380,10 +382,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public long insertUser(String name, String email, String phone, String password) {
-        return insertUser(name, email, phone, password, UserRole.KHACH_HANG, true);
+        return insertUser(name, email, phone, password, VaiTroNguoiDung.KHACH_HANG, true);
     }
 
-    public long insertUser(String name, String email, String phone, String password, UserRole role, boolean isActive) {
+    public long insertUser(String name, String email, String phone, String password, VaiTroNguoiDung role, boolean isActive) {
         if (TextUtils.isEmpty(name)
                 || TextUtils.isEmpty(email)
                 || TextUtils.isEmpty(phone)
@@ -395,7 +397,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return insertUser(db, name, email, phone, password, role, isActive);
     }
 
-    private long insertUser(SQLiteDatabase db, String name, String email, String phone, String password, UserRole role, boolean isActive) {
+    private long insertUser(SQLiteDatabase db, String name, String email, String phone, String password, VaiTroNguoiDung role, boolean isActive) {
         if (isPhoneInUse(phone, -1)) {
             return -1;
         }
@@ -405,7 +407,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_USER_EMAIL, email);
         values.put(COL_USER_PHONE, phone);
         values.put(COL_USER_PASSWORD, hashPassword(password));
-        values.put(COL_USER_ROLE, role != null ? role.name() : UserRole.KHACH_HANG.name());
+        values.put(COL_USER_ROLE, role != null ? role.name() : VaiTroNguoiDung.KHACH_HANG.name());
         values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
 
         try {
@@ -420,7 +422,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Nullable
-    public User getUserByEmail(String email) {
+    public NguoiDung getUserByEmail(String email) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
@@ -447,7 +449,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Nullable
-    public User getUserById(long userId) {
+    public NguoiDung getUserById(long userId) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
@@ -474,7 +476,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Nullable
-    public User getUserByPhone(String phone) {
+    public NguoiDung layNguoiDungTheoId(long userId) {
+        return getUserById(userId);
+    }
+
+    @Nullable
+    public NguoiDung getUserByPhone(String phone) {
         if (TextUtils.isEmpty(phone)) {
             return null;
         }
@@ -502,6 +509,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
+    }
+
+    @Nullable
+    public NguoiDung layNguoiDungTheoSoDienThoai(String phone) {
+        return getUserByPhone(phone);
     }
 
     public boolean isPhoneInUse(String phone, long excludeUserId) {
@@ -538,8 +550,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean soDienThoaiDaDuocSuDung(String phone, long excludeUserId) {
+        return isPhoneInUse(phone, excludeUserId);
+    }
+
     @Nullable
-    public User checkLogin(String usernameOrEmail, String password) {
+    public NguoiDung checkLogin(String usernameOrEmail, String password) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
@@ -563,9 +579,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return null;
             }
 
-            User user = mapUser(cursor);
+            NguoiDung user = mapUser(cursor);
             if (user != null && !isHashedPassword(storedPassword)) {
-                migrateLegacyPasswordHash(user.getId(), password);
+                migrateLegacyPasswordHash(user.layId(), password);
             }
             return user;
         } finally {
@@ -573,6 +589,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
+    }
+
+    @Nullable
+    public NguoiDung kiemTraDangNhap(String usernameOrEmail, String password) {
+        return checkLogin(usernameOrEmail, password);
     }
 
     public boolean updateUserProfile(long userId, String name, String phone) {
@@ -594,6 +615,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
+    public boolean capNhatThongTinNguoiDung(long userId, String name, String phone) {
+        return updateUserProfile(userId, name, phone);
+    }
+
     public boolean updateUserPassword(long userId, String newPassword) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -608,12 +633,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    public List<User> getAllUsers() {
+    public boolean capNhatMatKhauNguoiDung(long userId, String newPassword) {
+        return updateUserPassword(userId, newPassword);
+    }
+
+    public List<NguoiDung> getAllUsers() {
         return getUsersByRole(null);
     }
 
-    public List<User> getUsersByRole(@Nullable UserRole role) {
-        List<User> users = new ArrayList<>();
+    public List<NguoiDung> layTatCaNguoiDung() {
+        return getAllUsers();
+    }
+
+    public List<NguoiDung> getUsersByRole(@Nullable VaiTroNguoiDung role) {
+        List<NguoiDung> users = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
@@ -645,7 +678,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return users;
     }
 
-    public boolean updateUserRole(long userId, UserRole role) {
+    public List<NguoiDung> layNguoiDungTheoVaiTro(@Nullable VaiTroNguoiDung role) {
+        return getUsersByRole(role);
+    }
+
+    public boolean updateVaiTroNguoiDung(long userId, VaiTroNguoiDung role) {
         if (userId <= 0 || role == null) {
             return false;
         }
@@ -654,6 +691,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_USER_ROLE, role.name());
         int rows = db.update(TABLE_USER, values, COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
         return rows > 0;
+    }
+
+    public boolean capNhatVaiTroNguoiDung(long userId, VaiTroNguoiDung role) {
+        return updateVaiTroNguoiDung(userId, role);
     }
 
     public boolean updateUserActive(long userId, boolean isActive) {
@@ -667,11 +708,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
+    public boolean capNhatTrangThaiHoatDongNguoiDung(long userId, boolean isActive) {
+        return updateUserActive(userId, isActive);
+    }
+
     public int countAllUsers() {
         return demSoBanGhi(TABLE_USER, null, null);
     }
 
-    public int countUsersByRole(UserRole role) {
+    public int countUsersByRole(VaiTroNguoiDung role) {
         if (role == null) {
             return countAllUsers();
         }
@@ -683,13 +728,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         seedDishesIfEmpty(context == null ? appContext : context.getApplicationContext(), db);
     }
 
-    public List<DishRecord> getAllDishes() {
+    public List<DishRecord> layTatCaMonAn() {
         return queryDishes(null, null);
     }
 
-    public List<DishRecord> searchDishes(@Nullable String keyword) {
+    public List<DishRecord> timKiemMonAn(@Nullable String keyword) {
         if (TextUtils.isEmpty(keyword)) {
-            return getAllDishes();
+            return layTatCaMonAn();
         }
         String trimmedKeyword = keyword.trim();
         String likeValue = "%" + trimmedKeyword + "%";
@@ -699,13 +744,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
-    public long insertDishRecord(String name,
-                                 String price,
-                                 String description,
-                                 @Nullable String imageResName,
-                                 boolean isAvailable,
-                                 @Nullable String category,
-                                 int recommendScore) {
+    public long themBanGhiMonAn(String name,
+                                String price,
+                                String description,
+                                @Nullable String imageResName,
+                                boolean isAvailable,
+                                @Nullable String category,
+                                int recommendScore) {
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)) {
             return -1;
         }
@@ -714,14 +759,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.insert(TABLE_DISH, null, values);
     }
 
-    public boolean updateDishRecord(long dishId,
-                                    String name,
-                                    String price,
-                                    String description,
-                                    @Nullable String imageResName,
-                                    boolean isAvailable,
-                                    @Nullable String category,
-                                    int recommendScore) {
+    public boolean capNhatBanGhiMonAn(long dishId,
+                                      String name,
+                                      String price,
+                                      String description,
+                                      @Nullable String imageResName,
+                                      boolean isAvailable,
+                                      @Nullable String category,
+                                      int recommendScore) {
         if (dishId <= 0 || TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)) {
             return false;
         }
@@ -731,7 +776,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    public boolean deleteDishById(long dishId) {
+    public boolean xoaMonAnTheoId(long dishId) {
         if (dishId <= 0) {
             return false;
         }
@@ -740,7 +785,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    public boolean updateDishAvailability(long dishId, boolean isAvailable) {
+    public boolean capNhatTrangThaiPhucVuMon(long dishId, boolean isAvailable) {
         if (dishId <= 0) {
             return false;
         }
@@ -791,7 +836,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int recommendScore = cursor.getInt(cursor.getColumnIndexOrThrow(COL_DISH_RECOMMEND_SCORE));
 
                 int imageResId = resolveImageResId(imageResName);
-                RecommendedDishItem dishItem = new RecommendedDishItem(
+                MonAnDeXuat dishItem = new MonAnDeXuat(
                         imageResId,
                         name,
                         price,
@@ -810,53 +855,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return dishRecords;
     }
 
-    public List<RecommendedDishItem> getAllDishItems() {
-        List<RecommendedDishItem> dishes = new ArrayList<>();
-        List<DishRecord> dishRecords = getAllDishes();
+    public List<MonAnDeXuat> layTatCaMonHienThi() {
+        List<MonAnDeXuat> dishes = new ArrayList<>();
+        List<DishRecord> dishRecords = layTatCaMonAn();
 
         for (DishRecord record : dishRecords) {
-            dishes.add(record.getDishItem());
+            dishes.add(record.layMonAn());
         }
 
         return dishes;
     }
 
-    public List<RecommendedDishItem> getDanhSachMonTheoDanhMuc(@Nullable String tenDanhMuc) {
-        List<RecommendedDishItem> dishes = new ArrayList<>();
-        for (DishRecord record : getAllDishes()) {
-            RecommendedDishItem dishItem = record.getDishItem();
-            if (TextUtils.isEmpty(tenDanhMuc) || TextUtils.equals(tenDanhMuc, dishItem.getTenDanhMuc())) {
+    public List<MonAnDeXuat> layDanhSachMonTheoDanhMuc(@Nullable String tenDanhMuc) {
+        List<MonAnDeXuat> dishes = new ArrayList<>();
+        for (DishRecord record : layTatCaMonAn()) {
+            MonAnDeXuat dishItem = record.layMonAn();
+            if (TextUtils.isEmpty(tenDanhMuc) || TextUtils.equals(tenDanhMuc, dishItem.layTenDanhMuc())) {
                 dishes.add(dishItem);
             }
         }
         return dishes;
     }
 
-    public List<RecommendedDishItem> getMonDeXuatTrangChu(int soLuongToiDa) {
-        List<RecommendedDishItem> available = new ArrayList<>();
-        List<RecommendedDishItem> fallback = new ArrayList<>();
+    public List<MonAnDeXuat> layMonDeXuatTrangChu(int soLuongToiDa) {
+        List<MonAnDeXuat> available = new ArrayList<>();
+        List<MonAnDeXuat> fallback = new ArrayList<>();
 
-        for (DishRecord record : getAllDishes()) {
-            RecommendedDishItem dishItem = record.getDishItem();
+        for (DishRecord record : layTatCaMonAn()) {
+            MonAnDeXuat dishItem = record.layMonAn();
             fallback.add(dishItem);
-            if (dishItem.isConPhucVu()) {
+            if (dishItem.laConPhucVu()) {
                 available.add(dishItem);
             }
         }
 
-        List<RecommendedDishItem> source = available.isEmpty() ? fallback : available;
-        source.sort((first, second) -> Integer.compare(second.getDiemDeXuat(), first.getDiemDeXuat()));
+        List<MonAnDeXuat> source = available.isEmpty() ? fallback : available;
+        source.sort((first, second) -> Integer.compare(second.layDiemDeXuat(), first.layDiemDeXuat()));
 
         int gioiHan = Math.min(Math.max(soLuongToiDa, 0), source.size());
         return new ArrayList<>(source.subList(0, gioiHan));
     }
 
-    public long insertOrder(int userId,
+    public long themDonHang(int userId,
                             String code,
                             String time,
                             String totalPrice,
-                            Order.Status status,
-                            List<Order.OrderDish> dishes) {
+                            DonHang.TrangThai status,
+                            List<DonHang.MonTrongDon> dishes) {
         if (userId <= 0
                 || TextUtils.isEmpty(code)
                 || TextUtils.isEmpty(time)
@@ -883,19 +928,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 return -1;
             }
 
-            for (Order.OrderDish orderDish : dishes) {
-                if (orderDish == null || orderDish.getDishItem() == null) {
+            for (DonHang.MonTrongDon orderDish : dishes) {
+                if (orderDish == null || orderDish.layMonAn() == null) {
                     return -1;
                 }
 
-                RecommendedDishItem dishItem = orderDish.getDishItem();
+                MonAnDeXuat dishItem = orderDish.layMonAn();
                 ContentValues itemValues = new ContentValues();
                 itemValues.put(COL_ORDER_ITEM_ORDER_ID, orderId);
-                itemValues.put(COL_ORDER_ITEM_DISH_NAME, dishItem.getTenMon());
-                itemValues.put(COL_ORDER_ITEM_DISH_PRICE, dishItem.getGiaBan());
-                itemValues.put(COL_ORDER_ITEM_IMAGE_RES_NAME, resolveImageResName(dishItem.getImageResId()));
-                itemValues.put(COL_ORDER_ITEM_IS_AVAILABLE, dishItem.isConPhucVu() ? 1 : 0);
-                itemValues.put(COL_ORDER_ITEM_QUANTITY, orderDish.getQuantity());
+                itemValues.put(COL_ORDER_ITEM_DISH_NAME, dishItem.layTenMon());
+                itemValues.put(COL_ORDER_ITEM_DISH_PRICE, dishItem.layGiaBan());
+                itemValues.put(COL_ORDER_ITEM_IMAGE_RES_NAME, resolveImageResName(dishItem.layImageResId()));
+                itemValues.put(COL_ORDER_ITEM_IS_AVAILABLE, dishItem.laConPhucVu() ? 1 : 0);
+                itemValues.put(COL_ORDER_ITEM_QUANTITY, orderDish.laySoLuong());
 
                 long itemId = db.insert(TABLE_ORDER_ITEM, null, itemValues);
                 if (itemId <= 0) {
@@ -910,25 +955,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Order> getOrdersByUserId(int userId) {
-        return getOrdersByUserId((long) userId);
+    public List<DonHang> layDonHangTheoNguoiDung(int userId) {
+        return layDonHangTheoNguoiDung((long) userId);
     }
 
-    public List<Order> getOrdersByUserId(long userId) {
-        return queryOrders(COL_ORDER_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+    public List<DonHang> layDonHangTheoNguoiDung(long userId) {
+        return queryDonHangs(COL_ORDER_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 
-    public List<Order> getAllOrders() {
-        return queryOrders(null, null);
+    public List<DonHang> layTatCaDonHang() {
+        return queryDonHangs(null, null);
     }
 
-    public boolean updateOrderStatus(long orderId, Order.Status status) {
+    public boolean capNhatTrangThaiDonHang(long orderId, DonHang.TrangThai status) {
         if (orderId <= 0 || status == null) {
             return false;
         }
 
-        Order.Status currentStatus = getOrderStatusById(orderId);
-        if (currentStatus == null || !canTransitionOrderStatus(currentStatus, status)) {
+        DonHang.TrangThai currentStatus = layTrangThaiDonHangTheoId(orderId);
+        if (currentStatus == null || !coTheChuyenTrangThaiDonHang(currentStatus, status)) {
             return false;
         }
 
@@ -939,50 +984,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    public int countAllOrders() {
+    public int demTatCaDonHang() {
         return demSoBanGhi(TABLE_ORDER, null, null);
     }
 
-    public int countOrdersByStatus(Order.Status status) {
+    public int demDonHangTheoTrangThai(DonHang.TrangThai status) {
         if (status == null) {
-            return countAllOrders();
+            return demTatCaDonHang();
         }
         return demSoBanGhi(TABLE_ORDER, COL_ORDER_STATUS + " = ?", new String[]{status.name()});
     }
 
-    public boolean cancelOrder(long orderId) {
+    public boolean huyDonHang(long orderId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_ORDER_STATUS, Order.Status.CANCELED.name());
+        values.put(COL_ORDER_STATUS, DonHang.TrangThai.CANCELED.name());
 
         int rows = db.update(
                 TABLE_ORDER,
                 values,
                 COL_ORDER_ID + " = ? AND " + COL_ORDER_STATUS + " = ?",
-                new String[]{String.valueOf(orderId), Order.Status.PENDING_CONFIRMATION.name()}
+                new String[]{String.valueOf(orderId), DonHang.TrangThai.PENDING_CONFIRMATION.name()}
         );
         return rows > 0;
     }
 
-    public List<Reservation> getReservationsByUserId(int userId) {
-        return getReservationsByUserId((long) userId);
+    public List<DatBan> layDatBanTheoNguoiDung(int userId) {
+        return layDatBanTheoNguoiDung((long) userId);
     }
 
-    public List<Reservation> getReservationsByUserId(long userId) {
+    public List<DatBan> layDatBanTheoNguoiDung(long userId) {
         return queryReservations(COL_RESERVATION_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 
-    public List<Reservation> getAllReservations() {
+    public List<DatBan> layTatCaDatBan() {
         return queryReservations(null, null);
     }
 
-    public boolean updateReservationStatus(long reservationId, Reservation.Status status) {
+    public boolean capNhatTrangThaiDatBan(long reservationId, DatBan.TrangThai status) {
         if (reservationId <= 0 || status == null) {
             return false;
         }
 
-        Reservation.Status currentStatus = getReservationStatusById(reservationId);
-        if (currentStatus == null || !canTransitionReservationStatus(currentStatus, status)) {
+        DatBan.TrangThai currentStatus = layTrangThaiDatBanTheoId(reservationId);
+        if (currentStatus == null || !coTheChuyenTrangThaiDatBan(currentStatus, status)) {
             return false;
         }
 
@@ -993,41 +1038,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    public int countReservationsByStatus(Reservation.Status status) {
+    public int demDatBanTheoTrangThai(DatBan.TrangThai status) {
         if (status == null) {
             return demSoBanGhi(TABLE_RESERVATION, null, null);
         }
         return demSoBanGhi(TABLE_RESERVATION, COL_RESERVATION_STATUS + " = ?", new String[]{status.name()});
     }
 
-    public long insertReservation(int userId,
-                                  String time,
-                                  String tableNumber,
-                                  int peopleCount,
-                                  String notes) {
-        return insertReservation(
+    public long themDatBan(int userId,
+                           String time,
+                           String tableNumber,
+                           int peopleCount,
+                           String notes) {
+        return themDatBan(
                 (long) userId,
                 time,
                 tableNumber,
                 peopleCount,
                 notes,
-                Reservation.Status.PENDING_APPROVAL
+                DatBan.TrangThai.PENDING_APPROVAL
         );
     }
 
-    public long insertReservation(long userId,
-                                  String time,
-                                  String tableNumber,
-                                  int guestCount,
-                                  @Nullable String note,
-                                  Reservation.Status status) {
+    public long themDatBan(long userId,
+                           String time,
+                           String tableNumber,
+                           int guestCount,
+                           @Nullable String note,
+                           DatBan.TrangThai status) {
         if (userId <= 0
                 || TextUtils.isEmpty(time)
                 || TextUtils.isEmpty(tableNumber)
                 || guestCount <= 0
                 || guestCount > SO_KHACH_DAT_BAN_TOI_DA
                 || status == null
-                || parseOrderTimeToMillis(time) <= System.currentTimeMillis()) {
+                || parseDonHangTimeToMillis(time) <= System.currentTimeMillis()) {
             return -1;
         }
 
@@ -1042,35 +1087,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.insert(TABLE_RESERVATION, null, values);
     }
 
-    public boolean cancelReservation(long reservationId) {
+    public boolean huyDatBan(long reservationId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_RESERVATION_STATUS, Reservation.Status.CANCELED.name());
+        values.put(COL_RESERVATION_STATUS, DatBan.TrangThai.CANCELED.name());
 
         int rows = db.update(
                 TABLE_RESERVATION,
                 values,
                 COL_RESERVATION_ID + " = ? AND " + COL_RESERVATION_STATUS + " = ?",
-                new String[]{String.valueOf(reservationId), Reservation.Status.PENDING_APPROVAL.name()}
+                new String[]{String.valueOf(reservationId), DatBan.TrangThai.PENDING_APPROVAL.name()}
         );
         return rows > 0;
     }
 
-    public List<ServiceRequest> getServiceRequestsByUserId(long userId) {
+    public List<YeuCauPhucVu> layYeuCauTheoNguoiDung(long userId) {
         return queryServiceRequests(COL_SERVICE_REQUEST_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 
-    public List<ServiceRequest> getAllServiceRequests() {
+    public List<YeuCauPhucVu> layTatCaYeuCauPhucVu() {
         return queryServiceRequests(null, null);
     }
 
-    public boolean updateServiceRequestStatus(long requestId, ServiceRequest.Status status) {
+    public boolean capNhatTrangThaiYeuCauPhucVu(long requestId, YeuCauPhucVu.TrangThai status) {
         if (requestId <= 0 || status == null) {
             return false;
         }
 
-        ServiceRequest.Status currentStatus = getServiceRequestStatusById(requestId);
-        if (currentStatus == null || !canTransitionServiceRequestStatus(currentStatus, status)) {
+        YeuCauPhucVu.TrangThai currentStatus = layTrangThaiYeuCauTheoId(requestId);
+        if (currentStatus == null || !coTheChuyenTrangThaiYeuCau(currentStatus, status)) {
             return false;
         }
 
@@ -1081,84 +1126,84 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
-    public int countServiceRequestsByStatus(ServiceRequest.Status status) {
+    public int demYeuCauTheoTrangThai(YeuCauPhucVu.TrangThai status) {
         if (status == null) {
             return demSoBanGhi(TABLE_SERVICE_REQUEST, null, null);
         }
         return demSoBanGhi(TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_STATUS + " = ?", new String[]{status.name()});
     }
 
-    public AdminDashboardStats getAdminDashboardStats() {
-        return new AdminDashboardStats(
+    public ThongKeTongQuanAdmin layThongKeTongQuanAdmin() {
+        return new ThongKeTongQuanAdmin(
                 countAllUsers(),
-                countUsersByRole(UserRole.KHACH_HANG),
-                countUsersByRole(UserRole.NHAN_VIEN),
-                countUsersByRole(UserRole.ADMIN),
+                countUsersByRole(VaiTroNguoiDung.KHACH_HANG),
+                countUsersByRole(VaiTroNguoiDung.NHAN_VIEN),
+                countUsersByRole(VaiTroNguoiDung.ADMIN),
                 countAllDishes(),
-                countAllOrders(),
-                countOrdersByStatus(Order.Status.PENDING_CONFIRMATION),
-                countReservationsByStatus(Reservation.Status.PENDING_APPROVAL),
-                countServiceRequestsByStatus(ServiceRequest.Status.PROCESSING)
+                demTatCaDonHang(),
+                demDonHangTheoTrangThai(DonHang.TrangThai.PENDING_CONFIRMATION),
+                demDatBanTheoTrangThai(DatBan.TrangThai.PENDING_APPROVAL),
+                demYeuCauTheoTrangThai(YeuCauPhucVu.TrangThai.PROCESSING)
         );
     }
 
     @Nullable
-    private Order.Status getOrderStatusById(long orderId) {
-        return getEnumStatusById(TABLE_ORDER, COL_ORDER_ID, COL_ORDER_STATUS, orderId, Order.Status::valueOf);
+    private DonHang.TrangThai layTrangThaiDonHangTheoId(long orderId) {
+        return getEnumStatusById(TABLE_ORDER, COL_ORDER_ID, COL_ORDER_STATUS, orderId, DonHang.TrangThai::valueOf);
     }
 
     @Nullable
-    private Reservation.Status getReservationStatusById(long reservationId) {
-        return getEnumStatusById(TABLE_RESERVATION, COL_RESERVATION_ID, COL_RESERVATION_STATUS, reservationId, Reservation.Status::valueOf);
+    private DatBan.TrangThai layTrangThaiDatBanTheoId(long reservationId) {
+        return getEnumStatusById(TABLE_RESERVATION, COL_RESERVATION_ID, COL_RESERVATION_STATUS, reservationId, DatBan.TrangThai::valueOf);
     }
 
     @Nullable
-    private ServiceRequest.Status getServiceRequestStatusById(long requestId) {
-        return getEnumStatusById(TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_ID, COL_SERVICE_REQUEST_STATUS, requestId, ServiceRequest.Status::valueOf);
+    private YeuCauPhucVu.TrangThai layTrangThaiYeuCauTheoId(long requestId) {
+        return getEnumStatusById(TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_ID, COL_SERVICE_REQUEST_STATUS, requestId, YeuCauPhucVu.TrangThai::valueOf);
     }
 
-    private boolean canTransitionOrderStatus(@Nullable Order.Status current, @Nullable Order.Status next) {
+    private boolean coTheChuyenTrangThaiDonHang(@Nullable DonHang.TrangThai current, @Nullable DonHang.TrangThai next) {
         if (current == null || next == null || current == next) {
             return false;
         }
-        if (current == Order.Status.PENDING_CONFIRMATION) {
-            return next == Order.Status.CONFIRMED || next == Order.Status.CANCELED;
+        if (current == DonHang.TrangThai.PENDING_CONFIRMATION) {
+            return next == DonHang.TrangThai.CONFIRMED || next == DonHang.TrangThai.CANCELED;
         }
-        if (current == Order.Status.CONFIRMED) {
-            return next == Order.Status.COMPLETED || next == Order.Status.CANCELED;
+        if (current == DonHang.TrangThai.CONFIRMED) {
+            return next == DonHang.TrangThai.COMPLETED || next == DonHang.TrangThai.CANCELED;
         }
         return false;
     }
 
-    private boolean canTransitionReservationStatus(@Nullable Reservation.Status current, @Nullable Reservation.Status next) {
+    private boolean coTheChuyenTrangThaiDatBan(@Nullable DatBan.TrangThai current, @Nullable DatBan.TrangThai next) {
         if (current == null || next == null || current == next) {
             return false;
         }
-        if (current == Reservation.Status.PENDING_APPROVAL) {
-            return next == Reservation.Status.CONFIRMED || next == Reservation.Status.CANCELED;
+        if (current == DatBan.TrangThai.PENDING_APPROVAL) {
+            return next == DatBan.TrangThai.CONFIRMED || next == DatBan.TrangThai.CANCELED;
         }
-        if (current == Reservation.Status.CONFIRMED) {
-            return next == Reservation.Status.COMPLETED || next == Reservation.Status.CANCELED;
+        if (current == DatBan.TrangThai.CONFIRMED) {
+            return next == DatBan.TrangThai.COMPLETED || next == DatBan.TrangThai.CANCELED;
         }
         return false;
     }
 
-    private boolean canTransitionServiceRequestStatus(@Nullable ServiceRequest.Status current, @Nullable ServiceRequest.Status next) {
-        return current == ServiceRequest.Status.PROCESSING && next == ServiceRequest.Status.DONE;
+    private boolean coTheChuyenTrangThaiYeuCau(@Nullable YeuCauPhucVu.TrangThai current, @Nullable YeuCauPhucVu.TrangThai next) {
+        return current == YeuCauPhucVu.TrangThai.PROCESSING && next == YeuCauPhucVu.TrangThai.DONE;
     }
 
-    public EmployeeDashboardStats getEmployeeDashboardStats() {
-        return new EmployeeDashboardStats(
-                countOrdersByStatus(Order.Status.PENDING_CONFIRMATION),
-                countReservationsByStatus(Reservation.Status.PENDING_APPROVAL),
-                countServiceRequestsByStatus(ServiceRequest.Status.PROCESSING)
+    public ThongKeTongQuanNhanVien layThongKeTongQuanNhanVien() {
+        return new ThongKeTongQuanNhanVien(
+                demDonHangTheoTrangThai(DonHang.TrangThai.PENDING_CONFIRMATION),
+                demDatBanTheoTrangThai(DatBan.TrangThai.PENDING_APPROVAL),
+                demYeuCauTheoTrangThai(YeuCauPhucVu.TrangThai.PROCESSING)
         );
     }
 
     public long insertServiceRequest(long userId,
                                      String noiDung,
                                      String thoiGianGui,
-                                     ServiceRequest.Status trangThai) {
+                                     YeuCauPhucVu.TrangThai trangThai) {
         if (userId <= 0 || TextUtils.isEmpty(noiDung) || TextUtils.isEmpty(thoiGianGui) || trangThai == null) {
             return -1;
         }
@@ -1170,6 +1215,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_SERVICE_REQUEST_SENT_TIME, thoiGianGui);
         values.put(COL_SERVICE_REQUEST_STATUS, trangThai.name());
         return db.insert(TABLE_SERVICE_REQUEST, null, values);
+    }
+
+    public long themYeuCauPhucVu(long userId,
+                                 String noiDung,
+                                 String thoiGianGui,
+                                 YeuCauPhucVu.TrangThai trangThai) {
+        return insertServiceRequest(userId, noiDung, thoiGianGui, trangThai);
     }
 
     private void seedDishesIfEmpty(Context context, SQLiteDatabase db) {
@@ -1193,7 +1245,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.dish_lau_thai),
                 context.getString(R.string.price_259k),
                 context.getString(R.string.menu_desc_lau_thai),
-                TEN_ANH_MAC_DINH,
+                TEN_ANH_MON_LAU,
                 true,
                 context.getString(R.string.category_hotpot),
                 93
@@ -1203,7 +1255,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 context.getString(R.string.dish_salad_ca_hoi),
                 context.getString(R.string.price_129k),
                 context.getString(R.string.menu_desc_salad_ca_hoi),
-                TEN_ANH_MAC_DINH,
+                TEN_ANH_SALAD,
                 true,
                 context.getString(R.string.category_salad),
                 89
@@ -1284,6 +1336,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_DISH_CATEGORY, danhMucDung);
         values.put(COL_DISH_RECOMMEND_SCORE, diemDeXuat);
         values.put(COL_DISH_IS_AVAILABLE, conPhucVu ? 1 : 0);
+        values.put(COL_DISH_IMAGE_RES_NAME, layTenAnhMacDinhTheoMon(tenMon));
 
         if (!TextUtils.isEmpty(danhMucCuSai)) {
             db.update(
@@ -1339,7 +1392,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 EMAIL_TAI_KHOAN_TEST_KHACH_HANG,
                 SDT_TAI_KHOAN_TEST_KHACH_HANG,
                 MAT_KHAU_TAI_KHOAN_TEST,
-                UserRole.KHACH_HANG,
+                VaiTroNguoiDung.KHACH_HANG,
                 true
         );
         ensureSeedUser(
@@ -1348,7 +1401,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 EMAIL_TAI_KHOAN_TEST_NHAN_VIEN,
                 SDT_TAI_KHOAN_TEST_NHAN_VIEN,
                 MAT_KHAU_TAI_KHOAN_TEST,
-                UserRole.NHAN_VIEN,
+                VaiTroNguoiDung.NHAN_VIEN,
                 true
         );
         ensureSeedUser(
@@ -1357,7 +1410,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 EMAIL_TAI_KHOAN_TEST_ADMIN,
                 SDT_TAI_KHOAN_TEST_ADMIN,
                 MAT_KHAU_TAI_KHOAN_TEST,
-                UserRole.ADMIN,
+                VaiTroNguoiDung.ADMIN,
                 true
         );
     }
@@ -1367,7 +1420,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 String email,
                                 String phone,
                                 String password,
-                                UserRole role,
+                                VaiTroNguoiDung role,
                                 boolean isActive) {
         Cursor cursor = null;
         try {
@@ -1440,18 +1493,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Nullable
-    private User mapUser(Cursor cursor) {
+    private NguoiDung mapUser(Cursor cursor) {
         long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_USER_ID));
         String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_NAME));
         String email = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_EMAIL));
         String phone = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PHONE));
         String roleValue = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_ROLE));
         boolean isActive = cursor.getInt(cursor.getColumnIndexOrThrow(COL_USER_IS_ACTIVE)) == 1;
-        return new User(id, name, email, phone, UserRole.tuChuoi(roleValue), isActive);
+        return new NguoiDung(id, name, email, phone, VaiTroNguoiDung.tuChuoi(roleValue), isActive);
     }
 
-    private List<Order> queryOrders(@Nullable String selection, @Nullable String[] selectionArgs) {
-        List<Order> orders = new ArrayList<>();
+    private List<DonHang> queryDonHangs(@Nullable String selection, @Nullable String[] selectionArgs) {
+        List<DonHang> orders = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
 
@@ -1472,8 +1525,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String time = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_TIME));
                 String totalPrice = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_TOTAL_PRICE));
                 String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_ORDER_STATUS));
-                List<Order.OrderDish> dishes = getOrderItemsByOrderId(orderId);
-                orders.add(new Order(orderId, code, time, totalPrice, parseOrderStatus(statusRaw), dishes));
+                List<DonHang.MonTrongDon> dishes = getDonHangItemsByDonHangId(orderId);
+                orders.add(new DonHang(orderId, code, time, totalPrice, parseDonHangStatus(statusRaw), dishes));
             }
         } finally {
             if (cursor != null) {
@@ -1482,14 +1535,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         orders.sort((first, second) -> Long.compare(
-                parseOrderTimeToMillis(second.getTime()),
-                parseOrderTimeToMillis(first.getTime())
+                parseDonHangTimeToMillis(second.layThoiGian()),
+                parseDonHangTimeToMillis(first.layThoiGian())
         ));
         return orders;
     }
 
-    private List<Reservation> queryReservations(@Nullable String selection, @Nullable String[] selectionArgs) {
-        List<Reservation> reservations = new ArrayList<>();
+    private List<DatBan> queryReservations(@Nullable String selection, @Nullable String[] selectionArgs) {
+        List<DatBan> reservations = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
 
@@ -1518,7 +1571,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int guestCount = cursor.getInt(cursor.getColumnIndexOrThrow(COL_RESERVATION_GUEST_COUNT));
                 String note = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_NOTE));
                 String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_STATUS));
-                reservations.add(new Reservation(id, time, tableNumber, guestCount, note, parseReservationStatus(statusRaw)));
+                reservations.add(new DatBan(id, time, tableNumber, guestCount, note, parseReservationStatus(statusRaw)));
             }
         } finally {
             if (cursor != null) {
@@ -1528,8 +1581,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return reservations;
     }
 
-    private List<ServiceRequest> queryServiceRequests(@Nullable String selection, @Nullable String[] selectionArgs) {
-        List<ServiceRequest> requests = new ArrayList<>();
+    private List<YeuCauPhucVu> queryServiceRequests(@Nullable String selection, @Nullable String[] selectionArgs) {
+        List<YeuCauPhucVu> requests = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
 
@@ -1554,7 +1607,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String content = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_CONTENT));
                 String sentTime = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_SENT_TIME));
                 String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_STATUS));
-                requests.add(new ServiceRequest(id, content, sentTime, parseServiceRequestStatus(statusRaw)));
+                requests.add(new YeuCauPhucVu(id, content, sentTime, parseServiceRequestStatus(statusRaw)));
             }
         } finally {
             if (cursor != null) {
@@ -1563,8 +1616,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         requests.sort((first, second) -> Long.compare(
-                parseOrderTimeToMillis(second.getThoiGianGui()),
-                parseOrderTimeToMillis(first.getThoiGianGui())
+                parseDonHangTimeToMillis(second.layThoiGianGui()),
+                parseDonHangTimeToMillis(first.layThoiGianGui())
         ));
         return requests;
     }
@@ -1620,8 +1673,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private List<Order.OrderDish> getOrderItemsByOrderId(long orderId) {
-        List<Order.OrderDish> dishes = new ArrayList<>();
+    private List<DonHang.MonTrongDon> getDonHangItemsByDonHangId(long orderId) {
+        List<DonHang.MonTrongDon> dishes = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
 
@@ -1649,7 +1702,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 boolean isAvailable = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ORDER_ITEM_IS_AVAILABLE)) == 1;
                 int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ORDER_ITEM_QUANTITY));
 
-                RecommendedDishItem dishItem = new RecommendedDishItem(
+                MonAnDeXuat dishItem = new MonAnDeXuat(
                         resolveImageResId(imageResName),
                         dishName,
                         dishPrice,
@@ -1657,7 +1710,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         "",
                         0
                 );
-                dishes.add(new Order.OrderDish(dishItem, quantity));
+                dishes.add(new DonHang.MonTrongDon(dishItem, quantity));
             }
         } finally {
             if (cursor != null) {
@@ -1672,9 +1725,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         T parse(String rawValue) throws IllegalArgumentException;
     }
 
+    private String layTenAnhMacDinhTheoMon(@Nullable String tenMon) {
+        if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_lau_thai))) {
+            return TEN_ANH_MON_LAU;
+        }
+        if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_salad_ca_hoi))) {
+            return TEN_ANH_SALAD;
+        }
+        if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_tra_dao))) {
+            return TEN_ANH_DO_UONG;
+        }
+        return TEN_ANH_MAC_DINH;
+    }
+
     private int resolveImageResId(String imageResName) {
         if (TextUtils.isEmpty(imageResName)) {
-            return R.drawable.ic_restaurant_24;
+            return R.drawable.menu_1;
         }
 
         int resId = appContext.getResources().getIdentifier(
@@ -1682,7 +1748,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "drawable",
                 appContext.getPackageName()
         );
-        return resId == 0 ? R.drawable.ic_restaurant_24 : resId;
+        return resId == 0 ? R.drawable.menu_1 : resId;
     }
 
     private String resolveImageResName(int imageResId) {
@@ -1697,19 +1763,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private Order.Status parseOrderStatus(String statusRaw) {
+    private DonHang.TrangThai parseDonHangStatus(String statusRaw) {
         if (TextUtils.isEmpty(statusRaw)) {
-            return Order.Status.PENDING_CONFIRMATION;
+            return DonHang.TrangThai.PENDING_CONFIRMATION;
         }
 
         try {
-            return Order.Status.valueOf(statusRaw);
+            return DonHang.TrangThai.valueOf(statusRaw);
         } catch (IllegalArgumentException ex) {
-            return Order.Status.PENDING_CONFIRMATION;
+            return DonHang.TrangThai.PENDING_CONFIRMATION;
         }
     }
 
-    private long parseOrderTimeToMillis(@Nullable String timeRaw) {
+    private long parseDonHangTimeToMillis(@Nullable String timeRaw) {
         if (TextUtils.isEmpty(timeRaw)) {
             return 0L;
         }
@@ -1722,56 +1788,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private Reservation.Status parseReservationStatus(String statusRaw) {
+    private DatBan.TrangThai parseReservationStatus(String statusRaw) {
         if (TextUtils.isEmpty(statusRaw)) {
-            return Reservation.Status.PENDING_APPROVAL;
+            return DatBan.TrangThai.PENDING_APPROVAL;
         }
 
         try {
-            return Reservation.Status.valueOf(statusRaw);
+            return DatBan.TrangThai.valueOf(statusRaw);
         } catch (IllegalArgumentException ex) {
-            return Reservation.Status.PENDING_APPROVAL;
+            return DatBan.TrangThai.PENDING_APPROVAL;
         }
     }
 
-    private ServiceRequest.Status parseServiceRequestStatus(String statusRaw) {
+    private YeuCauPhucVu.TrangThai parseServiceRequestStatus(String statusRaw) {
         if (TextUtils.isEmpty(statusRaw)) {
-            return ServiceRequest.Status.PROCESSING;
+            return YeuCauPhucVu.TrangThai.PROCESSING;
         }
 
         try {
-            return ServiceRequest.Status.valueOf(statusRaw);
+            return YeuCauPhucVu.TrangThai.valueOf(statusRaw);
         } catch (IllegalArgumentException ex) {
-            return ServiceRequest.Status.PROCESSING;
+            return YeuCauPhucVu.TrangThai.PROCESSING;
         }
     }
 
     public static class DishRecord {
         private final long id;
-        private final RecommendedDishItem dishItem;
+        private final MonAnDeXuat dishItem;
         private final String description;
         private final String imageResName;
 
-        public DishRecord(long id, RecommendedDishItem dishItem, String description, String imageResName) {
+        public DishRecord(long id, MonAnDeXuat dishItem, String description, String imageResName) {
             this.id = id;
             this.dishItem = dishItem;
             this.description = description;
             this.imageResName = imageResName;
         }
 
-        public long getId() {
+        public long layId() {
             return id;
         }
 
-        public RecommendedDishItem getDishItem() {
+        public MonAnDeXuat layMonAn() {
             return dishItem;
         }
 
-        public String getDescription() {
+        public String layMoTa() {
             return description;
         }
 
-        public String getImageResName() {
+        public String layTenAnhTaiNguyen() {
             return imageResName;
         }
     }

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardRecommendedDish"
+    style="@style/Widget.Quanlynhahang.SurfaceCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_md"
+    app:cardUseCompatPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/space_md">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/recommended_image_height"
+            android:background="@drawable/bg_dish_image_placeholder">
+
+            <ImageView
+                android:id="@+id/ivDishImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/cd_dish_image"
+                android:scaleType="fitCenter"
+                android:src="@drawable/menu_1" />
+
+            <TextView
+                android:id="@+id/tvDishStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/status_badge_height"
+                android:layout_gravity="top|start"
+                android:layout_margin="@dimen/space_sm"
+                android:background="@drawable/bg_status_available"
+                android:gravity="center"
+                android:minWidth="72dp"
+                android:paddingStart="@dimen/space_md"
+                android:paddingEnd="@dimen/space_md"
+                android:text="@string/dish_status_available"
+                android:textColor="@color/status_available_text"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:gravity="bottom"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvDishName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="@string/dish_bo_luc_lac"
+                    android:textColor="@color/on_surface"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDishPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/price_145k"
+                    android:textColor="@color/secondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnAddDish"
+                android:layout_width="@dimen/add_button_size"
+                android:layout_height="@dimen/add_button_size"
+                android:layout_marginStart="@dimen/space_md"
+                android:background="@drawable/bg_add_button"
+                android:contentDescription="@string/cd_add_dish"
+                android:padding="@dimen/space_sm"
+                android:src="@drawable/ic_add_24"
+                app:tint="@color/add_button_icon_enabled" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

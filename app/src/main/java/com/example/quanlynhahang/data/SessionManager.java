@@ -6,8 +6,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.quanlynhahang.R;
-import com.example.quanlynhahang.model.User;
-import com.example.quanlynhahang.model.UserRole;
+import com.example.quanlynhahang.model.NguoiDung;
+import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
 public class SessionManager {
 
@@ -43,12 +43,12 @@ public class SessionManager {
 
         long currentSessionUserId = sharedPreferences.getLong(KEY_CURRENT_USER_ID, -1);
         if (currentSessionUserId > 0) {
-            User currentUser = databaseHelper.getUserById(currentSessionUserId);
+            NguoiDung currentUser = databaseHelper.getUserById(currentSessionUserId);
             if (currentUser != null) {
                 Log.i(TAG, "Giữ nguyên phiên đăng nhập hiện tại vì người dùng đã tồn tại trong cơ sở dữ liệu.");
                 sharedPreferences.edit()
                         .putBoolean(KEY_IS_LOGGED_IN, legacyLoggedIn)
-                        .putString(KEY_CURRENT_USER_ROLE, currentUser.getRole().name())
+                        .putString(KEY_CURRENT_USER_ROLE, currentUser.layVaiTro().name())
                         .putBoolean(KEY_LEGACY_AUTH_MIGRATED, true)
                         .apply();
                 return;
@@ -60,9 +60,9 @@ public class SessionManager {
 
         if (!TextUtils.isEmpty(legacyEmail) && !TextUtils.isEmpty(legacyPassword)) {
             Log.i(TAG, "Tìm hoặc tạo người dùng tương ứng cho dữ liệu đăng nhập cũ. email=" + legacyEmail);
-            User existingUser = databaseHelper.getUserByEmail(legacyEmail);
+            NguoiDung existingUser = databaseHelper.getUserByEmail(legacyEmail);
             if (existingUser != null) {
-                mappedUserId = existingUser.getId();
+                mappedUserId = existingUser.layId();
             } else {
                 long insertedId = databaseHelper.insertUser(
                         appContext.getString(R.string.account_default_name),
@@ -73,9 +73,9 @@ public class SessionManager {
                 if (insertedId > 0) {
                     mappedUserId = insertedId;
                 } else {
-                    User fallbackUser = databaseHelper.getUserByEmail(legacyEmail);
+                    NguoiDung fallbackUser = databaseHelper.getUserByEmail(legacyEmail);
                     if (fallbackUser != null) {
-                        mappedUserId = fallbackUser.getId();
+                        mappedUserId = fallbackUser.layId();
                     }
                 }
             }
@@ -86,7 +86,7 @@ public class SessionManager {
             Log.i(TAG, "Migration dữ liệu đăng nhập cũ thành công. userId=" + mappedUserId);
             editor.putBoolean(KEY_IS_LOGGED_IN, true);
             editor.putLong(KEY_CURRENT_USER_ID, mappedUserId);
-            editor.putString(KEY_CURRENT_USER_ROLE, UserRole.KHACH_HANG.name());
+            editor.putString(KEY_CURRENT_USER_ROLE, VaiTroNguoiDung.KHACH_HANG.name());
         } else {
             Log.i(TAG, "Không thể khôi phục phiên đăng nhập cũ, đánh dấu chưa đăng nhập.");
             editor.putBoolean(KEY_IS_LOGGED_IN, false);
@@ -101,16 +101,28 @@ public class SessionManager {
         return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false) && getCurrentUserId() > 0;
     }
 
+    public boolean daDangNhap() {
+        return isLoggedIn();
+    }
+
     public long getCurrentUserId() {
         return sharedPreferences.getLong(KEY_CURRENT_USER_ID, -1);
     }
 
-    public UserRole getVaiTroHienTai() {
+    public long layIdNguoiDungHienTai() {
+        return getCurrentUserId();
+    }
+
+    public VaiTroNguoiDung getVaiTroHienTai() {
         String roleValue = sharedPreferences.getString(KEY_CURRENT_USER_ROLE, null);
         if (!TextUtils.isEmpty(roleValue)) {
-            return UserRole.tuChuoi(roleValue);
+            return VaiTroNguoiDung.tuChuoi(roleValue);
         }
-        return UserRole.KHACH_HANG;
+        return VaiTroNguoiDung.KHACH_HANG;
+    }
+
+    public VaiTroNguoiDung layVaiTroHienTai() {
+        return getVaiTroHienTai();
     }
 
     public void damBaoVaiTroSession(DatabaseHelper databaseHelper) {
@@ -121,37 +133,41 @@ public class SessionManager {
             return;
         }
 
-        User currentUser = databaseHelper.getUserById(getCurrentUserId());
+        NguoiDung currentUser = databaseHelper.getUserById(getCurrentUserId());
         if (currentUser != null) {
             sharedPreferences.edit()
-                    .putString(KEY_CURRENT_USER_ROLE, currentUser.getRole().name())
+                    .putString(KEY_CURRENT_USER_ROLE, currentUser.layVaiTro().name())
                     .apply();
             return;
         }
 
         sharedPreferences.edit()
-                .putString(KEY_CURRENT_USER_ROLE, UserRole.KHACH_HANG.name())
+                .putString(KEY_CURRENT_USER_ROLE, VaiTroNguoiDung.KHACH_HANG.name())
                 .apply();
     }
 
     public boolean laKhachHang() {
-        return getVaiTroHienTai() == UserRole.KHACH_HANG;
+        return layVaiTroHienTai() == VaiTroNguoiDung.KHACH_HANG;
     }
 
     public boolean laNhanVien() {
-        return getVaiTroHienTai() == UserRole.NHAN_VIEN;
+        return layVaiTroHienTai() == VaiTroNguoiDung.NHAN_VIEN;
     }
 
     public boolean laAdmin() {
-        return getVaiTroHienTai() == UserRole.ADMIN;
+        return layVaiTroHienTai() == VaiTroNguoiDung.ADMIN;
     }
 
-    public void saveLoginSession(long userId, UserRole vaiTro) {
+    public void saveLoginSession(long userId, VaiTroNguoiDung vaiTro) {
         sharedPreferences.edit()
                 .putBoolean(KEY_IS_LOGGED_IN, true)
                 .putLong(KEY_CURRENT_USER_ID, userId)
-                .putString(KEY_CURRENT_USER_ROLE, vaiTro != null ? vaiTro.name() : UserRole.KHACH_HANG.name())
+                .putString(KEY_CURRENT_USER_ROLE, vaiTro != null ? vaiTro.name() : VaiTroNguoiDung.KHACH_HANG.name())
                 .apply();
+    }
+
+    public void luuPhienDangNhap(long userId, VaiTroNguoiDung vaiTro) {
+        saveLoginSession(userId, vaiTro);
     }
 
     public void clearSession() {
@@ -160,5 +176,9 @@ public class SessionManager {
                 .remove(KEY_CURRENT_USER_ID)
                 .remove(KEY_CURRENT_USER_ROLE)
                 .apply();
+    }
+
+    public void xoaPhienDangNhap() {
+        clearSession();
     }
 }

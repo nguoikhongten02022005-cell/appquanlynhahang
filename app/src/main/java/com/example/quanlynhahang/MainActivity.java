@@ -19,20 +19,20 @@ import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
-import com.example.quanlynhahang.model.User;
+import com.example.quanlynhahang.model.NguoiDung;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private static final int MAX_BADGE_COUNT = 99;
-    private static final String TAG_HOME = "home";
+    private static final int SO_LUONG_BADGE_TOI_DA = 99;
+    private static final String TAG_TRANG_CHU = "home";
     private static final String TAG_MENU = "menu";
-    private static final String TAG_ACTIVITY_HUB = "activity_hub";
-    private static final String TAG_ACCOUNT = "account";
-    private static final String KEY_PENDING_ACTIVITY_TAB = "pending_activity_tab";
-    private static final String KEY_HAS_PENDING_MENU_NAVIGATION = "has_pending_menu_navigation";
+    private static final String TAG_TRUNG_TAM_HOAT_DONG = "activity_hub";
+    private static final String TAG_TAI_KHOAN = "account";
+    private static final String KEY_TAB_HOAT_DONG_CHO = "pending_activity_tab";
+    private static final String KEY_CO_DIEU_HUONG_MENU_CHO = "has_pending_menu_navigation";
 
     private TextView tvCartBadge;
     private TextView tvGreeting;
@@ -41,13 +41,13 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
 
-    private int pendingActivityHubTab = ActivityHubFragment.TAB_ORDERS;
-    private String pendingMenuCategory;
-    private boolean pendingMenuSearchFocus;
-    private String pendingMenuQuery;
-    private boolean hasPendingMenuNavigation;
+    private int tabTrungTamHoatDongCho = TrungTamHoatDongFragment.TAB_ORDERS;
+    private String tenDanhMucMenuCho;
+    private boolean moTimKiemMenuCho;
+    private String tuKhoaMenuCho;
+    private boolean coDieuHuongMenuCho;
 
-    private final CartManager.CartListener cartListener = this::updateCartBadge;
+    private final CartManager.CartListener cartListener = this::capNhatBadgeGioHang;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
-        if (sessionManager.isLoggedIn() && !sessionManager.laKhachHang()) {
-            startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.getVaiTroHienTai())
+        if (sessionManager.daDangNhap() && !sessionManager.laKhachHang()) {
+            startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai())
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
             return;
@@ -81,19 +81,19 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         if (savedInstanceState != null) {
-            pendingMenuCategory = savedInstanceState.getString(MenuFragment.ARG_TEN_DANH_MUC);
-            pendingMenuSearchFocus = savedInstanceState.getBoolean(MenuFragment.ARG_MO_TIM_KIEM, false);
-            pendingMenuQuery = savedInstanceState.getString(MenuFragment.ARG_TU_KHOA_TIM_KIEM);
-            hasPendingMenuNavigation = savedInstanceState.getBoolean(KEY_HAS_PENDING_MENU_NAVIGATION, false);
-            pendingActivityHubTab = savedInstanceState.getInt(KEY_PENDING_ACTIVITY_TAB, ActivityHubFragment.TAB_ORDERS);
+            tenDanhMucMenuCho = savedInstanceState.getString(ThucDonFragment.ARG_TEN_DANH_MUC);
+            moTimKiemMenuCho = savedInstanceState.getBoolean(ThucDonFragment.ARG_MO_TIM_KIEM, false);
+            tuKhoaMenuCho = savedInstanceState.getString(ThucDonFragment.ARG_TU_KHOA_TIM_KIEM);
+            coDieuHuongMenuCho = savedInstanceState.getBoolean(KEY_CO_DIEU_HUONG_MENU_CHO, false);
+            tabTrungTamHoatDongCho = savedInstanceState.getInt(KEY_TAB_HOAT_DONG_CHO, TrungTamHoatDongFragment.TAB_ORDERS);
         }
 
-        setupBottomNavigation();
-        setupHeaderActions();
-        refreshHeaderState();
+        thietLapDieuHuongDuoi();
+        thietLapHanhDongHeader();
+        lamMoiTrangThaiHeader();
 
         if (savedInstanceState == null) {
-            showHome();
+            hienTrangChu();
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
         }
     }
@@ -101,76 +101,76 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        CartManager.getInstance().addListener(cartListener);
-        refreshHeaderState();
+        CartManager.getInstance().themLangNghe(cartListener);
+        lamMoiTrangThaiHeader();
     }
 
     @Override
     protected void onStop() {
-        CartManager.getInstance().removeListener(cartListener);
+        CartManager.getInstance().xoaLangNghe(cartListener);
         super.onStop();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(MenuFragment.ARG_TEN_DANH_MUC, pendingMenuCategory);
-        outState.putBoolean(MenuFragment.ARG_MO_TIM_KIEM, pendingMenuSearchFocus);
-        outState.putString(MenuFragment.ARG_TU_KHOA_TIM_KIEM, pendingMenuQuery);
-        outState.putBoolean(KEY_HAS_PENDING_MENU_NAVIGATION, hasPendingMenuNavigation);
-        outState.putInt(KEY_PENDING_ACTIVITY_TAB, pendingActivityHubTab);
+        outState.putString(ThucDonFragment.ARG_TEN_DANH_MUC, tenDanhMucMenuCho);
+        outState.putBoolean(ThucDonFragment.ARG_MO_TIM_KIEM, moTimKiemMenuCho);
+        outState.putString(ThucDonFragment.ARG_TU_KHOA_TIM_KIEM, tuKhoaMenuCho);
+        outState.putBoolean(KEY_CO_DIEU_HUONG_MENU_CHO, coDieuHuongMenuCho);
+        outState.putInt(KEY_TAB_HOAT_DONG_CHO, tabTrungTamHoatDongCho);
     }
 
-    private void setupBottomNavigation() {
+    private void thietLapDieuHuongDuoi() {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == bottomNavigationView.getSelectedItemId()) {
                 if (itemId == R.id.nav_menu) {
-                    showMenu();
+                    hienMenu();
                 } else if (itemId == R.id.nav_orders) {
-                    showActivityHub();
+                    hienTrungTamHoatDong();
                 } else if (itemId == R.id.nav_account) {
-                    showAccount();
+                    hienTaiKhoan();
                 }
                 return itemId != R.id.nav_cart;
             }
 
             if (itemId == R.id.nav_home) {
-                showHome();
+                hienTrangChu();
                 return true;
             }
             if (itemId == R.id.nav_menu) {
-                showMenu();
+                hienMenu();
                 return true;
             }
             if (itemId == R.id.nav_orders) {
-                showActivityHub();
+                hienTrungTamHoatDong();
                 return true;
             }
             if (itemId == R.id.nav_cart) {
-                openCart();
+                moGioHang();
                 return false;
             }
             if (itemId == R.id.nav_account) {
-                showAccount();
+                hienTaiKhoan();
                 return true;
             }
             return false;
         });
     }
 
-    private void setupHeaderActions() {
-        findViewById(R.id.layoutCartIcon).setOnClickListener(v -> openCart());
+    private void thietLapHanhDongHeader() {
+        findViewById(R.id.layoutCartIcon).setOnClickListener(v -> moGioHang());
         View nutTimKiem = findViewById(R.id.layoutSearchAction);
         if (nutTimKiem != null) {
-            nutTimKiem.setOnClickListener(v -> navigateToMenu(null, true, null));
+            nutTimKiem.setOnClickListener(v -> dieuHuongDenMenu(null, true, null));
         }
 
         View avatar = findViewById(R.id.layoutAvatarAction);
         if (avatar != null) {
             avatar.setOnClickListener(v -> {
                 if (bottomNavigationView.getSelectedItemId() == R.id.nav_account) {
-                    showAccount();
+                    hienTaiKhoan();
                     return;
                 }
                 bottomNavigationView.setSelectedItemId(R.id.nav_account);
@@ -178,42 +178,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showHome() {
-        showFragment(findOrCreateHomeFragment(), TAG_HOME);
+    private void hienTrangChu() {
+        hienFragment(timHoacTaoTrangChuFragment(), TAG_TRANG_CHU);
     }
 
-    private void showMenu() {
-        MenuFragment fragment = findOrCreateMenuFragment();
-        if (hasPendingMenuNavigation) {
-            fragment.applyHomeNavigationState(pendingMenuCategory, pendingMenuSearchFocus, pendingMenuQuery);
+    private void hienMenu() {
+        ThucDonFragment fragment = timHoacTaoThucDonFragment();
+        if (coDieuHuongMenuCho) {
+            fragment.apDungTrangThaiDieuHuongTuTrangChu(tenDanhMucMenuCho, moTimKiemMenuCho, tuKhoaMenuCho);
         }
-        showFragment(fragment, TAG_MENU);
-        hasPendingMenuNavigation = false;
+        hienFragment(fragment, TAG_MENU);
+        coDieuHuongMenuCho = false;
     }
 
-    private void showActivityHub() {
-        ActivityHubFragment fragment = findActivityHubFragment();
+    private void hienTrungTamHoatDong() {
+        TrungTamHoatDongFragment fragment = timTrungTamHoatDongFragment();
         if (fragment == null) {
-            fragment = ActivityHubFragment.newInstance(pendingActivityHubTab);
+            fragment = TrungTamHoatDongFragment.newInstance(tabTrungTamHoatDongCho);
         }
-        showFragment(fragment, TAG_ACTIVITY_HUB);
-        fragment.selectTab(pendingActivityHubTab);
-        pendingActivityHubTab = ActivityHubFragment.TAB_ORDERS;
+        hienFragment(fragment, TAG_TRUNG_TAM_HOAT_DONG);
+        fragment.chonTab(tabTrungTamHoatDongCho);
+        tabTrungTamHoatDongCho = TrungTamHoatDongFragment.TAB_ORDERS;
     }
 
-    private void showAccount() {
-        AccountFragment fragment = findAccountFragment();
+    private void hienTaiKhoan() {
+        TaiKhoanFragment fragment = timTaiKhoanFragment();
         if (fragment == null) {
-            fragment = new AccountFragment();
+            fragment = new TaiKhoanFragment();
         }
-        showFragment(fragment, TAG_ACCOUNT);
+        hienFragment(fragment, TAG_TAI_KHOAN);
         getSupportFragmentManager().executePendingTransactions();
-        fragment.onAccountTabSelected();
+        fragment.khiTabTaiKhoanDuocChon();
     }
 
-    private void showFragment(Fragment fragment, String tag) {
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
-        if (currentFragment == fragment || (currentFragment != null && tag.equals(currentFragment.getTag()))) {
+    private void hienFragment(Fragment fragment, String tag) {
+        Fragment fragmentHienTai = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
+        if (fragmentHienTai == fragment || (fragmentHienTai != null && tag.equals(fragmentHienTai.getTag()))) {
             return;
         }
 
@@ -223,106 +223,106 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    private HomeFragment findOrCreateHomeFragment() {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_HOME);
-        return fragment instanceof HomeFragment ? (HomeFragment) fragment : new HomeFragment();
+    private TrangChuFragment timHoacTaoTrangChuFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_TRANG_CHU);
+        return fragment instanceof TrangChuFragment ? (TrangChuFragment) fragment : new TrangChuFragment();
     }
 
-    private MenuFragment findOrCreateMenuFragment() {
+    private ThucDonFragment timHoacTaoThucDonFragment() {
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_MENU);
-        if (fragment instanceof MenuFragment) {
-            return (MenuFragment) fragment;
+        if (fragment instanceof ThucDonFragment) {
+            return (ThucDonFragment) fragment;
         }
-        return MenuFragment.newInstance(pendingMenuCategory, pendingMenuSearchFocus, pendingMenuQuery);
+        return ThucDonFragment.newInstance(tenDanhMucMenuCho, moTimKiemMenuCho, tuKhoaMenuCho);
     }
 
-    private ActivityHubFragment findActivityHubFragment() {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_ACTIVITY_HUB);
-        return fragment instanceof ActivityHubFragment ? (ActivityHubFragment) fragment : null;
+    private TrungTamHoatDongFragment timTrungTamHoatDongFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_TRUNG_TAM_HOAT_DONG);
+        return fragment instanceof TrungTamHoatDongFragment ? (TrungTamHoatDongFragment) fragment : null;
     }
 
-    private AccountFragment findAccountFragment() {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_ACCOUNT);
-        return fragment instanceof AccountFragment ? (AccountFragment) fragment : null;
+    private TaiKhoanFragment timTaiKhoanFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_TAI_KHOAN);
+        return fragment instanceof TaiKhoanFragment ? (TaiKhoanFragment) fragment : null;
     }
 
-    public void navigateToMenu() {
-        navigateToMenu(null, false, null);
+    public void dieuHuongDenMenu() {
+        dieuHuongDenMenu(null, false, null);
     }
 
-    public void navigateToMenu(@Nullable String tenDanhMuc, boolean moTimKiem) {
-        navigateToMenu(tenDanhMuc, moTimKiem, null);
+    public void dieuHuongDenMenu(@Nullable String tenDanhMuc, boolean moTimKiem) {
+        dieuHuongDenMenu(tenDanhMuc, moTimKiem, null);
     }
 
-    public void navigateToMenu(@Nullable String tenDanhMuc, boolean moTimKiem, @Nullable String tuKhoaTimKiem) {
-        pendingMenuCategory = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
-        pendingMenuSearchFocus = moTimKiem;
-        pendingMenuQuery = TextUtils.isEmpty(tuKhoaTimKiem) ? null : tuKhoaTimKiem;
-        hasPendingMenuNavigation = true;
+    public void dieuHuongDenMenu(@Nullable String tenDanhMuc, boolean moTimKiem, @Nullable String tuKhoaTimKiem) {
+        tenDanhMucMenuCho = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
+        moTimKiemMenuCho = moTimKiem;
+        tuKhoaMenuCho = TextUtils.isEmpty(tuKhoaTimKiem) ? null : tuKhoaTimKiem;
+        coDieuHuongMenuCho = true;
         if (bottomNavigationView.getSelectedItemId() == R.id.nav_menu) {
-            showMenu();
+            hienMenu();
             return;
         }
         bottomNavigationView.setSelectedItemId(R.id.nav_menu);
     }
 
-    public void openActivityHub(int tab) {
-        pendingActivityHubTab = tab;
+    public void moTrungTamHoatDong(int tab) {
+        tabTrungTamHoatDongCho = tab;
         if (bottomNavigationView.getSelectedItemId() == R.id.nav_orders) {
-            showActivityHub();
+            hienTrungTamHoatDong();
             return;
         }
         bottomNavigationView.setSelectedItemId(R.id.nav_orders);
     }
 
-    public void refreshHeaderState() {
-        updateGreeting();
-        updateCartBadge();
+    public void lamMoiTrangThaiHeader() {
+        capNhatLoiChao();
+        capNhatBadgeGioHang();
     }
 
-    private void openCart() {
-        startActivity(new Intent(this, CartActivity.class));
+    private void moGioHang() {
+        startActivity(new Intent(this, GioHangActivity.class));
     }
 
-    private void updateGreeting() {
+    private void capNhatLoiChao() {
         if (tvGreeting == null) {
             return;
         }
 
-        String displayName = getString(R.string.account_guest_name);
+        String tenHienThi = getString(R.string.account_guest_name);
 
-        if (sessionManager != null && databaseHelper != null && sessionManager.isLoggedIn()) {
-            long currentUserId = sessionManager.getCurrentUserId();
-            if (currentUserId > 0) {
-                User currentUser = databaseHelper.getUserById(currentUserId);
-                if (currentUser != null) {
-                    String name = currentUser.getName();
-                    String email = currentUser.getEmail();
-                    String defaultName = getString(R.string.account_default_name);
+        if (sessionManager != null && databaseHelper != null && sessionManager.daDangNhap()) {
+            long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
+            if (idNguoiDungHienTai > 0) {
+                NguoiDung nguoiDungHienTai = databaseHelper.layNguoiDungTheoId(idNguoiDungHienTai);
+                if (nguoiDungHienTai != null) {
+                    String ten = nguoiDungHienTai.layTen();
+                    String email = nguoiDungHienTai.layEmail();
+                    String tenMacDinh = getString(R.string.account_default_name);
 
-                    if (!TextUtils.isEmpty(name)
-                            && !TextUtils.equals(name, defaultName)
-                            && !TextUtils.equals(name, getString(R.string.db_test_customer_name))) {
-                        displayName = name;
+                    if (!TextUtils.isEmpty(ten)
+                            && !TextUtils.equals(ten, tenMacDinh)
+                            && !TextUtils.equals(ten, getString(R.string.db_test_customer_name))) {
+                        tenHienThi = ten;
                     } else if (!TextUtils.isEmpty(email)) {
-                        displayName = email;
+                        tenHienThi = email;
                     }
                 }
             }
         }
 
-        tvGreeting.setText(getString(R.string.home_greeting_format, displayName));
+        tvGreeting.setText(getString(R.string.home_greeting_format, tenHienThi));
     }
 
-    private void updateCartBadge() {
-        int totalQuantity = CartManager.getInstance().getTotalQuantity();
-        String badgeText = dinhDangSoLuongBadge(totalQuantity);
-        boolean hienBadge = badgeText != null;
+    private void capNhatBadgeGioHang() {
+        int tongSoLuong = CartManager.getInstance().layTongSoLuong();
+        String chuoiBadge = dinhDangSoLuongBadge(tongSoLuong);
+        boolean hienBadge = chuoiBadge != null;
 
         if (tvCartBadge != null) {
             tvCartBadge.setVisibility(hienBadge ? View.VISIBLE : View.GONE);
             if (hienBadge) {
-                tvCartBadge.setText(badgeText);
+                tvCartBadge.setText(chuoiBadge);
             }
         }
 
@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.nav_cart);
         badgeDrawable.setVisible(true);
         badgeDrawable.setMaxCharacterCount(3);
-        badgeDrawable.setNumber(totalQuantity);
+        badgeDrawable.setNumber(tongSoLuong);
     }
 
     @Nullable
@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
         if (totalQuantity <= 0) {
             return null;
         }
-        return totalQuantity > MAX_BADGE_COUNT
+        return totalQuantity > SO_LUONG_BADGE_TOI_DA
                 ? getString(R.string.cart_badge_overflow)
                 : String.valueOf(totalQuantity);
     }

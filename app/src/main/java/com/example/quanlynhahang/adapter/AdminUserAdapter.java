@@ -13,29 +13,29 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
-import com.example.quanlynhahang.model.User;
+import com.example.quanlynhahang.model.NguoiDung;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminUserAdapter extends RecyclerView.Adapter<AdminUserAdapter.AdminUserViewHolder> {
 
-    public interface ActionListener {
-        void onChangeRole(User user);
+    public interface HanhDongListener {
+        void khiDoiVaiTro(NguoiDung user);
 
-        void onToggleActive(User user);
+        void khiBatTatTrangThaiHoatDong(NguoiDung user);
     }
 
-    private final List<User> users = new ArrayList<>();
-    private final ActionListener actionListener;
+    private final List<NguoiDung> danhSachNguoiDung = new ArrayList<>();
+    private final HanhDongListener hanhDongListener;
 
-    public AdminUserAdapter(ActionListener actionListener) {
-        this.actionListener = actionListener;
+    public AdminUserAdapter(HanhDongListener hanhDongListener) {
+        this.hanhDongListener = hanhDongListener;
     }
 
-    public void submitList(List<User> newUsers) {
-        users.clear();
-        users.addAll(newUsers);
+    public void capNhatDanhSach(List<NguoiDung> danhSachMoi) {
+        danhSachNguoiDung.clear();
+        danhSachNguoiDung.addAll(danhSachMoi);
         notifyDataSetChanged();
     }
 
@@ -48,12 +48,12 @@ public class AdminUserAdapter extends RecyclerView.Adapter<AdminUserAdapter.Admi
 
     @Override
     public void onBindViewHolder(@NonNull AdminUserViewHolder holder, int position) {
-        holder.bind(users.get(position));
+        holder.ganDuLieu(danhSachNguoiDung.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return users.size();
+        return danhSachNguoiDung.size();
     }
 
     class AdminUserViewHolder extends RecyclerView.ViewHolder {
@@ -70,30 +70,30 @@ public class AdminUserAdapter extends RecyclerView.Adapter<AdminUserAdapter.Admi
             tvName = itemView.findViewById(R.id.tvAdminUserName);
             tvEmail = itemView.findViewById(R.id.tvAdminUserEmail);
             tvPhone = itemView.findViewById(R.id.tvAdminUserPhone);
-            tvRole = itemView.findViewById(R.id.tvAdminUserRole);
+            tvRole = itemView.findViewById(R.id.tvAdminVaiTroNguoiDung);
             tvStatus = itemView.findViewById(R.id.tvAdminUserStatus);
-            btnRole = itemView.findViewById(R.id.btnAdminUserRole);
+            btnRole = itemView.findViewById(R.id.btnAdminVaiTroNguoiDung);
             btnToggle = itemView.findViewById(R.id.btnAdminUserToggleActive);
         }
 
-        void bind(User user) {
+        void ganDuLieu(NguoiDung nguoiDung) {
             Context context = itemView.getContext();
-            tvName.setText(user.getName());
-            tvEmail.setText(user.getEmail());
-            tvPhone.setText(context.getString(R.string.admin_user_phone_format, user.getPhone()));
-            tvRole.setText(context.getString(R.string.admin_user_role_format, getRoleLabel(user)));
-            tvStatus.setText(user.isActive() ? R.string.admin_user_status_active : R.string.admin_user_status_locked);
-            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, user.isActive() ? R.color.success : R.color.error)));
-            btnToggle.setText(user.isActive() ? R.string.admin_lock_user : R.string.admin_unlock_user);
-            btnRole.setOnClickListener(v -> actionListener.onChangeRole(user));
-            btnToggle.setOnClickListener(v -> actionListener.onToggleActive(user));
+            tvName.setText(nguoiDung.layTen());
+            tvEmail.setText(nguoiDung.layEmail());
+            tvPhone.setText(context.getString(R.string.admin_user_phone_format, nguoiDung.laySoDienThoai()));
+            tvRole.setText(context.getString(R.string.admin_user_role_format, layNhanVaiTro(nguoiDung)));
+            tvStatus.setText(nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked);
+            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, nguoiDung.dangHoatDong() ? R.color.success : R.color.error)));
+            btnToggle.setText(nguoiDung.dangHoatDong() ? R.string.admin_lock_user : R.string.admin_unlock_user);
+            btnRole.setOnClickListener(v -> hanhDongListener.khiDoiVaiTro(nguoiDung));
+            btnToggle.setOnClickListener(v -> hanhDongListener.khiBatTatTrangThaiHoatDong(nguoiDung));
         }
 
-        private int getRoleLabel(User user) {
-            if (user.laAdmin()) {
+        private int layNhanVaiTro(NguoiDung nguoiDung) {
+            if (nguoiDung.laAdmin()) {
                 return R.string.admin_role_admin;
             }
-            if (user.laNhanVien()) {
+            if (nguoiDung.laNhanVien()) {
                 return R.string.admin_role_employee;
             }
             return R.string.admin_role_customer;

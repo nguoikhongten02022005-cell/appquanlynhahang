@@ -27,6 +27,9 @@ public class DonHang {
     public enum PhuongThucThanhToan {
         CHUA_CHON,
         TAI_QUAY,
+        TIEN_MAT_KHI_NHAN,
+        CHUYEN_KHOAN_NGAN_HANG,
+        VI_DIEN_TU,
         THANH_TOAN_NGAY_MO_PHONG
     }
 

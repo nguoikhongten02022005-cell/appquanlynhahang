@@ -11,7 +11,17 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.widget.TextView;
+
+import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
+import com.example.quanlynhahang.model.DonHang;
+import com.example.quanlynhahang.model.YeuCauPhucVu;
 import com.google.android.material.button.MaterialButton;
+
+import java.util.List;
 
 public class TrungTamHoatDongFragment extends Fragment {
 
@@ -27,6 +37,14 @@ public class TrungTamHoatDongFragment extends Fragment {
     private MaterialButton btnTabDonHangs;
     private MaterialButton btnTabRequests;
     private MaterialButton btnTabServiceRequests;
+    private TextView tvServiceHubSummaryTable;
+    private TextView tvServiceHubSummaryOrder;
+    private TextView tvServiceHubSummarySupport;
+    private TextView tvServiceHubSummaryEmpty;
+    private TextView tvServiceHubSummaryChevron;
+    private View cardServiceHubSummary;
+    private SessionManager sessionManager;
+    private DatabaseHelper databaseHelper;
     private int tabDangChon = TAB_ORDERS;
 
     public static TrungTamHoatDongFragment newInstance(int tabBanDau) {
@@ -52,6 +70,14 @@ public class TrungTamHoatDongFragment extends Fragment {
         btnTabDonHangs = view.findViewById(R.id.btnTabDonHangs);
         btnTabRequests = view.findViewById(R.id.btnTabRequests);
         btnTabServiceRequests = view.findViewById(R.id.btnTabServiceRequests);
+        tvServiceHubSummaryTable = view.findViewById(R.id.tvServiceHubSummaryTable);
+        tvServiceHubSummaryOrder = view.findViewById(R.id.tvServiceHubSummaryOrder);
+        tvServiceHubSummarySupport = view.findViewById(R.id.tvServiceHubSummarySupport);
+        tvServiceHubSummaryEmpty = view.findViewById(R.id.tvServiceHubSummaryEmpty);
+        tvServiceHubSummaryChevron = view.findViewById(R.id.tvServiceHubSummaryChevron);
+        cardServiceHubSummary = view.findViewById(R.id.cardServiceHubSummary);
+        sessionManager = new SessionManager(requireContext());
+        databaseHelper = new DatabaseHelper(requireContext());
 
         if (savedInstanceState != null) {
             tabDangChon = savedInstanceState.getInt(ARG_TAB_BAN_DAU, TAB_ORDERS);
@@ -62,8 +88,16 @@ public class TrungTamHoatDongFragment extends Fragment {
         btnTabDonHangs.setOnClickListener(v -> chonTab(TAB_ORDERS));
         btnTabRequests.setOnClickListener(v -> chonTab(TAB_RESERVATIONS));
         btnTabServiceRequests.setOnClickListener(v -> chonTab(TAB_SERVICE_REQUESTS));
+        if (cardServiceHubSummary != null) {
+            cardServiceHubSummary.setOnClickListener(v -> {
+                if (tvServiceHubSummarySupport != null && tvServiceHubSummarySupport.getVisibility() == View.VISIBLE) {
+                    chonTab(TAB_SERVICE_REQUESTS);
+                }
+            });
+        }
 
         chonTab(tabDangChon);
+        capNhatTomTatDichVu();
     }
 
     @Override
@@ -81,6 +115,7 @@ public class TrungTamHoatDongFragment extends Fragment {
             tabDangChon = TAB_ORDERS;
         }
         capNhatTrangThaiNutChuyen();
+        capNhatTomTatDichVu();
         hienNoiDungDangChon();
     }
 
@@ -117,12 +152,12 @@ public class TrungTamHoatDongFragment extends Fragment {
 
         Fragment fragment;
         String tag;
-        if (tabDangChon == TAB_RESERVATIONS) {
-            fragment = timHoacTaoDatBanFragment();
-            tag = TAG_DAT_BAN;
-        } else if (tabDangChon == TAB_SERVICE_REQUESTS) {
+        if (tabDangChon == TAB_SERVICE_REQUESTS) {
             fragment = timHoacTaoYeuCauFragment();
             tag = TAG_YEU_CAU;
+        } else if (tabDangChon == TAB_RESERVATIONS) {
+            fragment = timHoacTaoDatBanFragment();
+            tag = TAG_DAT_BAN;
         } else {
             fragment = timHoacTaoDonHangsFragment();
             tag = TAG_DON_HANG;
@@ -149,6 +184,59 @@ public class TrungTamHoatDongFragment extends Fragment {
         args.putBoolean(DonHangFragment.ARG_EMBEDDED, true);
         orderFragment.setArguments(args);
         return orderFragment;
+    }
+
+    private void capNhatTomTatDichVu() {
+        if (!isAdded()) {
+            return;
+        }
+        long idNguoiDung = sessionManager.layIdNguoiDungHienTai();
+        List<DonHang> danhSachDon = idNguoiDung > 0 ? databaseHelper.layDonHangTheoNguoiDung(idNguoiDung) : java.util.Collections.emptyList();
+        List<YeuCauPhucVu> danhSachYeuCau = idNguoiDung > 0 ? databaseHelper.layYeuCauTheoNguoiDung(idNguoiDung) : java.util.Collections.emptyList();
+
+        DonHang donDangHoatDong = DichVuKhachHangHelper.timDonHangDangHoatDong(danhSachDon);
+        DonHang donTaiQuanDangHoatDong = DichVuKhachHangHelper.timDonHangTaiQuanDangHoatDong(danhSachDon);
+        YeuCauPhucVu yeuCauDangCho = DichVuKhachHangHelper.timYeuCauHoTroDangXuLy(danhSachYeuCau);
+        String banHienTai = DichVuKhachHangHelper.timBanHienTai(
+                sessionManager.layBanHienTai(),
+                donTaiQuanDangHoatDong,
+                () -> CartManager.getInstance().layNguCanhDonHang().laySoBan()
+        );
+
+        capNhatDongTomTat(tvServiceHubSummaryTable,
+                banHienTai != null,
+                banHienTai == null ? null : getString(R.string.activity_hub_summary_table, banHienTai));
+
+        if (donDangHoatDong != null) {
+            int textRes = donDangHoatDong.laAnTaiQuan()
+                    ? R.string.activity_hub_summary_dine_in_order
+                    : R.string.activity_hub_summary_takeaway_order;
+            capNhatDongTomTat(tvServiceHubSummaryOrder, true, getString(textRes));
+        } else {
+            capNhatDongTomTat(tvServiceHubSummaryOrder, false, null);
+        }
+
+        capNhatDongTomTat(tvServiceHubSummarySupport,
+                yeuCauDangCho != null,
+                yeuCauDangCho == null ? null : getString(R.string.activity_hub_summary_support_waiting));
+
+        boolean khongCoGiHoatDong = banHienTai == null && donDangHoatDong == null && yeuCauDangCho == null;
+        capNhatDongTomTat(tvServiceHubSummaryEmpty,
+                khongCoGiHoatDong,
+                khongCoGiHoatDong ? getString(R.string.activity_hub_summary_empty) : null);
+        if (tvServiceHubSummaryChevron != null) {
+            tvServiceHubSummaryChevron.setVisibility(yeuCauDangCho != null ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void capNhatDongTomTat(@Nullable TextView textView, boolean hienThi, @Nullable String noiDung) {
+        if (textView == null) {
+            return;
+        }
+        textView.setVisibility(hienThi ? View.VISIBLE : View.GONE);
+        if (hienThi && noiDung != null) {
+            textView.setText(noiDung);
+        }
     }
 
     private Fragment timHoacTaoDatBanFragment() {

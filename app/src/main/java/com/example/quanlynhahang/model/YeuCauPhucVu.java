@@ -10,7 +10,8 @@ public class YeuCauPhucVu {
 
     public enum TrangThai {
         DANG_XU_LY,
-        DA_XU_LY
+        DA_XU_LY,
+        DA_HUY
     }
 
     private final long idYeuCau;
@@ -84,8 +85,16 @@ public class YeuCauPhucVu {
         return orderId > 0;
     }
 
+    public boolean coTheHuy() {
+        return trangThai == TrangThai.DANG_XU_LY;
+    }
+
     public void danhDauDaXong() {
         trangThai = TrangThai.DA_XU_LY;
+    }
+
+    public void danhDauDaHuy() {
+        trangThai = TrangThai.DA_HUY;
     }
 
     public void capNhatDaXuLyXong() {

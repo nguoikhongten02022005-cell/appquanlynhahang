@@ -4,8 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatRadioButton;
+import androidx.core.content.ContextCompat;
+
+import android.widget.LinearLayout;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +29,7 @@ import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,13 +47,14 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     private TextView tvConfirmTotal;
     private TextView tvConfirmPaymentHint;
     private MaterialButton btnSendOrder;
-    private MaterialButton btnPayNow;
-    private MaterialButton btnRequestPayment;
+    private MaterialButton btnSecondaryAction;
 
     private MonTrongDonAdapter monTrongDonAdapter;
     private CartManager cartManager;
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
+    private SessionManager tableSessionManager;
+    private DonHang.PhuongThucThanhToan phuongThucThanhToanMangDi = DonHang.PhuongThucThanhToan.TIEN_MAT_KHI_NHAN;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +63,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
 
         cartManager = CartManager.getInstance();
         sessionManager = new SessionManager(this);
+        tableSessionManager = sessionManager;
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
 
@@ -73,8 +85,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         tvConfirmTotal = findViewById(R.id.tvConfirmTotal);
         tvConfirmPaymentHint = findViewById(R.id.tvConfirmPaymentHint);
         btnSendOrder = findViewById(R.id.btnSendOrder);
-        btnPayNow = findViewById(R.id.btnPayNow);
-        btnRequestPayment = findViewById(R.id.btnRequestPayment);
+        btnSecondaryAction = findViewById(R.id.btnSecondaryAction);
     }
 
     private boolean kiemTraDuLieuDauVao() {
@@ -121,15 +132,26 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
                 : getString(R.string.order_note_format, nguCanhDonHang.layGhiChu()));
         tvConfirmSubtotal.setText(getString(R.string.cart_subtotal_label, tongTienDaDinhDang));
         tvConfirmTotal.setText(getString(R.string.cart_total_label, tongTienDaDinhDang));
-        tvConfirmPaymentHint.setText(nguCanhDonHang.laAnTaiQuan()
+        boolean laAnTaiQuan = nguCanhDonHang.laAnTaiQuan();
+        tvConfirmPaymentHint.setText(laAnTaiQuan
                 ? getString(R.string.order_confirmation_payment_hint_dine_in)
                 : getString(R.string.order_confirmation_payment_hint_takeaway));
+        btnSendOrder.setText(getString(laAnTaiQuan ? R.string.order_send : R.string.cart_checkout_takeaway));
+        btnSecondaryAction.setText(getString(laAnTaiQuan ? R.string.order_back_to_edit : R.string.order_back_to_edit));
     }
 
     private void thietLapNutHanhDong() {
-        btnSendOrder.setOnClickListener(v -> xuLyTaoDonHang(CheDoGuiDon.GUI_DON));
-        btnPayNow.setOnClickListener(v -> xuLyTaoDonHang(CheDoGuiDon.THANH_TOAN_NGAY));
-        btnRequestPayment.setOnClickListener(v -> xuLyTaoDonHang(CheDoGuiDon.GOI_THANH_TOAN));
+        btnSendOrder.setOnClickListener(v -> xuLyTheoNguCanh());
+        btnSecondaryAction.setOnClickListener(v -> finish());
+    }
+
+    private void xuLyTheoNguCanh() {
+        CartManager.NguCanhDonHang nguCanhDonHang = cartManager.layNguCanhDonHang();
+        if (nguCanhDonHang.laAnTaiQuan()) {
+            xuLyTaoDonHang(CheDoGuiDon.GUI_DON);
+            return;
+        }
+        moLuaChonThanhToanMangDi();
     }
 
     private void xuLyTaoDonHang(CheDoGuiDon cheDoGuiDon) {
@@ -137,7 +159,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         List<CartManager.CartItem> danhSachMon = cartManager.layDanhSachMon();
         CartManager.NguCanhDonHang nguCanhDonHang = cartManager.layNguCanhDonHang();
         if (idNguoiDung <= 0 || danhSachMon.isEmpty() || !nguCanhDonHang.hopLeDeDatHang()) {
-            Toast.makeText(this, R.string.db_operation_failed, Toast.LENGTH_SHORT).show();
+            hienThiPhanHoiNgan(R.string.order_submit_failed);
             return;
         }
 
@@ -154,8 +176,11 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
             trangThaiThanhToan = DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG;
             phuongThucThanhToan = DonHang.PhuongThucThanhToan.THANH_TOAN_NGAY_MO_PHONG;
         } else if (cheDoGuiDon == CheDoGuiDon.GOI_THANH_TOAN) {
-            trangThaiThanhToan = DonHang.TrangThaiThanhToan.DA_GOI_THANH_TOAN;
+            trangThaiThanhToan = DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN;
             phuongThucThanhToan = DonHang.PhuongThucThanhToan.TAI_QUAY;
+        } else if (cheDoGuiDon == CheDoGuiDon.XAC_NHAN_THANH_TOAN_MANG_DI) {
+            trangThaiThanhToan = DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN;
+            phuongThucThanhToan = phuongThucThanhToanMangDi;
         }
 
         long idDonHang = databaseHelper.themDonHang(
@@ -175,30 +200,16 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
 
         if (idDonHang <= 0) {
             datTrangThaiDangGui(false, cheDoGuiDon);
-            Toast.makeText(this, R.string.db_operation_failed, Toast.LENGTH_SHORT).show();
+            hienThiPhanHoiNgan(R.string.order_submit_failed);
             return;
         }
 
-        if (cheDoGuiDon == CheDoGuiDon.GOI_THANH_TOAN) {
-            long idYeuCau = databaseHelper.themYeuCauPhucVu(
-                    idNguoiDung,
-                    YeuCauPhucVu.LoaiYeuCau.THANH_TOAN,
-                    getString(R.string.service_request_payment_for_order_format, maDonHang),
-                    nguCanhDonHang.laySoBan(),
-                    idDonHang,
-                    thoiGianDat,
-                    YeuCauPhucVu.TrangThai.DANG_XU_LY
-            );
-            if (idYeuCau <= 0) {
-                datTrangThaiDangGui(false, cheDoGuiDon);
-                Toast.makeText(this, R.string.db_operation_failed, Toast.LENGTH_SHORT).show();
-                return;
-            }
+        if (nguCanhDonHang.laAnTaiQuan()) {
+            tableSessionManager.luuBanHienTai(nguCanhDonHang.laySoBan());
         }
-
         cartManager.xoaToanBoGio();
         setResult(RESULT_OK);
-        Toast.makeText(this, layThongBaoThanhCong(cheDoGuiDon), Toast.LENGTH_SHORT).show();
+        hienThiPhanHoiNgan(layThongBaoThanhCong(cheDoGuiDon));
         moTrungTamTheoDoi();
     }
 
@@ -210,30 +221,40 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         finish();
     }
 
-    private String layThongBaoThanhCong(CheDoGuiDon cheDoGuiDon) {
+    private int layThongBaoThanhCong(CheDoGuiDon cheDoGuiDon) {
         if (cheDoGuiDon == CheDoGuiDon.THANH_TOAN_NGAY) {
-            return getString(R.string.order_submit_success_paid_mock);
+            return R.string.order_submit_success_paid_mock;
         }
         if (cheDoGuiDon == CheDoGuiDon.GOI_THANH_TOAN) {
-            return getString(R.string.order_submit_success_payment_requested);
+            return R.string.order_submit_success_payment_requested;
         }
-        return getString(R.string.order_submit_success);
+        if (cheDoGuiDon == CheDoGuiDon.XAC_NHAN_THANH_TOAN_MANG_DI) {
+            return R.string.order_submit_success;
+        }
+        return R.string.order_submit_success;
     }
 
     private void datTrangThaiDangGui(boolean dangGui, CheDoGuiDon cheDoGuiDon) {
         btnSendOrder.setEnabled(!dangGui);
-        btnPayNow.setEnabled(!dangGui);
-        btnRequestPayment.setEnabled(!dangGui);
+        btnSecondaryAction.setEnabled(!dangGui);
 
-        btnSendOrder.setText(dangGui && cheDoGuiDon == CheDoGuiDon.GUI_DON
-                ? getString(R.string.order_submitting)
-                : getString(R.string.order_send));
-        btnPayNow.setText(dangGui && cheDoGuiDon == CheDoGuiDon.THANH_TOAN_NGAY
-                ? getString(R.string.order_submitting)
-                : getString(R.string.order_pay_now));
-        btnRequestPayment.setText(dangGui && cheDoGuiDon == CheDoGuiDon.GOI_THANH_TOAN
-                ? getString(R.string.order_submitting)
-                : getString(R.string.order_request_payment));
+        btnSendOrder.setText(dangGui ? getString(R.string.order_submitting) : getString(layNhanNutTheoCheDo(cheDoGuiDon)));
+        btnSecondaryAction.setText(R.string.order_back_to_edit);
+    }
+
+    private int layNhanNutTheoCheDo(CheDoGuiDon cheDoGuiDon) {
+        if (cheDoGuiDon == CheDoGuiDon.THANH_TOAN_NGAY) {
+            return R.string.order_pay_now;
+        }
+        if (cheDoGuiDon == CheDoGuiDon.GOI_THANH_TOAN) {
+            return R.string.order_request_payment;
+        }
+        if (cheDoGuiDon == CheDoGuiDon.XAC_NHAN_THANH_TOAN_MANG_DI) {
+            return R.string.order_confirm_payment;
+        }
+        return cartManager.layNguCanhDonHang().laAnTaiQuan()
+                ? R.string.order_send
+                : R.string.cart_checkout_takeaway;
     }
 
     private List<DonHang.MonTrongDon> xayDanhSachMonTrongDon() {
@@ -266,7 +287,20 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     }
 
     private String dinhDangGia(long giaTien) {
-        return String.format(Locale.getDefault(), "%,d đ", giaTien);
+        return String.format(Locale.forLanguageTag("vi-VN"), "%,d đ", giaTien).replace(',', '.');
+    }
+
+    private void hienThiPhanHoiNgan(int messageRes) {
+        hienThiPhanHoiNgan(getString(messageRes));
+    }
+
+    private void hienThiPhanHoiNgan(String message) {
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private String taoMaDonHang() {
@@ -277,9 +311,71 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
     }
 
+    private void moLuaChonThanhToanMangDi() {
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        int padding = getResources().getDimensionPixelSize(R.dimen.space_lg);
+        container.setPadding(padding, padding / 2, padding, 0);
+
+        TextView message = new TextView(this);
+        message.setText(R.string.order_choose_payment_message);
+        message.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+        container.addView(message);
+
+        RadioGroup radioGroup = new RadioGroup(this);
+        radioGroup.setOrientation(RadioGroup.VERTICAL);
+        radioGroup.setPadding(0, padding / 2, 0, 0);
+
+        AppCompatRadioButton rbCash = new AppCompatRadioButton(this);
+        rbCash.setId(View.generateViewId());
+        rbCash.setText(R.string.order_payment_option_cash);
+        radioGroup.addView(rbCash);
+
+        AppCompatRadioButton rbBank = new AppCompatRadioButton(this);
+        rbBank.setId(View.generateViewId());
+        rbBank.setText(R.string.order_payment_option_bank_transfer);
+        radioGroup.addView(rbBank);
+
+        AppCompatRadioButton rbWallet = new AppCompatRadioButton(this);
+        rbWallet.setId(View.generateViewId());
+        rbWallet.setText(R.string.order_payment_option_ewallet);
+        radioGroup.addView(rbWallet);
+
+        int checkedId = rbCash.getId();
+        if (phuongThucThanhToanMangDi == DonHang.PhuongThucThanhToan.CHUYEN_KHOAN_NGAN_HANG) {
+            checkedId = rbBank.getId();
+        } else if (phuongThucThanhToanMangDi == DonHang.PhuongThucThanhToan.VI_DIEN_TU) {
+            checkedId = rbWallet.getId();
+        }
+        radioGroup.check(checkedId);
+        container.addView(radioGroup);
+
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.order_choose_payment_title)
+                .setView(container)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.order_confirm_payment, null)
+                .create();
+
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            int selectedId = radioGroup.getCheckedRadioButtonId();
+            if (selectedId == rbBank.getId()) {
+                phuongThucThanhToanMangDi = DonHang.PhuongThucThanhToan.CHUYEN_KHOAN_NGAN_HANG;
+            } else if (selectedId == rbWallet.getId()) {
+                phuongThucThanhToanMangDi = DonHang.PhuongThucThanhToan.VI_DIEN_TU;
+            } else {
+                phuongThucThanhToanMangDi = DonHang.PhuongThucThanhToan.TIEN_MAT_KHI_NHAN;
+            }
+            dialog.dismiss();
+            xuLyTaoDonHang(CheDoGuiDon.XAC_NHAN_THANH_TOAN_MANG_DI);
+        }));
+        dialog.show();
+    }
+
     private enum CheDoGuiDon {
         GUI_DON,
         THANH_TOAN_NGAY,
-        GOI_THANH_TOAN
+        GOI_THANH_TOAN,
+        XAC_NHAN_THANH_TOAN_MANG_DI
     }
 }

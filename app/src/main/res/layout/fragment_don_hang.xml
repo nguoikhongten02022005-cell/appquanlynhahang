@@ -87,7 +87,7 @@
             android:paddingTop="@dimen/space_sm"
             android:paddingEnd="@dimen/space_md"
             android:paddingBottom="@dimen/space_sm"
-            android:text="@string/cart_checkout"
+            android:text="@string/order_empty_action"
             android:textAllCaps="false"
             android:textColor="@color/text_on_color"
             android:textSize="14sp"

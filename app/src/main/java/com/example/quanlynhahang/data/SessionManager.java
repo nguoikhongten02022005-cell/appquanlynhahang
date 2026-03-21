@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.example.quanlynhahang.R;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
@@ -18,6 +20,7 @@ public class SessionManager {
     private static final String KEY_CURRENT_USER_ID = "current_user_id";
     private static final String KEY_CURRENT_USER_ROLE = "current_user_role";
     private static final String KEY_LEGACY_AUTH_MIGRATED = "legacy_auth_migrated";
+    private static final String KEY_CURRENT_TABLE = "current_table";
 
     private static final String LEGACY_KEY_REGISTERED_EMAIL = "registered_email";
     private static final String LEGACY_KEY_REGISTERED_PASSWORD = "registered_password";
@@ -175,10 +178,29 @@ public class SessionManager {
                 .putBoolean(KEY_IS_LOGGED_IN, false)
                 .remove(KEY_CURRENT_USER_ID)
                 .remove(KEY_CURRENT_USER_ROLE)
+                .remove(KEY_CURRENT_TABLE)
                 .apply();
     }
 
     public void xoaPhienDangNhap() {
         clearSession();
+    }
+
+    public void luuBanHienTai(@Nullable String soBan) {
+        sharedPreferences.edit()
+                .putString(KEY_CURRENT_TABLE, soBan == null ? "" : soBan.trim())
+                .apply();
+    }
+
+    public String layBanHienTai() {
+        return sharedPreferences.getString(KEY_CURRENT_TABLE, "");
+    }
+
+    public boolean coBanHienTai() {
+        return !TextUtils.isEmpty(layBanHienTai());
+    }
+
+    public void xoaBanHienTai() {
+        sharedPreferences.edit().remove(KEY_CURRENT_TABLE).apply();
     }
 }

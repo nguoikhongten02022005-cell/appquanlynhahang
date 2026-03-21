@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
@@ -29,6 +30,81 @@
         android:layout_marginTop="@dimen/space_sm"
         android:text="@string/activity_hub_demo_hint"
         android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardServiceHubSummary"
+        style="@style/Widget.Quanlynhahang.SurfaceCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_md"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardUseCompatPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/space_md">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvServiceHubSummaryTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Quanlynhahang.CardTitle"
+                android:visibility="gone"
+                tools:text="Bạn đang ở Bàn 03"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvServiceHubSummaryOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
+                android:visibility="gone"
+                tools:text="Đang có đơn ăn tại quán hoạt động"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvServiceHubSummarySupport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
+                android:visibility="gone"
+                tools:text="Có yêu cầu hỗ trợ đang chờ xử lý"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvServiceHubSummaryEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
+                android:visibility="gone"
+                tools:text="Bạn chưa có đơn, chưa có bàn hoạt động và chưa có yêu cầu hỗ trợ nào."
+                tools:visibility="gone" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvServiceHubSummaryChevron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="›"
+                android:textColor="@color/brand_orange"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
         android:layout_width="match_parent"

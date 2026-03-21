@@ -156,6 +156,18 @@ public class DonHangNhanVienAdapter extends RecyclerView.Adapter<DonHangNhanVien
         if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_GOI_THANH_TOAN) {
             return context.getString(R.string.order_payment_status_requested);
         }
+        if (!donHang.laAnTaiQuan()) {
+            if (donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.TIEN_MAT_KHI_NHAN
+                    || donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.TAI_QUAY) {
+                return context.getString(R.string.order_payment_status_pay_on_pickup);
+            }
+            if (donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.CHUYEN_KHOAN_NGAN_HANG) {
+                return context.getString(R.string.order_payment_status_bank_transfer);
+            }
+            if (donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.VI_DIEN_TU) {
+                return context.getString(R.string.order_payment_status_ewallet);
+            }
+        }
         return context.getString(R.string.order_payment_status_unpaid);
     }
 

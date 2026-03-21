@@ -100,10 +100,11 @@
             android:layout_height="36dp"
             android:layout_marginStart="@dimen/space_xs"
             android:background="@drawable/bg_icon_circle"
+            android:backgroundTint="@color/cart_remove_bg"
             android:contentDescription="@string/cd_cart_remove"
             android:padding="8dp"
-            android:src="@drawable/ic_remove_24"
-            app:tint="@color/brand_red" />
+            android:src="@android:drawable/ic_menu_delete"
+            app:tint="@color/cart_remove_tint" />
     </LinearLayout>
 
 </LinearLayout>

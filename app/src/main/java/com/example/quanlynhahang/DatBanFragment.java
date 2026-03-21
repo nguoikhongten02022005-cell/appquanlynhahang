@@ -24,6 +24,7 @@ import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.DatBan;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.text.SimpleDateFormat;
@@ -57,6 +58,7 @@ public class DatBanFragment extends Fragment {
     private TextView tvReservationEmptyState;
     private TextView tvReservationAvailableTables;
     private TextView tvReservationOccupiedTables;
+    private MaterialButton btnSubmitReservation;
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
@@ -113,6 +115,7 @@ public class DatBanFragment extends Fragment {
         tvReservationEmptyState = view.findViewById(R.id.tvReservationEmptyState);
         tvReservationAvailableTables = view.findViewById(R.id.tvReservationAvailableTables);
         tvReservationOccupiedTables = view.findViewById(R.id.tvReservationOccupiedTables);
+        btnSubmitReservation = view.findViewById(R.id.btnSubmitReservation);
 
         thietLapLuaChonSoBan();
 
@@ -311,11 +314,7 @@ public class DatBanFragment extends Fragment {
     private void thucHienHuyDatBan(DatBan datBan, int position) {
         boolean daHuy = databaseHelper.huyDatBan(datBan.layId());
         if (!daHuy) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.db_operation_failed),
-                    Toast.LENGTH_SHORT
-            ).show();
+            hienThiPhanHoiNgan(R.string.db_operation_failed);
             return;
         }
 
@@ -323,36 +322,26 @@ public class DatBanFragment extends Fragment {
         reservationAdapter.notifyItemChanged(position);
         capNhatTrangThaiRong();
         capNhatDanhSachBanTheoKhungGio();
-        Toast.makeText(
-                requireContext(),
-                getString(R.string.reservation_cancel_success),
-                Toast.LENGTH_SHORT
-        ).show();
+        hienThiPhanHoiNgan(R.string.reservation_cancel_success);
     }
 
     private void thietLapHanhDong(View view) {
-        MaterialButton btnSubmitReservation = view.findViewById(R.id.btnSubmitReservation);
         btnSubmitReservation.setOnClickListener(v -> guiYeuCauDatBan());
     }
 
     private void guiYeuCauDatBan() {
+        datTrangThaiDangGui(true);
         long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
         if (!sessionManager.daDangNhap() || idNguoiDungHienTai <= 0) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reservation_login_required),
-                    Toast.LENGTH_SHORT
-            ).show();
+            datTrangThaiDangGui(false);
+            hienThiPhanHoiNgan(R.string.reservation_login_required);
             return;
         }
 
         String chuoiSoKhach = etGuestCount.getText() == null ? "" : etGuestCount.getText().toString().trim();
         if (TextUtils.isEmpty(chuoiSoKhach)) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reservation_validation_guest_count),
-                    Toast.LENGTH_SHORT
-            ).show();
+            datTrangThaiDangGui(false);
+            hienThiPhanHoiNgan(R.string.reservation_validation_guest_count);
             return;
         }
 
@@ -360,29 +349,20 @@ public class DatBanFragment extends Fragment {
         try {
             soKhach = Integer.parseInt(chuoiSoKhach);
         } catch (NumberFormatException ex) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reservation_validation_guest_count),
-                    Toast.LENGTH_SHORT
-            ).show();
+            datTrangThaiDangGui(false);
+            hienThiPhanHoiNgan(R.string.reservation_validation_guest_count);
             return;
         }
 
         if (soKhach <= 0 || soKhach > SO_KHACH_TOI_DA) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reservation_validation_guest_count_range, SO_KHACH_TOI_DA),
-                    Toast.LENGTH_SHORT
-            ).show();
+            datTrangThaiDangGui(false);
+            hienThiPhanHoiNgan(getString(R.string.reservation_validation_guest_count_range, SO_KHACH_TOI_DA));
             return;
         }
 
         if (!laThoiGianDatBanHopLe()) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reservation_validation_future_time),
-                    Toast.LENGTH_SHORT
-            ).show();
+            datTrangThaiDangGui(false);
+            hienThiPhanHoiNgan(R.string.reservation_validation_future_time);
             return;
         }
 
@@ -390,20 +370,14 @@ public class DatBanFragment extends Fragment {
                 ? ""
                 : autoCompleteReservationTable.getText().toString().trim();
         if (TextUtils.isEmpty(banDaChon)) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reservation_validation_area_required),
-                    Toast.LENGTH_SHORT
-            ).show();
+            datTrangThaiDangGui(false);
+            hienThiPhanHoiNgan(R.string.reservation_validation_area_required);
             return;
         }
 
         if (occupiedTables.contains(banDaChon)) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reservation_table_unavailable),
-                    Toast.LENGTH_SHORT
-            ).show();
+            datTrangThaiDangGui(false);
+            hienThiPhanHoiNgan(R.string.reservation_table_unavailable);
             capNhatDanhSachBanTheoKhungGio();
             return;
         }
@@ -421,11 +395,8 @@ public class DatBanFragment extends Fragment {
         );
 
         if (idDatBanMoi <= 0) {
-            Toast.makeText(
-                    requireContext(),
-                    getString(R.string.db_operation_failed),
-                    Toast.LENGTH_SHORT
-            ).show();
+            datTrangThaiDangGui(false);
+            hienThiPhanHoiNgan(R.string.reservation_submit_failed);
             return;
         }
 
@@ -439,6 +410,7 @@ public class DatBanFragment extends Fragment {
         etReservationNote.setText("");
         capNhatDanhSachBanTheoKhungGio();
 
+        datTrangThaiDangGui(false);
         Toast.makeText(
                 requireContext(),
                 getString(R.string.reservation_submit_success),
@@ -515,5 +487,31 @@ public class DatBanFragment extends Fragment {
         if (tvReservationEmptyState != null) {
             tvReservationEmptyState.setVisibility(reservations.isEmpty() ? View.VISIBLE : View.GONE);
         }
+    }
+
+    private void datTrangThaiDangGui(boolean dangGui) {
+        if (btnSubmitReservation == null) {
+            return;
+        }
+        btnSubmitReservation.setEnabled(!dangGui);
+        btnSubmitReservation.setText(dangGui ? getString(R.string.order_submitting) : getString(R.string.reservation_submit));
+    }
+
+    private void hienThiPhanHoiNgan(int messageRes) {
+        View root = getView();
+        if (root != null) {
+            Snackbar.make(root, messageRes, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(requireContext(), getString(messageRes), Toast.LENGTH_SHORT).show();
+    }
+
+    private void hienThiPhanHoiNgan(String message) {
+        View root = getView();
+        if (root != null) {
+            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

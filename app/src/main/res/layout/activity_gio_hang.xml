@@ -114,21 +114,17 @@
                             android:text="@string/cart_table_label"
                             android:textAppearance="@style/TextAppearance.Quanlynhahang.CardTitle" />
 
-                        <EditText
-                            android:id="@+id/etCartTableNumber"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnCartSelectTable"
+                            style="@style/Widget.Quanlynhahang.TonalButton"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/search_height"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/space_xs"
-                            android:background="@drawable/bg_search_rounded"
-                            android:gravity="center_vertical"
-                            android:hint="@string/cart_table_hint"
-                            android:inputType="textCapWords"
-                            android:maxLines="1"
-                            android:paddingStart="@dimen/space_md"
-                            android:paddingEnd="@dimen/space_md"
-                            android:textColor="@color/text_primary"
-                            android:textColorHint="@color/text_secondary"
-                            android:textSize="13sp" />
+                            android:gravity="center_vertical|start"
+                            android:text="@string/cart_table_unselected"
+                            app:icon="@drawable/ic_restaurant_24"
+                            app:iconGravity="textStart"
+                            app:iconPadding="8dp" />
                     </LinearLayout>
 
                     <TextView

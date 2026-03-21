@@ -35,6 +35,17 @@
             tools:text="Loại: Gọi nhân viên" />
 
         <TextView
+            android:id="@+id/tvServiceRequestTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="Bàn: Bàn 03"
+            tools:visibility="visible" />
+
+        <TextView
             android:id="@+id/tvServiceRequestTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,14 +55,36 @@
             tools:text="12/03/2026 12:05" />
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvServiceRequestStatus"
-        style="@style/Widget.Quanlynhahang.StatusChip"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_button_green"
-        android:text="@string/service_request_status_processing"
-        android:textColor="@color/text_on_color"
-        app:backgroundTint="@color/brand_orange" />
+        android:layout_marginStart="@dimen/space_sm"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvServiceRequestStatus"
+            style="@style/Widget.Quanlynhahang.StatusChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_green"
+            android:text="@string/service_request_status_processing"
+            android:textColor="@color/text_on_color"
+            app:backgroundTint="@color/brand_orange" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelServiceRequest"
+            style="@style/Widget.Quanlynhahang.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:minHeight="0dp"
+            android:paddingStart="@dimen/space_md"
+            android:paddingEnd="@dimen/space_md"
+            android:text="@string/service_request_cancel_action"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
 
 </LinearLayout>

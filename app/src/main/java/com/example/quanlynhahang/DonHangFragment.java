@@ -35,6 +35,8 @@ public class DonHangFragment extends Fragment {
 
     private RecyclerView rvDonHangs;
     private TextView tvDonHangEmpty;
+    private TextView tvDonHangCaption;
+    private View btnCheckout;
     private DonHangAdapter orderAdapter;
 
     private boolean daGoiMoDangNhap;
@@ -66,6 +68,8 @@ public class DonHangFragment extends Fragment {
 
         rvDonHangs = view.findViewById(R.id.rvDonHangs);
         tvDonHangEmpty = view.findViewById(R.id.tvCartEmpty);
+        tvDonHangCaption = view.findViewById(R.id.tvDonHangCaption);
+        btnCheckout = view.findViewById(R.id.btnCheckout);
 
         View titleView = view.findViewById(R.id.tvDonHangTitle);
         if (embedded && titleView != null) {
@@ -75,6 +79,10 @@ public class DonHangFragment extends Fragment {
         View layoutCartFooter = view.findViewById(R.id.layoutCartFooter);
         if (layoutCartFooter != null) {
             layoutCartFooter.setVisibility(View.GONE);
+        }
+
+        if (btnCheckout != null) {
+            btnCheckout.setOnClickListener(v -> moThucDon());
         }
 
         thietLapRecyclerView();
@@ -166,11 +174,32 @@ public class DonHangFragment extends Fragment {
         tvDonHangEmpty.setText(thongBao);
         tvDonHangEmpty.setVisibility(View.VISIBLE);
         rvDonHangs.setVisibility(View.GONE);
+        if (btnCheckout != null) {
+            btnCheckout.setVisibility(View.VISIBLE);
+        }
+        if (tvDonHangCaption != null) {
+            tvDonHangCaption.setText(getString(R.string.order_screen_caption));
+        }
     }
 
     private void hienTrangThaiDanhSach() {
         tvDonHangEmpty.setVisibility(View.GONE);
         rvDonHangs.setVisibility(View.VISIBLE);
+        if (btnCheckout != null) {
+            btnCheckout.setVisibility(View.GONE);
+        }
+        if (tvDonHangCaption != null) {
+            tvDonHangCaption.setText(getString(R.string.order_screen_caption));
+        }
+    }
+
+    private void moThucDon() {
+        if (!isAdded()) {
+            return;
+        }
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).dieuHuongDenMenu();
+        }
     }
 
     private void moDangNhap() {

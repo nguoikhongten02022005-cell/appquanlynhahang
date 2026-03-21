@@ -63,6 +63,16 @@
             tools:text="Ăn tại quán" />
 
         <TextView
+            android:id="@+id/tvDonHangProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            tools:text="Tiến độ món: Đã gửi" />
+
+        <TextView
             android:id="@+id/tvDonHangTable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -79,6 +89,15 @@
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
             tools:text="Thanh toán: Chưa thanh toán" />
+
+        <TextView
+            android:id="@+id/tvDonHangTimeline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="Đã gửi → Nhà hàng đã nhận → Đang chuẩn bị → Đang phục vụ → Hoàn tất" />
 
         <TextView
             android:id="@+id/tvDonHangNote"

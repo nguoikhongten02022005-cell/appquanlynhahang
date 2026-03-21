@@ -71,6 +71,13 @@
     <color name="status_available_text">#B8632F</color>
     <color name="status_unavailable_bg">#FBE4E1</color>
     <color name="status_unavailable_text">#B93D2C</color>
+    <color name="cart_remove_bg">#FFEEEE</color>
+    <color name="cart_remove_tint">#CC3333</color>
+    <color name="table_reserved_badge_bg">#FFE7BF</color>
+    <color name="table_reserved_badge_text">#B76829</color>
+    <color name="table_busy_badge_bg">#FFEEEE</color>
+    <color name="table_busy_badge_text">#CC3333</color>
+    <color name="table_current_border">#C8743A</color>
 
     <color name="add_button_enabled">@color/secondary</color>
     <color name="add_button_disabled">#D9CFC7</color>

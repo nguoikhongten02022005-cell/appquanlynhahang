@@ -69,8 +69,10 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
         private final TextView tvDonHangTotal;
         private final TextView tvDonHangStatus;
         private final TextView tvDonHangType;
+        private final TextView tvDonHangProgress;
         private final TextView tvDonHangTable;
         private final TextView tvDonHangPayment;
+        private final TextView tvDonHangTimeline;
         private final TextView tvDonHangNote;
         private final Button btnDonHangDetail;
         private final Button btnDonHangCancel;
@@ -84,8 +86,10 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
             tvDonHangTotal = itemView.findViewById(R.id.tvDonHangTotal);
             tvDonHangStatus = itemView.findViewById(R.id.tvDonHangStatus);
             tvDonHangType = itemView.findViewById(R.id.tvDonHangType);
+            tvDonHangProgress = itemView.findViewById(R.id.tvDonHangProgress);
             tvDonHangTable = itemView.findViewById(R.id.tvDonHangTable);
             tvDonHangPayment = itemView.findViewById(R.id.tvDonHangPayment);
+            tvDonHangTimeline = itemView.findViewById(R.id.tvDonHangTimeline);
             tvDonHangNote = itemView.findViewById(R.id.tvDonHangNote);
             btnDonHangDetail = itemView.findViewById(R.id.btnDonHangDetail);
             btnDonHangCancel = itemView.findViewById(R.id.btnDonHangCancel);
@@ -105,12 +109,20 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
             tvDonHangCode.setText(donHang.layMaDon());
             tvDonHangTime.setText(donHang.layThoiGian());
             tvDonHangTotal.setText(dinhDangGia(donHang.layTongTien()));
-            tvDonHangStatus.setText(layTextTrangThai(donHang.layTrangThai()));
+            int trangThaiRes = layTextTrangThai(donHang, context);
+            tvDonHangStatus.setText(trangThaiRes);
             tvDonHangType.setText(layTextHinhThuc(context, donHang));
+            tvDonHangProgress.setText(context.getString(
+                    donHang.laAnTaiQuan() ? R.string.order_status_label_dine_in : R.string.order_status_label_takeaway,
+                    context.getString(trangThaiRes)
+            ));
             tvDonHangTable.setText(donHang.coBanAn()
                     ? context.getString(R.string.order_table_format, donHang.laySoBan())
                     : context.getString(R.string.order_table_not_required));
             tvDonHangPayment.setText(layTextThanhToan(context, donHang));
+            tvDonHangTimeline.setText(donHang.laAnTaiQuan()
+                    ? R.string.order_timeline_dine_in
+                    : R.string.order_timeline_takeaway);
             tvDonHangNote.setText(donHang.coGhiChu()
                     ? context.getString(R.string.order_note_format, donHang.layGhiChu())
                     : context.getString(R.string.order_note_empty));
@@ -182,10 +194,23 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
         if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_GOI_THANH_TOAN) {
             return context.getString(R.string.order_payment_status_requested);
         }
+        if (!donHang.laAnTaiQuan()) {
+            if (donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.TIEN_MAT_KHI_NHAN
+                    || donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.TAI_QUAY) {
+                return context.getString(R.string.order_payment_status_pay_on_pickup);
+            }
+            if (donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.CHUYEN_KHOAN_NGAN_HANG) {
+                return context.getString(R.string.order_payment_status_bank_transfer);
+            }
+            if (donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.VI_DIEN_TU) {
+                return context.getString(R.string.order_payment_status_ewallet);
+            }
+        }
         return context.getString(R.string.order_payment_status_unpaid);
     }
 
-    private int layTextTrangThai(DonHang.TrangThai trangThai) {
+    private int layTextTrangThai(DonHang donHang, Context context) {
+        DonHang.TrangThai trangThai = donHang.layTrangThai();
         if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
             return R.string.order_status_pending;
         }
@@ -193,7 +218,7 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
             return R.string.order_status_preparing;
         }
         if (trangThai == DonHang.TrangThai.SAN_SANG_PHUC_VU) {
-            return R.string.order_status_ready;
+            return donHang.laAnTaiQuan() ? R.string.order_status_ready : R.string.order_status_ready_takeaway;
         }
         if (trangThai == DonHang.TrangThai.HOAN_THANH) {
             return R.string.order_status_completed;

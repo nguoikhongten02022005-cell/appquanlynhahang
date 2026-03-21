@@ -1290,7 +1290,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COL_SERVICE_REQUEST_STATUS, status.name());
-        if (status == YeuCauPhucVu.TrangThai.DA_XU_LY) {
+        if (status == YeuCauPhucVu.TrangThai.DA_XU_LY || status == YeuCauPhucVu.TrangThai.DA_HUY) {
             values.put(COL_SERVICE_REQUEST_HANDLED_TIME, layThoiGianHienTai());
         }
         int rows = db.update(TABLE_SERVICE_REQUEST, values, COL_SERVICE_REQUEST_ID + " = ?", new String[]{String.valueOf(requestId)});
@@ -1409,7 +1409,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private boolean coTheChuyenTrangThaiYeuCau(@Nullable YeuCauPhucVu.TrangThai current, @Nullable YeuCauPhucVu.TrangThai next) {
-        return current == YeuCauPhucVu.TrangThai.DANG_XU_LY && next == YeuCauPhucVu.TrangThai.DA_XU_LY;
+        if (current == null || next == null || current == next) {
+            return false;
+        }
+        if (current == YeuCauPhucVu.TrangThai.DANG_XU_LY) {
+            return next == YeuCauPhucVu.TrangThai.DA_XU_LY || next == YeuCauPhucVu.TrangThai.DA_HUY;
+        }
+        return false;
     }
 
     public ThongKeTongQuanNhanVien layThongKeTongQuanNhanVien() {

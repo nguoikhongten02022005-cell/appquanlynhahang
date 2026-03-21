@@ -31,11 +31,62 @@
             android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
 
         <TextView
+            android:id="@+id/tvServiceRequestCaption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
             android:text="@string/service_request_section_caption"
             android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPendingServiceRequest"
+            style="@style/Widget.Quanlynhahang.SurfaceCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:cardUseCompatPadding="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/space_md">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvPendingServiceRequestTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Có yêu cầu hỗ trợ đang chờ xử lý"
+                        android:textAppearance="@style/TextAppearance.Quanlynhahang.CardTitle" />
+
+                    <TextView
+                        android:id="@+id/tvPendingServiceRequestSubtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:text="Nhấn để xem chi tiết trong danh sách hỗ trợ."
+                        android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="@color/brand_orange"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -54,10 +105,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="0dp"
+                    android:maxLines="1"
                     android:paddingStart="@dimen/space_md"
                     android:paddingEnd="@dimen/space_md"
                     android:text="@string/service_request_quick_call_staff"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"
+                    app:autoSizeMaxTextSize="13sp"
+                    app:autoSizeMinTextSize="11sp"
+                    app:autoSizeStepGranularity="1sp"
+                    app:autoSizeTextType="uniform" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRequestMoreWater"
@@ -66,10 +122,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_sm"
                     android:minHeight="0dp"
+                    android:maxLines="1"
                     android:paddingStart="@dimen/space_md"
                     android:paddingEnd="@dimen/space_md"
                     android:text="@string/service_request_quick_more_water"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"
+                    app:autoSizeMaxTextSize="13sp"
+                    app:autoSizeMinTextSize="11sp"
+                    app:autoSizeStepGranularity="1sp"
+                    app:autoSizeTextType="uniform" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRequestPayment"
@@ -78,10 +139,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_sm"
                     android:minHeight="0dp"
+                    android:maxLines="1"
                     android:paddingStart="@dimen/space_md"
                     android:paddingEnd="@dimen/space_md"
                     android:text="@string/service_request_quick_payment"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"
+                    app:autoSizeMaxTextSize="13sp"
+                    app:autoSizeMinTextSize="11sp"
+                    app:autoSizeStepGranularity="1sp"
+                    app:autoSizeTextType="uniform" />
             </LinearLayout>
         </HorizontalScrollView>
 
@@ -110,6 +176,17 @@
             android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
             android:visibility="gone"
             tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvServiceRequestUnavailableState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:gravity="center"
+            android:text="@string/service_request_unavailable"
+            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
+            android:visibility="gone"
+            tools:visibility="gone" />
 
     </LinearLayout>
 

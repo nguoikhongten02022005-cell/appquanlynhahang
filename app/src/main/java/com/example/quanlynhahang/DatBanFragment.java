@@ -82,12 +82,7 @@ public class DatBanFragment extends Fragment {
         embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
         khoiTaoView(view);
-        if (embedded) {
-            View titleView = view.findViewById(R.id.tvReservationsTitle);
-            if (titleView != null) {
-                titleView.setVisibility(View.GONE);
-            }
-        }
+        apDungCheDoNhung(view);
         thietLapBoChonNgayGio();
         thietLapDanhSachDatBan(view);
         thietLapHanhDong(view);
@@ -104,6 +99,34 @@ public class DatBanFragment extends Fragment {
         }
         capNhatDanhSachBanTheoKhungGio();
         capNhatTrangThaiRong();
+    }
+
+    private void apDungCheDoNhung(@NonNull View view) {
+        if (!embedded) {
+            return;
+        }
+
+        View titleView = view.findViewById(R.id.tvReservationsTitle);
+        if (titleView != null) {
+            titleView.setVisibility(View.GONE);
+        }
+
+        View sectionTitle = view.findViewById(R.id.tvReservationSectionTitle);
+        if (sectionTitle != null) {
+            sectionTitle.setVisibility(View.GONE);
+        }
+
+        View sectionSubtitle = view.findViewById(R.id.tvReservationSectionSubtitle);
+        if (sectionSubtitle != null) {
+            sectionSubtitle.setVisibility(View.GONE);
+        }
+
+        View rootContent = view.findViewById(R.id.layoutReservationRootContent);
+        if (rootContent != null) {
+            int paddingNgang = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_horizontal);
+            int paddingDoc = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_vertical);
+            rootContent.setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
+        }
     }
 
     private void khoiTaoView(View view) {
@@ -306,7 +329,7 @@ public class DatBanFragment extends Fragment {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.reservation_cancel_confirm_title)
                 .setMessage(R.string.reservation_cancel_confirm_message)
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.dialog_close, null)
                 .setPositiveButton(R.string.reservation_cancel, (dialog, which) -> thucHienHuyDatBan(datBan, position))
                 .show();
     }
@@ -391,7 +414,7 @@ public class DatBanFragment extends Fragment {
                 banDaChon,
                 soKhach,
                 ghiChu,
-                DatBan.TrangThai.CHO_XAC_NHAN
+                DatBan.TrangThai.PENDING
         );
 
         if (idDatBanMoi <= 0) {

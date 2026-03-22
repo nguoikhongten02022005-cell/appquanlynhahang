@@ -26,6 +26,7 @@
     <string name="bottom_nav_cart">Giỏ hàng</string>
     <string name="bottom_nav_account">Tài khoản</string>
     <string name="activity_hub_title">Dịch vụ của tôi</string>
+    <string name="activity_hub_title_compact">Dịch vụ</string>
     <string name="activity_hub_subtitle">Theo dõi đơn hàng trước, gọi hỗ trợ khi đang dùng bữa và quản lý giữ bàn trong cùng một nơi.</string>
     <string name="activity_hub_demo_hint">Ưu tiên xem Đơn hàng để biết món đang tới đâu. Hỗ trợ chỉ khả dụng khi bạn đang dùng bữa tại quán.</string>
     <string name="activity_hub_summary_table">Bạn đang ở %1$s</string>
@@ -124,7 +125,9 @@
     <string name="order_screen_title">Đơn hàng</string>
     <string name="order_screen_caption">Theo dõi tiến độ xử lý món hoặc đơn mang đi, đồng thời xem riêng trạng thái thanh toán của từng đơn.</string>
     <string name="order_login_required">Vui lòng đăng nhập để xem đơn hàng</string>
-    <string name="order_empty_message">Bạn chưa có đơn nào. Hãy vào Thực đơn để chọn món và bắt đầu đơn mới.</string>
+    <string name="order_empty_title">Chưa có đơn hàng nào</string>
+    <string name="order_empty_subtitle">Hãy chọn món để bắt đầu</string>
+    <string name="order_empty_message">Hãy chọn món để bắt đầu</string>
 
     <string name="order_view_details">Chi tiết</string>
     <string name="order_hide_details">Ẩn chi tiết</string>
@@ -156,9 +159,12 @@
     <string name="order_submit_success">Đã gửi món thành công</string>
     <string name="order_submit_success_paid_mock">Đã đặt đơn và ghi nhận thanh toán mô phỏng</string>
     <string name="order_submit_success_payment_requested">Đã đặt đơn với lựa chọn thanh toán khi nhận</string>
+    <string name="order_payment_request_sent">Đã gửi yêu cầu thanh toán</string>
 
     <string name="order_status_pending">Đã gửi</string>
     <string name="order_status_preparing">Nhà hàng đã nhận</string>
+    <string name="order_status_making">Đang làm</string>
+    <string name="order_card_summary_format">%1$s · %2$d món · %3$s</string>
     <string name="order_status_ready">Đang phục vụ</string>
     <string name="order_status_ready_takeaway">Sẵn sàng / Đang giao</string>
     <string name="order_status_completed">Hoàn tất</string>
@@ -192,12 +198,14 @@
     <string name="reservation_note_hint">Ghi chú (nếu có)</string>
     <string name="reservation_submit">Xác nhận giữ chỗ</string>
     <string name="reservation_cancel">Hủy</string>
-    <string name="reservation_validation_hint">Vui lòng chọn thời điểm cách hiện tại ít nhất 15 phút và tối đa 20 khách mỗi bàn.</string>
+    <string name="dialog_close">Đóng</string>
+    <string name="reservation_validation_hint">Vui lòng chọn thời điểm cách hiện tại ít nhất 30 phút và tối đa 20 khách mỗi bàn.</string>
 
-    <string name="reservation_status_pending">Chờ xác nhận</string>
-    <string name="reservation_status_confirmed">Đã xác nhận</string>
-    <string name="reservation_status_completed">Đã phục vụ</string>
+    <string name="reservation_status_pending">Chờ đến giờ</string>
+    <string name="reservation_status_confirmed">Đang trong khung giờ</string>
+    <string name="reservation_status_completed">Đã gửi món</string>
     <string name="reservation_status_canceled">Đã hủy</string>
+    <string name="reservation_status_expired">Hết hạn</string>
 
     <string name="reservation_table_format_display">Bàn: %1$s</string>
     <string name="reservation_guest_count_format">Số người: %1$d</string>
@@ -211,16 +219,28 @@
     <string name="reservation_table_unavailable">Bàn bạn chọn vừa có khách trong khung giờ này. Vui lòng chọn bàn khác.</string>
     <string name="reservation_validation_guest_count">Vui lòng nhập số người hợp lệ</string>
     <string name="reservation_validation_guest_count_range">Số khách phải từ 1 đến %1$d người</string>
-    <string name="reservation_validation_future_time">Vui lòng chọn ngày giờ đặt bàn cách hiện tại ít nhất 15 phút</string>
+    <string name="reservation_validation_future_time">Vui lòng chọn ngày giờ đặt bàn cách hiện tại ít nhất 30 phút</string>
     <string name="reservation_validation_area_required">Vui lòng chọn số bàn mong muốn</string>
-    <string name="reservation_time_normalized_to_future">Thời điểm đã chọn quá sát hiện tại, hệ thống đã chuyển sang mốc hợp lệ gần nhất</string>
+    <string name="reservation_time_normalized_to_future">Thời điểm đã chọn quá sát hiện tại, hệ thống đã chuyển sang mốc hợp lệ gần nhất sau 30 phút</string>
     <string name="reservation_login_required">Vui lòng đăng nhập trước khi gửi yêu cầu đặt bàn</string>
-    <string name="reservation_submit_success">Đã gửi yêu cầu giữ bàn. Bạn có thể quay lại chọn món sau.</string>
+    <string name="reservation_submit_success">Đã giữ bàn thành công. Hệ thống sẽ tự kích hoạt khi vào khung giờ của bạn.</string>
     <string name="reservation_cancel_confirm_title">Hủy giữ bàn?</string>
-    <string name="reservation_cancel_confirm_message">Yêu cầu giữ bàn này sẽ được chuyển sang trạng thái đã hủy.</string>
+    <string name="reservation_cancel_confirm_message">Bàn giữ này sẽ được chuyển sang trạng thái đã hủy và trả lại trạng thái trống.</string>
     <string name="reservation_cancel_success">Đã hủy yêu cầu đặt bàn</string>
     <string name="reservation_empty_message">Bạn chưa có lượt giữ bàn nào. Hãy chọn thời gian phù hợp nếu muốn giữ chỗ trước khi đến.</string>
-    <string name="reservation_demo_hint">Mẹo demo: hãy chọn thời gian tương lai gần để dễ kiểm tra trạng thái giữ bàn và thao tác hủy.</string>
+    <string name="reservation_demo_hint">Mẹo demo: hãy chọn thời gian tương lai từ 30 phút trở lên để kiểm tra luồng giữ bàn và tự động kích hoạt.</string>
+    <string name="reservation_active_table_format">🪑 %1$s (đã giữ trước lúc %2$s)</string>
+    <string name="reservation_badge_prebooked">Giữ chỗ trước</string>
+    <string name="reservation_badge_my_table">Bàn của bạn</string>
+    <string name="reservation_pending_prompt_title">Bạn có bàn giữ sắp tới</string>
+    <string name="reservation_pending_prompt_message">Bạn có bàn giữ lúc %1$s (%2$s). Hiện chưa đến giờ. Bạn có muốn chờ đến giờ hay chọn bàn khác?</string>
+    <string name="reservation_pending_wait">Chờ đến giờ</string>
+    <string name="reservation_pending_choose_other">Chọn bàn khác</string>
+    <string name="reservation_active_locked_message">Bàn của bạn đang trong khung giờ giữ chỗ, hệ thống đã tự động gắn vào đơn ăn tại quán.</string>
+    <string name="reservation_expired_message">Bàn giữ của bạn đã hết hạn</string>
+    <string name="reservation_card_title_active">Bàn của bạn đang giữ</string>
+    <string name="reservation_card_title_none">Bạn chưa có lượt giữ bàn hiệu lực nào</string>
+    <string name="reservation_form_hidden_hint">Bạn đang có bàn giữ hiệu lực, vì vậy form đặt bàn tạm được ẩn.</string>
 
     <string name="service_request_section_title">Yêu cầu phục vụ</string>
     <string name="service_request_section_caption">Gửi yêu cầu nhanh cho nhân viên và xem trạng thái xử lý ngay tại đây.</string>
@@ -238,6 +258,7 @@
     <string name="service_request_type_call_staff">Loại: Gọi nhân viên</string>
     <string name="service_request_type_more_water">Loại: Thêm nước</string>
     <string name="service_request_type_payment">Loại: Yêu cầu thanh toán</string>
+    <string name="service_request_quick_request_payment">Yêu cầu thanh toán</string>
     <string name="service_request_payment_for_order_format">Yêu cầu thanh toán cho đơn %1$s</string>
     <string name="service_request_submit_success">Đã gửi yêu cầu "%1$s"</string>
     <string name="service_request_duplicate_blocked">Yêu cầu cùng loại đang được xử lý. Vui lòng chờ ít phút rồi thử lại.</string>

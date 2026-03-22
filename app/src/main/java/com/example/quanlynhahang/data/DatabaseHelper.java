@@ -55,6 +55,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String MAT_KHAU_TAI_KHOAN_TEST = "1";
     private static final String PASSWORD_PREFIX_SHA256 = "sha256:";
     private static final int SO_KHACH_DAT_BAN_TOI_DA = 20;
+    private static final long DAT_BAN_TOI_THIEU_TRUOC_PHUT = 30L;
+    private static final long CUA_SO_KICH_HOAT_DAT_BAN_PHUT = 30L;
 
     public static final String TABLE_USER = "users";
     public static final String TABLE_DISH = "dishes";
@@ -234,7 +236,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_GUEST_COUNT, "INTEGER NOT NULL DEFAULT 1");
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_NOTE, "TEXT");
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_STATUS,
-                "TEXT NOT NULL DEFAULT '" + DatBan.TrangThai.CHO_XAC_NHAN.name() + "'");
+                "TEXT NOT NULL DEFAULT '" + DatBan.TrangThai.PENDING.name() + "'");
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_CODE, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_RESERVATION, COL_RESERVATION_LINKED_ORDER_ID, "INTEGER NOT NULL DEFAULT 0");
 
@@ -1060,6 +1062,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return queryDonHangs(COL_ORDER_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 
+    @Nullable
+    public DonHang layDonHangTheoMa(long userId, @Nullable String maDon) {
+        if (userId <= 0 || TextUtils.isEmpty(maDon)) {
+            return null;
+        }
+        List<DonHang> ketQua = queryDonHangs(
+                COL_ORDER_USER_ID + " = ? AND " + COL_ORDER_CODE + " = ?",
+                new String[]{String.valueOf(userId), maDon.trim()}
+        );
+        return ketQua.isEmpty() ? null : ketQua.get(0);
+    }
+
     public List<DonHang> layTatCaDonHang() {
         return queryDonHangs(null, null);
     }
@@ -1108,17 +1122,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean huyDonHang(long orderId) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_ORDER_STATUS, DonHang.TrangThai.DA_HUY.name());
-
-        int rows = db.update(
-                TABLE_ORDER,
-                values,
-                COL_ORDER_ID + " = ? AND " + COL_ORDER_STATUS + " = ?",
-                new String[]{String.valueOf(orderId), DonHang.TrangThai.CHO_XAC_NHAN.name()}
-        );
-        return rows > 0;
+        return capNhatTrangThaiDonHang(orderId, DonHang.TrangThai.DA_HUY);
     }
 
     public List<DatBan> layDatBanTheoNguoiDung(int userId) {
@@ -1144,13 +1148,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             cursor = db.query(
                     TABLE_RESERVATION,
-                    new String[]{COL_RESERVATION_TABLE_NUMBER},
-                    COL_RESERVATION_TIME + " = ? AND " + COL_RESERVATION_STATUS + " IN (?, ?)",
                     new String[]{
-                            thoiGianDatBan,
-                            DatBan.TrangThai.CHO_XAC_NHAN.name(),
-                            DatBan.TrangThai.DA_XAC_NHAN.name()
+                            COL_RESERVATION_ID,
+                            COL_RESERVATION_TABLE_NUMBER,
+                            COL_RESERVATION_STATUS,
+                            COL_RESERVATION_LINKED_ORDER_ID
                     },
+                    COL_RESERVATION_TIME + " = ?",
+                    new String[]{thoiGianDatBan},
                     null,
                     null,
                     COL_RESERVATION_TABLE_NUMBER + " ASC"
@@ -1158,7 +1163,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             while (cursor.moveToNext()) {
                 String tableNumber = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_TABLE_NUMBER));
-                if (!TextUtils.isEmpty(tableNumber) && !occupiedTables.contains(tableNumber)) {
+                String statusRaw = cursor.getString(cursor.getColumnIndexOrThrow(COL_RESERVATION_STATUS));
+                long reservationId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_RESERVATION_ID));
+                long linkedOrderId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_RESERVATION_LINKED_ORDER_ID));
+                DatBan.TrangThai status = xacDinhTrangThaiDatBanHieuLuc(parseReservationStatus(statusRaw), thoiGianDatBan, linkedOrderId);
+                dongBoTrangThaiDatBanNeuCan(reservationId, parseReservationStatus(statusRaw), status, linkedOrderId);
+                if ((status == DatBan.TrangThai.PENDING || status == DatBan.TrangThai.ACTIVE)
+                        && !TextUtils.isEmpty(tableNumber)
+                        && !occupiedTables.contains(tableNumber)) {
                     occupiedTables.add(tableNumber);
                 }
             }
@@ -1206,7 +1218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 tableNumber,
                 peopleCount,
                 notes,
-                DatBan.TrangThai.CHO_XAC_NHAN,
+                DatBan.TrangThai.PENDING,
                 0
         );
     }
@@ -1234,7 +1246,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 || guestCount <= 0
                 || guestCount > SO_KHACH_DAT_BAN_TOI_DA
                 || status == null
-                || parseDonHangTimeToMillis(time) <= System.currentTimeMillis()) {
+                || !laThoiGianDatBanHopLe(time)
+                || !banCoTheDatTrongKhungGio(time, tableNumber)
+                || coDatBanHieuLucTheoNguoiDung(userId)) {
             return -1;
         }
 
@@ -1252,21 +1266,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean huyDatBan(long reservationId) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_RESERVATION_STATUS, DatBan.TrangThai.DA_HUY.name());
+        return capNhatTrangThaiDatBan(reservationId, DatBan.TrangThai.CANCELLED);
+    }
 
-        int rows = db.update(
-                TABLE_RESERVATION,
-                values,
-                COL_RESERVATION_ID + " = ? AND " + COL_RESERVATION_STATUS + " IN (?, ?)",
-                new String[]{
-                        String.valueOf(reservationId),
-                        DatBan.TrangThai.CHO_XAC_NHAN.name(),
-                        DatBan.TrangThai.DA_XAC_NHAN.name()
-                }
-        );
-        return rows > 0;
+    @Nullable
+    public DatBan layDatBanActiveTheoNguoiDung(long userId) {
+        return timDatBanTheoTrangThai(layDatBanTheoNguoiDung(userId), DatBan.TrangThai.ACTIVE);
+    }
+
+    @Nullable
+    public DatBan layDatBanPendingTheoNguoiDung(long userId) {
+        return timDatBanTheoTrangThai(layDatBanTheoNguoiDung(userId), DatBan.TrangThai.PENDING);
+    }
+
+    @Nullable
+    public DatBan layDatBanHieuLucTheoNguoiDung(long userId) {
+        DatBan active = layDatBanActiveTheoNguoiDung(userId);
+        return active != null ? active : layDatBanPendingTheoNguoiDung(userId);
+    }
+
+    public boolean huyYeuCauPhucVu(long requestId) {
+        return capNhatTrangThaiYeuCauPhucVu(requestId, YeuCauPhucVu.TrangThai.DA_HUY);
     }
 
     public List<YeuCauPhucVu> layYeuCauTheoNguoiDung(long userId) {
@@ -1359,7 +1379,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 countAllDishes(),
                 demTatCaDonHang(),
                 demDonHangTheoTrangThai(DonHang.TrangThai.CHO_XAC_NHAN),
-                demDatBanTheoTrangThai(DatBan.TrangThai.CHO_XAC_NHAN),
+                demDatBanTheoTrangThai(DatBan.TrangThai.PENDING) + demDatBanTheoTrangThai(DatBan.TrangThai.ACTIVE),
                 demYeuCauTheoTrangThai(YeuCauPhucVu.TrangThai.DANG_XU_LY)
         );
     }
@@ -1399,11 +1419,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (current == null || next == null || current == next) {
             return false;
         }
-        if (current == DatBan.TrangThai.CHO_XAC_NHAN) {
-            return next == DatBan.TrangThai.DA_XAC_NHAN || next == DatBan.TrangThai.DA_HUY;
+        if (current == DatBan.TrangThai.PENDING) {
+            return next == DatBan.TrangThai.ACTIVE
+                    || next == DatBan.TrangThai.CANCELLED
+                    || next == DatBan.TrangThai.EXPIRED
+                    || next == DatBan.TrangThai.COMPLETED;
         }
-        if (current == DatBan.TrangThai.DA_XAC_NHAN) {
-            return next == DatBan.TrangThai.DA_PHUC_VU || next == DatBan.TrangThai.DA_HUY;
+        if (current == DatBan.TrangThai.ACTIVE) {
+            return next == DatBan.TrangThai.COMPLETED || next == DatBan.TrangThai.EXPIRED;
         }
         return false;
     }
@@ -1421,7 +1444,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ThongKeTongQuanNhanVien layThongKeTongQuanNhanVien() {
         return new ThongKeTongQuanNhanVien(
                 demDonHangTheoTrangThai(DonHang.TrangThai.CHO_XAC_NHAN),
-                demDatBanTheoTrangThai(DatBan.TrangThai.CHO_XAC_NHAN),
+                demDatBanTheoTrangThai(DatBan.TrangThai.PENDING) + demDatBanTheoTrangThai(DatBan.TrangThai.ACTIVE),
                 demYeuCauTheoTrangThai(YeuCauPhucVu.TrangThai.DANG_XU_LY)
         );
     }
@@ -2072,6 +2095,88 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
     }
 
+    private boolean laThoiGianDatBanHopLe(@Nullable String time) {
+        long reservationTime = parseDonHangTimeToMillis(time);
+        if (reservationTime <= 0L) {
+            return false;
+        }
+        long toiThieu = System.currentTimeMillis() + DAT_BAN_TOI_THIEU_TRUOC_PHUT * 60_000L;
+        return reservationTime >= toiThieu;
+    }
+
+    private boolean banCoTheDatTrongKhungGio(@Nullable String time, @Nullable String tableNumber) {
+        if (TextUtils.isEmpty(time) || TextUtils.isEmpty(tableNumber)) {
+            return false;
+        }
+        return !layDanhSachBanDaDat(time).contains(tableNumber.trim());
+    }
+
+    private boolean coDatBanHieuLucTheoNguoiDung(long userId) {
+        return layDatBanHieuLucTheoNguoiDung(userId) != null;
+    }
+
+    @Nullable
+    private DatBan timDatBanTheoTrangThai(@Nullable List<DatBan> danhSachDatBan, DatBan.TrangThai trangThai) {
+        if (danhSachDatBan == null || trangThai == null) {
+            return null;
+        }
+        for (DatBan datBan : danhSachDatBan) {
+            if (datBan != null && datBan.layTrangThai() == trangThai) {
+                return datBan;
+            }
+        }
+        return null;
+    }
+
+    private DatBan.TrangThai xacDinhTrangThaiDatBanHieuLuc(@Nullable DatBan.TrangThai trangThaiHienTai,
+                                                           @Nullable String thoiGianDat,
+                                                           long linkedOrderId) {
+        if (trangThaiHienTai == null) {
+            return DatBan.TrangThai.PENDING;
+        }
+        if (trangThaiHienTai == DatBan.TrangThai.CANCELLED
+                || trangThaiHienTai == DatBan.TrangThai.EXPIRED
+                || trangThaiHienTai == DatBan.TrangThai.COMPLETED) {
+            return trangThaiHienTai;
+        }
+        if (linkedOrderId > 0) {
+            return DatBan.TrangThai.COMPLETED;
+        }
+
+        long reservationTime = parseDonHangTimeToMillis(thoiGianDat);
+        long now = System.currentTimeMillis();
+        long startActive = reservationTime - CUA_SO_KICH_HOAT_DAT_BAN_PHUT * 60_000L;
+        long expireAt = reservationTime + CUA_SO_KICH_HOAT_DAT_BAN_PHUT * 60_000L;
+
+        if (reservationTime <= 0L) {
+            return DatBan.TrangThai.EXPIRED;
+        }
+        if (now > expireAt) {
+            return DatBan.TrangThai.EXPIRED;
+        }
+        if (now >= startActive) {
+            return DatBan.TrangThai.ACTIVE;
+        }
+        return DatBan.TrangThai.PENDING;
+    }
+
+    private void dongBoTrangThaiDatBanNeuCan(long reservationId,
+                                             @Nullable DatBan.TrangThai trangThaiCu,
+                                             @Nullable DatBan.TrangThai trangThaiMoi,
+                                             long linkedOrderId) {
+        if (reservationId <= 0 || trangThaiCu == null || trangThaiMoi == null || trangThaiCu == trangThaiMoi) {
+            return;
+        }
+        if ((trangThaiMoi == DatBan.TrangThai.COMPLETED && linkedOrderId <= 0)
+                || !coTheChuyenTrangThaiDatBan(trangThaiCu, trangThaiMoi)) {
+            return;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_RESERVATION_STATUS, trangThaiMoi.name());
+        db.update(TABLE_RESERVATION, values, COL_RESERVATION_ID + " = ?", new String[]{String.valueOf(reservationId)});
+    }
+
     private String resolveImageResName(int imageResId) {
         if (imageResId == 0) {
             return TEN_ANH_MAC_DINH;
@@ -2157,26 +2262,63 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private DatBan.TrangThai parseReservationStatus(String statusRaw) {
         if (TextUtils.isEmpty(statusRaw)) {
-            return DatBan.TrangThai.CHO_XAC_NHAN;
+            return DatBan.TrangThai.PENDING;
         }
 
         if ("PENDING_APPROVAL".equals(statusRaw)) {
-            return DatBan.TrangThai.CHO_XAC_NHAN;
+            return DatBan.TrangThai.PENDING;
         }
         if ("CONFIRMED".equals(statusRaw)) {
-            return DatBan.TrangThai.DA_XAC_NHAN;
+            return DatBan.TrangThai.ACTIVE;
         }
         if ("COMPLETED".equals(statusRaw)) {
-            return DatBan.TrangThai.DA_PHUC_VU;
+            return DatBan.TrangThai.COMPLETED;
         }
         if ("CANCELED".equals(statusRaw)) {
-            return DatBan.TrangThai.DA_HUY;
+            return DatBan.TrangThai.CANCELLED;
+        }
+        if ("EXPIRED".equals(statusRaw)) {
+            return DatBan.TrangThai.EXPIRED;
         }
 
         try {
             return DatBan.TrangThai.valueOf(statusRaw);
         } catch (IllegalArgumentException ex) {
-            return DatBan.TrangThai.CHO_XAC_NHAN;
+            return DatBan.TrangThai.PENDING;
+        }
+    }
+
+    public boolean coYeuCauThanhToanDangXuLy(long userId, long orderId) {
+        if (userId <= 0 || orderId <= 0) {
+            return false;
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(
+                    TABLE_SERVICE_REQUEST,
+                    new String[]{COL_SERVICE_REQUEST_ID},
+                    COL_SERVICE_REQUEST_USER_ID + " = ? AND "
+                            + COL_SERVICE_REQUEST_ORDER_ID + " = ? AND "
+                            + COL_SERVICE_REQUEST_TYPE + " = ? AND "
+                            + COL_SERVICE_REQUEST_STATUS + " = ?",
+                    new String[]{
+                            String.valueOf(userId),
+                            String.valueOf(orderId),
+                            YeuCauPhucVu.LoaiYeuCau.THANH_TOAN.name(),
+                            YeuCauPhucVu.TrangThai.DANG_XU_LY.name()
+                    },
+                    null,
+                    null,
+                    COL_SERVICE_REQUEST_ID + " DESC",
+                    "1"
+            );
+            return cursor.moveToFirst();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 

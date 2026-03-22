@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/space_md"
-    app:cardCornerRadius="0dp"
+    android:layout_marginBottom="@dimen/space_sm"
+    app:cardCornerRadius="@dimen/corner_medium"
     app:cardElevation="0dp"
     app:cardUseCompatPadding="false">
 
@@ -13,8 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_dish_card"
+        android:minHeight="80dp"
         android:orientation="vertical"
-        android:padding="@dimen/space_md">
+        android:padding="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,9 +29,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@color/text_primary"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
-                tools:text="#DH12345" />
+                tools:text="#DH41599" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDonHangStatus"
@@ -45,78 +46,21 @@
 
         <TextView
             android:id="@+id/tvDonHangTime"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
             android:textColor="@color/text_secondary"
             android:textSize="13sp"
-            tools:text="12/03/2026 10:30" />
+            tools:text="21/03/2026 20:27" />
 
         <TextView
             android:id="@+id/tvDonHangType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:text="Ăn tại quán" />
-
-        <TextView
-            android:id="@+id/tvDonHangProgress"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
             android:textColor="@color/text_primary"
             android:textSize="13sp"
-            android:textStyle="bold"
-            tools:text="Tiến độ món: Đã gửi" />
-
-        <TextView
-            android:id="@+id/tvDonHangTable"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            tools:text="Bàn: Bàn 03" />
-
-        <TextView
-            android:id="@+id/tvDonHangPayment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            tools:text="Thanh toán: Chưa thanh toán" />
-
-        <TextView
-            android:id="@+id/tvDonHangTimeline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            tools:text="Đã gửi → Nhà hàng đã nhận → Đang chuẩn bị → Đang phục vụ → Hoàn tất" />
-
-        <TextView
-            android:id="@+id/tvDonHangNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            tools:text="Ghi chú: Ít cay" />
-
-        <TextView
-            android:id="@+id/tvDonHangTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
-            android:textColor="@color/brand_orange"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:text="500.000 đ" />
+            tools:text="Mang đi · 1 món · 145.000 đ" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -161,36 +105,6 @@
                 tools:visibility="visible" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/layoutDonHangDetails"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/stroke" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_sm"
-                android:text="@string/order_detail_dishes_title"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvMonTrongDon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_sm"
-                android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_mon_trong_don" />
-        </LinearLayout>
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

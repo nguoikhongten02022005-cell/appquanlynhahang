@@ -69,12 +69,7 @@ public class YeuCauFragment extends Fragment {
         embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
         khoiTaoView(view);
-        if (embedded) {
-            View titleView = view.findViewById(R.id.tvRequestsTitle);
-            if (titleView != null) {
-                titleView.setVisibility(View.GONE);
-            }
-        }
+        apDungCheDoNhung(view);
         thietLapDanhSachYeuCau(view);
         taiDanhSachYeuCau();
         thietLapHanhDong(view);
@@ -89,6 +84,34 @@ public class YeuCauFragment extends Fragment {
             serviceRequestAdapter.capNhatDanhSach(serviceRequests);
         }
         capNhatTrangThaiRong();
+    }
+
+    private void apDungCheDoNhung(@NonNull View view) {
+        if (!embedded) {
+            return;
+        }
+
+        View titleView = view.findViewById(R.id.tvRequestsTitle);
+        if (titleView != null) {
+            titleView.setVisibility(View.GONE);
+        }
+
+        View sectionTitle = view.findViewById(R.id.tvServiceRequestSectionTitle);
+        if (sectionTitle != null) {
+            sectionTitle.setVisibility(View.GONE);
+        }
+
+        View captionView = view.findViewById(R.id.tvServiceRequestCaption);
+        if (captionView != null) {
+            captionView.setVisibility(View.GONE);
+        }
+
+        View rootContent = view.findViewById(R.id.layoutServiceRequestRootContent);
+        if (rootContent != null) {
+            int paddingNgang = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_horizontal);
+            int paddingDoc = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_vertical);
+            rootContent.setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
+        }
     }
 
     private void khoiTaoView(View view) {
@@ -125,7 +148,7 @@ public class YeuCauFragment extends Fragment {
         ));
         btnRequestPayment.setOnClickListener(v -> guiYeuCauPhucVuNhanh(
                 YeuCauPhucVu.LoaiYeuCau.THANH_TOAN,
-                getString(R.string.service_request_quick_payment)
+                getString(R.string.service_request_quick_request_payment)
         ));
     }
 
@@ -268,7 +291,7 @@ public class YeuCauFragment extends Fragment {
         new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setTitle(R.string.service_request_cancel_confirm_title)
                 .setMessage(R.string.service_request_cancel_confirm_message)
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.dialog_close, null)
                 .setPositiveButton(R.string.service_request_cancel_action, (dialog, which) -> thucHienHuyYeuCau(yeuCauPhucVu, viTri))
                 .show();
     }
@@ -277,7 +300,7 @@ public class YeuCauFragment extends Fragment {
         if (yeuCauPhucVu == null || !yeuCauPhucVu.coTheHuy()) {
             return;
         }
-        boolean daCapNhat = databaseHelper.capNhatTrangThaiYeuCauPhucVu(yeuCauPhucVu.layId(), YeuCauPhucVu.TrangThai.DA_HUY);
+        boolean daCapNhat = databaseHelper.huyYeuCauPhucVu(yeuCauPhucVu.layId());
         if (!daCapNhat) {
             hienThiPhanHoiNgan(R.string.service_request_submit_failed);
             return;

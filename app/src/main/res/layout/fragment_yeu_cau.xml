@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/screen_background"
     android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/layoutServiceRequestRootContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -24,6 +24,7 @@
             android:textAppearance="@style/TextAppearance.Quanlynhahang.PageTitle" />
 
         <TextView
+            android:id="@+id/tvServiceRequestSectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_md"
@@ -88,26 +89,27 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <HorizontalScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_sm"
-            android:scrollbars="none">
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRequestCallStaff"
                     style="@style/Widget.Quanlynhahang.FilledButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:minHeight="0dp"
                     android:maxLines="1"
-                    android:paddingStart="@dimen/space_md"
-                    android:paddingEnd="@dimen/space_md"
+                    android:paddingStart="@dimen/space_sm"
+                    android:paddingEnd="@dimen/space_sm"
                     android:text="@string/service_request_quick_call_staff"
                     android:textSize="13sp"
                     app:autoSizeMaxTextSize="13sp"
@@ -118,38 +120,39 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRequestMoreWater"
                     style="@style/Widget.Quanlynhahang.FilledButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_sm"
+                    android:layout_weight="1"
                     android:minHeight="0dp"
                     android:maxLines="1"
-                    android:paddingStart="@dimen/space_md"
-                    android:paddingEnd="@dimen/space_md"
+                    android:paddingStart="@dimen/space_sm"
+                    android:paddingEnd="@dimen/space_sm"
                     android:text="@string/service_request_quick_more_water"
                     android:textSize="13sp"
                     app:autoSizeMaxTextSize="13sp"
                     app:autoSizeMinTextSize="11sp"
                     app:autoSizeStepGranularity="1sp"
                     app:autoSizeTextType="uniform" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRequestPayment"
-                    style="@style/Widget.Quanlynhahang.FilledButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/space_sm"
-                    android:minHeight="0dp"
-                    android:maxLines="1"
-                    android:paddingStart="@dimen/space_md"
-                    android:paddingEnd="@dimen/space_md"
-                    android:text="@string/service_request_quick_payment"
-                    android:textSize="13sp"
-                    app:autoSizeMaxTextSize="13sp"
-                    app:autoSizeMinTextSize="11sp"
-                    app:autoSizeStepGranularity="1sp"
-                    app:autoSizeTextType="uniform" />
             </LinearLayout>
-        </HorizontalScrollView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRequestPayment"
+                style="@style/Widget.Quanlynhahang.FilledButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:minHeight="0dp"
+                android:maxLines="1"
+                android:paddingStart="@dimen/space_sm"
+                android:paddingEnd="@dimen/space_sm"
+                android:text="@string/service_request_quick_request_payment"
+                android:textSize="13sp"
+                app:autoSizeMaxTextSize="13sp"
+                app:autoSizeMinTextSize="11sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"

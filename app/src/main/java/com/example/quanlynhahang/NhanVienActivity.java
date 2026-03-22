@@ -117,17 +117,17 @@ public class NhanVienActivity extends AppCompatActivity {
         reservationAdapter = new DatBanNhanVienAdapter(new DatBanNhanVienAdapter.HanhDongListener() {
             @Override
             public void khiXacNhan(DatBan reservation) {
-                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.DA_XAC_NHAN);
+                // No-op for customer time-based reservation flow.
             }
 
             @Override
             public void khiHoanTat(DatBan reservation) {
-                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.DA_PHUC_VU);
+                // Reservation is completed automatically when customer sends dine-in order.
             }
 
             @Override
             public void khiHuy(DatBan reservation) {
-                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.DA_HUY);
+                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.CANCELLED);
             }
         });
         serviceRequestAdapter = new YeuCauPhucVuNhanVienAdapter(request -> xuLyTrangThaiYeuCau(request, YeuCauPhucVu.TrangThai.DA_XU_LY));

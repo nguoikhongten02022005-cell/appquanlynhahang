@@ -48,4 +48,6 @@
     <dimen name="bottom_nav_indicator_inset_vertical">8dp</dimen>
 
     <dimen name="hub_toggle_height">44dp</dimen>
+    <dimen name="hub_embedded_content_padding_horizontal">8dp</dimen>
+    <dimen name="hub_embedded_content_padding_vertical">8dp</dimen>
 </resources>

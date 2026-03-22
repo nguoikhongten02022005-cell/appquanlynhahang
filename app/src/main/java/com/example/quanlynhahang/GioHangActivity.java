@@ -400,7 +400,6 @@ public class GioHangActivity extends AppCompatActivity {
 
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.cart_table_dialog_title)
-                .setMessage(R.string.cart_table_dialog_subtitle)
                 .setAdapter(adapter, (dialog, which) -> {
                     MucBanUi mucBan = adapter.getItem(which);
                     if (mucBan == null || !mucBan.chonDuoc) {

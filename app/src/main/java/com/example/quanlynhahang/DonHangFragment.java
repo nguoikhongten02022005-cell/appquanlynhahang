@@ -36,8 +36,12 @@ public class DonHangFragment extends Fragment {
     private RecyclerView rvDonHangs;
     private TextView tvDonHangEmpty;
     private TextView tvDonHangCaption;
+    private TextView tvDonHangEmptyTitle;
     private View btnCheckout;
     private DonHangAdapter orderAdapter;
+    private View layoutOrderEmptyState;
+    private View layoutCartFooter;
+    private View titleView;
 
     private boolean daGoiMoDangNhap;
     private boolean embedded;
@@ -69,16 +73,16 @@ public class DonHangFragment extends Fragment {
         rvDonHangs = view.findViewById(R.id.rvDonHangs);
         tvDonHangEmpty = view.findViewById(R.id.tvCartEmpty);
         tvDonHangCaption = view.findViewById(R.id.tvDonHangCaption);
+        tvDonHangEmptyTitle = view.findViewById(R.id.tvDonHangEmptyTitle);
         btnCheckout = view.findViewById(R.id.btnCheckout);
+        layoutOrderEmptyState = view.findViewById(R.id.layoutOrderEmptyState);
+        titleView = view.findViewById(R.id.tvDonHangTitle);
+        layoutCartFooter = view.findViewById(R.id.layoutCartFooter);
 
-        View titleView = view.findViewById(R.id.tvDonHangTitle);
-        if (embedded && titleView != null) {
-            titleView.setVisibility(View.GONE);
-        }
+        apDungCheDoNhung(view);
 
-        View layoutCartFooter = view.findViewById(R.id.layoutCartFooter);
         if (layoutCartFooter != null) {
-            layoutCartFooter.setVisibility(View.GONE);
+            layoutCartFooter.setVisibility(embedded ? View.GONE : View.VISIBLE);
         }
 
         if (btnCheckout != null) {
@@ -93,6 +97,23 @@ public class DonHangFragment extends Fragment {
     public void onResume() {
         super.onResume();
         capNhatGiaoDienDonHang(false);
+    }
+
+    private void apDungCheDoNhung(@NonNull View view) {
+        if (!embedded) {
+            return;
+        }
+
+        if (titleView != null) {
+            titleView.setVisibility(View.GONE);
+        }
+        if (tvDonHangCaption != null) {
+            tvDonHangCaption.setVisibility(View.GONE);
+        }
+
+        int paddingNgang = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_horizontal);
+        int paddingDoc = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_vertical);
+        view.setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
     }
 
     private void thietLapRecyclerView() {
@@ -143,7 +164,7 @@ public class DonHangFragment extends Fragment {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.order_cancel_confirm_title)
                 .setMessage(R.string.order_cancel_confirm_message)
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.dialog_close, null)
                 .setPositiveButton(R.string.order_cancel, (dialog, which) -> thucHienHuyDon(donHang, viTri))
                 .show();
     }
@@ -172,23 +193,34 @@ public class DonHangFragment extends Fragment {
 
     private void hienTrangThaiRong(String thongBao) {
         tvDonHangEmpty.setText(thongBao);
+        if (tvDonHangEmptyTitle != null) {
+            tvDonHangEmptyTitle.setText(R.string.order_empty_title);
+        }
+        if (layoutOrderEmptyState != null) {
+            layoutOrderEmptyState.setVisibility(View.VISIBLE);
+        }
         tvDonHangEmpty.setVisibility(View.VISIBLE);
         rvDonHangs.setVisibility(View.GONE);
         if (btnCheckout != null) {
             btnCheckout.setVisibility(View.VISIBLE);
         }
         if (tvDonHangCaption != null) {
-            tvDonHangCaption.setText(getString(R.string.order_screen_caption));
+            tvDonHangCaption.setVisibility(embedded ? View.GONE : View.VISIBLE);
+            tvDonHangCaption.setText(getString(R.string.order_empty_subtitle));
         }
     }
 
     private void hienTrangThaiDanhSach() {
+        if (layoutOrderEmptyState != null) {
+            layoutOrderEmptyState.setVisibility(View.GONE);
+        }
         tvDonHangEmpty.setVisibility(View.GONE);
         rvDonHangs.setVisibility(View.VISIBLE);
         if (btnCheckout != null) {
             btnCheckout.setVisibility(View.GONE);
         }
         if (tvDonHangCaption != null) {
+            tvDonHangCaption.setVisibility(embedded ? View.GONE : View.VISIBLE);
             tvDonHangCaption.setText(getString(R.string.order_screen_caption));
         }
     }

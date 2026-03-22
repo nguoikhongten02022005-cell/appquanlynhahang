@@ -3,10 +3,11 @@ package com.example.quanlynhahang.model;
 public class DatBan {
 
     public enum TrangThai {
-        CHO_XAC_NHAN,
-        DA_XAC_NHAN,
-        DA_PHUC_VU,
-        DA_HUY
+        PENDING,
+        ACTIVE,
+        COMPLETED,
+        CANCELLED,
+        EXPIRED
     }
 
     private final long idDatBan;
@@ -32,7 +33,7 @@ public class DatBan {
         this.soBan = soBan;
         this.soKhach = soKhach;
         this.ghiChu = ghiChu == null ? "" : ghiChu.trim();
-        this.trangThai = trangThai == null ? TrangThai.CHO_XAC_NHAN : trangThai;
+        this.trangThai = trangThai == null ? TrangThai.PENDING : trangThai;
         this.linkedOrderId = linkedOrderId;
     }
 
@@ -77,15 +78,37 @@ public class DatBan {
     }
 
     public boolean coTheHuy() {
-        return trangThai == TrangThai.CHO_XAC_NHAN || trangThai == TrangThai.DA_XAC_NHAN;
+        return trangThai == TrangThai.PENDING;
     }
 
     public boolean coTheXacNhan() {
-        return trangThai == TrangThai.CHO_XAC_NHAN;
+        return false;
     }
 
     public boolean coTheHoanTat() {
-        return trangThai == TrangThai.DA_XAC_NHAN;
+        return false;
+    }
+
+    public boolean laDangChoDenGio() {
+        return trangThai == TrangThai.PENDING;
+    }
+
+    public boolean laDangTrongKhungGio() {
+        return trangThai == TrangThai.ACTIVE;
+    }
+
+    public boolean laDangHieuLuc() {
+        return trangThai == TrangThai.PENDING || trangThai == TrangThai.ACTIVE;
+    }
+
+    public boolean daHoanTatGuiMon() {
+        return trangThai == TrangThai.COMPLETED;
+    }
+
+    public boolean daKetThuc() {
+        return trangThai == TrangThai.COMPLETED
+                || trangThai == TrangThai.CANCELLED
+                || trangThai == TrangThai.EXPIRED;
     }
 
     public void capNhatTrangThai(TrangThai trangThaiMoi) {
@@ -95,6 +118,6 @@ public class DatBan {
     }
 
     public void huyDatBan() {
-        capNhatTrangThai(TrangThai.DA_HUY);
+        capNhatTrangThai(TrangThai.CANCELLED);
     }
 }

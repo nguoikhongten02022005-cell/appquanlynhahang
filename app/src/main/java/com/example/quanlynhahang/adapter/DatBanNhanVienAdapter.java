@@ -93,8 +93,8 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
             tvStatus.setText(layTextTrangThai(datBan.layTrangThai()));
             ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, layMauTrangThai(datBan.layTrangThai()))));
 
-            ganHanhDong(btnConfirm, datBan.coTheXacNhan(), v -> hanhDongListener.khiXacNhan(datBan));
-            ganHanhDong(btnComplete, datBan.coTheHoanTat(), v -> hanhDongListener.khiHoanTat(datBan));
+            ganHanhDong(btnConfirm, false, v -> hanhDongListener.khiXacNhan(datBan));
+            ganHanhDong(btnComplete, false, v -> hanhDongListener.khiHoanTat(datBan));
             ganHanhDong(btnCancel, datBan.coTheHuy(), v -> hanhDongListener.khiHuy(datBan));
         }
 
@@ -105,26 +105,29 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
     }
 
     private int layTextTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.CHO_XAC_NHAN) {
+        if (trangThai == DatBan.TrangThai.PENDING) {
             return R.string.reservation_status_pending;
         }
-        if (trangThai == DatBan.TrangThai.DA_XAC_NHAN) {
+        if (trangThai == DatBan.TrangThai.ACTIVE) {
             return R.string.reservation_status_confirmed;
         }
-        if (trangThai == DatBan.TrangThai.DA_PHUC_VU) {
+        if (trangThai == DatBan.TrangThai.COMPLETED) {
             return R.string.reservation_status_completed;
+        }
+        if (trangThai == DatBan.TrangThai.EXPIRED) {
+            return R.string.reservation_status_expired;
         }
         return R.string.reservation_status_canceled;
     }
 
     private int layMauTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.CHO_XAC_NHAN) {
+        if (trangThai == DatBan.TrangThai.PENDING) {
             return R.color.warning;
         }
-        if (trangThai == DatBan.TrangThai.DA_XAC_NHAN) {
+        if (trangThai == DatBan.TrangThai.ACTIVE) {
             return R.color.success;
         }
-        if (trangThai == DatBan.TrangThai.DA_PHUC_VU) {
+        if (trangThai == DatBan.TrangThai.COMPLETED) {
             return R.color.primary;
         }
         return R.color.error;

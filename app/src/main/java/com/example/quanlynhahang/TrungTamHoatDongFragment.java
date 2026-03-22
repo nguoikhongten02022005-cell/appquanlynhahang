@@ -5,13 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
-import android.widget.TextView;
 
 import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
@@ -37,6 +36,12 @@ public class TrungTamHoatDongFragment extends Fragment {
     private MaterialButton btnTabDonHangs;
     private MaterialButton btnTabRequests;
     private MaterialButton btnTabServiceRequests;
+    private View layoutActivityHubRoot;
+    private TextView tvActivityHubTitle;
+    private TextView tvActivityHubSubtitle;
+    private TextView tvActivityHubDemoHint;
+    private View spaceActivityHubCompactGap;
+    private View layoutServiceHubSummaryContent;
     private TextView tvServiceHubSummaryTable;
     private TextView tvServiceHubSummaryOrder;
     private TextView tvServiceHubSummarySupport;
@@ -67,9 +72,15 @@ public class TrungTamHoatDongFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        layoutActivityHubRoot = view.findViewById(R.id.layoutActivityHubRoot);
         btnTabDonHangs = view.findViewById(R.id.btnTabDonHangs);
         btnTabRequests = view.findViewById(R.id.btnTabRequests);
         btnTabServiceRequests = view.findViewById(R.id.btnTabServiceRequests);
+        tvActivityHubTitle = view.findViewById(R.id.tvActivityHubTitle);
+        tvActivityHubSubtitle = view.findViewById(R.id.tvActivityHubSubtitle);
+        tvActivityHubDemoHint = view.findViewById(R.id.tvActivityHubDemoHint);
+        spaceActivityHubCompactGap = view.findViewById(R.id.spaceActivityHubCompactGap);
+        layoutServiceHubSummaryContent = view.findViewById(R.id.layoutServiceHubSummaryContent);
         tvServiceHubSummaryTable = view.findViewById(R.id.tvServiceHubSummaryTable);
         tvServiceHubSummaryOrder = view.findViewById(R.id.tvServiceHubSummaryOrder);
         tvServiceHubSummarySupport = view.findViewById(R.id.tvServiceHubSummarySupport);
@@ -202,6 +213,9 @@ public class TrungTamHoatDongFragment extends Fragment {
                 donTaiQuanDangHoatDong,
                 () -> CartManager.getInstance().layNguCanhDonHang().laySoBan()
         );
+        boolean coPhienHoatDong = banHienTai != null || donDangHoatDong != null;
+
+        capNhatTieuDeVaMoTa(coPhienHoatDong);
 
         capNhatDongTomTat(tvServiceHubSummaryTable,
                 banHienTai != null,
@@ -227,6 +241,47 @@ public class TrungTamHoatDongFragment extends Fragment {
         if (tvServiceHubSummaryChevron != null) {
             tvServiceHubSummaryChevron.setVisibility(yeuCauDangCho != null ? View.VISIBLE : View.GONE);
         }
+    }
+
+    private void capNhatTieuDeVaMoTa(boolean coPhienHoatDong) {
+        if (tvActivityHubTitle != null) {
+            tvActivityHubTitle.setText(coPhienHoatDong
+                    ? R.string.activity_hub_title_compact
+                    : R.string.activity_hub_title);
+            tvActivityHubTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, coPhienHoatDong ? 20 : 28);
+        }
+        if (tvActivityHubSubtitle != null) {
+            tvActivityHubSubtitle.setVisibility(coPhienHoatDong ? View.GONE : View.VISIBLE);
+        }
+        if (tvActivityHubDemoHint != null) {
+            tvActivityHubDemoHint.setVisibility(coPhienHoatDong ? View.GONE : View.VISIBLE);
+        }
+        if (spaceActivityHubCompactGap != null) {
+            spaceActivityHubCompactGap.setVisibility(coPhienHoatDong ? View.GONE : View.VISIBLE);
+        }
+        if (layoutActivityHubRoot != null) {
+            int paddingTop = dpSangPx(coPhienHoatDong ? 8 : 24);
+            layoutActivityHubRoot.setPadding(
+                    layoutActivityHubRoot.getPaddingLeft(),
+                    paddingTop,
+                    layoutActivityHubRoot.getPaddingRight(),
+                    layoutActivityHubRoot.getPaddingBottom()
+            );
+        }
+        if (layoutServiceHubSummaryContent != null) {
+            int summaryPadding = dpSangPx(coPhienHoatDong ? 8 : 16);
+            layoutServiceHubSummaryContent.setPadding(
+                    summaryPadding,
+                    summaryPadding,
+                    summaryPadding,
+                    summaryPadding
+            );
+        }
+    }
+
+    private int dpSangPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 
     private void capNhatDongTomTat(@Nullable TextView textView, boolean hienThi, @Nullable String noiDung) {

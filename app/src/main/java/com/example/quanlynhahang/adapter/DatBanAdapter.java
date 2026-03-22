@@ -119,26 +119,29 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.Reservatio
     }
 
     private int layTextTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.CHO_XAC_NHAN) {
+        if (trangThai == DatBan.TrangThai.PENDING) {
             return R.string.reservation_status_pending;
         }
-        if (trangThai == DatBan.TrangThai.DA_XAC_NHAN) {
+        if (trangThai == DatBan.TrangThai.ACTIVE) {
             return R.string.reservation_status_confirmed;
         }
-        if (trangThai == DatBan.TrangThai.DA_PHUC_VU) {
+        if (trangThai == DatBan.TrangThai.COMPLETED) {
             return R.string.reservation_status_completed;
+        }
+        if (trangThai == DatBan.TrangThai.EXPIRED) {
+            return R.string.reservation_status_expired;
         }
         return R.string.reservation_status_canceled;
     }
 
     private int layMauTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.CHO_XAC_NHAN) {
+        if (trangThai == DatBan.TrangThai.PENDING) {
             return R.color.warning;
         }
-        if (trangThai == DatBan.TrangThai.DA_XAC_NHAN) {
+        if (trangThai == DatBan.TrangThai.ACTIVE) {
             return R.color.success;
         }
-        if (trangThai == DatBan.TrangThai.DA_PHUC_VU) {
+        if (trangThai == DatBan.TrangThai.COMPLETED) {
             return R.color.primary;
         }
         return R.color.error;

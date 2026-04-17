@@ -183,6 +183,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
             phuongThucThanhToan = phuongThucThanhToanMangDi;
         }
 
+        long reservationId = timReservationIdApDung(nguCanhDonHang, thoiGianDat);
         long idDonHang = databaseHelper.themDonHang(
                 (int) idNguoiDung,
                 maDonHang,
@@ -194,7 +195,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
                 nguCanhDonHang.layGhiChu(),
                 trangThaiThanhToan,
                 phuongThucThanhToan,
-                0,
+                reservationId,
                 danhSachMonDat
         );
 
@@ -301,6 +302,24 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
             return;
         }
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private long timReservationIdApDung(CartManager.NguCanhDonHang nguCanhDonHang, String thoiGianDat) {
+        if (nguCanhDonHang == null || !nguCanhDonHang.laAnTaiQuan()) {
+            return 0;
+        }
+        long userId = sessionManager.layIdNguoiDungHienTai();
+        if (userId <= 0 || TextUtils.isEmpty(nguCanhDonHang.laySoBan())) {
+            return 0;
+        }
+        com.example.quanlynhahang.model.DatBan datBanHieuLuc = databaseHelper.layDatBanHieuLucTheoNguoiDung(userId);
+        if (datBanHieuLuc == null || datBanHieuLuc.layLinkedOrderId() > 0) {
+            return 0;
+        }
+        if (!nguCanhDonHang.laySoBan().trim().equalsIgnoreCase(datBanHieuLuc.laySoBan())) {
+            return 0;
+        }
+        return datBanHieuLuc.layId();
     }
 
     private String taoMaDonHang() {

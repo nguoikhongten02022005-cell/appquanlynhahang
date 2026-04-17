@@ -143,6 +143,14 @@ public class ThucDonFragment extends Fragment {
                 filteredDishes,
                 filteredDescriptions,
                 dish -> {
+                    if (dish == null || !dish.laConPhucVu()) {
+                        Toast.makeText(
+                                requireContext(),
+                                getString(R.string.menu_unavailable_blocked),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
+                    }
                     CartManager.getInstance().themVaoGio(dish);
                     Toast.makeText(
                             requireContext(),

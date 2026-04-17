@@ -406,7 +406,7 @@ public class GioHangActivity extends AppCompatActivity {
         List<MucBanUi> danhSachBan = new ArrayList<>();
         Set<String> banDaGiu = new HashSet<>();
         for (DatBan datBan : databaseHelper.layTatCaDatBan()) {
-            if (datBan != null && datBan.coTheHuy()) {
+            if (datBan != null && datBan.laDangHieuLuc()) {
                 banDaGiu.add(datBan.laySoBan());
             }
         }

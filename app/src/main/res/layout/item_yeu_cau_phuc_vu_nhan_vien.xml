@@ -49,6 +49,15 @@
             android:textSize="13sp" />
 
         <TextView
+            android:id="@+id/tvEmployeeServiceRequestTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/btnEmployeeServiceRequestDone"
             style="@style/Widget.Quanlynhahang.FilledButton"
             android:layout_width="wrap_content"

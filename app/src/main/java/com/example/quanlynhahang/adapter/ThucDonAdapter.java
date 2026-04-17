@@ -7,6 +7,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,6 +60,14 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
         holder.tvMenuDishName.setText(monAn.layTenMon());
         holder.tvMenuDishDescription.setText(danhSachMoTa.get(position));
         holder.tvMenuDishPrice.setText(monAn.layGiaBan());
+        holder.tvMenuDishMeta.setText(monAn.layTenDanhMuc());
+        holder.tvMenuDishAvailability.setText(monAn.laConPhucVu()
+                ? R.string.dish_status_available
+                : R.string.dish_status_unavailable);
+        holder.tvMenuDishAvailability.setTextColor(ContextCompat.getColor(
+                holder.itemView.getContext(),
+                monAn.laConPhucVu() ? R.color.success : R.color.error
+        ));
 
         holder.btnMenuAddDish.setEnabled(monAn.laConPhucVu());
         holder.btnMenuAddDish.setAlpha(monAn.laConPhucVu() ? 1f : 0.5f);
@@ -78,6 +88,8 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
         private final TextView tvMenuDishName;
         private final TextView tvMenuDishDescription;
         private final TextView tvMenuDishPrice;
+        private final TextView tvMenuDishMeta;
+        private final TextView tvMenuDishAvailability;
         private final ImageButton btnMenuAddDish;
 
         MenuViewHolder(@NonNull View itemView) {
@@ -86,6 +98,8 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
             tvMenuDishName = itemView.findViewById(R.id.tvMenuDishName);
             tvMenuDishDescription = itemView.findViewById(R.id.tvMenuDishDescription);
             tvMenuDishPrice = itemView.findViewById(R.id.tvMenuDishPrice);
+            tvMenuDishMeta = itemView.findViewById(R.id.tvMenuDishMeta);
+            tvMenuDishAvailability = itemView.findViewById(R.id.tvMenuDishAvailability);
             btnMenuAddDish = itemView.findViewById(R.id.btnMenuAddDish);
         }
     }

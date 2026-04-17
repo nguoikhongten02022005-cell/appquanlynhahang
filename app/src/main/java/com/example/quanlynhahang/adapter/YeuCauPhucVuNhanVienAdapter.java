@@ -58,6 +58,7 @@ public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhuc
         private final TextView tvContent;
         private final TextView tvTime;
         private final TextView tvStatus;
+        private final TextView tvTable;
         private final TextView btnDone;
 
         EmployeeServiceRequestViewHolder(@NonNull View itemView) {
@@ -65,6 +66,7 @@ public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhuc
             tvContent = itemView.findViewById(R.id.tvEmployeeServiceRequestContent);
             tvTime = itemView.findViewById(R.id.tvEmployeeServiceRequestTime);
             tvStatus = itemView.findViewById(R.id.tvEmployeeServiceRequestStatus);
+            tvTable = itemView.findViewById(R.id.tvEmployeeServiceRequestTable);
             btnDone = itemView.findViewById(R.id.btnEmployeeServiceRequestDone);
         }
 
@@ -72,6 +74,10 @@ public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhuc
             Context context = itemView.getContext();
             tvContent.setText(yeuCau.layNoiDung());
             tvTime.setText(yeuCau.layThoiGianGui());
+            tvTable.setVisibility(yeuCau.coBanLienQuan() ? View.VISIBLE : View.GONE);
+            if (yeuCau.coBanLienQuan()) {
+                tvTable.setText(context.getString(R.string.order_table_format, yeuCau.laySoBan()));
+            }
             boolean dangCho = yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_CHO;
             boolean dangXuLy = yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY;
             if (dangCho) {

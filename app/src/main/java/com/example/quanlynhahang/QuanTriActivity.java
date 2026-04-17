@@ -626,6 +626,14 @@ public class QuanTriActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.admin_dish_validation_required, Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (tachGiaTien(giaBan) <= 0) {
+                Toast.makeText(this, R.string.admin_dish_validation_price, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (moTa.length() < 10) {
+                Toast.makeText(this, R.string.admin_dish_validation_description, Toast.LENGTH_SHORT).show();
+                return;
+            }
             int diemDeXuat;
             try {
                 diemDeXuat = diemDeXuatRaw.isEmpty() ? 0 : Integer.parseInt(diemDeXuatRaw);
@@ -722,6 +730,21 @@ public class QuanTriActivity extends AppCompatActivity {
         Toast.makeText(this, daCapNhat ? R.string.admin_user_active_update_success : R.string.admin_action_failed, Toast.LENGTH_SHORT).show();
         if (daCapNhat) {
             lamMoiToanBoDuLieuAdmin();
+        }
+    }
+
+    private long tachGiaTien(String chuoiGia) {
+        if (chuoiGia == null || chuoiGia.trim().isEmpty()) {
+            return 0L;
+        }
+        String chuoiDaLamSach = chuoiGia.replaceAll("[^0-9]", "");
+        if (chuoiDaLamSach.isEmpty()) {
+            return 0L;
+        }
+        try {
+            return Long.parseLong(chuoiDaLamSach);
+        } catch (NumberFormatException ex) {
+            return 0L;
         }
     }
 

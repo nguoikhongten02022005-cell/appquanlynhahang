@@ -151,10 +151,10 @@ public class TaiKhoanFragment extends Fragment {
     }
 
     private void moManNhanVien() {
-        if (!isAdded() || sessionManager == null || !sessionManager.laNhanVien()) {
+        if (!isAdded() || sessionManager == null || (!sessionManager.laNhanVien() && !sessionManager.laAdmin())) {
             return;
         }
-        Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(requireContext(), sessionManager.layVaiTroHienTai());
+        Intent intent = new Intent(requireContext(), NhanVienActivity.class);
         startActivity(intent);
     }
 
@@ -422,7 +422,7 @@ public class TaiKhoanFragment extends Fragment {
             btnOpenAdmin.setVisibility(sessionManager.laAdmin() ? View.VISIBLE : View.GONE);
         }
         if (btnOpenEmployee != null) {
-            btnOpenEmployee.setVisibility(sessionManager.laNhanVien() ? View.VISIBLE : View.GONE);
+            btnOpenEmployee.setVisibility((sessionManager.laNhanVien() || sessionManager.laAdmin()) ? View.VISIBLE : View.GONE);
         }
     }
 

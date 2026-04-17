@@ -996,6 +996,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         if (hinhThucDon == DonHang.HinhThucDon.MANG_DI) {
             soBanDaLamSach = "";
+            reservationId = 0;
+        }
+
+        long reservationIdHopLe = reservationId;
+        if (hinhThucDon == DonHang.HinhThucDon.AN_TAI_QUAN) {
+            reservationIdHopLe = timReservationIdPhuHopChoDonTaiQuan(userId, soBanDaLamSach, time, reservationId);
         }
 
         SQLiteDatabase db = getWritableDatabase();
@@ -1013,7 +1019,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             orderValues.put(COL_ORDER_NOTE, note == null ? "" : note.trim());
             orderValues.put(COL_ORDER_PAYMENT_STATUS, paymentStatus.name());
             orderValues.put(COL_ORDER_PAYMENT_METHOD, paymentMethod.name());
-            orderValues.put(COL_ORDER_RESERVATION_ID, Math.max(reservationId, 0));
+            orderValues.put(COL_ORDER_RESERVATION_ID, Math.max(reservationIdHopLe, 0));
 
             long orderId = db.insert(TABLE_ORDER, null, orderValues);
             if (orderId <= 0) {
@@ -1040,14 +1046,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
             }
 
-            if (reservationId > 0) {
+            if (reservationIdHopLe > 0) {
                 ContentValues reservationValues = new ContentValues();
                 reservationValues.put(COL_RESERVATION_LINKED_ORDER_ID, orderId);
+                reservationValues.put(COL_RESERVATION_STATUS, DatBan.TrangThai.COMPLETED.name());
                 db.update(
                         TABLE_RESERVATION,
                         reservationValues,
                         COL_RESERVATION_ID + " = ?",
-                        new String[]{String.valueOf(reservationId)}
+                        new String[]{String.valueOf(reservationIdHopLe)}
                 );
             }
 
@@ -1328,22 +1335,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         }
 
+        String soBanDaLamSach = soBan == null ? "" : soBan.trim();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
+            String selection = COL_SERVICE_REQUEST_USER_ID + " = ? AND "
+                    + COL_SERVICE_REQUEST_TYPE + " = ? AND "
+                    + COL_SERVICE_REQUEST_STATUS + " IN (?, ?)";
+            List<String> selectionArgs = new ArrayList<>();
+            selectionArgs.add(String.valueOf(userId));
+            selectionArgs.add(loaiYeuCau.name());
+            selectionArgs.add(YeuCauPhucVu.TrangThai.DANG_CHO.name());
+            selectionArgs.add(YeuCauPhucVu.TrangThai.DANG_XU_LY.name());
+            if (TextUtils.isEmpty(soBanDaLamSach)) {
+                selection += " AND (" + COL_SERVICE_REQUEST_TABLE_NUMBER + " IS NULL OR TRIM(" + COL_SERVICE_REQUEST_TABLE_NUMBER + ") = '')";
+            } else {
+                selection += " AND TRIM(" + COL_SERVICE_REQUEST_TABLE_NUMBER + ") = ?";
+                selectionArgs.add(soBanDaLamSach);
+            }
+
             cursor = db.query(
                     TABLE_SERVICE_REQUEST,
                     new String[]{COL_SERVICE_REQUEST_SENT_TIME},
-                    COL_SERVICE_REQUEST_USER_ID + " = ? AND "
-                            + COL_SERVICE_REQUEST_TYPE + " = ? AND "
-                            + COL_SERVICE_REQUEST_STATUS + " = ? AND "
-                            + COL_SERVICE_REQUEST_TABLE_NUMBER + " = ?",
-                    new String[]{
-                            String.valueOf(userId),
-                            loaiYeuCau.name(),
-                            YeuCauPhucVu.TrangThai.DANG_XU_LY.name(),
-                            soBan == null ? "" : soBan.trim()
-                    },
+                    selection,
+                    selectionArgs.toArray(new String[0]),
                     null,
                     null,
                     COL_SERVICE_REQUEST_ID + " DESC",
@@ -2157,6 +2172,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private boolean coDatBanHieuLucTheoNguoiDung(long userId) {
         return layDatBanHieuLucTheoNguoiDung(userId) != null;
+    }
+
+    private long timReservationIdPhuHopChoDonTaiQuan(long userId,
+                                                     @Nullable String soBan,
+                                                     @Nullable String thoiGianDonHang,
+                                                     long reservationIdUuTien) {
+        String soBanDaLamSach = soBan == null ? "" : soBan.trim();
+        if (userId <= 0 || TextUtils.isEmpty(soBanDaLamSach)) {
+            return 0;
+        }
+
+        List<DatBan> danhSachDatBan = layDatBanTheoNguoiDung(userId);
+        DatBan datBanTheoId = null;
+        DatBan datBanGanNhat = null;
+        long khoangCachNhoNhat = Long.MAX_VALUE;
+        long thoiGianDon = parseDonHangTimeToMillis(thoiGianDonHang);
+
+        for (DatBan datBan : danhSachDatBan) {
+            if (datBan == null || datBan.daKetThuc() || datBan.layLinkedOrderId() > 0) {
+                continue;
+            }
+            if (!soBanDaLamSach.equalsIgnoreCase(datBan.laySoBan())) {
+                continue;
+            }
+            if (reservationIdUuTien > 0 && datBan.layId() == reservationIdUuTien) {
+                datBanTheoId = datBan;
+                break;
+            }
+
+            long thoiGianDatBan = parseDonHangTimeToMillis(datBan.layThoiGian());
+            if (thoiGianDatBan <= 0 || thoiGianDon <= 0) {
+                if (datBanGanNhat == null) {
+                    datBanGanNhat = datBan;
+                }
+                continue;
+            }
+
+            long khoangCach = Math.abs(thoiGianDon - thoiGianDatBan);
+            if (khoangCach <= CUA_SO_KICH_HOAT_DAT_BAN_PHUT * 60_000L && khoangCach < khoangCachNhoNhat) {
+                khoangCachNhoNhat = khoangCach;
+                datBanGanNhat = datBan;
+            }
+        }
+
+        if (datBanTheoId != null) {
+            return datBanTheoId.layId();
+        }
+        return datBanGanNhat == null ? 0 : datBanGanNhat.layId();
     }
 
     @Nullable

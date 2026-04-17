@@ -133,21 +133,21 @@ public class SessionManager {
         if (!isLoggedIn()) {
             return;
         }
-        if (!TextUtils.isEmpty(sharedPreferences.getString(KEY_CURRENT_USER_ROLE, null))) {
-            return;
-        }
 
         NguoiDung currentUser = databaseHelper.getUserById(getCurrentUserId());
-        if (currentUser != null) {
-            sharedPreferences.edit()
-                    .putString(KEY_CURRENT_USER_ROLE, currentUser.layVaiTro().name())
-                    .apply();
+        if (currentUser == null || !currentUser.dangHoatDong()) {
+            xoaPhienDangNhap();
+            xoaVaiTroNoiBo();
             return;
         }
 
-        sharedPreferences.edit()
-                .putString(KEY_CURRENT_USER_ROLE, VaiTroNguoiDung.KHACH_HANG.name())
-                .apply();
+        String vaiTroSession = sharedPreferences.getString(KEY_CURRENT_USER_ROLE, null);
+        String vaiTroDb = currentUser.layVaiTro().name();
+        if (!TextUtils.equals(vaiTroSession, vaiTroDb)) {
+            sharedPreferences.edit()
+                    .putString(KEY_CURRENT_USER_ROLE, vaiTroDb)
+                    .apply();
+        }
     }
 
     public boolean damBaoNguoiDungConHoatDong(DatabaseHelper databaseHelper) {

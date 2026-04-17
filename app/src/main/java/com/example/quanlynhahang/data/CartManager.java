@@ -267,7 +267,13 @@ public class CartManager {
     }
 
     private String buildDishKey(MonAnDeXuat dish) {
-        return dish.layTenMon() + "|" + dish.layGiaBan();
+        if (dish == null) {
+            return "";
+        }
+        return dish.layImageResId()
+                + "|" + (dish.layTenMon() == null ? "" : dish.layTenMon().trim())
+                + "|" + (dish.layGiaBan() == null ? "" : dish.layGiaBan().trim())
+                + "|" + (dish.layTenDanhMuc() == null ? "" : dish.layTenDanhMuc().trim());
     }
 
     private void notifyCartChanged() {

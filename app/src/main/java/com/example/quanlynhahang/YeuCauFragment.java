@@ -176,7 +176,7 @@ public class YeuCauFragment extends Fragment {
             return;
         }
 
-        if (databaseHelper.coYeuCauDangXuLyGanDay(idNguoiDungHienTai, loaiYeuCau, "")) {
+        if (databaseHelper.coYeuCauDangXuLyGanDay(idNguoiDungHienTai, loaiYeuCau, soBanHienTai)) {
             datTrangThaiDangGui(false, null);
             hienThiPhanHoiNgan(R.string.service_request_duplicate_blocked);
             return;

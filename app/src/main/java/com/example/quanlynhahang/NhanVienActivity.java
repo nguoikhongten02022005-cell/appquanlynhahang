@@ -166,12 +166,12 @@ public class NhanVienActivity extends AppCompatActivity {
         reservationAdapter = new DatBanNhanVienAdapter(new DatBanNhanVienAdapter.HanhDongListener() {
             @Override
             public void khiXacNhan(DatBan reservation) {
-                // No-op for customer time-based reservation flow.
+                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.ACTIVE);
             }
 
             @Override
             public void khiHoanTat(DatBan reservation) {
-                // Reservation is completed automatically when customer sends dine-in order.
+                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.COMPLETED);
             }
 
             @Override
@@ -412,6 +412,14 @@ public class NhanVienActivity extends AppCompatActivity {
     }
 
     private void xuLyTrangThaiDatBan(DatBan datBan, DatBan.TrangThai trangThai) {
+        if (datBan == null || trangThai == null) {
+            Toast.makeText(this, R.string.employee_status_update_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (trangThai == DatBan.TrangThai.COMPLETED && datBan.layLinkedOrderId() <= 0) {
+            Toast.makeText(this, R.string.employee_reservation_complete_requires_order, Toast.LENGTH_SHORT).show();
+            return;
+        }
         boolean daCapNhat = databaseHelper.capNhatTrangThaiDatBan(datBan.layId(), trangThai);
         Toast.makeText(this, daCapNhat ? R.string.employee_reservation_status_update_success : R.string.employee_status_update_failed, Toast.LENGTH_SHORT).show();
         if (daCapNhat) {

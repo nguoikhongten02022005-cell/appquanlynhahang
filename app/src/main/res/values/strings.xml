@@ -45,6 +45,7 @@
     <string name="cd_dish_image">Hình món ăn</string>
     <string name="cd_add_dish">Thêm món</string>
     <string name="menu_added_to_cart">Đã thêm %1$s vào giỏ hàng</string>
+    <string name="menu_unavailable_blocked">Món này hiện đang tạm hết phục vụ</string>
     <string name="menu_filter_hint_format">Đang xem danh mục: %1$s</string>
     <string name="menu_filter_hint_with_query_format">Danh mục: %1$s • Từ khóa: %2$s</string>
     <string name="menu_filter_query_hint_format">Đang tìm: %1$s</string>
@@ -356,6 +357,7 @@
     <string name="employee_reservation_status_update_success">Đã cập nhật trạng thái đặt bàn</string>
     <string name="employee_service_request_status_update_success">Đã cập nhật trạng thái yêu cầu phục vụ</string>
     <string name="employee_status_update_failed">Không thể cập nhật trạng thái, vui lòng thử lại</string>
+    <string name="employee_reservation_complete_requires_order">Chỉ có thể hoàn tất đặt bàn khi đã có đơn ăn tại quán liên kết</string>
     <string name="employee_open_sidebar">Mở menu nhân viên</string>
     <string name="employee_sidebar_section_operations">VẬN HÀNH</string>
 
@@ -411,6 +413,8 @@
     <string name="admin_change_role_title">Đổi vai trò tài khoản</string>
     <string name="admin_change_role_message">Chọn vai trò mới cho tài khoản này.</string>
     <string name="admin_dish_validation_required">Vui lòng nhập đầy đủ tên món, giá bán, danh mục và mô tả.</string>
+    <string name="admin_dish_validation_price">Giá bán phải là số tiền hợp lệ lớn hơn 0.</string>
+    <string name="admin_dish_validation_description">Mô tả món ăn cần đủ rõ ràng, tối thiểu 10 ký tự.</string>
     <string name="admin_dish_validation_score">Điểm đề xuất phải là số nguyên không âm.</string>
     <string name="admin_dish_create_success">Đã thêm món ăn mới</string>
     <string name="admin_dish_update_success">Đã cập nhật món ăn</string>

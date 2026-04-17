@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean moTimKiemMenuCho;
     private String tuKhoaMenuCho;
     private boolean coDieuHuongMenuCho;
+    private boolean choPhepXemGiaoDienKhach;
 
     private final CartManager.CartListener cartListener = this::capNhatBadgeGioHang;
 
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
-        boolean choPhepXemGiaoDienKhach = getIntent().getBooleanExtra(EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false);
+        choPhepXemGiaoDienKhach = getIntent().getBooleanExtra(EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false);
         if (sessionManager.daDangNhap() && !sessionManager.laKhachHang() && !choPhepXemGiaoDienKhach) {
             startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai())
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -317,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!sessionManager.laKhachHang()) {
+        if (!sessionManager.laKhachHang() && !choPhepXemGiaoDienKhach) {
             startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai())
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();

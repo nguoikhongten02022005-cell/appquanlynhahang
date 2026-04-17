@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -35,6 +36,8 @@ public class TaiKhoanFragment extends Fragment {
     private NguoiDung nguoiDungHienTai;
 
     private View layoutAccountLoggedIn;
+    private View btnOpenAdmin;
+    private View btnOpenEmployee;
 
     private TextView tvAccountName;
     private TextView tvAccountEmail;
@@ -87,11 +90,16 @@ public class TaiKhoanFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (!xacThucPhienKhachHang(false)) {
+            return;
+        }
         capNhatGiaoDienTrangThaiDangNhap();
     }
 
     private void khoiTaoView(View view) {
         layoutAccountLoggedIn = view.findViewById(R.id.layoutAccountLoggedIn);
+        btnOpenAdmin = view.findViewById(R.id.btnOpenAdmin);
+        btnOpenEmployee = view.findViewById(R.id.btnOpenEmployee);
 
         tvAccountName = view.findViewById(R.id.tvAccountName);
         tvAccountEmail = view.findViewById(R.id.tvAccountEmail);
@@ -116,6 +124,8 @@ public class TaiKhoanFragment extends Fragment {
         MaterialButton btnSubmitChangePassword = view.findViewById(R.id.btnSubmitChangePassword);
         MaterialButton btnCancelChangePassword = view.findViewById(R.id.btnCancelChangePassword);
         MaterialButton btnContactSupport = view.findViewById(R.id.btnContactSupport);
+        MaterialButton btnMoQuanTri = view.findViewById(R.id.btnOpenAdmin);
+        MaterialButton btnMoNhanVien = view.findViewById(R.id.btnOpenEmployee);
         MaterialButton btnLogout = view.findViewById(R.id.btnLogout);
 
         btnEditProfile.setOnClickListener(v -> hienFormSuaThongTin());
@@ -126,8 +136,26 @@ public class TaiKhoanFragment extends Fragment {
         btnCancelChangePassword.setOnClickListener(v -> anFormDoiMatKhau());
 
         btnContactSupport.setOnClickListener(v -> moKenhHoTro());
+        btnMoQuanTri.setOnClickListener(v -> moManQuanTri());
+        btnMoNhanVien.setOnClickListener(v -> moManNhanVien());
 
         btnLogout.setOnClickListener(v -> hienXacNhanDangXuat());
+    }
+
+    private void moManQuanTri() {
+        if (!isAdded() || sessionManager == null || !sessionManager.laAdmin()) {
+            return;
+        }
+        Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(requireContext(), sessionManager.layVaiTroHienTai());
+        startActivity(intent);
+    }
+
+    private void moManNhanVien() {
+        if (!isAdded() || sessionManager == null || !sessionManager.laNhanVien()) {
+            return;
+        }
+        Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(requireContext(), sessionManager.layVaiTroHienTai());
+        startActivity(intent);
     }
 
     private void hienFormSuaThongTin() {
@@ -334,6 +362,9 @@ public class TaiKhoanFragment extends Fragment {
     }
 
     public void khiTabTaiKhoanDuocChon() {
+        if (!xacThucPhienKhachHang(true)) {
+            return;
+        }
         capNhatGiaoDienTrangThaiDangNhap();
         lamMoiTrangThaiHeader();
         if (sessionManager == null || sessionManager.daDangNhap()) {
@@ -361,6 +392,13 @@ public class TaiKhoanFragment extends Fragment {
             return;
         }
 
+        if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
+            xoaGiaoDienKhiDangXuat();
+            dieuHuongDenTabTrangChu();
+            Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
         if (idNguoiDungHienTai <= 0) {
             sessionManager.xoaPhienDangNhap();
@@ -380,11 +418,42 @@ public class TaiKhoanFragment extends Fragment {
         nguoiDungHienTai = user;
         layoutAccountLoggedIn.setVisibility(View.VISIBLE);
         ganDuLieuNguoiDung(nguoiDungHienTai);
+        if (btnOpenAdmin != null) {
+            btnOpenAdmin.setVisibility(sessionManager.laAdmin() ? View.VISIBLE : View.GONE);
+        }
+        if (btnOpenEmployee != null) {
+            btnOpenEmployee.setVisibility(sessionManager.laNhanVien() ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private boolean xacThucPhienKhachHang(boolean hienToast) {
+        if (!isAdded() || sessionManager == null || databaseHelper == null) {
+            return false;
+        }
+        if (!sessionManager.daDangNhap()) {
+            return true;
+        }
+        if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
+            xoaGiaoDienKhiDangXuat();
+            lamMoiTrangThaiHeader();
+            dieuHuongDenTabTrangChu();
+            if (hienToast) {
+                Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            }
+            return false;
+        }
+        return true;
     }
 
     private void xoaGiaoDienKhiDangXuat() {
         nguoiDungHienTai = null;
         layoutAccountLoggedIn.setVisibility(View.GONE);
+        if (btnOpenAdmin != null) {
+            btnOpenAdmin.setVisibility(View.GONE);
+        }
+        if (btnOpenEmployee != null) {
+            btnOpenEmployee.setVisibility(View.GONE);
+        }
         layoutEditProfile.setVisibility(View.GONE);
         layoutChangePassword.setVisibility(View.GONE);
         xoaFormSuaThongTin();

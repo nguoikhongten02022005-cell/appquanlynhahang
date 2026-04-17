@@ -214,22 +214,13 @@
                 android:maxLines="1"
                 android:text="@string/section_category"
                 android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="@string/home_category_hint"
-                android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_sm"
             android:clipToPadding="false"
             android:overScrollMode="never"
             android:paddingStart="@dimen/space_xs"
@@ -248,22 +239,13 @@
                 android:maxLines="1"
                 android:text="@string/section_recommended"
                 android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="@string/home_recommended_hint"
-                android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvRecommended"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
+            android:layout_marginTop="@dimen/space_sm"
             android:clipToPadding="false"
             android:nestedScrollingEnabled="false"
             android:overScrollMode="never"

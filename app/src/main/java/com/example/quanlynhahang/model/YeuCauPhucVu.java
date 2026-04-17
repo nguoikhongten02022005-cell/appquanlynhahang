@@ -9,6 +9,7 @@ public class YeuCauPhucVu {
     }
 
     public enum TrangThai {
+        DANG_CHO,
         DANG_XU_LY,
         DA_XU_LY,
         DA_HUY
@@ -38,7 +39,7 @@ public class YeuCauPhucVu {
         this.thoiGianXuLy = thoiGianXuLy == null ? "" : thoiGianXuLy.trim();
         this.soBan = soBan == null ? "" : soBan.trim();
         this.orderId = orderId;
-        this.trangThai = trangThai == null ? TrangThai.DANG_XU_LY : trangThai;
+        this.trangThai = trangThai == null ? TrangThai.DANG_CHO : trangThai;
     }
 
     public long layId() {
@@ -86,7 +87,11 @@ public class YeuCauPhucVu {
     }
 
     public boolean coTheHuy() {
-        return trangThai == TrangThai.DANG_XU_LY;
+        return trangThai == TrangThai.DANG_CHO;
+    }
+
+    public boolean dangHoatDong() {
+        return trangThai == TrangThai.DANG_CHO || trangThai == TrangThai.DANG_XU_LY;
     }
 
     public void danhDauDaXong() {

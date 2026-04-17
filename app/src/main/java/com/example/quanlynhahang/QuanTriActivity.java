@@ -1,14 +1,18 @@
 package com.example.quanlynhahang;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -17,21 +21,28 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
 
 import com.example.quanlynhahang.adapter.AdminDishAdapter;
 import com.example.quanlynhahang.adapter.AdminUserAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
+import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.ThongKeTongQuanAdmin;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 import com.google.android.material.button.MaterialButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class QuanTriActivity extends AppCompatActivity {
 
@@ -41,6 +52,7 @@ public class QuanTriActivity extends AppCompatActivity {
     private MaterialButton btnTabOverview;
     private MaterialButton btnTabDishes;
     private MaterialButton btnTabUsers;
+    private View drawerLayoutContainer;
     private View layoutOverview;
     private View layoutDishes;
     private View layoutUsers;
@@ -53,6 +65,11 @@ public class QuanTriActivity extends AppCompatActivity {
     private TextView tvCustomerCount;
     private TextView tvEmployeeCount;
     private TextView tvAdminCount;
+    private TextView tvCurrentDate;
+    private TextView tvRestaurantName;
+    private TextView tvOrdersShortcutBadge;
+    private LinearLayout layoutRecentOrders;
+    private TextView tvRecentOrdersEmpty;
     private EditText etDishSearch;
     private Spinner spinnerRoleFilter;
     private TextView tvDishesEmpty;
@@ -75,9 +92,7 @@ public class QuanTriActivity extends AppCompatActivity {
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
 
-        if (!sessionManager.daDangNhap() || !sessionManager.laAdmin()) {
-            Toast.makeText(this, getString(R.string.role_guard_admin_denied), Toast.LENGTH_SHORT).show();
-            dieuHuongSaiVaiTro();
+        if (!xacThucPhienQuanTri(true)) {
             return;
         }
 
@@ -92,7 +107,17 @@ public class QuanTriActivity extends AppCompatActivity {
         hienTabTongQuan();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!xacThucPhienQuanTri(false)) {
+            return;
+        }
+        lamMoiToanBoDuLieuAdmin();
+    }
+
     private void khoiTaoView() {
+        drawerLayoutContainer = findViewById(R.id.drawerAdminRoot);
         btnTabOverview = findViewById(R.id.btnAdminTabOverview);
         btnTabDishes = findViewById(R.id.btnAdminTabDishes);
         btnTabUsers = findViewById(R.id.btnAdminTabUsers);
@@ -108,6 +133,11 @@ public class QuanTriActivity extends AppCompatActivity {
         tvCustomerCount = findViewById(R.id.tvAdminCustomerCount);
         tvEmployeeCount = findViewById(R.id.tvAdminEmployeeCount);
         tvAdminCount = findViewById(R.id.tvAdminAdminCount);
+        tvCurrentDate = findViewById(R.id.tvAdminCurrentDate);
+        tvRestaurantName = findViewById(R.id.tvAdminRestaurantName);
+        tvOrdersShortcutBadge = findViewById(R.id.tvAdminOrdersShortcutBadge);
+        layoutRecentOrders = findViewById(R.id.layoutAdminRecentOrders);
+        tvRecentOrdersEmpty = findViewById(R.id.tvAdminRecentOrdersEmpty);
         etDishSearch = findViewById(R.id.etAdminDishSearch);
         spinnerRoleFilter = findViewById(R.id.spinnerAdminVaiTroNguoiDungFilter);
         tvDishesEmpty = findViewById(R.id.tvAdminDishesEmpty);
@@ -158,9 +188,18 @@ public class QuanTriActivity extends AppCompatActivity {
     }
 
     private void thietLapTab() {
-        btnTabOverview.setOnClickListener(v -> hienTabTongQuan());
-        btnTabDishes.setOnClickListener(v -> hienTabMonAn());
-        btnTabUsers.setOnClickListener(v -> hienTabTaiKhoan());
+        btnTabOverview.setOnClickListener(v -> {
+            hienTabTongQuan();
+            dongSidebarNeuCan();
+        });
+        btnTabDishes.setOnClickListener(v -> {
+            hienTabMonAn();
+            dongSidebarNeuCan();
+        });
+        btnTabUsers.setOnClickListener(v -> {
+            hienTabTaiKhoan();
+            dongSidebarNeuCan();
+        });
     }
 
     private void thietLapTimKiemMon() {
@@ -214,28 +253,124 @@ public class QuanTriActivity extends AppCompatActivity {
     }
 
     private void thietLapHanhDong() {
+        ImageView btnOpenSidebar = findViewById(R.id.btnAdminOpenSidebar);
+        if (btnOpenSidebar != null) {
+            btnOpenSidebar.setOnClickListener(v -> moSidebar());
+        }
+        findViewById(R.id.btnAdminOrdersShortcut).setOnClickListener(v -> moManNhanVien(NhanVienActivity.TAB_DON_HANG));
+        findViewById(R.id.btnAdminReservationsShortcut).setOnClickListener(v -> moManNhanVien(NhanVienActivity.TAB_DAT_BAN));
+        findViewById(R.id.btnAdminSettingsShortcut).setOnClickListener(v -> hienThiCaiDatQuanTri());
         findViewById(R.id.btnAdminAddDish).setOnClickListener(v -> hienDialogMonAn(null));
+        findViewById(R.id.cardAdminAddDishShortcut).setOnClickListener(v -> hienDialogMonAn(null));
+        findViewById(R.id.cardAdminReservationShortcut).setOnClickListener(v -> moManNhanVien(NhanVienActivity.TAB_DAT_BAN));
+    }
+
+    private void moSidebar() {
+        if (drawerLayoutContainer instanceof DrawerLayout) {
+            ((DrawerLayout) drawerLayoutContainer).openDrawer(GravityCompat.START);
+        }
+    }
+
+    private void dongSidebarNeuCan() {
+        if (drawerLayoutContainer instanceof DrawerLayout) {
+            DrawerLayout drawerLayout = (DrawerLayout) drawerLayoutContainer;
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            }
+        }
+    }
+
+    private void moManNhanVien(String tabMucTieu) {
+        Intent intent = new Intent(this, NhanVienActivity.class);
+        intent.putExtra(NhanVienActivity.EXTRA_TAB_MUC_TIEU, tabMucTieu);
+        startActivity(intent);
+    }
+
+    private void hienThiCaiDatQuanTri() {
+        String[] luaChon = new String[]{
+                getString(R.string.admin_settings_customer_view),
+                getString(R.string.admin_settings_employee_orders),
+                getString(R.string.account_logout)
+        };
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.admin_settings_title)
+                .setItems(luaChon, (dialog, which) -> {
+                    if (which == 0) {
+                        moGiaoDienKhachHang();
+                    } else if (which == 1) {
+                        moManNhanVien(NhanVienActivity.TAB_DON_HANG);
+                    } else if (which == 2) {
+                        thucHienDangXuat();
+                    }
+                })
+                .setNegativeButton(R.string.dialog_close, null)
+                .show();
+    }
+
+    private void moGiaoDienKhachHang() {
+        Intent intent = new Intent(this, CustomerLauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void thucHienDangXuat() {
+        sessionManager.xoaPhienDangNhap();
+        sessionManager.xoaVaiTroNoiBo();
+        Intent intent = new Intent(this, StaffLauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private boolean xacThucPhienQuanTri(boolean hienToast) {
+        if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
+            if (hienToast) {
+                Toast.makeText(this, getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            }
+            dieuHuongSaiVaiTro();
+            return false;
+        }
+
+        if (!sessionManager.daDangNhap() || !sessionManager.laAdmin()) {
+            if (hienToast) {
+                Toast.makeText(this, getString(R.string.role_guard_admin_denied), Toast.LENGTH_SHORT).show();
+            }
+            dieuHuongSaiVaiTro();
+            return false;
+        }
+        return true;
     }
 
     private void thietLapDangXuat() {
         MaterialButton btnLogout = findViewById(R.id.btnAdminLogout);
         btnLogout.setOnClickListener(v -> {
-            sessionManager.xoaPhienDangNhap();
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            dongSidebarNeuCan();
+            thucHienDangXuat();
         });
     }
 
     private void lamMoiToanBoDuLieuAdmin() {
-        taiThongKeTongQuan();
+        ThongKeTongQuanAdmin thongKe = databaseHelper.layThongKeTongQuanAdmin();
+        capNhatHeaderAdmin(thongKe);
+        taiThongKeTongQuan(thongKe);
+        taiDonHangGanDay();
         taiDanhSachMon();
         taiDanhSachNguoiDung();
     }
 
-    private void taiThongKeTongQuan() {
-        ThongKeTongQuanAdmin thongKe = databaseHelper.layThongKeTongQuanAdmin();
+    private void capNhatHeaderAdmin(ThongKeTongQuanAdmin thongKe) {
+        if (tvCurrentDate != null) {
+            String ngayHienTai = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+            tvCurrentDate.setText(getString(R.string.admin_current_date_format, ngayHienTai));
+        }
+        if (tvRestaurantName != null) {
+            tvRestaurantName.setText(R.string.admin_restaurant_name);
+        }
+        capNhatBadgeDonHang(thongKe.getPendingDonHangs());
+    }
+
+    private void taiThongKeTongQuan(ThongKeTongQuanAdmin thongKe) {
         tvTotalUsersCount.setText(String.valueOf(thongKe.getTotalUsers()));
         tvTotalDishesCount.setText(String.valueOf(thongKe.getTotalDishes()));
         tvTotalDonHangsCount.setText(String.valueOf(thongKe.getTotalDonHangs()));
@@ -245,6 +380,156 @@ public class QuanTriActivity extends AppCompatActivity {
         tvCustomerCount.setText(String.valueOf(thongKe.getCustomerCount()));
         tvEmployeeCount.setText(String.valueOf(thongKe.getEmployeeCount()));
         tvAdminCount.setText(String.valueOf(thongKe.getAdminCount()));
+    }
+
+    private void capNhatBadgeDonHang(int soLuongChoXacNhan) {
+        if (tvOrdersShortcutBadge == null) {
+            return;
+        }
+        if (soLuongChoXacNhan <= 0) {
+            tvOrdersShortcutBadge.setVisibility(View.GONE);
+            tvOrdersShortcutBadge.setText("");
+            return;
+        }
+        tvOrdersShortcutBadge.setVisibility(View.VISIBLE);
+        if (soLuongChoXacNhan > 99) {
+            tvOrdersShortcutBadge.setText(R.string.admin_orders_shortcut_badge_overflow);
+            return;
+        }
+        tvOrdersShortcutBadge.setText(String.valueOf(soLuongChoXacNhan));
+    }
+
+    private void taiDonHangGanDay() {
+        if (layoutRecentOrders == null || tvRecentOrdersEmpty == null) {
+            return;
+        }
+        layoutRecentOrders.removeAllViews();
+        List<DonHang> danhSachDon = layBaDonHangGanDay();
+        if (danhSachDon.isEmpty()) {
+            tvRecentOrdersEmpty.setVisibility(View.VISIBLE);
+            return;
+        }
+        tvRecentOrdersEmpty.setVisibility(View.GONE);
+        for (int i = 0; i < danhSachDon.size(); i++) {
+            layoutRecentOrders.addView(taoTheDonGanDay(danhSachDon.get(i), i > 0));
+        }
+    }
+
+    private List<DonHang> layBaDonHangGanDay() {
+        List<DonHang> tatCaDonHang = new ArrayList<>(databaseHelper.layTatCaDonHang());
+        if (tatCaDonHang.size() <= 3) {
+            return tatCaDonHang;
+        }
+        return new ArrayList<>(tatCaDonHang.subList(0, 3));
+    }
+
+    private View taoTheDonGanDay(DonHang donHang, boolean themKhoangCachTop) {
+        LinearLayout wrapper = new LinearLayout(this);
+        wrapper.setOrientation(LinearLayout.HORIZONTAL);
+        wrapper.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        wrapper.setPadding(dp(20), dp(20), dp(20), dp(20));
+
+        com.google.android.material.card.MaterialCardView cardView = new com.google.android.material.card.MaterialCardView(this);
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        if (themKhoangCachTop) {
+            cardParams.topMargin = dp(12);
+        }
+        cardView.setLayoutParams(cardParams);
+        cardView.setCardBackgroundColor(ContextCompat.getColor(this, R.color.surface));
+        cardView.setRadius(dp(22));
+        cardView.setCardElevation(0f);
+
+        View statusDot = new View(this);
+        LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(dp(14), dp(14));
+        statusDot.setLayoutParams(dotParams);
+        statusDot.setBackgroundColor(ContextCompat.getColor(this, mauTrangThaiDon(donHang)));
+
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams contentParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        contentParams.leftMargin = dp(14);
+        content.setLayoutParams(contentParams);
+
+        TextView title = new TextView(this);
+        title.setText(taoTieuDeDonGanDay(donHang));
+        title.setTextColor(ContextCompat.getColor(this, R.color.on_surface));
+        title.setTextSize(16);
+        title.setTypeface(title.getTypeface(), android.graphics.Typeface.BOLD);
+
+        TextView subtitle = new TextView(this);
+        subtitle.setText(taoPhuDeDonGanDay(donHang));
+        subtitle.setTextColor(ContextCompat.getColor(this, R.color.on_surface_variant));
+        subtitle.setTextSize(13);
+
+        TextView amount = new TextView(this);
+        amount.setText(rutGonGia(donHang.layTongTien()));
+        amount.setTextColor(ContextCompat.getColor(this, R.color.admin_stat_highlight));
+        amount.setTextSize(16);
+        amount.setTypeface(amount.getTypeface(), android.graphics.Typeface.BOLD);
+
+        content.addView(title);
+        content.addView(subtitle);
+        wrapper.addView(statusDot);
+        wrapper.addView(content);
+        wrapper.addView(amount);
+        cardView.addView(wrapper);
+        return cardView;
+    }
+
+    private String taoTieuDeDonGanDay(DonHang donHang) {
+        String ban = donHang.coBanAn() ? donHang.laySoBan() : getString(R.string.admin_takeaway_label);
+        String tenMon = donHang.layDanhSachMon().isEmpty() ? donHang.layMaDon() : donHang.layDanhSachMon().get(0).layMonAn().layTenMon();
+        return getString(R.string.admin_recent_order_title_format, ban, tenMon);
+    }
+
+    private String taoPhuDeDonGanDay(DonHang donHang) {
+        return getString(R.string.admin_recent_order_subtitle_format, nhanTrangThaiDon(donHang), donHang.layThoiGian());
+    }
+
+    private String nhanTrangThaiDon(DonHang donHang) {
+        switch (donHang.layTrangThai()) {
+            case DANG_CHUAN_BI:
+                return getString(R.string.admin_status_preparing);
+            case SAN_SANG_PHUC_VU:
+                return getString(R.string.admin_status_ready_to_serve);
+            case HOAN_THANH:
+                return getString(R.string.admin_status_completed);
+            case DA_HUY:
+                return getString(R.string.admin_status_cancelled);
+            case CHO_XAC_NHAN:
+            default:
+                return getString(R.string.admin_status_pending_confirmation);
+        }
+    }
+
+    private int mauTrangThaiDon(DonHang donHang) {
+        switch (donHang.layTrangThai()) {
+            case HOAN_THANH:
+                return R.color.admin_success;
+            case DA_HUY:
+                return R.color.error;
+            case DANG_CHUAN_BI:
+            case SAN_SANG_PHUC_VU:
+                return R.color.admin_warning;
+            case CHO_XAC_NHAN:
+            default:
+                return R.color.admin_stat_highlight;
+        }
+    }
+
+    private String rutGonGia(String giaGoc) {
+        if (giaGoc == null) {
+            return getString(R.string.admin_price_zero);
+        }
+        String so = giaGoc.replace(".000 đ", "k").replace(" đ", "đ");
+        return so;
+    }
+
+    private int dp(int value) {
+        return Math.round(getResources().getDisplayMetrics().density * value);
     }
 
     private void taiDanhSachMon() {
@@ -265,27 +550,41 @@ public class QuanTriActivity extends AppCompatActivity {
         layoutOverview.setVisibility(View.VISIBLE);
         layoutDishes.setVisibility(View.GONE);
         layoutUsers.setVisibility(View.GONE);
-        btnTabOverview.setEnabled(false);
-        btnTabDishes.setEnabled(true);
-        btnTabUsers.setEnabled(true);
+        capNhatTrangThaiTab(btnTabOverview, true, R.drawable.ic_menu_24);
+        capNhatTrangThaiTab(btnTabDishes, false, R.drawable.ic_restaurant_24);
+        capNhatTrangThaiTab(btnTabUsers, false, R.drawable.ic_account_24);
     }
 
     private void hienTabMonAn() {
         layoutOverview.setVisibility(View.GONE);
         layoutDishes.setVisibility(View.VISIBLE);
         layoutUsers.setVisibility(View.GONE);
-        btnTabOverview.setEnabled(true);
-        btnTabDishes.setEnabled(false);
-        btnTabUsers.setEnabled(true);
+        capNhatTrangThaiTab(btnTabOverview, false, R.drawable.ic_menu_24);
+        capNhatTrangThaiTab(btnTabDishes, true, R.drawable.ic_restaurant_24);
+        capNhatTrangThaiTab(btnTabUsers, false, R.drawable.ic_account_24);
     }
 
     private void hienTabTaiKhoan() {
         layoutOverview.setVisibility(View.GONE);
         layoutDishes.setVisibility(View.GONE);
         layoutUsers.setVisibility(View.VISIBLE);
-        btnTabOverview.setEnabled(true);
-        btnTabDishes.setEnabled(true);
-        btnTabUsers.setEnabled(false);
+        capNhatTrangThaiTab(btnTabOverview, false, R.drawable.ic_menu_24);
+        capNhatTrangThaiTab(btnTabDishes, false, R.drawable.ic_restaurant_24);
+        capNhatTrangThaiTab(btnTabUsers, true, R.drawable.ic_account_24);
+    }
+
+    private void capNhatTrangThaiTab(MaterialButton button, boolean duocChon, int iconRes) {
+        if (button == null) {
+            return;
+        }
+        button.setIconResource(iconRes);
+        button.setCheckable(false);
+        button.setClickable(!duocChon);
+        button.setEnabled(true);
+        button.setBackgroundResource(duocChon ? R.drawable.bg_button_orange : android.R.color.transparent);
+        int textColor = ContextCompat.getColor(this, duocChon ? R.color.white : R.color.admin_sidebar_text);
+        button.setTextColor(textColor);
+        button.setIconTint(ColorStateList.valueOf(textColor));
     }
 
     private void hienDialogMonAn(DatabaseHelper.DishRecord dishRecord) {

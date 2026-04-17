@@ -72,11 +72,23 @@ public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhuc
             Context context = itemView.getContext();
             tvContent.setText(yeuCau.layNoiDung());
             tvTime.setText(yeuCau.layThoiGianGui());
+            boolean dangCho = yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_CHO;
             boolean dangXuLy = yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY;
-            tvStatus.setText(dangXuLy ? R.string.service_request_status_processing : R.string.service_request_status_done);
-            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, dangXuLy ? R.color.warning : R.color.success)));
-            btnDone.setVisibility(dangXuLy ? View.VISIBLE : View.GONE);
-            btnDone.setOnClickListener(dangXuLy ? v -> hanhDongListener.khiDanhDauDaXong(yeuCau) : null);
+            if (dangCho) {
+                tvStatus.setText(R.string.service_request_status_pending);
+                ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary)));
+            } else if (dangXuLy) {
+                tvStatus.setText(R.string.service_request_status_processing);
+                ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.warning)));
+            } else if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DA_HUY) {
+                tvStatus.setText(R.string.service_request_status_canceled);
+                ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.error)));
+            } else {
+                tvStatus.setText(R.string.service_request_status_done);
+                ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.success)));
+            }
+            btnDone.setVisibility(dangCho || dangXuLy ? View.VISIBLE : View.GONE);
+            btnDone.setOnClickListener(dangCho || dangXuLy ? v -> hanhDongListener.khiDanhDauDaXong(yeuCau) : null);
         }
     }
 }

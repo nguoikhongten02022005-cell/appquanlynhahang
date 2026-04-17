@@ -21,27 +21,6 @@
         android:text="@string/activity_hub_title"
         android:textAppearance="@style/TextAppearance.Quanlynhahang.PageTitle" />
 
-    <TextView
-        android:id="@+id/tvActivityHubSubtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_xs"
-        android:text="@string/activity_hub_subtitle"
-        android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
-
-    <TextView
-        android:id="@+id/tvActivityHubDemoHint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_xs"
-        android:text="@string/activity_hub_demo_hint"
-        android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
-
-    <Space
-        android:id="@+id/spaceActivityHubCompactGap"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/space_md" />
-
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardServiceHubSummary"
         style="@style/Widget.Quanlynhahang.SurfaceCard"
@@ -99,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
                     android:visibility="gone"
-                    tools:text="Bạn chưa có đơn, chưa có bàn hoạt động và chưa có yêu cầu hỗ trợ nào."
+                    tools:text=""
                     tools:visibility="gone" />
             </LinearLayout>
 
@@ -120,7 +99,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/hub_toggle_height"
-        android:layout_marginTop="@dimen/space_md"
+        android:layout_marginTop="@dimen/space_sm"
         android:background="@drawable/bg_hub_toggle_group"
         android:orientation="horizontal"
         android:padding="4dp">

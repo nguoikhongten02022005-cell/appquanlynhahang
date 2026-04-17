@@ -19,12 +19,12 @@ import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
-import com.example.quanlynhahang.model.NguoiDung;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH = "extra_allow_customer_preview";
     private static final String TAG = "MainActivity";
     public static final String EXTRA_MO_TAB_TRUNG_TAM_HOAT_DONG = "extra_open_activity_hub_tab";
     private static final int SO_LUONG_BADGE_TOI_DA = 99;
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
 
@@ -69,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
-        if (sessionManager.daDangNhap() && !sessionManager.laKhachHang()) {
+        boolean choPhepXemGiaoDienKhach = getIntent().getBooleanExtra(EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false);
+        if (sessionManager.daDangNhap() && !sessionManager.laKhachHang() && !choPhepXemGiaoDienKhach) {
             startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai())
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
@@ -109,6 +110,16 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         CartManager.getInstance().themLangNghe(cartListener);
         lamMoiTrangThaiHeader();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!xacThucPhienKhachHang(true)) {
+            return;
+        }
+        lamMoiTrangThaiHeader();
+        capNhatTaiKhoanNeuCan();
     }
 
     @Override
@@ -290,6 +301,38 @@ public class MainActivity extends AppCompatActivity {
         capNhatBadgeGioHang();
     }
 
+    private boolean xacThucPhienKhachHang(boolean hienToast) {
+        if (!sessionManager.daDangNhap()) {
+            return true;
+        }
+
+        if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
+            if (hienToast) {
+                android.widget.Toast.makeText(this, getString(R.string.session_invalid), android.widget.Toast.LENGTH_SHORT).show();
+            }
+            Intent intent = new Intent(this, CustomerLauncherActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return false;
+        }
+
+        if (!sessionManager.laKhachHang()) {
+            startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai())
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            finish();
+            return false;
+        }
+        return true;
+    }
+
+    private void capNhatTaiKhoanNeuCan() {
+        TaiKhoanFragment taiKhoanFragment = timTaiKhoanFragment();
+        if (taiKhoanFragment != null && taiKhoanFragment.isAdded()) {
+            taiKhoanFragment.capNhatGiaoDienTrangThaiDangNhap();
+        }
+    }
+
     private void moGioHang() {
         startActivity(new Intent(this, GioHangActivity.class));
     }
@@ -299,29 +342,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        String tenHienThi = getString(R.string.account_guest_name);
-
-        if (sessionManager != null && databaseHelper != null && sessionManager.daDangNhap()) {
-            long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
-            if (idNguoiDungHienTai > 0) {
-                NguoiDung nguoiDungHienTai = databaseHelper.layNguoiDungTheoId(idNguoiDungHienTai);
-                if (nguoiDungHienTai != null) {
-                    String ten = nguoiDungHienTai.layTen();
-                    String email = nguoiDungHienTai.layEmail();
-                    String tenMacDinh = getString(R.string.account_default_name);
-
-                    if (!TextUtils.isEmpty(ten)
-                            && !TextUtils.equals(ten, tenMacDinh)
-                            && !TextUtils.equals(ten, getString(R.string.db_test_customer_name))) {
-                        tenHienThi = ten;
-                    } else if (!TextUtils.isEmpty(email)) {
-                        tenHienThi = email;
-                    }
-                }
-            }
-        }
-
-        tvGreeting.setText(getString(R.string.home_greeting_format, tenHienThi));
+        tvGreeting.setText(R.string.home_greeting);
     }
 
     private void capNhatBadgeGioHang() {

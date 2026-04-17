@@ -78,7 +78,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xs"
             android:gravity="center"
-            android:text="@string/order_empty_subtitle"
             android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
             android:textColor="@color/text_secondary" />
 

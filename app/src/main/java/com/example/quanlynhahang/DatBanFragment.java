@@ -55,7 +55,6 @@ public class DatBanFragment extends Fragment {
     private MaterialAutoCompleteTextView autoCompleteReservationTable;
     private EditText etGuestCount;
     private EditText etReservationNote;
-    private TextView tvReservationEmptyState;
     private TextView tvReservationAvailableTables;
     private TextView tvReservationOccupiedTables;
     private MaterialButton btnSubmitReservation;
@@ -87,7 +86,6 @@ public class DatBanFragment extends Fragment {
         thietLapDanhSachDatBan(view);
         thietLapHanhDong(view);
         taiDanhSachDatBan();
-        capNhatTrangThaiRong();
     }
 
     @Override
@@ -98,7 +96,6 @@ public class DatBanFragment extends Fragment {
             reservationAdapter.capNhatDanhSachDatBan(reservations);
         }
         capNhatDanhSachBanTheoKhungGio();
-        capNhatTrangThaiRong();
     }
 
     private void apDungCheDoNhung(@NonNull View view) {
@@ -135,7 +132,6 @@ public class DatBanFragment extends Fragment {
         autoCompleteReservationTable = view.findViewById(R.id.autoCompleteReservationTable);
         etGuestCount = view.findViewById(R.id.etGuestCount);
         etReservationNote = view.findViewById(R.id.etReservationNote);
-        tvReservationEmptyState = view.findViewById(R.id.tvReservationEmptyState);
         tvReservationAvailableTables = view.findViewById(R.id.tvReservationAvailableTables);
         tvReservationOccupiedTables = view.findViewById(R.id.tvReservationOccupiedTables);
         btnSubmitReservation = view.findViewById(R.id.btnSubmitReservation);
@@ -343,7 +339,6 @@ public class DatBanFragment extends Fragment {
 
         datBan.huyDatBan();
         reservationAdapter.notifyItemChanged(position);
-        capNhatTrangThaiRong();
         capNhatDanhSachBanTheoKhungGio();
         hienThiPhanHoiNgan(R.string.reservation_cancel_success);
     }
@@ -427,7 +422,6 @@ public class DatBanFragment extends Fragment {
         if (reservationAdapter != null) {
             reservationAdapter.capNhatDanhSachDatBan(reservations);
         }
-        capNhatTrangThaiRong();
 
         etGuestCount.setText("");
         etReservationNote.setText("");
@@ -504,12 +498,6 @@ public class DatBanFragment extends Fragment {
         }
 
         reservations.addAll(databaseHelper.layDatBanTheoNguoiDung(idNguoiDung));
-    }
-
-    private void capNhatTrangThaiRong() {
-        if (tvReservationEmptyState != null) {
-            tvReservationEmptyState.setVisibility(reservations.isEmpty() ? View.VISIBLE : View.GONE);
-        }
     }
 
     private void datTrangThaiDangGui(boolean dangGui) {

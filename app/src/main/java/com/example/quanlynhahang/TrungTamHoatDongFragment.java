@@ -38,9 +38,6 @@ public class TrungTamHoatDongFragment extends Fragment {
     private MaterialButton btnTabServiceRequests;
     private View layoutActivityHubRoot;
     private TextView tvActivityHubTitle;
-    private TextView tvActivityHubSubtitle;
-    private TextView tvActivityHubDemoHint;
-    private View spaceActivityHubCompactGap;
     private View layoutServiceHubSummaryContent;
     private TextView tvServiceHubSummaryTable;
     private TextView tvServiceHubSummaryOrder;
@@ -77,9 +74,6 @@ public class TrungTamHoatDongFragment extends Fragment {
         btnTabRequests = view.findViewById(R.id.btnTabRequests);
         btnTabServiceRequests = view.findViewById(R.id.btnTabServiceRequests);
         tvActivityHubTitle = view.findViewById(R.id.tvActivityHubTitle);
-        tvActivityHubSubtitle = view.findViewById(R.id.tvActivityHubSubtitle);
-        tvActivityHubDemoHint = view.findViewById(R.id.tvActivityHubDemoHint);
-        spaceActivityHubCompactGap = view.findViewById(R.id.spaceActivityHubCompactGap);
         layoutServiceHubSummaryContent = view.findViewById(R.id.layoutServiceHubSummaryContent);
         tvServiceHubSummaryTable = view.findViewById(R.id.tvServiceHubSummaryTable);
         tvServiceHubSummaryOrder = view.findViewById(R.id.tvServiceHubSummaryOrder);
@@ -235,32 +229,22 @@ public class TrungTamHoatDongFragment extends Fragment {
                 yeuCauDangCho == null ? null : getString(R.string.activity_hub_summary_support_waiting));
 
         boolean khongCoGiHoatDong = banHienTai == null && donDangHoatDong == null && yeuCauDangCho == null;
-        capNhatDongTomTat(tvServiceHubSummaryEmpty,
-                khongCoGiHoatDong,
-                khongCoGiHoatDong ? getString(R.string.activity_hub_summary_empty) : null);
+        capNhatDongTomTat(tvServiceHubSummaryEmpty, false, null);
         if (tvServiceHubSummaryChevron != null) {
             tvServiceHubSummaryChevron.setVisibility(yeuCauDangCho != null ? View.VISIBLE : View.GONE);
+        }
+        if (cardServiceHubSummary != null) {
+            cardServiceHubSummary.setVisibility(khongCoGiHoatDong ? View.GONE : View.VISIBLE);
         }
     }
 
     private void capNhatTieuDeVaMoTa(boolean coPhienHoatDong) {
         if (tvActivityHubTitle != null) {
-            tvActivityHubTitle.setText(coPhienHoatDong
-                    ? R.string.activity_hub_title_compact
-                    : R.string.activity_hub_title);
-            tvActivityHubTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, coPhienHoatDong ? 20 : 28);
-        }
-        if (tvActivityHubSubtitle != null) {
-            tvActivityHubSubtitle.setVisibility(coPhienHoatDong ? View.GONE : View.VISIBLE);
-        }
-        if (tvActivityHubDemoHint != null) {
-            tvActivityHubDemoHint.setVisibility(coPhienHoatDong ? View.GONE : View.VISIBLE);
-        }
-        if (spaceActivityHubCompactGap != null) {
-            spaceActivityHubCompactGap.setVisibility(coPhienHoatDong ? View.GONE : View.VISIBLE);
+            tvActivityHubTitle.setText(R.string.activity_hub_title);
+            tvActivityHubTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 28);
         }
         if (layoutActivityHubRoot != null) {
-            int paddingTop = dpSangPx(coPhienHoatDong ? 8 : 24);
+            int paddingTop = dpSangPx(24);
             layoutActivityHubRoot.setPadding(
                     layoutActivityHubRoot.getPaddingLeft(),
                     paddingTop,

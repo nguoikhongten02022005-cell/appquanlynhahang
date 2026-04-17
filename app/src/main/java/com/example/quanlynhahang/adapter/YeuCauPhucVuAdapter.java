@@ -90,7 +90,11 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
                 tvServiceRequestTable.setText(context.getString(R.string.order_table_format, yeuCau.laySoBan()));
             }
 
-            if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY) {
+            if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_CHO) {
+                tvServiceRequestStatus.setText(R.string.service_request_status_pending);
+                int mauDangCho = ContextCompat.getColor(context, R.color.primary);
+                ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauDangCho));
+            } else if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY) {
                 tvServiceRequestStatus.setText(R.string.service_request_status_processing);
                 int mauDangXuLy = ContextCompat.getColor(context, R.color.warning);
                 ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauDangXuLy));

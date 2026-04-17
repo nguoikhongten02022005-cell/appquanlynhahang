@@ -50,11 +50,8 @@ public class GioHangActivity extends AppCompatActivity {
     private static final int SO_BAN_TOI_DA = 20;
 
     private RecyclerView rvCartItems;
-    private TextView tvCartSubtitle;
     private TextView tvCartTotal;
     private TextView tvCartSubtotal;
-    private TextView tvCartContextHint;
-    private TextView tvCartEmpty;
     private View layoutTableNumber;
     private RadioGroup rgCartOrderType;
     private RadioButton rbCartDineIn;
@@ -117,11 +114,8 @@ public class GioHangActivity extends AppCompatActivity {
 
     private void khoiTaoView() {
         rvCartItems = findViewById(R.id.rvCartItems);
-        tvCartSubtitle = findViewById(R.id.tvCartSubtitle);
         tvCartTotal = findViewById(R.id.tvCartTotal);
         tvCartSubtotal = findViewById(R.id.tvCartSubtotal);
-        tvCartContextHint = findViewById(R.id.tvCartContextHint);
-        tvCartEmpty = findViewById(R.id.tvCartEmpty);
         layoutTableNumber = findViewById(R.id.layoutTableNumber);
         rgCartOrderType = findViewById(R.id.rgCartOrderType);
         rbCartDineIn = findViewById(R.id.rbCartDineIn);
@@ -195,9 +189,6 @@ public class GioHangActivity extends AppCompatActivity {
 
     private void capNhatHienThiTheoHinhThucDon(boolean dangAnTaiQuan, boolean xoaSoBanNeuKhongCan) {
         layoutTableNumber.setVisibility(dangAnTaiQuan ? View.VISIBLE : View.GONE);
-        tvCartContextHint.setText(getString(
-                dangAnTaiQuan ? R.string.cart_context_hint_dine_in : R.string.cart_context_hint_takeaway
-        ));
         btnCheckout.setText(getString(
                 dangAnTaiQuan ? R.string.cart_checkout_dine_in : R.string.cart_checkout_takeaway
         ));
@@ -218,12 +209,10 @@ public class GioHangActivity extends AppCompatActivity {
 
         boolean gioHangRong = danhSachMon.isEmpty();
         rvCartItems.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
-        tvCartEmpty.setVisibility(gioHangRong ? View.VISIBLE : View.GONE);
         btnContinueShopping.setVisibility(gioHangRong ? View.VISIBLE : View.GONE);
         btnClearCart.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
         btnCheckout.setEnabled(!gioHangRong);
         btnCheckout.setAlpha(gioHangRong ? 0.5f : 1f);
-        tvCartSubtitle.setText(getString(R.string.cart_subtitle));
     }
 
     private long tinhTongTien(List<CartManager.CartItem> danhSachMon) {

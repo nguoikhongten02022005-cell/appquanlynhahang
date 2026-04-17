@@ -84,7 +84,6 @@
     <color name="add_button_icon_enabled">@color/white</color>
     <color name="add_button_icon_disabled">#887C74</color>
 
-    <color name="brand_green">@color/brand_primary</color>
     <color name="brand_orange">@color/brand_secondary</color>
     <color name="brand_red">@color/error</color>
     <color name="text_primary">@color/on_surface</color>
@@ -92,12 +91,15 @@
     <color name="text_on_color">@color/white</color>
     <color name="screen_background">@color/background</color>
     <color name="stroke">@color/outline_variant</color>
-    <color name="hero_top">@color/hero_gradient_center</color>
-    <color name="hero_bottom">@color/hero_gradient_end</color>
-    <color name="overlay_transparent">#00000000</color>
-    <color name="overlay_dark">#99000000</color>
-    <color name="category_bg">@color/category_unselected_bg</color>
-    <color name="bottom_nav_unselected">@color/nav_unselected</color>
     <color name="status_available">@color/status_available_text</color>
     <color name="status_unavailable">@color/status_unavailable_text</color>
+
+    <color name="admin_sidebar_bg">#FFFDFC</color>
+    <color name="admin_sidebar_divider">#EADFD5</color>
+    <color name="admin_sidebar_text">#5F554D</color>
+    <color name="admin_sidebar_heading">#9A8D81</color>
+    <color name="admin_surface_alt">#F7F3ED</color>
+    <color name="admin_stat_highlight">#D78440</color>
+    <color name="admin_success">#2DBE60</color>
+    <color name="admin_warning">#F6A318</color>
 </resources>

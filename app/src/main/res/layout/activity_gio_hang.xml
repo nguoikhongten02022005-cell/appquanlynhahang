@@ -19,19 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvCartSubtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/screen_padding_horizontal"
-        android:layout_marginTop="@dimen/space_xs"
-        android:layout_marginEnd="@dimen/screen_padding_horizontal"
-        android:text="@string/cart_subtitle"
-        android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvCartTitle" />
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollCartContent"
         android:layout_width="0dp"
@@ -42,7 +29,7 @@
         app:layout_constraintBottom_toTopOf="@id/layoutCartFooter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvCartSubtitle">
+        app:layout_constraintTop_toBottomOf="@id/tvCartTitle">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -93,19 +80,11 @@
                             android:text="@string/order_type_take_away" />
                     </RadioGroup>
 
-                    <TextView
-                        android:id="@+id/tvCartContextHint"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/space_sm"
-                        android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
-                        tools:text="Nếu ăn tại quán, vui lòng nhập số bàn để nhân viên phục vụ đúng chỗ." />
-
                     <LinearLayout
                         android:id="@+id/layoutTableNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/space_md"
+                        android:layout_marginTop="@dimen/space_sm"
                         android:orientation="vertical">
 
                         <TextView
@@ -165,16 +144,6 @@
                 android:layout_marginTop="@dimen/space_md"
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_mon_trong_don" />
-
-            <TextView
-                android:id="@+id/tvCartEmpty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_md"
-                android:gravity="center"
-                android:text="@string/cart_empty_message"
-                android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
-                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btnContinueShopping"

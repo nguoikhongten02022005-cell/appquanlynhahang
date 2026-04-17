@@ -441,7 +441,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private long insertUser(SQLiteDatabase db, String name, String email, String phone, String password, VaiTroNguoiDung role, boolean isActive) {
-        if (isPhoneInUse(phone, -1)) {
+        if (isPhoneInUse(db, phone, -1)) {
             return -1;
         }
 
@@ -560,11 +560,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isPhoneInUse(String phone, long excludeUserId) {
+        SQLiteDatabase db = getReadableDatabase();
+        return isPhoneInUse(db, phone, excludeUserId);
+    }
+
+    private boolean isPhoneInUse(SQLiteDatabase db, String phone, long excludeUserId) {
         if (TextUtils.isEmpty(phone)) {
             return false;
         }
 
-        SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = null;
         try {
             String selection = COL_USER_PHONE + " = ?";
@@ -1370,6 +1374,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return demSoBanGhi(TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_STATUS + " = ?", new String[]{status.name()});
     }
 
+    public boolean coYeuCauThanhToanDangHoatDongTheoBan(long userId, @Nullable String soBan) {
+        if (userId <= 0 || TextUtils.isEmpty(soBan)) {
+            return false;
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(
+                    TABLE_SERVICE_REQUEST,
+                    new String[]{COL_SERVICE_REQUEST_ID},
+                    COL_SERVICE_REQUEST_USER_ID + " = ? AND "
+                            + COL_SERVICE_REQUEST_TABLE_NUMBER + " = ? AND "
+                            + COL_SERVICE_REQUEST_TYPE + " = ? AND "
+                            + COL_SERVICE_REQUEST_STATUS + " IN (?, ?)",
+                    new String[]{
+                            String.valueOf(userId),
+                            soBan.trim(),
+                            YeuCauPhucVu.LoaiYeuCau.THANH_TOAN.name(),
+                            YeuCauPhucVu.TrangThai.DANG_CHO.name(),
+                            YeuCauPhucVu.TrangThai.DANG_XU_LY.name()
+                    },
+                    null,
+                    null,
+                    COL_SERVICE_REQUEST_ID + " DESC",
+                    "1"
+            );
+            return cursor.moveToFirst();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
     public ThongKeTongQuanAdmin layThongKeTongQuanAdmin() {
         return new ThongKeTongQuanAdmin(
                 countAllUsers(),
@@ -1379,7 +1418,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 countAllDishes(),
                 demTatCaDonHang(),
                 demDonHangTheoTrangThai(DonHang.TrangThai.CHO_XAC_NHAN),
-                demDatBanTheoTrangThai(DatBan.TrangThai.PENDING) + demDatBanTheoTrangThai(DatBan.TrangThai.ACTIVE),
+                demDatBanTheoTrangThai(DatBan.TrangThai.PENDING),
                 demYeuCauTheoTrangThai(YeuCauPhucVu.TrangThai.DANG_XU_LY)
         );
     }
@@ -1435,6 +1474,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (current == null || next == null || current == next) {
             return false;
         }
+        if (current == YeuCauPhucVu.TrangThai.DANG_CHO) {
+            return next == YeuCauPhucVu.TrangThai.DANG_XU_LY
+                    || next == YeuCauPhucVu.TrangThai.DA_XU_LY
+                    || next == YeuCauPhucVu.TrangThai.DA_HUY;
+        }
         if (current == YeuCauPhucVu.TrangThai.DANG_XU_LY) {
             return next == YeuCauPhucVu.TrangThai.DA_XU_LY || next == YeuCauPhucVu.TrangThai.DA_HUY;
         }
@@ -1444,7 +1488,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ThongKeTongQuanNhanVien layThongKeTongQuanNhanVien() {
         return new ThongKeTongQuanNhanVien(
                 demDonHangTheoTrangThai(DonHang.TrangThai.CHO_XAC_NHAN),
-                demDatBanTheoTrangThai(DatBan.TrangThai.PENDING) + demDatBanTheoTrangThai(DatBan.TrangThai.ACTIVE),
+                demDatBanTheoTrangThai(DatBan.TrangThai.PENDING),
                 demYeuCauTheoTrangThai(YeuCauPhucVu.TrangThai.DANG_XU_LY)
         );
     }
@@ -2324,9 +2368,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private YeuCauPhucVu.TrangThai parseServiceRequestStatus(String statusRaw) {
         if (TextUtils.isEmpty(statusRaw)) {
-            return YeuCauPhucVu.TrangThai.DANG_XU_LY;
+            return YeuCauPhucVu.TrangThai.DANG_CHO;
         }
 
+        if ("PENDING".equals(statusRaw)) {
+            return YeuCauPhucVu.TrangThai.DANG_CHO;
+        }
         if ("PROCESSING".equals(statusRaw)) {
             return YeuCauPhucVu.TrangThai.DANG_XU_LY;
         }
@@ -2337,7 +2384,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             return YeuCauPhucVu.TrangThai.valueOf(statusRaw);
         } catch (IllegalArgumentException ex) {
-            return YeuCauPhucVu.TrangThai.DANG_XU_LY;
+            return YeuCauPhucVu.TrangThai.DANG_CHO;
         }
     }
 

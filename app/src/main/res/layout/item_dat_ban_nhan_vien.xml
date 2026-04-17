@@ -20,13 +20,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvEmployeeReservationTime"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textColor="@color/on_surface"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -36,6 +35,7 @@
                 style="@style/Widget.Quanlynhahang.StatusChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/bg_button_green"
                 android:textColor="@color/white" />
         </LinearLayout>
@@ -68,15 +68,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/btnEmployeeReservationConfirm"
                 style="@style/Widget.Quanlynhahang.FilledButton"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
                 android:gravity="center"
                 android:padding="12dp"
                 android:text="@string/employee_mark_confirmed" />
@@ -84,10 +82,9 @@
             <TextView
                 android:id="@+id/btnEmployeeReservationComplete"
                 style="@style/Widget.Quanlynhahang.AccentButton"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
+                android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:padding="12dp"
                 android:text="@string/employee_mark_completed" />
@@ -95,8 +92,9 @@
             <TextView
                 android:id="@+id/btnEmployeeReservationCancel"
                 style="@style/Widget.Quanlynhahang.TonalButton"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:padding="12dp"
                 android:text="@string/employee_action_cancel" />

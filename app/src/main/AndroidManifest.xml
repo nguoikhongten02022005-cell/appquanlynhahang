@@ -14,6 +14,27 @@
 
         <activity android:name=".DangKyActivity" />
 
+        <activity
+            android:name=".CustomerLauncherActivity"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name_customer"
+            android:roundIcon="@mipmap/ic_launcher_round">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".StaffLauncherActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ChonVaiTroNoiBoActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
+
         <activity android:name=".DangNhapActivity" />
 
         <activity android:name=".GioHangActivity" />
@@ -30,15 +51,6 @@
             android:name=".MainActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".KhoiDongActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

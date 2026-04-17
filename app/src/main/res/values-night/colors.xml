@@ -77,7 +77,6 @@
     <color name="add_button_icon_enabled">#4B250A</color>
     <color name="add_button_icon_disabled">#A89589</color>
 
-    <color name="brand_green">@color/brand_primary</color>
     <color name="brand_orange">@color/brand_secondary</color>
     <color name="brand_red">@color/error</color>
     <color name="text_primary">@color/on_surface</color>
@@ -85,12 +84,6 @@
     <color name="text_on_color">@color/white</color>
     <color name="screen_background">@color/background</color>
     <color name="stroke">@color/outline_variant</color>
-    <color name="hero_top">@color/hero_gradient_center</color>
-    <color name="hero_bottom">@color/hero_gradient_end</color>
-    <color name="overlay_transparent">#00000000</color>
-    <color name="overlay_dark">#99000000</color>
-    <color name="category_bg">@color/category_unselected_bg</color>
-    <color name="bottom_nav_unselected">@color/nav_unselected</color>
     <color name="status_available">@color/status_available_text</color>
     <color name="status_unavailable">@color/status_unavailable_text</color>
 </resources>

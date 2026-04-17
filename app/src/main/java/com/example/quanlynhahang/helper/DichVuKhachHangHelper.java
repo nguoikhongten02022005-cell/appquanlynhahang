@@ -65,7 +65,7 @@ public final class DichVuKhachHangHelper {
             return false;
         }
         for (YeuCauPhucVu yeuCau : danhSachYeuCau) {
-            if (yeuCau != null && yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY) {
+            if (yeuCau != null && yeuCau.dangHoatDong()) {
                 return true;
             }
         }
@@ -104,7 +104,7 @@ public final class DichVuKhachHangHelper {
     }
 
     public static boolean coYeuCauDangCho(@Nullable YeuCauPhucVu yeuCau) {
-        return yeuCau != null && yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY;
+        return yeuCau != null && yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_CHO;
     }
 
     @Nullable
@@ -113,7 +113,7 @@ public final class DichVuKhachHangHelper {
             return null;
         }
         for (YeuCauPhucVu yeuCau : danhSachYeuCau) {
-            if (yeuCau != null && yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY) {
+            if (yeuCau != null && yeuCau.dangHoatDong()) {
                 return yeuCau;
             }
         }

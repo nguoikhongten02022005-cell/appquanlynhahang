@@ -75,9 +75,13 @@
 
     <style name="Widget.Quanlynhahang.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
         <item name="android:minHeight">@dimen/bottom_nav_min_height</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">6dp</item>
         <item name="android:background">@color/surface</item>
         <item name="itemIconTint">@color/bottom_nav_item_color</item>
         <item name="itemTextColor">@color/bottom_nav_item_color</item>
+        <item name="itemPaddingTop">4dp</item>
+        <item name="itemPaddingBottom">6dp</item>
         <item name="itemActiveIndicatorStyle">@style/Widget.Quanlynhahang.BottomNavigation.ActiveIndicator</item>
         <item name="labelVisibilityMode">labeled</item>
     </style>

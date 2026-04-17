@@ -36,7 +36,6 @@ public class YeuCauFragment extends Fragment {
     private final List<YeuCauPhucVu> serviceRequests = new ArrayList<>();
 
     private TextView tvServiceRequestEmptyState;
-    private TextView tvServiceRequestUnavailableState;
     private TextView tvServiceRequestCaption;
     private TextView tvPendingServiceRequestTitle;
     private TextView tvPendingServiceRequestSubtitle;
@@ -116,7 +115,6 @@ public class YeuCauFragment extends Fragment {
 
     private void khoiTaoView(View view) {
         tvServiceRequestEmptyState = view.findViewById(R.id.tvServiceRequestEmptyState);
-        tvServiceRequestUnavailableState = view.findViewById(R.id.tvServiceRequestUnavailableState);
         tvServiceRequestCaption = view.findViewById(R.id.tvServiceRequestCaption);
         tvPendingServiceRequestTitle = view.findViewById(R.id.tvPendingServiceRequestTitle);
         tvPendingServiceRequestSubtitle = view.findViewById(R.id.tvPendingServiceRequestSubtitle);
@@ -169,6 +167,15 @@ public class YeuCauFragment extends Fragment {
 
         datTrangThaiDangGui(true, loaiYeuCau);
 
+        String soBanHienTai = timBanHienTai(idNguoiDungHienTai);
+
+        if (loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THANH_TOAN
+                && databaseHelper.coYeuCauThanhToanDangHoatDongTheoBan(idNguoiDungHienTai, soBanHienTai)) {
+            datTrangThaiDangGui(false, null);
+            hienThiPhanHoiNgan(R.string.service_request_payment_duplicate_by_table);
+            return;
+        }
+
         if (databaseHelper.coYeuCauDangXuLyGanDay(idNguoiDungHienTai, loaiYeuCau, "")) {
             datTrangThaiDangGui(false, null);
             hienThiPhanHoiNgan(R.string.service_request_duplicate_blocked);
@@ -176,7 +183,6 @@ public class YeuCauFragment extends Fragment {
         }
 
         String thoiGianGui = layChuoiThoiGianHienTai();
-        String soBanHienTai = timBanHienTai(idNguoiDungHienTai);
         long idYeuCau = databaseHelper.themYeuCauPhucVu(
                 idNguoiDungHienTai,
                 loaiYeuCau,
@@ -184,7 +190,7 @@ public class YeuCauFragment extends Fragment {
                 soBanHienTai,
                 0,
                 thoiGianGui,
-                YeuCauPhucVu.TrangThai.DANG_XU_LY
+                YeuCauPhucVu.TrangThai.DANG_CHO
         );
         if (idYeuCau <= 0) {
             datTrangThaiDangGui(false, null);
@@ -214,7 +220,7 @@ public class YeuCauFragment extends Fragment {
     }
 
     private void capNhatTrangThaiRong() {
-        if (tvServiceRequestEmptyState == null || tvServiceRequestUnavailableState == null || rvServiceRequests == null) {
+        if (tvServiceRequestEmptyState == null || rvServiceRequests == null) {
             return;
         }
 
@@ -244,7 +250,6 @@ public class YeuCauFragment extends Fragment {
             tvPendingServiceRequestSubtitle.setText(yeuCauDangCho.layNoiDung());
         }
 
-        tvServiceRequestUnavailableState.setVisibility(!coNgucCanhHoTro ? View.VISIBLE : View.GONE);
         tvServiceRequestEmptyState.setVisibility(coNgucCanhHoTro && serviceRequests.isEmpty() ? View.VISIBLE : View.GONE);
         rvServiceRequests.setVisibility(coNgucCanhHoTro && !serviceRequests.isEmpty() ? View.VISIBLE : View.GONE);
 

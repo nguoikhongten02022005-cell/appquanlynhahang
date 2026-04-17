@@ -171,6 +171,40 @@
                 app:backgroundTint="@null" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOpenAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:background="@drawable/bg_button_green"
+                android:minHeight="0dp"
+                android:paddingTop="@dimen/space_sm"
+                android:paddingBottom="@dimen/space_sm"
+                android:text="@string/account_open_admin"
+                android:textAllCaps="false"
+                android:textColor="@color/text_on_color"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:backgroundTint="@null" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOpenEmployee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_sm"
+                android:background="@drawable/bg_button_green"
+                android:minHeight="0dp"
+                android:paddingTop="@dimen/space_sm"
+                android:paddingBottom="@dimen/space_sm"
+                android:text="@string/account_open_employee"
+                android:textAllCaps="false"
+                android:textColor="@color/text_on_color"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:backgroundTint="@null" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -126,7 +126,8 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
         boolean hienNut = donHang.laAnTaiQuan()
                 && donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN
                 && donHang.layTrangThai() != DonHang.TrangThai.DA_HUY
-                && !databaseHelper.coYeuCauThanhToanDangXuLy(sessionManager.layIdNguoiDungHienTai(), donHang.layId());
+                && !databaseHelper.coYeuCauThanhToanDangXuLy(sessionManager.layIdNguoiDungHienTai(), donHang.layId())
+                && !databaseHelper.coYeuCauThanhToanDangHoatDongTheoBan(sessionManager.layIdNguoiDungHienTai(), donHang.laySoBan());
 
         btnRequestPayment.setVisibility(hienNut ? android.view.View.VISIBLE : android.view.View.GONE);
         btnRequestPayment.setEnabled(hienNut);
@@ -135,6 +136,11 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
         }
 
         btnRequestPayment.setOnClickListener(v -> {
+            if (databaseHelper.coYeuCauThanhToanDangHoatDongTheoBan(sessionManager.layIdNguoiDungHienTai(), donHang.laySoBan())) {
+                Toast.makeText(this, R.string.service_request_payment_duplicate_by_table, Toast.LENGTH_SHORT).show();
+                btnRequestPayment.setVisibility(android.view.View.GONE);
+                return;
+            }
             long idYeuCau = databaseHelper.themYeuCauPhucVu(
                     sessionManager.layIdNguoiDungHienTai(),
                     YeuCauPhucVu.LoaiYeuCau.THANH_TOAN,
@@ -142,7 +148,7 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
                     donHang.laySoBan(),
                     donHang.layId(),
                     new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new java.util.Date()),
-                    YeuCauPhucVu.TrangThai.DANG_XU_LY
+                    YeuCauPhucVu.TrangThai.DANG_CHO
             );
             if (idYeuCau <= 0) {
                 Toast.makeText(this, R.string.db_operation_failed, Toast.LENGTH_SHORT).show();

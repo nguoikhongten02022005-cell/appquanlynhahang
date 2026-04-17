@@ -21,13 +21,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvDonHangCode"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -38,6 +37,7 @@
                 style="@style/Widget.Quanlynhahang.StatusChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/bg_button_green"
                 android:text="@string/order_status_pending"
                 android:textColor="@color/text_on_color"
@@ -66,14 +66,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_md"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/btnDonHangDetail"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/space_sm"
-                android:layout_weight="1"
                 android:background="@drawable/bg_button_green"
                 android:minHeight="0dp"
                 android:paddingStart="@dimen/space_md"
@@ -88,9 +86,9 @@
 
             <Button
                 android:id="@+id/btnDonHangCancel"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/space_sm"
+                android:layout_marginTop="@dimen/space_sm"
                 android:background="@drawable/bg_button_orange"
                 android:minHeight="0dp"
                 android:paddingStart="@dimen/space_md"

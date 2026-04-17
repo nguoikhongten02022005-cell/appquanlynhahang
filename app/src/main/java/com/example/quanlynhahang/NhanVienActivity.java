@@ -1,12 +1,17 @@
 package com.example.quanlynhahang;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,12 +31,24 @@ import java.util.List;
 
 public class NhanVienActivity extends AppCompatActivity {
 
+    public static final String EXTRA_TAB_MUC_TIEU = "extra_target_tab";
+    public static final String TAB_DON_HANG = "orders";
+    public static final String TAB_DAT_BAN = "reservations";
+    public static final String TAB_YEU_CAU = "service_requests";
+
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
 
+    private MaterialButton btnTabOverview;
     private MaterialButton btnTabDonHangs;
     private MaterialButton btnTabReservations;
     private MaterialButton btnTabServiceRequests;
+    private MaterialButton btnSidebarOverview;
+    private MaterialButton btnSidebarOrders;
+    private MaterialButton btnSidebarReservations;
+    private MaterialButton btnSidebarServiceRequests;
+    private View drawerLayoutContainer;
+    private View layoutOverview;
     private View layoutDonHangs;
     private View layoutReservations;
     private View layoutServiceRequests;
@@ -57,24 +74,56 @@ public class NhanVienActivity extends AppCompatActivity {
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
 
-        if (!sessionManager.daDangNhap() || !sessionManager.laNhanVien()) {
-            Toast.makeText(this, getString(R.string.role_guard_employee_denied), Toast.LENGTH_SHORT).show();
-            dieuHuongSaiVaiTro();
+        if (!xacThucPhienNoiBo(true)) {
             return;
         }
 
         khoiTaoView();
         thietLapRecyclerView();
-        thietLapTab();
+        thietLapDieuHuong();
+        thietLapHanhDong();
         thietLapDangXuat();
         lamMoiToanBoDuLieuNhanVien();
-        hienTabDonHang();
+        moTabMacDinh();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!xacThucPhienNoiBo(false)) {
+            return;
+        }
+        lamMoiToanBoDuLieuNhanVien();
+    }
+
+    private void moTabMacDinh() {
+        String tabMucTieu = getIntent().getStringExtra(EXTRA_TAB_MUC_TIEU);
+        if (TAB_DON_HANG.equals(tabMucTieu)) {
+            hienTabDonHang();
+            return;
+        }
+        if (TAB_DAT_BAN.equals(tabMucTieu)) {
+            hienTabDatBan();
+            return;
+        }
+        if (TAB_YEU_CAU.equals(tabMucTieu)) {
+            hienTabYeuCauPhucVu();
+            return;
+        }
+        hienTabTongQuan();
     }
 
     private void khoiTaoView() {
+        drawerLayoutContainer = findViewById(R.id.drawerEmployeeRoot);
+        btnTabOverview = findViewById(R.id.btnEmployeeTabOverview);
         btnTabDonHangs = findViewById(R.id.btnEmployeeTabDonHangs);
         btnTabReservations = findViewById(R.id.btnEmployeeTabReservations);
         btnTabServiceRequests = findViewById(R.id.btnEmployeeTabServiceRequests);
+        btnSidebarOverview = findViewById(R.id.btnEmployeeSidebarOverview);
+        btnSidebarOrders = findViewById(R.id.btnEmployeeSidebarOrders);
+        btnSidebarReservations = findViewById(R.id.btnEmployeeSidebarReservations);
+        btnSidebarServiceRequests = findViewById(R.id.btnEmployeeSidebarServiceRequests);
+        layoutOverview = findViewById(R.id.layoutEmployeeOverview);
         layoutDonHangs = findViewById(R.id.layoutEmployeeDonHangs);
         layoutReservations = findViewById(R.id.layoutEmployeeReservations);
         layoutServiceRequests = findViewById(R.id.layoutEmployeeServiceRequests);
@@ -137,21 +186,88 @@ public class NhanVienActivity extends AppCompatActivity {
         rvServiceRequests.setAdapter(serviceRequestAdapter);
     }
 
-    private void thietLapTab() {
+    private void thietLapDieuHuong() {
+        btnTabOverview.setOnClickListener(v -> hienTabTongQuan());
         btnTabDonHangs.setOnClickListener(v -> hienTabDonHang());
         btnTabReservations.setOnClickListener(v -> hienTabDatBan());
         btnTabServiceRequests.setOnClickListener(v -> hienTabYeuCauPhucVu());
+        btnSidebarOverview.setOnClickListener(v -> hienTabTongQuan());
+        btnSidebarOrders.setOnClickListener(v -> hienTabDonHang());
+        btnSidebarReservations.setOnClickListener(v -> hienTabDatBan());
+        btnSidebarServiceRequests.setOnClickListener(v -> hienTabYeuCauPhucVu());
+    }
+
+    private void thietLapHanhDong() {
+        ImageView btnOpenSidebar = findViewById(R.id.btnEmployeeOpenSidebar);
+        MaterialButton btnBackToCustomer = findViewById(R.id.btnBackToCustomerFromEmployee);
+        MaterialButton btnCustomerView = findViewById(R.id.btnEmployeeSidebarCustomerView);
+        if (btnOpenSidebar != null) {
+            btnOpenSidebar.setOnClickListener(v -> moSidebar());
+        }
+        btnBackToCustomer.setOnClickListener(v -> moGiaoDienKhachHang());
+        btnCustomerView.setOnClickListener(v -> {
+            dongSidebarNeuCan();
+            moGiaoDienKhachHang();
+        });
     }
 
     private void thietLapDangXuat() {
         MaterialButton btnLogout = findViewById(R.id.btnEmployeeLogout);
         btnLogout.setOnClickListener(v -> {
-            sessionManager.xoaPhienDangNhap();
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            dongSidebarNeuCan();
+            thucHienDangXuat();
         });
+    }
+
+    private void moSidebar() {
+        if (drawerLayoutContainer instanceof DrawerLayout) {
+            ((DrawerLayout) drawerLayoutContainer).openDrawer(GravityCompat.START);
+        }
+    }
+
+    private void dongSidebarNeuCan() {
+        if (drawerLayoutContainer instanceof DrawerLayout) {
+            DrawerLayout drawerLayout = (DrawerLayout) drawerLayoutContainer;
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            }
+        }
+    }
+
+    private void moGiaoDienKhachHang() {
+        Intent intent = new Intent(this, CustomerLauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void thucHienDangXuat() {
+        sessionManager.xoaPhienDangNhap();
+        sessionManager.xoaVaiTroNoiBo();
+        Intent intent = new Intent(this, StaffLauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private boolean xacThucPhienNoiBo(boolean hienToast) {
+        if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
+            if (hienToast) {
+                Toast.makeText(this, getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            }
+            dieuHuongSaiVaiTro();
+            return false;
+        }
+
+        boolean coQuyenNoiBo = sessionManager.daDangNhap() && (sessionManager.laNhanVien() || sessionManager.laAdmin());
+        if (!coQuyenNoiBo) {
+            if (hienToast) {
+                Toast.makeText(this, getString(R.string.role_guard_employee_denied), Toast.LENGTH_SHORT).show();
+            }
+            dieuHuongSaiVaiTro();
+            return false;
+        }
+        return true;
     }
 
     private void taiThongKeTongQuan() {
@@ -179,31 +295,105 @@ public class NhanVienActivity extends AppCompatActivity {
         tvServiceRequestsEmpty.setVisibility(danhSachYeuCau.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
+    private void hienTabTongQuan() {
+        layoutOverview.setVisibility(View.VISIBLE);
+        layoutDonHangs.setVisibility(View.GONE);
+        layoutReservations.setVisibility(View.GONE);
+        layoutServiceRequests.setVisibility(View.GONE);
+        capNhatTrangThaiTab(btnTabOverview, true);
+        capNhatTrangThaiTab(btnTabDonHangs, false);
+        capNhatTrangThaiTab(btnTabReservations, false);
+        capNhatTrangThaiTab(btnTabServiceRequests, false);
+        capNhatTrangThaiSidebar(btnSidebarOverview, true, R.drawable.ic_menu_24);
+        capNhatTrangThaiSidebar(btnSidebarOrders, false, R.drawable.ic_receipt_24);
+        capNhatTrangThaiSidebar(btnSidebarReservations, false, R.drawable.ic_calendar_24);
+        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_home_24);
+        dongSidebarNeuCan();
+    }
+
     private void hienTabDonHang() {
+        layoutOverview.setVisibility(View.GONE);
         layoutDonHangs.setVisibility(View.VISIBLE);
         layoutReservations.setVisibility(View.GONE);
         layoutServiceRequests.setVisibility(View.GONE);
-        btnTabDonHangs.setEnabled(false);
-        btnTabReservations.setEnabled(true);
-        btnTabServiceRequests.setEnabled(true);
+        capNhatTrangThaiTab(btnTabOverview, false);
+        capNhatTrangThaiTab(btnTabDonHangs, true);
+        capNhatTrangThaiTab(btnTabReservations, false);
+        capNhatTrangThaiTab(btnTabServiceRequests, false);
+        capNhatTrangThaiSidebar(btnSidebarOverview, false, R.drawable.ic_menu_24);
+        capNhatTrangThaiSidebar(btnSidebarOrders, true, R.drawable.ic_receipt_24);
+        capNhatTrangThaiSidebar(btnSidebarReservations, false, R.drawable.ic_calendar_24);
+        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_home_24);
+        dongSidebarNeuCan();
     }
 
     private void hienTabDatBan() {
+        layoutOverview.setVisibility(View.GONE);
         layoutDonHangs.setVisibility(View.GONE);
         layoutReservations.setVisibility(View.VISIBLE);
         layoutServiceRequests.setVisibility(View.GONE);
-        btnTabDonHangs.setEnabled(true);
-        btnTabReservations.setEnabled(false);
-        btnTabServiceRequests.setEnabled(true);
+        capNhatTrangThaiTab(btnTabOverview, false);
+        capNhatTrangThaiTab(btnTabDonHangs, false);
+        capNhatTrangThaiTab(btnTabReservations, true);
+        capNhatTrangThaiTab(btnTabServiceRequests, false);
+        capNhatTrangThaiSidebar(btnSidebarOverview, false, R.drawable.ic_menu_24);
+        capNhatTrangThaiSidebar(btnSidebarOrders, false, R.drawable.ic_receipt_24);
+        capNhatTrangThaiSidebar(btnSidebarReservations, true, R.drawable.ic_calendar_24);
+        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_home_24);
+        dongSidebarNeuCan();
     }
 
     private void hienTabYeuCauPhucVu() {
+        layoutOverview.setVisibility(View.GONE);
         layoutDonHangs.setVisibility(View.GONE);
         layoutReservations.setVisibility(View.GONE);
         layoutServiceRequests.setVisibility(View.VISIBLE);
-        btnTabDonHangs.setEnabled(true);
-        btnTabReservations.setEnabled(true);
-        btnTabServiceRequests.setEnabled(false);
+        capNhatTrangThaiTab(btnTabOverview, false);
+        capNhatTrangThaiTab(btnTabDonHangs, false);
+        capNhatTrangThaiTab(btnTabReservations, false);
+        capNhatTrangThaiTab(btnTabServiceRequests, true);
+        capNhatTrangThaiSidebar(btnSidebarOverview, false, R.drawable.ic_menu_24);
+        capNhatTrangThaiSidebar(btnSidebarOrders, false, R.drawable.ic_receipt_24);
+        capNhatTrangThaiSidebar(btnSidebarReservations, false, R.drawable.ic_calendar_24);
+        capNhatTrangThaiSidebar(btnSidebarServiceRequests, true, R.drawable.ic_home_24);
+        dongSidebarNeuCan();
+    }
+
+    private void capNhatTrangThaiTab(MaterialButton button, boolean duocChon) {
+        if (button == null) {
+            return;
+        }
+        button.setClickable(!duocChon);
+        button.setEnabled(true);
+        button.setBackgroundResource(duocChon ? R.drawable.bg_button_orange : android.R.color.transparent);
+        int mauChu = ContextCompat.getColor(this, duocChon ? R.color.white : R.color.on_surface);
+        button.setTextColor(mauChu);
+        button.setStrokeWidth(duocChon ? 0 : dp(1));
+        if (!duocChon) {
+            button.setStrokeColor(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.outline_variant)));
+            button.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.transparent)));
+        } else {
+            button.setStrokeColor(null);
+            button.setBackgroundTintList(null);
+        }
+    }
+
+    private void capNhatTrangThaiSidebar(MaterialButton button, boolean duocChon, int iconRes) {
+        if (button == null) {
+            return;
+        }
+        button.setIconResource(iconRes);
+        button.setCheckable(false);
+        button.setClickable(!duocChon);
+        button.setEnabled(true);
+        button.setBackgroundResource(duocChon ? R.drawable.bg_button_orange : android.R.color.transparent);
+        int textColor = ContextCompat.getColor(this, duocChon ? R.color.white : R.color.admin_sidebar_text);
+        button.setTextColor(textColor);
+        button.setIconTint(ColorStateList.valueOf(textColor));
+    }
+
+    private int dp(int value) {
+        return Math.round(getResources().getDisplayMetrics().density * value);
     }
 
     private void lamMoiToanBoDuLieuNhanVien() {

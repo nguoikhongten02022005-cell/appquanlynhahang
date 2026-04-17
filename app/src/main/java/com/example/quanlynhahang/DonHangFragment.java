@@ -205,8 +205,7 @@ public class DonHangFragment extends Fragment {
             btnCheckout.setVisibility(View.VISIBLE);
         }
         if (tvDonHangCaption != null) {
-            tvDonHangCaption.setVisibility(embedded ? View.GONE : View.VISIBLE);
-            tvDonHangCaption.setText(getString(R.string.order_empty_subtitle));
+            tvDonHangCaption.setVisibility(View.GONE);
         }
     }
 

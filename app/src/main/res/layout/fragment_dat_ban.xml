@@ -61,24 +61,6 @@
             android:nestedScrollingEnabled="false"
             tools:listitem="@layout/item_trang_thai_dat_ban" />
 
-        <TextView
-            android:id="@+id/tvReservationEmptyState"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
-            android:gravity="center"
-            android:text="@string/reservation_empty_message"
-            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            android:text="@string/reservation_demo_hint"
-            android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
-
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

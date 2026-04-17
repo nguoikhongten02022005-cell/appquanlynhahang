@@ -21,6 +21,7 @@ public class SessionManager {
     private static final String KEY_CURRENT_USER_ROLE = "current_user_role";
     private static final String KEY_LEGACY_AUTH_MIGRATED = "legacy_auth_migrated";
     private static final String KEY_CURRENT_TABLE = "current_table";
+    private static final String KEY_INTERNAL_ROLE = "internal_role";
 
     private static final String LEGACY_KEY_REGISTERED_EMAIL = "registered_email";
     private static final String LEGACY_KEY_REGISTERED_PASSWORD = "registered_password";
@@ -149,6 +150,26 @@ public class SessionManager {
                 .apply();
     }
 
+    public boolean damBaoNguoiDungConHoatDong(DatabaseHelper databaseHelper) {
+        if (!isLoggedIn()) {
+            return false;
+        }
+
+        NguoiDung currentUser = databaseHelper.getUserById(getCurrentUserId());
+        if (currentUser == null || !currentUser.dangHoatDong()) {
+            xoaPhienDangNhap();
+            xoaVaiTroNoiBo();
+            return false;
+        }
+
+        if (layVaiTroHienTai() != currentUser.layVaiTro()) {
+            sharedPreferences.edit()
+                    .putString(KEY_CURRENT_USER_ROLE, currentUser.layVaiTro().name())
+                    .apply();
+        }
+        return true;
+    }
+
     public boolean laKhachHang() {
         return layVaiTroHienTai() == VaiTroNguoiDung.KHACH_HANG;
     }
@@ -186,6 +207,12 @@ public class SessionManager {
         clearSession();
     }
 
+    public void xoaVaiTroNoiBo() {
+        sharedPreferences.edit()
+                .remove(KEY_INTERNAL_ROLE)
+                .apply();
+    }
+
     public void luuBanHienTai(@Nullable String soBan) {
         sharedPreferences.edit()
                 .putString(KEY_CURRENT_TABLE, soBan == null ? "" : soBan.trim())
@@ -202,5 +229,29 @@ public class SessionManager {
 
     public void xoaBanHienTai() {
         sharedPreferences.edit().remove(KEY_CURRENT_TABLE).apply();
+    }
+
+    public void luuVaiTroNoiBo(@Nullable VaiTroNguoiDung vaiTro) {
+        if (vaiTro == null || (vaiTro != VaiTroNguoiDung.NHAN_VIEN && vaiTro != VaiTroNguoiDung.ADMIN)) {
+            xoaVaiTroNoiBo();
+            return;
+        }
+
+        sharedPreferences.edit()
+                .putString(KEY_INTERNAL_ROLE, vaiTro.name())
+                .apply();
+    }
+
+    @Nullable
+    public VaiTroNguoiDung layVaiTroNoiBo() {
+        String roleValue = sharedPreferences.getString(KEY_INTERNAL_ROLE, null);
+        if (TextUtils.isEmpty(roleValue)) {
+            return null;
+        }
+        VaiTroNguoiDung vaiTro = VaiTroNguoiDung.tuChuoi(roleValue);
+        if (vaiTro == VaiTroNguoiDung.NHAN_VIEN || vaiTro == VaiTroNguoiDung.ADMIN) {
+            return vaiTro;
+        }
+        return null;
     }
 }

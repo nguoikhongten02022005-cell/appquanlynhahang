@@ -57,20 +57,9 @@
             app:layout_constraintTop_toTopOf="@id/layoutAvatarAction">
 
             <TextView
-                android:id="@+id/tvHeaderCaption"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="@string/home_header_caption"
-                android:textColor="@color/on_surface_variant"
-                android:textSize="12sp" />
-
-            <TextView
                 android:id="@+id/tvGreeting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_xs"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/home_greeting"

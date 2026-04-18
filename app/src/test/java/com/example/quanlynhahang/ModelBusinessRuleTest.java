@@ -57,8 +57,14 @@ public class ModelBusinessRuleTest {
         DatBan completedReservation = new DatBan(3, "#GB3", "17/04/2026 19:00", "Bàn 05", 4, "", DatBan.TrangThai.COMPLETED, 11);
 
         assertTrue(pendingReservation.coTheHuy());
+        assertTrue(pendingReservation.coTheXacNhan());
+        assertFalse(pendingReservation.coTheHoanTat());
         assertTrue(pendingReservation.laDangHieuLuc());
+
+        assertTrue(activeReservation.coTheHoanTat());
+        assertFalse(activeReservation.coTheHuy());
         assertTrue(activeReservation.laDangHieuLuc());
+
         assertTrue(completedReservation.daHoanTatGuiMon());
         assertTrue(completedReservation.daKetThuc());
         assertFalse(completedReservation.laDangHieuLuc());

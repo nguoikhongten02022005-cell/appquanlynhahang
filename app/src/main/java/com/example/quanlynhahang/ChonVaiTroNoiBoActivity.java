@@ -39,7 +39,7 @@ public class ChonVaiTroNoiBoActivity extends AppCompatActivity {
         sessionManager.luuVaiTroNoiBo(vaiTro);
 
         if (sessionManager.daDangNhap() && sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
-            VaiTroNguoiDung vaiTroDangNhap = sessionManager.layVaiTroHienTai();
+            VaiTroNguoiDung vaiTroDangNhap = sessionManager.layVaiTroSessionHopLe();
             if (vaiTroDangNhap == VaiTroNguoiDung.ADMIN
                     || (vaiTroDangNhap == VaiTroNguoiDung.NHAN_VIEN && vaiTro == VaiTroNguoiDung.NHAN_VIEN)) {
                 Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, vaiTro);

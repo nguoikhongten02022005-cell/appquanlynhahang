@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.YeuCauPhucVuAdapter;
+import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
@@ -274,7 +275,9 @@ public class YeuCauFragment extends Fragment {
         return DichVuKhachHangHelper.timBanHienTai(
                 sessionManager.layBanHienTai(),
                 donTaiQuanDangHoatDong,
-                null
+                () -> CartManager.getInstance().layNguCanhDonHang().laAnTaiQuan()
+                        ? CartManager.getInstance().layNguCanhDonHang().laySoBan()
+                        : null
         );
     }
 

@@ -23,7 +23,7 @@ public class StaffLauncherActivity extends AppCompatActivity {
         sessionManager.damBaoVaiTroSession(databaseHelper);
 
         if (sessionManager.daDangNhap() && sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
-            VaiTroNguoiDung vaiTroDangNhap = sessionManager.layVaiTroHienTai();
+            VaiTroNguoiDung vaiTroDangNhap = sessionManager.layVaiTroSessionHopLe();
             if (vaiTroDangNhap == VaiTroNguoiDung.ADMIN || vaiTroDangNhap == VaiTroNguoiDung.NHAN_VIEN) {
                 Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, vaiTroDangNhap);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -32,8 +32,7 @@ public class StaffLauncherActivity extends AppCompatActivity {
                 return;
             }
 
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, true);
+            Intent intent = DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, true);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();

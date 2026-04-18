@@ -93,10 +93,10 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
             tvStatus.setText(layTextTrangThai(datBan.layTrangThai()));
             ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, layMauTrangThai(datBan.layTrangThai()))));
 
-            ganHanhDong(btnConfirm, datBan.layTrangThai() == DatBan.TrangThai.PENDING, v -> hanhDongListener.khiXacNhan(datBan));
-            ganHanhDong(btnComplete, datBan.layTrangThai() == DatBan.TrangThai.ACTIVE && datBan.layLinkedOrderId() > 0, v -> hanhDongListener.khiHoanTat(datBan));
+            ganHanhDong(btnConfirm, datBan.coTheXacNhan(), v -> hanhDongListener.khiXacNhan(datBan));
+            ganHanhDong(btnComplete, datBan.coTheHoanTat() && datBan.layLinkedOrderId() > 0, v -> hanhDongListener.khiHoanTat(datBan));
             ganHanhDong(btnCancel,
-                    datBan.layTrangThai() == DatBan.TrangThai.PENDING || datBan.layTrangThai() == DatBan.TrangThai.ACTIVE,
+                    datBan.coTheHuy() || datBan.coTheHoanTat(),
                     v -> hanhDongListener.khiHuy(datBan));
         }
 

@@ -65,4 +65,14 @@ public class CartManagerTest {
         assertEquals("", cartManager.layNguCanhDonHang().laySoBan());
         assertEquals("", cartManager.layNguCanhDonHang().layGhiChu());
     }
+
+    @Test
+    public void dineInContext_keepsTrimmedTableNumber() {
+        cartManager.capNhatNguCanhDonHang(DonHang.HinhThucDon.AN_TAI_QUAN, "  Bàn 08  ", "  Gần cửa sổ ");
+
+        CartManager.NguCanhDonHang context = cartManager.layNguCanhDonHang();
+        assertEquals(DonHang.HinhThucDon.AN_TAI_QUAN, context.layHinhThucDon());
+        assertEquals("Bàn 08", context.laySoBan());
+        assertEquals("Gần cửa sổ", context.layGhiChu());
+    }
 }

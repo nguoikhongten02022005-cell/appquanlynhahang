@@ -332,7 +332,7 @@ public class QuanTriActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!sessionManager.daDangNhap() || !sessionManager.laAdmin()) {
+        if (!sessionManager.daDangNhap() || sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.ADMIN) {
             if (hienToast) {
                 Toast.makeText(this, getString(R.string.role_guard_admin_denied), Toast.LENGTH_SHORT).show();
             }
@@ -749,12 +749,7 @@ public class QuanTriActivity extends AppCompatActivity {
     }
 
     private void dieuHuongSaiVaiTro() {
-        Intent intent;
-        if (sessionManager.daDangNhap()) {
-            intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai());
-        } else {
-            intent = new Intent(this, MainActivity.class);
-        }
+        Intent intent = DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, true);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

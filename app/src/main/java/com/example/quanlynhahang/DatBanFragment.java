@@ -440,7 +440,7 @@ public class DatBanFragment extends Fragment {
             return false;
         }
         Calendar minimumTime = Calendar.getInstance();
-        minimumTime.add(Calendar.MINUTE, 15);
+        minimumTime.add(Calendar.MINUTE, 30);
         minimumTime.set(Calendar.SECOND, 0);
         minimumTime.set(Calendar.MILLISECOND, 0);
         return !selectedDateTime.before(minimumTime);
@@ -449,7 +449,7 @@ public class DatBanFragment extends Fragment {
     private boolean normalizeSelectedDateTime(boolean giuGioDaChon) {
         Calendar now = Calendar.getInstance();
         Calendar mucToiThieu = (Calendar) now.clone();
-        mucToiThieu.add(Calendar.MINUTE, 15);
+        mucToiThieu.add(Calendar.MINUTE, 30);
         mucToiThieu.set(Calendar.SECOND, 0);
         mucToiThieu.set(Calendar.MILLISECOND, 0);
 

@@ -312,11 +312,12 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         if (userId <= 0 || TextUtils.isEmpty(nguCanhDonHang.laySoBan())) {
             return 0;
         }
-        com.example.quanlynhahang.model.DatBan datBanHieuLuc = databaseHelper.layDatBanHieuLucTheoNguoiDung(userId);
+        com.example.quanlynhahang.model.DatBan datBanHieuLuc = databaseHelper.timDatBanHieuLucTheoNguoiDung(
+                userId,
+                nguCanhDonHang.laySoBan(),
+                thoiGianDat
+        );
         if (datBanHieuLuc == null || datBanHieuLuc.layLinkedOrderId() > 0) {
-            return 0;
-        }
-        if (!nguCanhDonHang.laySoBan().trim().equalsIgnoreCase(datBanHieuLuc.laySoBan())) {
             return 0;
         }
         return datBanHieuLuc.layId();

@@ -25,6 +25,7 @@ import com.example.quanlynhahang.model.ThongKeTongQuanNhanVien;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.DatBan;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
+import com.example.quanlynhahang.model.VaiTroNguoiDung;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
@@ -259,7 +260,9 @@ public class NhanVienActivity extends AppCompatActivity {
             return false;
         }
 
-        boolean coQuyenNoiBo = sessionManager.daDangNhap() && (sessionManager.laNhanVien() || sessionManager.laAdmin());
+        VaiTroNguoiDung vaiTroSession = sessionManager.layVaiTroSessionHopLe();
+        boolean coQuyenNoiBo = sessionManager.daDangNhap()
+                && (vaiTroSession == VaiTroNguoiDung.NHAN_VIEN || vaiTroSession == VaiTroNguoiDung.ADMIN);
         if (!coQuyenNoiBo) {
             if (hienToast) {
                 Toast.makeText(this, getString(R.string.role_guard_employee_denied), Toast.LENGTH_SHORT).show();
@@ -436,12 +439,7 @@ public class NhanVienActivity extends AppCompatActivity {
     }
 
     private void dieuHuongSaiVaiTro() {
-        Intent intent;
-        if (sessionManager.daDangNhap()) {
-            intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai());
-        } else {
-            intent = new Intent(this, MainActivity.class);
-        }
+        Intent intent = DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, true);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

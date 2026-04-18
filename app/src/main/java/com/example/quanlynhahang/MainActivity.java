@@ -19,6 +19,7 @@ import com.example.quanlynhahang.data.CartManager;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
+import com.example.quanlynhahang.model.VaiTroNguoiDung;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -71,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
         sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
         choPhepXemGiaoDienKhach = getIntent().getBooleanExtra(EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false);
-        if (sessionManager.daDangNhap() && !sessionManager.laKhachHang() && !choPhepXemGiaoDienKhach) {
-            startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai())
+        if (sessionManager.daDangNhap() && sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.KHACH_HANG && !choPhepXemGiaoDienKhach) {
+            startActivity(DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, false)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
             return;
@@ -318,8 +319,8 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!sessionManager.laKhachHang() && !choPhepXemGiaoDienKhach) {
-            startActivity(DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, sessionManager.layVaiTroHienTai())
+        if (sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.KHACH_HANG && !choPhepXemGiaoDienKhach) {
+            startActivity(DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, false)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
             return false;

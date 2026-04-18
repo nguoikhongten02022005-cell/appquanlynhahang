@@ -82,11 +82,11 @@ public class DatBan {
     }
 
     public boolean coTheXacNhan() {
-        return false;
+        return trangThai == TrangThai.PENDING;
     }
 
     public boolean coTheHoanTat() {
-        return false;
+        return trangThai == TrangThai.ACTIVE;
     }
 
     public boolean laDangChoDenGio() {

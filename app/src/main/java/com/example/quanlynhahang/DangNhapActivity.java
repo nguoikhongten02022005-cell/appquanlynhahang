@@ -70,7 +70,7 @@ public class DangNhapActivity extends AppCompatActivity {
         }
 
         NguoiDung nguoiDungDaXacThuc = databaseHelper.kiemTraDangNhap(emailHoacSoDienThoai, matKhau);
-        if (nguoiDungDaXacThuc == null) {
+        if (nguoiDungDaXacThuc == null || !nguoiDungDaXacThuc.dangHoatDong()) {
             Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
             return;
         }

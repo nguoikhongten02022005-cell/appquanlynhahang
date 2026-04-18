@@ -205,7 +205,9 @@ public class TrungTamHoatDongFragment extends Fragment {
         String banHienTai = DichVuKhachHangHelper.timBanHienTai(
                 sessionManager.layBanHienTai(),
                 donTaiQuanDangHoatDong,
-                () -> CartManager.getInstance().layNguCanhDonHang().laySoBan()
+                () -> CartManager.getInstance().layNguCanhDonHang().laAnTaiQuan()
+                        ? CartManager.getInstance().layNguCanhDonHang().laySoBan()
+                        : null
         );
         boolean coPhienHoatDong = banHienTai != null || donDangHoatDong != null;
 

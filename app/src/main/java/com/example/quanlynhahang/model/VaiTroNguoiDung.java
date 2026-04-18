@@ -1,6 +1,6 @@
 package com.example.quanlynhahang.model;
 
-import android.text.TextUtils;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
@@ -9,17 +9,28 @@ public enum VaiTroNguoiDung {
     NHAN_VIEN,
     ADMIN;
 
-    public static VaiTroNguoiDung tuChuoi(String giaTri) {
-        if (TextUtils.isEmpty(giaTri)) {
-            return KHACH_HANG;
+    @Nullable
+    public static VaiTroNguoiDung tuChuoiNghiemNhat(@Nullable String giaTri) {
+        if (giaTri == null) {
+            return null;
         }
 
-        String giaTriChuanHoa = giaTri.trim().toUpperCase(Locale.ROOT);
+        String giaTriChuanHoa = giaTri.trim();
+        if (giaTriChuanHoa.isEmpty()) {
+            return null;
+        }
+
+        giaTriChuanHoa = giaTriChuanHoa.toUpperCase(Locale.ROOT);
         for (VaiTroNguoiDung vaiTro : values()) {
             if (vaiTro.name().equals(giaTriChuanHoa)) {
                 return vaiTro;
             }
         }
-        return KHACH_HANG;
+        return null;
+    }
+
+    public static VaiTroNguoiDung tuChuoi(String giaTri) {
+        VaiTroNguoiDung vaiTro = tuChuoiNghiemNhat(giaTri);
+        return vaiTro != null ? vaiTro : KHACH_HANG;
     }
 }

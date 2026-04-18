@@ -124,19 +124,17 @@ public final class DichVuKhachHangHelper {
     public static String timBanHienTai(@Nullable String banTuSession,
                                        @Nullable DonHang donTaiQuanDangHoatDong,
                                        @Nullable CartContextProvider cartContextProvider) {
-        if (donTaiQuanDangHoatDong != null) {
-            if (donTaiQuanDangHoatDong.coBanAn()) {
-                return donTaiQuanDangHoatDong.laySoBan();
-            }
-            if (banTuSession != null && !banTuSession.trim().isEmpty()) {
-                return banTuSession.trim();
-            }
+        if (donTaiQuanDangHoatDong != null && donTaiQuanDangHoatDong.coBanAn()) {
+            return donTaiQuanDangHoatDong.laySoBan();
         }
         if (cartContextProvider != null) {
             String banTrongGio = cartContextProvider.laySoBanTrongNguCanh();
             if (banTrongGio != null && !banTrongGio.trim().isEmpty()) {
                 return banTrongGio.trim();
             }
+        }
+        if (banTuSession != null && !banTuSession.trim().isEmpty()) {
+            return banTuSession.trim();
         }
         return null;
     }

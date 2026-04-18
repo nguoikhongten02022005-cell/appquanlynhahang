@@ -327,6 +327,8 @@ public class GioHangActivity extends AppCompatActivity {
         cartManager.capNhatNguCanhDonHang(hinhThucDon, soBan, ghiChu);
         if (hinhThucDon == DonHang.HinhThucDon.AN_TAI_QUAN) {
             tableSessionManager.luuBanHienTai(soBan);
+        } else {
+            tableSessionManager.xoaBanHienTai();
         }
         return true;
     }
@@ -421,7 +423,9 @@ public class GioHangActivity extends AppCompatActivity {
         String banHienTai = DichVuKhachHangHelper.timBanHienTai(
                 tableSessionManager.layBanHienTai(),
                 DichVuKhachHangHelper.timDonHangTaiQuanDangHoatDong(databaseHelper.layDonHangTheoNguoiDung(sessionManager.layIdNguoiDungHienTai())),
-                () -> cartManager.layNguCanhDonHang().laySoBan()
+                () -> cartManager.layNguCanhDonHang().laAnTaiQuan()
+                        ? cartManager.layNguCanhDonHang().laySoBan()
+                        : null
         );
 
         for (int index = 0; index < SO_BAN_TOI_DA; index++) {

@@ -118,15 +118,26 @@ public class SessionManager {
     }
 
     public VaiTroNguoiDung getVaiTroHienTai() {
-        String roleValue = sharedPreferences.getString(KEY_CURRENT_USER_ROLE, null);
-        if (!TextUtils.isEmpty(roleValue)) {
-            return VaiTroNguoiDung.tuChuoi(roleValue);
-        }
-        return VaiTroNguoiDung.KHACH_HANG;
+        VaiTroNguoiDung vaiTroSession = getVaiTroSessionHopLe();
+        return vaiTroSession != null ? vaiTroSession : VaiTroNguoiDung.KHACH_HANG;
     }
 
     public VaiTroNguoiDung layVaiTroHienTai() {
         return getVaiTroHienTai();
+    }
+
+    @Nullable
+    public VaiTroNguoiDung getVaiTroSessionHopLe() {
+        return VaiTroNguoiDung.tuChuoiNghiemNhat(sharedPreferences.getString(KEY_CURRENT_USER_ROLE, null));
+    }
+
+    @Nullable
+    public VaiTroNguoiDung layVaiTroSessionHopLe() {
+        return getVaiTroSessionHopLe();
+    }
+
+    public boolean coVaiTroSessionHopLe() {
+        return getVaiTroSessionHopLe() != null;
     }
 
     public void damBaoVaiTroSession(DatabaseHelper databaseHelper) {
@@ -141,11 +152,11 @@ public class SessionManager {
             return;
         }
 
-        String vaiTroSession = sharedPreferences.getString(KEY_CURRENT_USER_ROLE, null);
-        String vaiTroDb = currentUser.layVaiTro().name();
-        if (!TextUtils.equals(vaiTroSession, vaiTroDb)) {
+        VaiTroNguoiDung vaiTroSession = getVaiTroSessionHopLe();
+        VaiTroNguoiDung vaiTroDb = currentUser.layVaiTro();
+        if (vaiTroSession != vaiTroDb) {
             sharedPreferences.edit()
-                    .putString(KEY_CURRENT_USER_ROLE, vaiTroDb)
+                    .putString(KEY_CURRENT_USER_ROLE, vaiTroDb.name())
                     .apply();
         }
     }
@@ -162,7 +173,7 @@ public class SessionManager {
             return false;
         }
 
-        if (layVaiTroHienTai() != currentUser.layVaiTro()) {
+        if (layVaiTroSessionHopLe() != currentUser.layVaiTro()) {
             sharedPreferences.edit()
                     .putString(KEY_CURRENT_USER_ROLE, currentUser.layVaiTro().name())
                     .apply();
@@ -171,15 +182,15 @@ public class SessionManager {
     }
 
     public boolean laKhachHang() {
-        return layVaiTroHienTai() == VaiTroNguoiDung.KHACH_HANG;
+        return layVaiTroSessionHopLe() == VaiTroNguoiDung.KHACH_HANG;
     }
 
     public boolean laNhanVien() {
-        return layVaiTroHienTai() == VaiTroNguoiDung.NHAN_VIEN;
+        return layVaiTroSessionHopLe() == VaiTroNguoiDung.NHAN_VIEN;
     }
 
     public boolean laAdmin() {
-        return layVaiTroHienTai() == VaiTroNguoiDung.ADMIN;
+        return layVaiTroSessionHopLe() == VaiTroNguoiDung.ADMIN;
     }
 
     public void saveLoginSession(long userId, VaiTroNguoiDung vaiTro) {

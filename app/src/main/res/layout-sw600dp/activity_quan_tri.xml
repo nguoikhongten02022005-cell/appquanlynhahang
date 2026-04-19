@@ -807,7 +807,7 @@
                     android:textStyle="bold" />
 
                 <Spinner
-                    android:id="@+id/spinnerAdminVaiTroNguoiDungFilter"
+                    android:id="@+id/spinnerAdminLocVaiTro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp" />

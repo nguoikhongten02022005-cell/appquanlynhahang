@@ -579,7 +579,7 @@
             android:textColor="@color/admin_sidebar_text"
             android:textSize="15sp"
             app:backgroundTint="@null"
-            app:icon="@drawable/ic_home_24"
+            app:icon="@drawable/ic_person_24"
             app:iconGravity="textStart"
             app:iconPadding="12dp"
             app:iconTint="@color/admin_sidebar_text" />

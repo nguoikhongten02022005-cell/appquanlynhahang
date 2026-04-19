@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.YeuCauPhucVuAdapter;
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
@@ -34,7 +34,7 @@ public class YeuCauFragment extends Fragment {
 
     public static final String ARG_EMBEDDED = "embedded";
 
-    private final List<YeuCauPhucVu> serviceRequests = new ArrayList<>();
+    private final List<YeuCauPhucVu> danhSachYeuCauPhucVu = new ArrayList<>();
 
     private TextView tvServiceRequestEmptyState;
     private TextView tvServiceRequestCaption;
@@ -49,8 +49,8 @@ public class YeuCauFragment extends Fragment {
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
 
-    private YeuCauPhucVuAdapter serviceRequestAdapter;
-    private boolean embedded;
+    private YeuCauPhucVuAdapter boDieuHopYeuCauPhucVu;
+    private boolean cheDoNhung;
 
     @Nullable
     @Override
@@ -66,7 +66,7 @@ public class YeuCauFragment extends Fragment {
 
         databaseHelper = new DatabaseHelper(requireContext());
         sessionManager = new SessionManager(requireContext());
-        embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
+        cheDoNhung = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
         khoiTaoView(view);
         apDungCheDoNhung(view);
@@ -80,14 +80,14 @@ public class YeuCauFragment extends Fragment {
     public void onResume() {
         super.onResume();
         taiDanhSachYeuCau();
-        if (serviceRequestAdapter != null) {
-            serviceRequestAdapter.capNhatDanhSach(serviceRequests);
+        if (boDieuHopYeuCauPhucVu != null) {
+            boDieuHopYeuCauPhucVu.capNhatDanhSach(danhSachYeuCauPhucVu);
         }
         capNhatTrangThaiRong();
     }
 
     private void apDungCheDoNhung(@NonNull View view) {
-        if (!embedded) {
+        if (!cheDoNhung) {
             return;
         }
 
@@ -129,8 +129,8 @@ public class YeuCauFragment extends Fragment {
     private void thietLapDanhSachYeuCau(View view) {
         rvServiceRequests.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        serviceRequestAdapter = new YeuCauPhucVuAdapter(serviceRequests, this::xacNhanHuyYeuCau);
-        rvServiceRequests.setAdapter(serviceRequestAdapter);
+        boDieuHopYeuCauPhucVu = new YeuCauPhucVuAdapter(danhSachYeuCauPhucVu, this::xacNhanHuyYeuCau);
+        rvServiceRequests.setAdapter(boDieuHopYeuCauPhucVu);
     }
 
     private void thietLapHanhDong(View view) {
@@ -184,12 +184,24 @@ public class YeuCauFragment extends Fragment {
         }
 
         String thoiGianGui = layChuoiThoiGianHienTai();
+        long idDonHangLienQuan = 0;
+        if (loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THANH_TOAN) {
+            DonHang donTaiQuanDangHoatDong = DichVuKhachHangHelper.timDonHangTaiQuanDangHoatDong(
+                    databaseHelper.layDonHangTheoNguoiDung(idNguoiDungHienTai)
+            );
+            if (donTaiQuanDangHoatDong == null) {
+                datTrangThaiDangGui(false, null);
+                hienThiPhanHoiNgan(R.string.service_request_payment_requires_order);
+                return;
+            }
+            idDonHangLienQuan = donTaiQuanDangHoatDong.layId();
+        }
         long idYeuCau = databaseHelper.themYeuCauPhucVu(
                 idNguoiDungHienTai,
                 loaiYeuCau,
                 noiDungYeuCau,
                 soBanHienTai,
-                0,
+                idDonHangLienQuan,
                 thoiGianGui,
                 YeuCauPhucVu.TrangThai.DANG_CHO
         );
@@ -200,8 +212,8 @@ public class YeuCauFragment extends Fragment {
         }
 
         taiDanhSachYeuCau();
-        if (serviceRequestAdapter != null) {
-            serviceRequestAdapter.capNhatDanhSach(serviceRequests);
+        if (boDieuHopYeuCauPhucVu != null) {
+            boDieuHopYeuCauPhucVu.capNhatDanhSach(danhSachYeuCauPhucVu);
         }
         capNhatTrangThaiRong();
 
@@ -210,14 +222,14 @@ public class YeuCauFragment extends Fragment {
     }
 
     private void taiDanhSachYeuCau() {
-        serviceRequests.clear();
+        danhSachYeuCauPhucVu.clear();
 
         long idNguoiDung = sessionManager.layIdNguoiDungHienTai();
         if (idNguoiDung <= 0 || !sessionManager.daDangNhap()) {
             return;
         }
 
-        serviceRequests.addAll(databaseHelper.layYeuCauTheoNguoiDung(idNguoiDung));
+        danhSachYeuCauPhucVu.addAll(databaseHelper.layYeuCauTheoNguoiDung(idNguoiDung));
     }
 
     private void capNhatTrangThaiRong() {
@@ -240,7 +252,7 @@ public class YeuCauFragment extends Fragment {
             }
         }
 
-        YeuCauPhucVu yeuCauDangCho = DichVuKhachHangHelper.timYeuCauHoTroDangXuLy(serviceRequests);
+        YeuCauPhucVu yeuCauDangCho = DichVuKhachHangHelper.timYeuCauHoTroDangXuLy(danhSachYeuCauPhucVu);
         if (cardPendingServiceRequest != null) {
             cardPendingServiceRequest.setVisibility(coNgucCanhHoTro && yeuCauDangCho != null ? View.VISIBLE : View.GONE);
         }
@@ -251,8 +263,8 @@ public class YeuCauFragment extends Fragment {
             tvPendingServiceRequestSubtitle.setText(yeuCauDangCho.layNoiDung());
         }
 
-        tvServiceRequestEmptyState.setVisibility(coNgucCanhHoTro && serviceRequests.isEmpty() ? View.VISIBLE : View.GONE);
-        rvServiceRequests.setVisibility(coNgucCanhHoTro && !serviceRequests.isEmpty() ? View.VISIBLE : View.GONE);
+        tvServiceRequestEmptyState.setVisibility(coNgucCanhHoTro && danhSachYeuCauPhucVu.isEmpty() ? View.VISIBLE : View.GONE);
+        rvServiceRequests.setVisibility(coNgucCanhHoTro && !danhSachYeuCauPhucVu.isEmpty() ? View.VISIBLE : View.GONE);
 
         btnRequestCallStaff.setEnabled(coNgucCanhHoTro);
         btnRequestMoreWater.setEnabled(coNgucCanhHoTro);
@@ -275,8 +287,8 @@ public class YeuCauFragment extends Fragment {
         return DichVuKhachHangHelper.timBanHienTai(
                 sessionManager.layBanHienTai(),
                 donTaiQuanDangHoatDong,
-                () -> CartManager.getInstance().layNguCanhDonHang().laAnTaiQuan()
-                        ? CartManager.getInstance().layNguCanhDonHang().laySoBan()
+                () -> QuanLyGioHang.layInstance().layNguCanhDonHang().laAnTaiQuan()
+                        ? QuanLyGioHang.layInstance().layNguCanhDonHang().laySoBan()
                         : null
         );
     }
@@ -315,8 +327,8 @@ public class YeuCauFragment extends Fragment {
         }
         yeuCauPhucVu.danhDauDaHuy();
         taiDanhSachYeuCau();
-        if (serviceRequestAdapter != null) {
-            serviceRequestAdapter.capNhatDanhSach(serviceRequests);
+        if (boDieuHopYeuCauPhucVu != null) {
+            boDieuHopYeuCauPhucVu.capNhatDanhSach(danhSachYeuCauPhucVu);
         }
         capNhatTrangThaiRong();
         hienThiPhanHoiNgan(R.string.service_request_cancel_success);

@@ -1,0 +1,144 @@
+- generic [ref=e2]:
+  - link "Bỏ qua điều hướng" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "NH Nhà Hàng Nguyên Vị" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: NH
+        - generic [ref=e8]: Nhà Hàng Nguyên Vị
+      - navigation "Điều hướng chính" [ref=e9]:
+        - link "Trang chủ" [ref=e10] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e11]: Trang chủ
+        - link "Thực đơn" [ref=e12] [cursor=pointer]:
+          - /url: /thuc-don
+          - generic [ref=e13]: Thực đơn
+        - link "Đặt bàn" [ref=e14] [cursor=pointer]:
+          - /url: /dat-ban
+          - generic [ref=e15]: Đặt bàn
+        - link "Về chúng tôi" [ref=e16] [cursor=pointer]:
+          - /url: /gioi-thieu
+          - generic [ref=e17]: Về chúng tôi
+        - link "Đánh giá" [ref=e18] [cursor=pointer]:
+          - /url: /danh-gia
+          - generic [ref=e19]: Đánh giá
+      - generic [ref=e20]:
+        - link "Đặt bàn" [ref=e21] [cursor=pointer]:
+          - /url: /dat-ban
+        - link "Đăng nhập" [ref=e23] [cursor=pointer]:
+          - /url: /dang-nhap
+  - main [ref=e24]:
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - paragraph [ref=e28]: Hoàn tất đơn gọi món
+        - heading "Thanh toán đơn hàng" [level=1] [ref=e29]
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - heading "Thông tin liên hệ" [level=2] [ref=e32]
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - generic [ref=e35]: Họ tên
+              - textbox "Họ tên" [ref=e36]:
+                - /placeholder: Nhập họ tên người đặt hoặc người nhận món
+            - generic [ref=e37]:
+              - generic [ref=e38]: Số điện thoại
+              - textbox "Số điện thoại" [ref=e39]:
+                - /placeholder: 0901 234 567
+            - generic [ref=e40]:
+              - generic [ref=e41]: Địa chỉ
+              - textbox "Địa chỉ" [ref=e42]:
+                - /placeholder: Nhập địa chỉ nếu cần giao hoặc xác nhận vị trí phục vụ
+            - generic [ref=e43]:
+              - generic [ref=e44]: Ghi chú
+              - textbox "Ghi chú" [ref=e45]:
+                - /placeholder: Dị ứng thực phẩm, yêu cầu đặc biệt về món ăn, hoặc ghi chú khác cho bếp...
+              - generic [ref=e46]: 0/300
+          - generic [ref=e47]:
+            - heading "Phương thức thanh toán" [level=3] [ref=e48]
+            - generic [ref=e49]:
+              - generic [ref=e50]:
+                - radio "Tiền mặtThanh toán trực tiếp tại bàn hoặc khi nhận món." [checked] [ref=e51]
+                - generic [ref=e52]:
+                  - strong [ref=e53]: Tiền mặt
+                  - text: Thanh toán trực tiếp tại bàn hoặc khi nhận món.
+              - generic [ref=e54]:
+                - radio "Chuyển khoảnChuyển khoản cho đơn mang đi hoặc dùng tại bàn." [ref=e55]
+                - generic [ref=e56]:
+                  - strong [ref=e57]: Chuyển khoản
+                  - text: Chuyển khoản cho đơn mang đi hoặc dùng tại bàn.
+              - generic [ref=e58]:
+                - radio "Thanh toán bằng thẻDùng thẻ tại quầy hoặc thiết bị hỗ trợ." [ref=e59]
+                - generic [ref=e60]:
+                  - strong [ref=e61]: Thanh toán bằng thẻ
+                  - text: Dùng thẻ tại quầy hoặc thiết bị hỗ trợ.
+        - complementary [ref=e62]:
+          - generic [ref=e63]:
+            - heading "Tóm tắt đơn hàng" [level=2] [ref=e64]
+            - generic [ref=e65]: Chưa có món nào trong giỏ hàng.
+            - generic [ref=e66]:
+              - generic [ref=e67]:
+                - generic [ref=e68]:
+                  - strong [ref=e69]: Mã giảm giá khả dụng
+                  - generic [ref=e70]: 3 mã
+                - generic [ref=e71]:
+                  - generic [ref=e72]:
+                    - generic [ref=e73]:
+                      - strong [ref=e74]: WELCOME10
+                      - paragraph [ref=e75]: Giảm 10% cho khách hàng mới, tối đa 50.000đ
+                    - generic [ref=e76]: 10%
+                  - generic [ref=e77]:
+                    - generic [ref=e78]:
+                      - strong [ref=e79]: SUMMER20
+                      - paragraph [ref=e80]: Giảm 20% cho đơn từ 200.000đ, tối đa 100.000đ
+                    - generic [ref=e81]: 20%
+                  - generic [ref=e82]:
+                    - generic [ref=e83]:
+                      - strong [ref=e84]: GIAM50K
+                      - paragraph [ref=e85]: Giảm thẳng 50.000đ cho đơn từ 300.000đ
+                    - generic [ref=e86]: 50.000đ
+              - generic [ref=e87]:
+                - generic [ref=e88]: Tạm tính món
+                - generic [ref=e89]: 0đ
+              - generic [ref=e90]:
+                - generic [ref=e91]: Phí dịch vụ (5%)
+                - generic [ref=e92]: 0đ
+              - generic [ref=e93]:
+                - generic [ref=e94]: Giảm giá
+                - generic [ref=e95]: "-0đ"
+              - generic [ref=e96]:
+                - generic [ref=e97]: Tổng cộng
+                - strong [ref=e98]: 0đ
+            - paragraph [ref=e99]: Tổng tiền cuối cùng sẽ được xác nhận khi đơn hàng được tạo từ dữ liệu thực đơn hiện tại.
+            - button "Đặt hàng ngay" [disabled] [ref=e100]
+  - contentinfo [ref=e101]:
+    - generic [ref=e102]:
+      - generic [ref=e103]:
+        - link "NH Nhà Hàng Nguyên Vị" [ref=e104] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e105]: NH
+          - generic [ref=e106]: Nhà Hàng Nguyên Vị
+        - paragraph [ref=e107]: Không gian ấm cúng, món ăn chỉn chu và nhịp phục vụ vừa vặn cho những buổi gặp gỡ đáng nhớ.
+        - generic "Mạng xã hội" [ref=e108]:
+          - link "Theo dõi trên Facebook" [ref=e109] [cursor=pointer]:
+            - /url: "#"
+          - link "Theo dõi trên Instagram" [ref=e110] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=e111]:
+        - heading "Liên hệ" [level=3] [ref=e112]
+        - list [ref=e113]:
+          - listitem [ref=e114]: 28 Nguyễn Huệ, Q.1, TP. HCM
+          - listitem [ref=e115]:
+            - text: "Hotline:"
+            - link "(028) 3825 6789" [ref=e116] [cursor=pointer]:
+              - /url: tel:02838256789
+          - listitem [ref=e117]:
+            - text: "Email:"
+            - link "hello@nguyenvi.vn" [ref=e118] [cursor=pointer]:
+              - /url: mailto:hello@nguyenvi.vn
+      - generic [ref=e119]:
+        - heading "Giờ mở cửa" [level=3] [ref=e120]
+        - list [ref=e121]:
+          - listitem [ref=e122]: "Thứ 2 - Thứ 6: 11:00 - 14:00 · 17:00 - 22:00"
+          - listitem [ref=e123]: "Thứ 7 - Chủ nhật: 11:00 - 22:00"
+          - listitem [ref=e124]: Nhận đơn online đến 21:45

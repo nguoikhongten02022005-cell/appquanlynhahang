@@ -20,7 +20,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
-import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -36,9 +35,6 @@ public class TaiKhoanFragment extends Fragment {
     private NguoiDung nguoiDungHienTai;
 
     private View layoutAccountLoggedIn;
-    private View btnOpenAdmin;
-    private View btnOpenEmployee;
-
     private TextView tvAccountName;
     private TextView tvAccountEmail;
     private TextView tvAccountPhone;
@@ -73,7 +69,7 @@ public class TaiKhoanFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         sessionManager = new SessionManager(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
 
         return inflater.inflate(R.layout.fragment_tai_khoan, container, false);
     }
@@ -98,9 +94,6 @@ public class TaiKhoanFragment extends Fragment {
 
     private void khoiTaoView(View view) {
         layoutAccountLoggedIn = view.findViewById(R.id.layoutAccountLoggedIn);
-        btnOpenAdmin = view.findViewById(R.id.btnOpenAdmin);
-        btnOpenEmployee = view.findViewById(R.id.btnOpenEmployee);
-
         tvAccountName = view.findViewById(R.id.tvAccountName);
         tvAccountEmail = view.findViewById(R.id.tvAccountEmail);
         tvAccountPhone = view.findViewById(R.id.tvAccountPhone);
@@ -124,8 +117,6 @@ public class TaiKhoanFragment extends Fragment {
         MaterialButton btnSubmitChangePassword = view.findViewById(R.id.btnSubmitChangePassword);
         MaterialButton btnCancelChangePassword = view.findViewById(R.id.btnCancelChangePassword);
         MaterialButton btnContactSupport = view.findViewById(R.id.btnContactSupport);
-        MaterialButton btnMoQuanTri = view.findViewById(R.id.btnOpenAdmin);
-        MaterialButton btnMoNhanVien = view.findViewById(R.id.btnOpenEmployee);
         MaterialButton btnLogout = view.findViewById(R.id.btnLogout);
 
         btnEditProfile.setOnClickListener(v -> hienFormSuaThongTin());
@@ -136,26 +127,7 @@ public class TaiKhoanFragment extends Fragment {
         btnCancelChangePassword.setOnClickListener(v -> anFormDoiMatKhau());
 
         btnContactSupport.setOnClickListener(v -> moKenhHoTro());
-        btnMoQuanTri.setOnClickListener(v -> moManQuanTri());
-        btnMoNhanVien.setOnClickListener(v -> moManNhanVien());
-
         btnLogout.setOnClickListener(v -> hienXacNhanDangXuat());
-    }
-
-    private void moManQuanTri() {
-        if (!isAdded() || sessionManager == null || !sessionManager.laAdmin()) {
-            return;
-        }
-        Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(requireContext(), sessionManager.layVaiTroHienTai());
-        startActivity(intent);
-    }
-
-    private void moManNhanVien() {
-        if (!isAdded() || sessionManager == null || (!sessionManager.laNhanVien() && !sessionManager.laAdmin())) {
-            return;
-        }
-        Intent intent = new Intent(requireContext(), NhanVienActivity.class);
-        startActivity(intent);
     }
 
     private void hienFormSuaThongTin() {
@@ -167,7 +139,7 @@ public class TaiKhoanFragment extends Fragment {
         layoutEditProfile.setVisibility(View.VISIBLE);
         anFormDoiMatKhau();
 
-        etEditName.setText(nguoiDungHienTai.layTen());
+        etEditName.setText(nguoiDungHienTai.layHoTen());
         etEditPhone.setText(nguoiDungHienTai.laySoDienThoai());
     }
 
@@ -418,12 +390,6 @@ public class TaiKhoanFragment extends Fragment {
         nguoiDungHienTai = user;
         layoutAccountLoggedIn.setVisibility(View.VISIBLE);
         ganDuLieuNguoiDung(nguoiDungHienTai);
-        if (btnOpenAdmin != null) {
-            btnOpenAdmin.setVisibility(sessionManager.laAdmin() ? View.VISIBLE : View.GONE);
-        }
-        if (btnOpenEmployee != null) {
-            btnOpenEmployee.setVisibility((sessionManager.laNhanVien() || sessionManager.laAdmin()) ? View.VISIBLE : View.GONE);
-        }
     }
 
     private boolean xacThucPhienKhachHang(boolean hienToast) {
@@ -448,12 +414,6 @@ public class TaiKhoanFragment extends Fragment {
     private void xoaGiaoDienKhiDangXuat() {
         nguoiDungHienTai = null;
         layoutAccountLoggedIn.setVisibility(View.GONE);
-        if (btnOpenAdmin != null) {
-            btnOpenAdmin.setVisibility(View.GONE);
-        }
-        if (btnOpenEmployee != null) {
-            btnOpenEmployee.setVisibility(View.GONE);
-        }
         layoutEditProfile.setVisibility(View.GONE);
         layoutChangePassword.setVisibility(View.GONE);
         xoaFormSuaThongTin();
@@ -472,7 +432,7 @@ public class TaiKhoanFragment extends Fragment {
     }
 
     private void ganDuLieuNguoiDung(NguoiDung user) {
-        tvAccountName.setText(user.layTen());
+        tvAccountName.setText(user.layHoTen());
         tvAccountEmail.setText(user.layEmail());
         tvAccountPhone.setText(user.laySoDienThoai());
     }

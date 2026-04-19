@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.MonTrongDonAdapter;
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.DonHang;
@@ -50,7 +50,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     private MaterialButton btnSecondaryAction;
 
     private MonTrongDonAdapter monTrongDonAdapter;
-    private CartManager cartManager;
+    private QuanLyGioHang quanLyGioHang;
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
     private SessionManager tableSessionManager;
@@ -61,7 +61,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xac_nhan_don_hang);
 
-        cartManager = CartManager.getInstance();
+        quanLyGioHang = QuanLyGioHang.layInstance();
         sessionManager = new SessionManager(this);
         tableSessionManager = sessionManager;
         databaseHelper = new DatabaseHelper(this);
@@ -95,13 +95,13 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
             return false;
         }
 
-        if (cartManager.laGioHangRong()) {
+        if (quanLyGioHang.laGioHangRong()) {
             Toast.makeText(this, R.string.cart_empty_message, Toast.LENGTH_SHORT).show();
             finish();
             return false;
         }
 
-        CartManager.NguCanhDonHang nguCanhDonHang = cartManager.layNguCanhDonHang();
+        QuanLyGioHang.NguCanhDonHang nguCanhDonHang = quanLyGioHang.layNguCanhDonHang();
         if (!nguCanhDonHang.hopLeDeDatHang()) {
             Toast.makeText(this, R.string.cart_validation_table_required, Toast.LENGTH_SHORT).show();
             finish();
@@ -117,8 +117,8 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     }
 
     private void ganTomTatDonHang() {
-        CartManager.NguCanhDonHang nguCanhDonHang = cartManager.layNguCanhDonHang();
-        long tongTien = tinhTongTien(cartManager.layDanhSachMon());
+        QuanLyGioHang.NguCanhDonHang nguCanhDonHang = quanLyGioHang.layNguCanhDonHang();
+        long tongTien = tinhTongTien(quanLyGioHang.layDanhSachMon());
         String tongTienDaDinhDang = dinhDangGia(tongTien);
 
         tvConfirmOrderType.setText(getString(
@@ -146,7 +146,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     }
 
     private void xuLyTheoNguCanh() {
-        CartManager.NguCanhDonHang nguCanhDonHang = cartManager.layNguCanhDonHang();
+        QuanLyGioHang.NguCanhDonHang nguCanhDonHang = quanLyGioHang.layNguCanhDonHang();
         if (nguCanhDonHang.laAnTaiQuan()) {
             xuLyTaoDonHang(CheDoGuiDon.GUI_DON);
             return;
@@ -156,8 +156,8 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
 
     private void xuLyTaoDonHang(CheDoGuiDon cheDoGuiDon) {
         long idNguoiDung = sessionManager.layIdNguoiDungHienTai();
-        List<CartManager.CartItem> danhSachMon = cartManager.layDanhSachMon();
-        CartManager.NguCanhDonHang nguCanhDonHang = cartManager.layNguCanhDonHang();
+        List<QuanLyGioHang.MonTrongGio> danhSachMon = quanLyGioHang.layDanhSachMon();
+        QuanLyGioHang.NguCanhDonHang nguCanhDonHang = quanLyGioHang.layNguCanhDonHang();
         if (idNguoiDung <= 0 || danhSachMon.isEmpty() || !nguCanhDonHang.hopLeDeDatHang()) {
             hienThiPhanHoiNgan(R.string.order_submit_failed);
             return;
@@ -208,7 +208,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         if (nguCanhDonHang.laAnTaiQuan()) {
             tableSessionManager.luuBanHienTai(nguCanhDonHang.laySoBan());
         }
-        cartManager.xoaToanBoGio();
+        quanLyGioHang.xoaToanBoGio();
         setResult(RESULT_OK);
         hienThiPhanHoiNgan(layThongBaoThanhCong(cheDoGuiDon));
         moTrungTamTheoDoi();
@@ -253,24 +253,24 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         if (cheDoGuiDon == CheDoGuiDon.XAC_NHAN_THANH_TOAN_MANG_DI) {
             return R.string.order_confirm_payment;
         }
-        return cartManager.layNguCanhDonHang().laAnTaiQuan()
+        return quanLyGioHang.layNguCanhDonHang().laAnTaiQuan()
                 ? R.string.order_send
                 : R.string.cart_checkout_takeaway;
     }
 
     private List<DonHang.MonTrongDon> xayDanhSachMonTrongDon() {
         List<DonHang.MonTrongDon> danhSachMonDat = new ArrayList<>();
-        for (CartManager.CartItem monTrongGio : cartManager.layDanhSachMon()) {
+        for (QuanLyGioHang.MonTrongGio monTrongGio : quanLyGioHang.layDanhSachMon()) {
             MonAnDeXuat monAn = monTrongGio.layMonAn();
             danhSachMonDat.add(new DonHang.MonTrongDon(monAn, monTrongGio.laySoLuong()));
         }
         return danhSachMonDat;
     }
 
-    private long tinhTongTien(List<CartManager.CartItem> danhSachMon) {
+    private long tinhTongTien(List<QuanLyGioHang.MonTrongGio> danhSachMon) {
         long tongTien = 0;
-        for (CartManager.CartItem monTrongGio : danhSachMon) {
-            tongTien += tachGiaTienTuChuoi(monTrongGio.layMonAn().layGia()) * monTrongGio.laySoLuong();
+        for (QuanLyGioHang.MonTrongGio monTrongGio : danhSachMon) {
+            tongTien += tachGiaTienTuChuoi(monTrongGio.layMonAn().layGiaBan()) * monTrongGio.laySoLuong();
         }
         return tongTien;
     }
@@ -304,7 +304,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private long timReservationIdApDung(CartManager.NguCanhDonHang nguCanhDonHang, String thoiGianDat) {
+    private long timReservationIdApDung(QuanLyGioHang.NguCanhDonHang nguCanhDonHang, String thoiGianDat) {
         if (nguCanhDonHang == null || !nguCanhDonHang.laAnTaiQuan()) {
             return 0;
         }
@@ -317,7 +317,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
                 nguCanhDonHang.laySoBan(),
                 thoiGianDat
         );
-        if (datBanHieuLuc == null || datBanHieuLuc.layLinkedOrderId() > 0) {
+        if (datBanHieuLuc == null || datBanHieuLuc.layIdDonHangLienKet() > 0) {
             return 0;
         }
         return datBanHieuLuc.layId();

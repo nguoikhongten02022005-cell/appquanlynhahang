@@ -13,15 +13,21 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
+import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhucVuNhanVienAdapter.EmployeeServiceRequestViewHolder> {
+public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhucVuNhanVienAdapter.ViewHolderYeuCauPhucVuNhanVien> {
 
     public interface HanhDongListener {
-        void khiDanhDauDaXong(YeuCauPhucVu request);
+        void khiNhanXuLy(YeuCauPhucVu yeuCau);
+
+        void khiDanhDauDaXong(YeuCauPhucVu yeuCau);
+
+        void khiHuy(YeuCauPhucVu yeuCau);
     }
 
     private final List<YeuCauPhucVu> danhSachYeuCau = new ArrayList<>();
@@ -39,13 +45,13 @@ public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhuc
 
     @NonNull
     @Override
-    public EmployeeServiceRequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolderYeuCauPhucVuNhanVien onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_yeu_cau_phuc_vu_nhan_vien, parent, false);
-        return new EmployeeServiceRequestViewHolder(view);
+        return new ViewHolderYeuCauPhucVuNhanVien(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EmployeeServiceRequestViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolderYeuCauPhucVuNhanVien holder, int position) {
         holder.ganDuLieu(danhSachYeuCau.get(position));
     }
 
@@ -54,20 +60,24 @@ public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhuc
         return danhSachYeuCau.size();
     }
 
-    class EmployeeServiceRequestViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolderYeuCauPhucVuNhanVien extends RecyclerView.ViewHolder {
         private final TextView tvContent;
         private final TextView tvTime;
         private final TextView tvStatus;
         private final TextView tvTable;
+        private final TextView btnReceive;
         private final TextView btnDone;
+        private final TextView btnCancel;
 
-        EmployeeServiceRequestViewHolder(@NonNull View itemView) {
+        ViewHolderYeuCauPhucVuNhanVien(@NonNull View itemView) {
             super(itemView);
             tvContent = itemView.findViewById(R.id.tvEmployeeServiceRequestContent);
             tvTime = itemView.findViewById(R.id.tvEmployeeServiceRequestTime);
             tvStatus = itemView.findViewById(R.id.tvEmployeeServiceRequestStatus);
             tvTable = itemView.findViewById(R.id.tvEmployeeServiceRequestTable);
+            btnReceive = itemView.findViewById(R.id.btnEmployeeServiceRequestReceive);
             btnDone = itemView.findViewById(R.id.btnEmployeeServiceRequestDone);
+            btnCancel = itemView.findViewById(R.id.btnEmployeeServiceRequestCancel);
         }
 
         void ganDuLieu(YeuCauPhucVu yeuCau) {
@@ -78,23 +88,17 @@ public class YeuCauPhucVuNhanVienAdapter extends RecyclerView.Adapter<YeuCauPhuc
             if (yeuCau.coBanLienQuan()) {
                 tvTable.setText(context.getString(R.string.order_table_format, yeuCau.laySoBan()));
             }
-            boolean dangCho = yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_CHO;
-            boolean dangXuLy = yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY;
-            if (dangCho) {
-                tvStatus.setText(R.string.service_request_status_pending);
-                ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary)));
-            } else if (dangXuLy) {
-                tvStatus.setText(R.string.service_request_status_processing);
-                ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.warning)));
-            } else if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DA_HUY) {
-                tvStatus.setText(R.string.service_request_status_canceled);
-                ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.error)));
-            } else {
-                tvStatus.setText(R.string.service_request_status_done);
-                ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, R.color.success)));
-            }
-            btnDone.setVisibility(dangCho || dangXuLy ? View.VISIBLE : View.GONE);
-            btnDone.setOnClickListener(dangCho || dangXuLy ? v -> hanhDongListener.khiDanhDauDaXong(yeuCau) : null);
+            tvStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiYeuCau(yeuCau.layTrangThai()));
+            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiYeuCau(yeuCau.layTrangThai()))));
+            btnReceive.setVisibility(HanhDongNghiepVuHelper.nhanVienCoTheNhanXuLyYeuCau(yeuCau) ? View.VISIBLE : View.GONE);
+            btnReceive.setOnClickListener(HanhDongNghiepVuHelper.nhanVienCoTheNhanXuLyYeuCau(yeuCau) ? v -> hanhDongListener.khiNhanXuLy(yeuCau) : null);
+            btnDone.setText(yeuCau.layLoaiYeuCau() == YeuCauPhucVu.LoaiYeuCau.THANH_TOAN
+                    ? R.string.employee_service_request_action_confirm_payment
+                    : R.string.employee_service_request_action_done);
+            btnDone.setVisibility(HanhDongNghiepVuHelper.nhanVienCoTheHoanTatYeuCau(yeuCau) ? View.VISIBLE : View.GONE);
+            btnDone.setOnClickListener(HanhDongNghiepVuHelper.nhanVienCoTheHoanTatYeuCau(yeuCau) ? v -> hanhDongListener.khiDanhDauDaXong(yeuCau) : null);
+            btnCancel.setVisibility(HanhDongNghiepVuHelper.nhanVienCoTheHuyYeuCau(yeuCau) ? View.VISIBLE : View.GONE);
+            btnCancel.setOnClickListener(HanhDongNghiepVuHelper.nhanVienCoTheHuyYeuCau(yeuCau) ? v -> hanhDongListener.khiHuy(yeuCau) : null);
         }
     }
 }

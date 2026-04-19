@@ -30,11 +30,6 @@
             android:name=".StaffLauncherActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".ChonVaiTroNoiBoActivity"
-            android:exported="false"
-            android:label="@string/app_name" />
-
         <activity android:name=".DangNhapActivity" />
 
         <activity android:name=".GioHangActivity" />

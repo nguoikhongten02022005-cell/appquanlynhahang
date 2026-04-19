@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="12dp"
-                android:text="@string/employee_mark_confirmed" />
+                android:text="@string/employee_order_action_accept" />
 
             <TextView
                 android:id="@+id/btnEmployeeDonHangComplete"
@@ -157,7 +157,7 @@
                 android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:padding="12dp"
-                android:text="@string/employee_mark_completed" />
+                android:text="@string/employee_order_action_complete" />
 
             <TextView
                 android:id="@+id/btnEmployeeDonHangCancel"

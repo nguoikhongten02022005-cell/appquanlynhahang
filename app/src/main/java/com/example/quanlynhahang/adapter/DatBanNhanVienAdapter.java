@@ -14,6 +14,8 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
+import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.DatBan;
 
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
         void khiHoanTat(DatBan reservation);
 
         void khiHuy(DatBan reservation);
+
+        void khiDoiBan(DatBan reservation);
     }
 
     private final List<DatBan> danhSachDatBan = new ArrayList<>();
@@ -68,6 +72,7 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
         private final TextView btnConfirm;
         private final TextView btnComplete;
         private final TextView btnCancel;
+        private final TextView btnChangeTable;
 
         EmployeeReservationViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -79,6 +84,7 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
             btnConfirm = itemView.findViewById(R.id.btnEmployeeReservationConfirm);
             btnComplete = itemView.findViewById(R.id.btnEmployeeReservationComplete);
             btnCancel = itemView.findViewById(R.id.btnEmployeeReservationCancel);
+            btnChangeTable = itemView.findViewById(R.id.btnEmployeeReservationChangeTable);
         }
 
         void ganDuLieu(DatBan datBan) {
@@ -90,13 +96,17 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
             tvNote.setText(TextUtils.isEmpty(ghiChu)
                     ? context.getString(R.string.reservation_note_empty)
                     : context.getString(R.string.reservation_note_format, ghiChu));
-            tvStatus.setText(layTextTrangThai(datBan.layTrangThai()));
-            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, layMauTrangThai(datBan.layTrangThai()))));
+            tvStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiDatBan(datBan.layTrangThai()));
+            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiDatBan(datBan.layTrangThai()))));
 
-            ganHanhDong(btnConfirm, datBan.coTheXacNhan(), v -> hanhDongListener.khiXacNhan(datBan));
-            ganHanhDong(btnComplete, datBan.coTheHoanTat() && datBan.layLinkedOrderId() > 0, v -> hanhDongListener.khiHoanTat(datBan));
+            btnConfirm.setText(R.string.employee_reservation_action_confirm);
+            btnComplete.setText(R.string.employee_reservation_action_complete);
+            btnChangeTable.setText(R.string.employee_reservation_action_change_table);
+            ganHanhDong(btnConfirm, HanhDongNghiepVuHelper.nhanVienCoTheXacNhanDatBan(datBan), v -> hanhDongListener.khiXacNhan(datBan));
+            ganHanhDong(btnComplete, HanhDongNghiepVuHelper.nhanVienCoTheHoanTatDatBan(datBan) && datBan.layIdDonHangLienKet() > 0, v -> hanhDongListener.khiHoanTat(datBan));
+            ganHanhDong(btnChangeTable, HanhDongNghiepVuHelper.nhanVienCoTheDoiBan(datBan), v -> hanhDongListener.khiDoiBan(datBan));
             ganHanhDong(btnCancel,
-                    datBan.coTheHuy() || datBan.coTheHoanTat(),
+                    HanhDongNghiepVuHelper.nhanVienCoTheHuyDatBan(datBan),
                     v -> hanhDongListener.khiHuy(datBan));
         }
 
@@ -106,32 +116,4 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
         }
     }
 
-    private int layTextTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.PENDING) {
-            return R.string.reservation_status_pending;
-        }
-        if (trangThai == DatBan.TrangThai.ACTIVE) {
-            return R.string.reservation_status_confirmed;
-        }
-        if (trangThai == DatBan.TrangThai.COMPLETED) {
-            return R.string.reservation_status_completed;
-        }
-        if (trangThai == DatBan.TrangThai.EXPIRED) {
-            return R.string.reservation_status_expired;
-        }
-        return R.string.reservation_status_canceled;
-    }
-
-    private int layMauTrangThai(DatBan.TrangThai trangThai) {
-        if (trangThai == DatBan.TrangThai.PENDING) {
-            return R.color.warning;
-        }
-        if (trangThai == DatBan.TrangThai.ACTIVE) {
-            return R.color.success;
-        }
-        if (trangThai == DatBan.TrangThai.COMPLETED) {
-            return R.color.primary;
-        }
-        return R.color.error;
-    }
 }

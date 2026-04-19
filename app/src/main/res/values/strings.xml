@@ -1,10 +1,6 @@
 <resources>
     <string name="app_name">Quản lý nhà hàng</string>
     <string name="app_name_customer">Quán Mộc</string>
-    <string name="internal_role_picker_title">Chọn vai trò nội bộ</string>
-    <string name="internal_role_picker_subtitle">Chọn đúng vai trò để vào màn hình demo của nhân viên hoặc quản lý.</string>
-    <string name="internal_role_employee">Nhân viên</string>
-    <string name="internal_role_manager">Quản lý</string>
 
     <string name="home_greeting">Xin chào</string>
     <string name="menu_search_hint">Tìm món, danh mục hoặc mô tả...</string>
@@ -150,7 +146,6 @@
     <string name="order_payment_request_sent">Đã gửi yêu cầu thanh toán</string>
 
     <string name="order_status_pending">Đã gửi</string>
-    <string name="order_status_preparing">Nhà hàng đã nhận</string>
     <string name="order_status_making">Đang làm</string>
     <string name="order_card_summary_format">%1$s · %2$d món · %3$s</string>
     <string name="order_status_ready">Đang phục vụ</string>
@@ -163,8 +158,8 @@
     <string name="order_cancel_success">Đã hủy đơn %1$s</string>
     <string name="order_status_label_dine_in">Tiến độ món: %1$s</string>
     <string name="order_status_label_takeaway">Tiến độ đơn: %1$s</string>
-    <string name="order_timeline_dine_in">Đã gửi → Nhà hàng đã nhận → Đang chuẩn bị → Đang phục vụ → Hoàn tất</string>
-    <string name="order_timeline_takeaway">Đã đặt → Nhà hàng đã nhận → Đang chuẩn bị → Sẵn sàng / Đang giao → Hoàn tất</string>
+    <string name="order_timeline_dine_in">Đã gửi → Đang làm → Đang phục vụ → Hoàn tất</string>
+    <string name="order_timeline_takeaway">Đã đặt → Đang làm → Sẵn sàng / Đang giao → Hoàn tất</string>
 
     <string name="requests_screen_title">Yêu cầu phục vụ của tôi</string>
     <string name="reservations_screen_title">Đặt bàn của tôi</string>
@@ -185,9 +180,9 @@
     <string name="dialog_close">Đóng</string>
     <string name="reservation_validation_hint">Vui lòng chọn thời điểm cách hiện tại ít nhất 30 phút và tối đa 20 khách mỗi bàn.</string>
 
-    <string name="reservation_status_pending">Chờ đến giờ</string>
-    <string name="reservation_status_confirmed">Đang trong khung giờ</string>
-    <string name="reservation_status_completed">Đã gửi món</string>
+    <string name="reservation_status_pending">Chờ xác nhận</string>
+    <string name="reservation_status_confirmed">Đã xác nhận</string>
+    <string name="reservation_status_completed">Hoàn tất lượt đặt</string>
     <string name="reservation_status_canceled">Đã hủy</string>
     <string name="reservation_status_expired">Hết hạn</string>
 
@@ -234,6 +229,7 @@
     <string name="service_request_submit_success">Đã gửi yêu cầu "%1$s"</string>
     <string name="service_request_duplicate_blocked">Yêu cầu cùng loại đang được xử lý. Vui lòng chờ ít phút rồi thử lại.</string>
     <string name="service_request_payment_duplicate_by_table">Bàn này đã có yêu cầu thanh toán đang hoạt động. Vui lòng chờ nhân viên xử lý.</string>
+    <string name="service_request_payment_requires_order">Cần có đơn ăn tại quán đang hoạt động để yêu cầu thanh toán.</string>
     <string name="service_request_login_required">Vui lòng đăng nhập để dùng khu hỗ trợ</string>
     <string name="service_request_unavailable">Bạn cần chọn bàn hoặc có đơn ăn tại quán đang hoạt động để dùng hỗ trợ.</string>
     <string name="service_request_caption_with_table">Đang hỗ trợ cho %1$s. Bạn có thể gọi nhân viên, xin thêm nước hoặc yêu cầu thanh toán.</string>
@@ -248,8 +244,6 @@
     <string name="account_edit_profile">Chỉnh sửa hồ sơ</string>
     <string name="account_change_password">Đổi mật khẩu</string>
     <string name="account_contact_support">Gọi hỗ trợ</string>
-    <string name="account_open_employee">Vào nhân viên</string>
-    <string name="account_open_admin">Vào quản trị</string>
     <string name="account_logout">Đăng xuất</string>
     <string name="account_cancel_action">Hủy</string>
     <string name="account_logout_confirm_title">Đăng xuất?</string>
@@ -288,7 +282,7 @@
     <string name="login_quick_section_title">Đăng nhập nhanh</string>
     <string name="login_quick_customer">Khách hàng</string>
     <string name="login_quick_employee">Nhân viên</string>
-    <string name="login_quick_admin">Admin</string>
+    <string name="login_quick_admin">Quản trị</string>
     <string name="login_go_to_register">Chưa có tài khoản? Đăng ký ngay</string>
     <string name="login_validation_required">Vui lòng nhập email hoặc số điện thoại cùng mật khẩu</string>
     <string name="login_failed">Đăng nhập thất bại, vui lòng kiểm tra lại thông tin</string>
@@ -319,25 +313,23 @@
     <string name="db_test_admin_name">Quản trị viên thử nghiệm</string>
 
     <string name="employee_title">Bảng điều khiển nhân viên</string>
-    <string name="employee_subtitle">Theo dõi đơn hàng, đặt bàn và yêu cầu phục vụ cần xử lý.</string>
-    <string name="back_to_customer_ui">Về giao diện khách hàng</string>
+    <string name="employee_subtitle">Vào thẳng khu vực xử lý đơn hàng, đặt bàn và yêu cầu phục vụ trong ca làm.</string>
     <string name="employee_tab_overview">Tổng quan</string>
     <string name="employee_tab_orders">Đơn hàng</string>
     <string name="employee_header_title">Bảng điều khiển</string>
     <string name="employee_header_avatar">NV</string>
     <string name="employee_overview_title">Tổng quan ca làm</string>
-    <string name="employee_overview_description">Theo dõi nhanh các đơn chờ xác nhận, đặt bàn chờ duyệt và yêu cầu đang xử lý.</string>
+    <string name="employee_overview_description">Đây là màn theo dõi nhanh số liệu trong ca. Các thao tác xử lý nằm ở tab Đơn hàng, Đặt bàn và Yêu cầu phục vụ.</string>
     <string name="employee_section_worklists">Danh sách công việc</string>
     <string name="employee_orders_description">Theo dõi toàn bộ đơn hàng và cập nhật trạng thái phục vụ trong ca làm.</string>
     <string name="employee_reservations_description">Theo dõi danh sách đặt bàn hiện có và xử lý các trường hợp cần hủy.</string>
-    <string name="employee_service_requests_description">Theo dõi các yêu cầu phục vụ và đánh dấu hoàn tất khi đã xử lý xong.</string>
+    <string name="employee_service_requests_description">Theo dõi các yêu cầu phục vụ từ khách hàng, nhận xử lý và cập nhật tiến độ theo ca làm.</string>
     <string name="employee_stat_pending_orders_short">Đơn chờ xác nhận</string>
     <string name="employee_back_to_customer_short">Về giao diện khách hàng</string>
     <string name="employee_tab_reservations">Đặt bàn</string>
     <string name="employee_tab_service_requests">Yêu cầu phục vụ</string>
-    <string name="employee_stat_pending_orders">Đơn chờ xác nhận</string>
     <string name="employee_stat_pending_reservations">Đặt bàn chờ duyệt</string>
-    <string name="employee_stat_processing_requests">Yêu cầu đang xử lý</string>
+    <string name="employee_stat_processing_requests">Yêu cầu cần xử lý</string>
     <string name="employee_orders_title">Danh sách đơn hàng</string>
     <string name="employee_reservations_title">Danh sách đặt bàn</string>
     <string name="employee_service_requests_title">Danh sách yêu cầu phục vụ</string>
@@ -348,34 +340,42 @@
     <string name="employee_order_toggle_hide">Ẩn chi tiết món</string>
     <string name="employee_order_dishes_title">Món trong đơn</string>
     <string name="employee_order_empty_dishes">Đơn này chưa có dữ liệu món.</string>
-    <string name="employee_mark_confirmed">Xác nhận</string>
-    <string name="employee_mark_ready">Báo sẵn sàng</string>
-    <string name="employee_mark_completed">Hoàn thành</string>
-    <string name="employee_mark_done">Đánh dấu xong</string>
     <string name="employee_action_cancel">Huỷ</string>
+    <string name="employee_order_action_accept">Nhận đơn</string>
+    <string name="employee_order_action_move_to_serving">Chuyển sang phục vụ</string>
+    <string name="employee_order_action_complete">Hoàn tất đơn</string>
+    <string name="employee_service_request_action_receive">Nhận xử lý</string>
+    <string name="employee_service_request_action_done">Đánh dấu đã xử lý</string>
+    <string name="employee_service_request_action_confirm_payment">Xác nhận đã thanh toán</string>
+    <string name="employee_reservation_action_confirm">Xác nhận bàn</string>
+    <string name="employee_reservation_action_complete">Hoàn tất lượt đặt</string>
+    <string name="employee_reservation_action_change_table">Đổi bàn</string>
+    <string name="employee_reservation_change_table_title">Đổi bàn đặt trước</string>
+    <string name="employee_reservation_change_table_message">Chọn bàn còn trống cho cùng khung giờ đặt.</string>
+    <string name="employee_reservation_change_table_success">Đã cập nhật bàn cho lượt đặt</string>
+    <string name="employee_reservation_change_table_no_options">Không còn bàn trống phù hợp để đổi</string>
     <string name="employee_order_status_update_success">Đã cập nhật trạng thái đơn hàng</string>
     <string name="employee_reservation_status_update_success">Đã cập nhật trạng thái đặt bàn</string>
     <string name="employee_service_request_status_update_success">Đã cập nhật trạng thái yêu cầu phục vụ</string>
     <string name="employee_status_update_failed">Không thể cập nhật trạng thái, vui lòng thử lại</string>
     <string name="employee_reservation_complete_requires_order">Chỉ có thể hoàn tất đặt bàn khi đã có đơn ăn tại quán liên kết</string>
+    <string name="employee_order_cancel_confirm_title">Hủy đơn hàng?</string>
+    <string name="employee_order_cancel_confirm_message">Đơn này sẽ được chuyển sang trạng thái đã hủy.</string>
+    <string name="employee_service_request_cancel_confirm_title">Hủy yêu cầu phục vụ?</string>
+    <string name="employee_service_request_cancel_confirm_message">Yêu cầu này sẽ được chuyển sang trạng thái đã hủy.</string>
+    <string name="employee_reservation_cancel_confirm_title">Hủy đặt bàn?</string>
+    <string name="employee_reservation_cancel_confirm_message">Lượt đặt này sẽ được chuyển sang trạng thái đã hủy.</string>
     <string name="employee_open_sidebar">Mở menu nhân viên</string>
     <string name="employee_sidebar_section_operations">VẬN HÀNH</string>
 
-    <string name="admin_title">Bảng điều khiển quản trị</string>
-    <string name="admin_subtitle">Quản lý tổng quan vận hành, thực đơn món ăn và tài khoản người dùng.</string>
     <string name="admin_tab_overview">Tổng quan</string>
     <string name="admin_tab_dishes">Món ăn</string>
     <string name="admin_tab_users">Tài khoản</string>
-    <string name="admin_overview_title">Tổng quan hệ thống</string>
     <string name="admin_stat_total_users">Tổng tài khoản</string>
     <string name="admin_stat_total_dishes">Tổng món ăn</string>
-    <string name="admin_stat_total_orders">Tổng đơn hàng</string>
-    <string name="admin_stat_pending_orders">Đơn chờ xác nhận</string>
     <string name="admin_stat_pending_reservations">Đặt bàn chờ duyệt</string>
-    <string name="admin_stat_processing_requests">Yêu cầu đang xử lý</string>
     <string name="admin_stat_customers">Khách hàng</string>
     <string name="admin_stat_employees">Nhân viên</string>
-    <string name="admin_stat_admins">Quản trị viên</string>
     <string name="admin_dishes_title">Quản lý món ăn</string>
     <string name="admin_users_title">Quản lý tài khoản</string>
     <string name="admin_search_dishes_hint">Tìm món theo tên, danh mục hoặc mô tả...</string>
@@ -458,12 +458,13 @@
     <string name="admin_price_zero">0đ</string>
     <string name="admin_quick_action_checkmark">✓</string>
     <string name="admin_stat_pending_orders_short">Đơn chờ xác nhận</string>
-    <string name="admin_recent_order_preview_dish">Món mẫu</string>
-    <string name="admin_recent_order_preview_title">B1 — Món mẫu</string>
-    <string name="admin_recent_order_preview_subtitle">Chờ xác nhận · 16/04/2026 09:30</string>
-    <string name="admin_sidebar_preview_badge">3</string>
-    <string name="admin_stat_zero">0</string>
 
     <string name="role_guard_employee_denied">Tài khoản hiện tại không có quyền vào khu vực nhân viên</string>
     <string name="role_guard_admin_denied">Tài khoản hiện tại không có quyền vào khu vực quản trị</string>
+
+    <string name="quan_tri_mo_menu">Mở menu quản trị</string>
+    <string name="mo_ta_mo_chi_tiet_ho_tro">Nhấn để xem chi tiết trong danh sách hỗ trợ.</string>
+    <string name="ky_hieu_mui_ten">›</string>
+    <string name="ky_hieu_don_hang">🧾</string>
+    <string name="ky_hieu_thong_tin">ℹ️</string>
 </resources>

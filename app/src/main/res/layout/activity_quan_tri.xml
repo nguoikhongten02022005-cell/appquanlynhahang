@@ -31,7 +31,7 @@
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:contentDescription="Mở menu quản trị"
+                android:contentDescription="@string/quan_tri_mo_menu"
                 android:focusable="true"
                 android:padding="8dp"
                 android:src="@drawable/ic_menu_24"
@@ -521,7 +521,7 @@
                     android:textStyle="bold" />
 
                 <Spinner
-                    android:id="@+id/spinnerAdminVaiTroNguoiDungFilter"
+                    android:id="@+id/spinnerAdminLocVaiTro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp" />

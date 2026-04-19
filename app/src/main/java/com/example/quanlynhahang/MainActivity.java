@@ -15,7 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean coDieuHuongMenuCho;
     private boolean choPhepXemGiaoDienKhach;
 
-    private final CartManager.CartListener cartListener = this::capNhatBadgeGioHang;
+    private final QuanLyGioHang.LangNgheGioHang cartListener = this::capNhatBadgeGioHang;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         Log.i(TAG, "Bắt đầu mở cơ sở dữ liệu và chạy migration phiên đăng nhập cũ.");
         databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
         choPhepXemGiaoDienKhach = getIntent().getBooleanExtra(EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false);
         if (sessionManager.daDangNhap() && sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.KHACH_HANG && !choPhepXemGiaoDienKhach) {
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        CartManager.getInstance().themLangNghe(cartListener);
+        QuanLyGioHang.layInstance().themLangNghe(cartListener);
         lamMoiTrangThaiHeader();
     }
 
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        CartManager.getInstance().xoaLangNghe(cartListener);
+        QuanLyGioHang.layInstance().xoaLangNghe(cartListener);
         super.onStop();
     }
 
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void capNhatBadgeGioHang() {
-        int tongSoLuong = CartManager.getInstance().layTongSoLuong();
+        int tongSoLuong = QuanLyGioHang.layInstance().layTongSoLuong();
         String chuoiBadge = dinhDangSoLuongBadge(tongSoLuong);
         boolean hienBadge = chuoiBadge != null;
 

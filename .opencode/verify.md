@@ -18,9 +18,18 @@ Tai lieu nay quy dinh cach OpenCode nen kiem tra thay doi trong du an `quanlynha
 
 ## Lenh verify co san trong du an
 
-Chay tai thu muc goc du an `D:\quanlynhahang`.
+Chay tai thu muc goc du an tren he dieu hanh dang dung.
+
+- Linux/macOS: `/media/nha/New Volume/quanlynhahang`
+- Windows: `D:\quanlynhahang`
 
 ### Build debug
+
+```sh
+./gradlew assembleDebug
+```
+
+Hoac tren Windows:
 
 ```bat
 gradlew.bat assembleDebug
@@ -41,6 +50,12 @@ Muc dich:
 
 ### Unit test
 
+```sh
+./gradlew testDebugUnitTest
+```
+
+Hoac tren Windows:
+
 ```bat
 gradlew.bat testDebugUnitTest
 ```
@@ -57,6 +72,12 @@ Luu y hien tai:
 - Nghia la lenh nay huu ich de kiem tra cau hinh test va loi compile, nhung chua bao phu nghiep vu that su nhieu
 
 ### Instrumented test
+
+```sh
+./gradlew connectedDebugAndroidTest
+```
+
+Hoac tren Windows:
 
 ```bat
 gradlew.bat connectedDebugAndroidTest
@@ -86,8 +107,9 @@ Vi du:
 
 Nen verify:
 
-1. `gradlew.bat assembleDebug`
-2. Tu review lai luong man hinh bi anh huong
+1. Linux/macOS: `./gradlew assembleDebug`
+2. Windows: `gradlew.bat assembleDebug`
+3. Tu review lai luong man hinh bi anh huong
 
 ### 2. Sua logic dat mon, dat ban, request, session, role
 
@@ -101,9 +123,11 @@ Vi du:
 
 Nen verify:
 
-1. `gradlew.bat assembleDebug`
-2. `gradlew.bat testDebugUnitTest`
-3. Kiem tra tay luong nghiep vu lien quan theo checklist ben duoi
+1. Linux/macOS: `./gradlew assembleDebug`
+2. Linux/macOS: `./gradlew testDebugUnitTest`
+3. Windows: `gradlew.bat assembleDebug`
+4. Windows: `gradlew.bat testDebugUnitTest`
+5. Kiem tra tay luong nghiep vu lien quan theo checklist ben duoi
 
 ### 3. Sua schema, du lieu local, `DatabaseHelper`
 
@@ -116,10 +140,12 @@ Vi du:
 
 Nen verify:
 
-1. `gradlew.bat assembleDebug`
-2. `gradlew.bat testDebugUnitTest`
-3. Kiem tra lai cac man hinh doc/ghi du lieu lien quan
-4. Neu co moi truong phu hop, can uu tien test tren may/emulator
+1. Linux/macOS: `./gradlew assembleDebug`
+2. Linux/macOS: `./gradlew testDebugUnitTest`
+3. Windows: `gradlew.bat assembleDebug`
+4. Windows: `gradlew.bat testDebugUnitTest`
+5. Kiem tra lai cac man hinh doc/ghi du lieu lien quan
+6. Neu co moi truong phu hop, can uu tien test tren may/emulator
 
 ### 4. Sua lon hoac sua xuyen nhieu flow
 
@@ -131,10 +157,13 @@ Vi du:
 
 Nen verify:
 
-1. `gradlew.bat assembleDebug`
-2. `gradlew.bat testDebugUnitTest`
-3. `gradlew.bat connectedDebugAndroidTest` neu co emulator/device san sang
-4. Di lai checklist thu cong cho tung flow bi anh huong
+1. Linux/macOS: `./gradlew assembleDebug`
+2. Linux/macOS: `./gradlew testDebugUnitTest`
+3. Linux/macOS: `./gradlew connectedDebugAndroidTest` neu co emulator/device san sang
+4. Windows: `gradlew.bat assembleDebug`
+5. Windows: `gradlew.bat testDebugUnitTest`
+6. Windows: `gradlew.bat connectedDebugAndroidTest` neu co emulator/device san sang
+7. Di lai checklist thu cong cho tung flow bi anh huong
 
 ## Checklist verify thu cong theo flow
 
@@ -204,12 +233,12 @@ Khi hoan thanh mot task, nen ghi ro:
 
 ```text
 Verify da thuc hien:
-- Da chay `gradlew.bat assembleDebug`
-- Da chay `gradlew.bat testDebugUnitTest`
+- Linux/macOS: da chay `./gradlew assembleDebug`
+- Linux/macOS: da chay `./gradlew testDebugUnitTest`
 - Da ra soat tay luong dang nhap va dat mon
 
 Chua verify:
-- Chua chay `connectedDebugAndroidTest` vi chua co emulator/device san sang
+- Chua chay `./gradlew connectedDebugAndroidTest` vi chua co emulator/device san sang
 
 Rui ro con lai:
 - Can test tren may that de chac chan flow UI Android hoat dong dung

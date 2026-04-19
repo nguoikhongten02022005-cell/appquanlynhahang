@@ -56,7 +56,7 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
     public void onBindViewHolder(@NonNull MenuViewHolder holder, int position) {
         MonAnDeXuat monAn = danhSachMon.get(position);
 
-        holder.ivMenuDishImage.setImageResource(monAn.layImageResId());
+        holder.ivMenuDishImage.setImageResource(monAn.layIdAnhTaiNguyen());
         holder.tvMenuDishName.setText(monAn.layTenMon());
         holder.tvMenuDishDescription.setText(danhSachMoTa.get(position));
         holder.tvMenuDishPrice.setText(monAn.layGiaBan());

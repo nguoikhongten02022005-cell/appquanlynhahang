@@ -125,11 +125,20 @@
                 android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOrderDetailCancel"
+                style="@style/Widget.Quanlynhahang.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/order_cancel"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnOrderDetailRequestPayment"
                 style="@style/Widget.Quanlynhahang.FilledButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="12dp"
                 android:text="@string/service_request_quick_request_payment"
                 android:visibility="gone"
                 app:backgroundTint="@color/brand_orange" />

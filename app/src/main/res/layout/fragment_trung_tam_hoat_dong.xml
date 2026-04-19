@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="›"
+                android:text="@string/ky_hieu_mui_ten"
                 android:textColor="@color/brand_orange"
                 android:textSize="24sp"
                 android:textStyle="bold"

@@ -27,13 +27,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.core.content.ContextCompat;
 
-import com.example.quanlynhahang.adapter.AdminDishAdapter;
-import com.example.quanlynhahang.adapter.AdminUserAdapter;
+import com.example.quanlynhahang.adapter.BoDieuHopMonQuanTri;
+import com.example.quanlynhahang.adapter.BoDieuHopNguoiDungQuanTri;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.DonHang;
-import com.example.quanlynhahang.model.ThongKeTongQuanAdmin;
+import com.example.quanlynhahang.model.ThongKeTongQuanQuanTri;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 import com.google.android.material.button.MaterialButton;
@@ -67,19 +67,19 @@ public class QuanTriActivity extends AppCompatActivity {
     private TextView tvAdminCount;
     private TextView tvCurrentDate;
     private TextView tvRestaurantName;
-    private TextView tvOrdersShortcutBadge;
-    private LinearLayout layoutRecentOrders;
-    private TextView tvRecentOrdersEmpty;
-    private EditText etDishSearch;
-    private Spinner spinnerRoleFilter;
-    private TextView tvDishesEmpty;
-    private TextView tvUsersEmpty;
+    private TextView tvSoLuongTatDonHang;
+    private LinearLayout layoutDonGanDay;
+    private TextView tvDonGanDayRong;
+    private EditText etTimMon;
+    private Spinner spinnerLocVaiTro;
+    private TextView tvMonRong;
+    private TextView tvNguoiDungRong;
 
-    private AdminDishAdapter dishAdapter;
-    private AdminUserAdapter userAdapter;
+    private BoDieuHopMonQuanTri boDieuHopMon;
+    private BoDieuHopNguoiDungQuanTri boDieuHopNguoiDung;
 
-    private String currentDishKeyword = "";
-    private VaiTroNguoiDung currentRoleFilter = null;
+    private String tuKhoaMonHienTai = "";
+    private VaiTroNguoiDung vaiTroLocHienTai = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +89,7 @@ public class QuanTriActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
 
         if (!xacThucPhienQuanTri(true)) {
@@ -135,13 +135,13 @@ public class QuanTriActivity extends AppCompatActivity {
         tvAdminCount = findViewById(R.id.tvAdminAdminCount);
         tvCurrentDate = findViewById(R.id.tvAdminCurrentDate);
         tvRestaurantName = findViewById(R.id.tvAdminRestaurantName);
-        tvOrdersShortcutBadge = findViewById(R.id.tvAdminOrdersShortcutBadge);
-        layoutRecentOrders = findViewById(R.id.layoutAdminRecentOrders);
-        tvRecentOrdersEmpty = findViewById(R.id.tvAdminRecentOrdersEmpty);
-        etDishSearch = findViewById(R.id.etAdminDishSearch);
-        spinnerRoleFilter = findViewById(R.id.spinnerAdminVaiTroNguoiDungFilter);
-        tvDishesEmpty = findViewById(R.id.tvAdminDishesEmpty);
-        tvUsersEmpty = findViewById(R.id.tvAdminUsersEmpty);
+        tvSoLuongTatDonHang = findViewById(R.id.tvAdminOrdersShortcutBadge);
+        layoutDonGanDay = findViewById(R.id.layoutAdminRecentOrders);
+        tvDonGanDayRong = findViewById(R.id.tvAdminRecentOrdersEmpty);
+        etTimMon = findViewById(R.id.etAdminDishSearch);
+        spinnerLocVaiTro = findViewById(R.id.spinnerAdminLocVaiTro);
+        tvMonRong = findViewById(R.id.tvAdminDishesEmpty);
+        tvNguoiDungRong = findViewById(R.id.tvAdminUsersEmpty);
     }
 
     private void thietLapRecyclerView() {
@@ -150,20 +150,20 @@ public class QuanTriActivity extends AppCompatActivity {
         rvDishes.setLayoutManager(new LinearLayoutManager(this));
         rvUsers.setLayoutManager(new LinearLayoutManager(this));
 
-        dishAdapter = new AdminDishAdapter(new AdminDishAdapter.HanhDongListener() {
+        boDieuHopMon = new BoDieuHopMonQuanTri(new BoDieuHopMonQuanTri.HanhDongListener() {
             @Override
-            public void khiSua(DatabaseHelper.DishRecord dishRecord) {
-                hienDialogMonAn(dishRecord);
+            public void khiSua(DatabaseHelper.DishRecord banGhiMon) {
+                hienDialogMonAn(banGhiMon);
             }
 
             @Override
-            public void khiXoa(DatabaseHelper.DishRecord dishRecord) {
-                xacNhanXoaMon(dishRecord);
+            public void khiXoa(DatabaseHelper.DishRecord banGhiMon) {
+                xacNhanXoaMon(banGhiMon);
             }
 
             @Override
-            public void khiBatTatTrangThaiPhucVu(DatabaseHelper.DishRecord dishRecord) {
-                boolean daCapNhat = databaseHelper.capNhatTrangThaiPhucVuMon(dishRecord.layId(), !dishRecord.layMonAn().laConPhucVu());
+            public void khiBatTatTrangThaiPhucVu(DatabaseHelper.DishRecord banGhiMon) {
+                boolean daCapNhat = databaseHelper.capNhatTrangThaiPhucVuMon(banGhiMon.layId(), !banGhiMon.layMonAn().laConPhucVu());
                 Toast.makeText(QuanTriActivity.this, daCapNhat ? R.string.admin_dish_availability_success : R.string.admin_action_failed, Toast.LENGTH_SHORT).show();
                 if (daCapNhat) {
                     lamMoiToanBoDuLieuAdmin();
@@ -171,20 +171,20 @@ public class QuanTriActivity extends AppCompatActivity {
             }
         });
 
-        userAdapter = new AdminUserAdapter(new AdminUserAdapter.HanhDongListener() {
+        boDieuHopNguoiDung = new BoDieuHopNguoiDungQuanTri(new BoDieuHopNguoiDungQuanTri.HanhDongListener() {
             @Override
-            public void khiDoiVaiTro(NguoiDung user) {
-                hienDialogDoiVaiTro(user);
+            public void khiDoiVaiTro(NguoiDung nguoiDung) {
+                hienDialogDoiVaiTro(nguoiDung);
             }
 
             @Override
-            public void khiBatTatTrangThaiHoatDong(NguoiDung user) {
-                xuLyBatTatTrangThaiNguoiDung(user);
+            public void khiBatTatTrangThaiHoatDong(NguoiDung nguoiDung) {
+                xuLyBatTatTrangThaiNguoiDung(nguoiDung);
             }
         });
 
-        rvDishes.setAdapter(dishAdapter);
-        rvUsers.setAdapter(userAdapter);
+        rvDishes.setAdapter(boDieuHopMon);
+        rvUsers.setAdapter(boDieuHopNguoiDung);
     }
 
     private void thietLapTab() {
@@ -203,14 +203,14 @@ public class QuanTriActivity extends AppCompatActivity {
     }
 
     private void thietLapTimKiemMon() {
-        etDishSearch.addTextChangedListener(new TextWatcher() {
+        etTimMon.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                currentDishKeyword = s == null ? "" : s.toString().trim();
+                tuKhoaMonHienTai = s == null ? "" : s.toString().trim();
                 taiDanhSachMon();
             }
 
@@ -226,27 +226,27 @@ public class QuanTriActivity extends AppCompatActivity {
         labels.add(getString(R.string.admin_filter_customers));
         labels.add(getString(R.string.admin_filter_employees));
         labels.add(getString(R.string.admin_filter_admins));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerRoleFilter.setAdapter(adapter);
-        spinnerRoleFilter.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+        ArrayAdapter<String> boDieuHopLuaChon = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, labels);
+        boDieuHopLuaChon.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLocVaiTro.setAdapter(boDieuHopLuaChon);
+        spinnerLocVaiTro.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 if (position == 1) {
-                    currentRoleFilter = VaiTroNguoiDung.KHACH_HANG;
+                    vaiTroLocHienTai = VaiTroNguoiDung.KHACH_HANG;
                 } else if (position == 2) {
-                    currentRoleFilter = VaiTroNguoiDung.NHAN_VIEN;
+                    vaiTroLocHienTai = VaiTroNguoiDung.NHAN_VIEN;
                 } else if (position == 3) {
-                    currentRoleFilter = VaiTroNguoiDung.ADMIN;
+                    vaiTroLocHienTai = VaiTroNguoiDung.ADMIN;
                 } else {
-                    currentRoleFilter = null;
+                    vaiTroLocHienTai = null;
                 }
                 taiDanhSachNguoiDung();
             }
 
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {
-                currentRoleFilter = null;
+                vaiTroLocHienTai = null;
                 taiDanhSachNguoiDung();
             }
         });
@@ -316,8 +316,7 @@ public class QuanTriActivity extends AppCompatActivity {
 
     private void thucHienDangXuat() {
         sessionManager.xoaPhienDangNhap();
-        sessionManager.xoaVaiTroNoiBo();
-        Intent intent = new Intent(this, StaffLauncherActivity.class);
+        Intent intent = new Intent(this, CustomerLauncherActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
@@ -351,7 +350,7 @@ public class QuanTriActivity extends AppCompatActivity {
     }
 
     private void lamMoiToanBoDuLieuAdmin() {
-        ThongKeTongQuanAdmin thongKe = databaseHelper.layThongKeTongQuanAdmin();
+        ThongKeTongQuanQuanTri thongKe = databaseHelper.layThongKeTongQuanQuanTri();
         capNhatHeaderAdmin(thongKe);
         taiThongKeTongQuan(thongKe);
         taiDonHangGanDay();
@@ -359,7 +358,7 @@ public class QuanTriActivity extends AppCompatActivity {
         taiDanhSachNguoiDung();
     }
 
-    private void capNhatHeaderAdmin(ThongKeTongQuanAdmin thongKe) {
+    private void capNhatHeaderAdmin(ThongKeTongQuanQuanTri thongKe) {
         if (tvCurrentDate != null) {
             String ngayHienTai = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
             tvCurrentDate.setText(getString(R.string.admin_current_date_format, ngayHienTai));
@@ -367,51 +366,51 @@ public class QuanTriActivity extends AppCompatActivity {
         if (tvRestaurantName != null) {
             tvRestaurantName.setText(R.string.admin_restaurant_name);
         }
-        capNhatBadgeDonHang(thongKe.getPendingDonHangs());
+        capNhatBadgeDonHang(thongKe.laySoDonHangChoXacNhan());
     }
 
-    private void taiThongKeTongQuan(ThongKeTongQuanAdmin thongKe) {
-        tvTotalUsersCount.setText(String.valueOf(thongKe.getTotalUsers()));
-        tvTotalDishesCount.setText(String.valueOf(thongKe.getTotalDishes()));
-        tvTotalDonHangsCount.setText(String.valueOf(thongKe.getTotalDonHangs()));
-        tvPendingDonHangsCount.setText(String.valueOf(thongKe.getPendingDonHangs()));
-        tvPendingReservationsCount.setText(String.valueOf(thongKe.getPendingReservations()));
-        tvProcessingRequestsCount.setText(String.valueOf(thongKe.getProcessingServiceRequests()));
-        tvCustomerCount.setText(String.valueOf(thongKe.getCustomerCount()));
-        tvEmployeeCount.setText(String.valueOf(thongKe.getEmployeeCount()));
-        tvAdminCount.setText(String.valueOf(thongKe.getAdminCount()));
+    private void taiThongKeTongQuan(ThongKeTongQuanQuanTri thongKe) {
+        tvTotalUsersCount.setText(String.valueOf(thongKe.layTongNguoiDung()));
+        tvTotalDishesCount.setText(String.valueOf(thongKe.layTongMonAn()));
+        tvTotalDonHangsCount.setText(String.valueOf(thongKe.layTongDonHang()));
+        tvPendingDonHangsCount.setText(String.valueOf(thongKe.laySoDonHangChoXacNhan()));
+        tvPendingReservationsCount.setText(String.valueOf(thongKe.laySoDatBanChoDuyet()));
+        tvProcessingRequestsCount.setText(String.valueOf(thongKe.laySoYeuCauDangXuLy()));
+        tvCustomerCount.setText(String.valueOf(thongKe.laySoKhachHang()));
+        tvEmployeeCount.setText(String.valueOf(thongKe.laySoNhanVien()));
+        tvAdminCount.setText(String.valueOf(thongKe.laySoQuanTriVien()));
     }
 
     private void capNhatBadgeDonHang(int soLuongChoXacNhan) {
-        if (tvOrdersShortcutBadge == null) {
+        if (tvSoLuongTatDonHang == null) {
             return;
         }
         if (soLuongChoXacNhan <= 0) {
-            tvOrdersShortcutBadge.setVisibility(View.GONE);
-            tvOrdersShortcutBadge.setText("");
+            tvSoLuongTatDonHang.setVisibility(View.GONE);
+            tvSoLuongTatDonHang.setText("");
             return;
         }
-        tvOrdersShortcutBadge.setVisibility(View.VISIBLE);
+        tvSoLuongTatDonHang.setVisibility(View.VISIBLE);
         if (soLuongChoXacNhan > 99) {
-            tvOrdersShortcutBadge.setText(R.string.admin_orders_shortcut_badge_overflow);
+            tvSoLuongTatDonHang.setText(R.string.admin_orders_shortcut_badge_overflow);
             return;
         }
-        tvOrdersShortcutBadge.setText(String.valueOf(soLuongChoXacNhan));
+        tvSoLuongTatDonHang.setText(String.valueOf(soLuongChoXacNhan));
     }
 
     private void taiDonHangGanDay() {
-        if (layoutRecentOrders == null || tvRecentOrdersEmpty == null) {
+        if (layoutDonGanDay == null || tvDonGanDayRong == null) {
             return;
         }
-        layoutRecentOrders.removeAllViews();
+        layoutDonGanDay.removeAllViews();
         List<DonHang> danhSachDon = layBaDonHangGanDay();
         if (danhSachDon.isEmpty()) {
-            tvRecentOrdersEmpty.setVisibility(View.VISIBLE);
+            tvDonGanDayRong.setVisibility(View.VISIBLE);
             return;
         }
-        tvRecentOrdersEmpty.setVisibility(View.GONE);
+        tvDonGanDayRong.setVisibility(View.GONE);
         for (int i = 0; i < danhSachDon.size(); i++) {
-            layoutRecentOrders.addView(taoTheDonGanDay(danhSachDon.get(i), i > 0));
+            layoutDonGanDay.addView(taoTheDonGanDay(danhSachDon.get(i), i > 0));
         }
     }
 
@@ -533,17 +532,17 @@ public class QuanTriActivity extends AppCompatActivity {
     }
 
     private void taiDanhSachMon() {
-        List<DatabaseHelper.DishRecord> danhSachMon = currentDishKeyword.isEmpty()
+        List<DatabaseHelper.DishRecord> danhSachMon = tuKhoaMonHienTai.isEmpty()
                 ? databaseHelper.layTatCaMonAn()
-                : databaseHelper.timKiemMonAn(currentDishKeyword);
-        dishAdapter.capNhatDanhSach(danhSachMon);
-        tvDishesEmpty.setVisibility(danhSachMon.isEmpty() ? View.VISIBLE : View.GONE);
+                : databaseHelper.timKiemMonAn(tuKhoaMonHienTai);
+        boDieuHopMon.capNhatDanhSach(danhSachMon);
+        tvMonRong.setVisibility(danhSachMon.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void taiDanhSachNguoiDung() {
-        List<NguoiDung> danhSachNguoiDung = currentRoleFilter == null ? databaseHelper.layTatCaNguoiDung() : databaseHelper.layNguoiDungTheoVaiTro(currentRoleFilter);
-        userAdapter.capNhatDanhSach(danhSachNguoiDung);
-        tvUsersEmpty.setVisibility(danhSachNguoiDung.isEmpty() ? View.VISIBLE : View.GONE);
+        List<NguoiDung> danhSachNguoiDung = vaiTroLocHienTai == null ? databaseHelper.layTatCaNguoiDung() : databaseHelper.layNguoiDungTheoVaiTro(vaiTroLocHienTai);
+        boDieuHopNguoiDung.capNhatDanhSach(danhSachNguoiDung);
+        tvNguoiDungRong.setVisibility(danhSachNguoiDung.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void hienTabTongQuan() {
@@ -679,7 +678,7 @@ public class QuanTriActivity extends AppCompatActivity {
     private void hienDialogDoiVaiTro(NguoiDung user) {
         long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_change_user_role, null);
-        RadioGroup radioGroup = dialogView.findViewById(R.id.radioGroupAdminVaiTroNguoiDung);
+        RadioGroup radioGroup = dialogView.findViewById(R.id.radioGroupAdminChonVaiTro);
         RadioButton radioCustomer = dialogView.findViewById(R.id.radioRoleCustomer);
         RadioButton radioEmployee = dialogView.findViewById(R.id.radioRoleEmployee);
         RadioButton radioAdmin = dialogView.findViewById(R.id.radioRoleAdmin);

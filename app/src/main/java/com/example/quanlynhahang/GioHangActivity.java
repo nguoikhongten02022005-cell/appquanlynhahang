@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.MonTrongGioAdapter;
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
@@ -62,11 +62,11 @@ public class GioHangActivity extends AppCompatActivity {
     private Button btnClearCart;
     private Button btnContinueShopping;
 
-    private MonTrongGioAdapter cartAdapter;
-    private CartManager cartManager;
+    private MonTrongGioAdapter boDieuHopGioHang;
+    private QuanLyGioHang quanLyGioHang;
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
-    private SessionManager tableSessionManager;
+    private SessionManager quanLyPhienBan;
 
     private boolean choXacNhanSauDangNhap;
 
@@ -89,12 +89,12 @@ public class GioHangActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gio_hang);
 
-        cartManager = CartManager.getInstance();
+        quanLyGioHang = QuanLyGioHang.layInstance();
         sessionManager = new SessionManager(this);
-        tableSessionManager = sessionManager;
+        quanLyPhienBan = sessionManager;
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
 
         khoiTaoView();
         thietLapRecyclerView();
@@ -130,29 +130,29 @@ public class GioHangActivity extends AppCompatActivity {
     private void thietLapRecyclerView() {
         rvCartItems.setLayoutManager(new LinearLayoutManager(this));
 
-        cartAdapter = new MonTrongGioAdapter(
-                cartManager.layDanhSachMon(),
+        boDieuHopGioHang = new MonTrongGioAdapter(
+                quanLyGioHang.layDanhSachMon(),
                 new MonTrongGioAdapter.OnHanhDongSoLuongListener() {
                     @Override
-                    public void khiTangSoLuong(CartManager.CartItem item) {
-                        cartManager.tangSoLuong(cartManager.layKhoaMon(item));
+                    public void khiTangSoLuong(QuanLyGioHang.MonTrongGio item) {
+                        quanLyGioHang.tangSoLuong(quanLyGioHang.layKhoaMon(item));
                         capNhatHienThiGioHang();
                     }
 
                     @Override
-                    public void khiGiamSoLuong(CartManager.CartItem item) {
-                        cartManager.giamSoLuong(cartManager.layKhoaMon(item));
+                    public void khiGiamSoLuong(QuanLyGioHang.MonTrongGio item) {
+                        quanLyGioHang.giamSoLuong(quanLyGioHang.layKhoaMon(item));
                         capNhatHienThiGioHang();
                     }
 
                     @Override
-                    public void khiXoaMon(CartManager.CartItem item) {
+                    public void khiXoaMon(QuanLyGioHang.MonTrongGio item) {
                         xoaTungMon(item);
                     }
                 }
         );
 
-        rvCartItems.setAdapter(cartAdapter);
+        rvCartItems.setAdapter(boDieuHopGioHang);
     }
 
     private void thietLapNguCanhDonHang() {
@@ -173,7 +173,7 @@ public class GioHangActivity extends AppCompatActivity {
     }
 
     private void dongBoNguCanhLenForm() {
-        CartManager.NguCanhDonHang nguCanhDonHang = cartManager.layNguCanhDonHang();
+        QuanLyGioHang.NguCanhDonHang nguCanhDonHang = quanLyGioHang.layNguCanhDonHang();
         if (nguCanhDonHang.layHinhThucDon() == DonHang.HinhThucDon.AN_TAI_QUAN) {
             rbCartDineIn.setChecked(true);
         } else {
@@ -181,7 +181,7 @@ public class GioHangActivity extends AppCompatActivity {
         }
         String soBanUuTien = !TextUtils.isEmpty(nguCanhDonHang.laySoBan())
                 ? nguCanhDonHang.laySoBan()
-                : tableSessionManager.layBanHienTai();
+                : quanLyPhienBan.layBanHienTai();
         capNhatNhanBan(soBanUuTien);
         etCartNote.setText(nguCanhDonHang.layGhiChu());
         capNhatHienThiTheoHinhThucDon(nguCanhDonHang.laAnTaiQuan(), false);
@@ -199,8 +199,8 @@ public class GioHangActivity extends AppCompatActivity {
     }
 
     private void capNhatHienThiGioHang() {
-        List<CartManager.CartItem> danhSachMon = cartManager.layDanhSachMon();
-        cartAdapter.capNhatDuLieu(danhSachMon);
+        List<QuanLyGioHang.MonTrongGio> danhSachMon = quanLyGioHang.layDanhSachMon();
+        boDieuHopGioHang.capNhatDuLieu(danhSachMon);
 
         long tongTien = tinhTongTien(danhSachMon);
         String tongTienDaDinhDang = dinhDangGia(tongTien);
@@ -215,10 +215,10 @@ public class GioHangActivity extends AppCompatActivity {
         btnCheckout.setAlpha(gioHangRong ? 0.5f : 1f);
     }
 
-    private long tinhTongTien(List<CartManager.CartItem> danhSachMon) {
+    private long tinhTongTien(List<QuanLyGioHang.MonTrongGio> danhSachMon) {
         long tongTien = 0;
-        for (CartManager.CartItem monTrongGio : danhSachMon) {
-            long giaTien = tachGiaTienTuChuoi(monTrongGio.layMonAn().layGia());
+        for (QuanLyGioHang.MonTrongGio monTrongGio : danhSachMon) {
+            long giaTien = tachGiaTienTuChuoi(monTrongGio.layMonAn().layGiaBan());
             tongTien += giaTien * monTrongGio.laySoLuong();
         }
         return tongTien;
@@ -241,15 +241,15 @@ public class GioHangActivity extends AppCompatActivity {
         return String.format(Locale.forLanguageTag("vi-VN"), "%,d đ", giaTien).replace(',', '.');
     }
 
-    private void xoaTungMon(@NonNull CartManager.CartItem monTrongGio) {
-        String tenMon = monTrongGio.layMonAn().layTen();
-        cartManager.xoaMon(cartManager.layKhoaMon(monTrongGio));
+    private void xoaTungMon(@NonNull QuanLyGioHang.MonTrongGio monTrongGio) {
+        String tenMon = monTrongGio.layMonAn().layTenMon();
+        quanLyGioHang.xoaMon(quanLyGioHang.layKhoaMon(monTrongGio));
         capNhatHienThiGioHang();
         Toast.makeText(this, getString(R.string.cart_item_removed, tenMon), Toast.LENGTH_SHORT).show();
     }
 
     private void xoaToanBoGioHang() {
-        if (cartManager.laGioHangRong()) {
+        if (quanLyGioHang.laGioHangRong()) {
             capNhatHienThiGioHang();
             return;
         }
@@ -258,8 +258,8 @@ public class GioHangActivity extends AppCompatActivity {
                 .setTitle(R.string.cart_clear_confirm_title)
                 .setMessage(R.string.cart_clear_confirm_message)
                 .setPositiveButton(R.string.cart_clear_confirm_action, (dialog, which) -> {
-                    cartManager.xoaToanBoGio();
-                    tableSessionManager.xoaBanHienTai();
+                    quanLyGioHang.xoaToanBoGio();
+                    quanLyPhienBan.xoaBanHienTai();
                     dongBoNguCanhLenForm();
                     capNhatHienThiGioHang();
                     Toast.makeText(this, R.string.cart_cleared, Toast.LENGTH_SHORT).show();
@@ -269,7 +269,7 @@ public class GioHangActivity extends AppCompatActivity {
     }
 
     private void moManXacNhanDonHang() {
-        List<CartManager.CartItem> danhSachMon = cartManager.layDanhSachMon();
+        List<QuanLyGioHang.MonTrongGio> danhSachMon = quanLyGioHang.layDanhSachMon();
         if (danhSachMon.isEmpty()) {
             Toast.makeText(this, R.string.cart_empty_message, Toast.LENGTH_SHORT).show();
             capNhatHienThiGioHang();
@@ -324,11 +324,11 @@ public class GioHangActivity extends AppCompatActivity {
             return false;
         }
 
-        cartManager.capNhatNguCanhDonHang(hinhThucDon, soBan, ghiChu);
+        quanLyGioHang.capNhatNguCanhDonHang(hinhThucDon, soBan, ghiChu);
         if (hinhThucDon == DonHang.HinhThucDon.AN_TAI_QUAN) {
-            tableSessionManager.luuBanHienTai(soBan);
+            quanLyPhienBan.luuBanHienTai(soBan);
         } else {
-            tableSessionManager.xoaBanHienTai();
+            quanLyPhienBan.xoaBanHienTai();
         }
         return true;
     }
@@ -421,10 +421,10 @@ public class GioHangActivity extends AppCompatActivity {
         }
 
         String banHienTai = DichVuKhachHangHelper.timBanHienTai(
-                tableSessionManager.layBanHienTai(),
+                quanLyPhienBan.layBanHienTai(),
                 DichVuKhachHangHelper.timDonHangTaiQuanDangHoatDong(databaseHelper.layDonHangTheoNguoiDung(sessionManager.layIdNguoiDungHienTai())),
-                () -> cartManager.layNguCanhDonHang().laAnTaiQuan()
-                        ? cartManager.layNguCanhDonHang().laySoBan()
+                () -> quanLyGioHang.layNguCanhDonHang().laAnTaiQuan()
+                        ? quanLyGioHang.layNguCanhDonHang().laySoBan()
                         : null
         );
 

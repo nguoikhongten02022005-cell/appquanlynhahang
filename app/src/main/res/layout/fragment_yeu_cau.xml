@@ -67,7 +67,7 @@
                         android:id="@+id/tvPendingServiceRequestTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Có yêu cầu hỗ trợ đang chờ xử lý"
+                        android:text="@string/activity_hub_summary_support_waiting"
                         android:textAppearance="@style/TextAppearance.Quanlynhahang.CardTitle" />
 
                     <TextView
@@ -75,14 +75,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_xs"
-                        android:text="Nhấn để xem chi tiết trong danh sách hỗ trợ."
+                        android:text="@string/mo_ta_mo_chi_tiet_ho_tro"
                         android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionCaption" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="›"
+                    android:text="@string/ky_hieu_mui_ten"
                     android:textColor="@color/brand_orange"
                     android:textSize="24sp"
                     android:textStyle="bold" />

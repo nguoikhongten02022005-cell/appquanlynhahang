@@ -42,7 +42,7 @@ public class DonHang {
     private final String ghiChu;
     private final TrangThaiThanhToan trangThaiThanhToan;
     private final PhuongThucThanhToan phuongThucThanhToan;
-    private final long reservationId;
+    private final long idDatBanLienKet;
     private final List<MonTrongDon> danhSachMon;
     private TrangThai trangThai;
     private boolean moRong;
@@ -57,7 +57,7 @@ public class DonHang {
                    TrangThai trangThai,
                    TrangThaiThanhToan trangThaiThanhToan,
                    PhuongThucThanhToan phuongThucThanhToan,
-                   long reservationId,
+                   long idDatBanLienKet,
                    List<MonTrongDon> danhSachMon) {
         this.idDonHang = idDonHang;
         this.maDon = maDon;
@@ -73,7 +73,7 @@ public class DonHang {
         this.phuongThucThanhToan = phuongThucThanhToan == null
                 ? PhuongThucThanhToan.CHUA_CHON
                 : phuongThucThanhToan;
-        this.reservationId = reservationId;
+        this.idDatBanLienKet = idDatBanLienKet;
         this.danhSachMon = new ArrayList<>(danhSachMon == null ? Collections.emptyList() : danhSachMon);
         this.moRong = false;
     }
@@ -118,8 +118,8 @@ public class DonHang {
         return phuongThucThanhToan;
     }
 
-    public long layReservationId() {
-        return reservationId;
+    public long layIdDatBanLienKet() {
+        return idDatBanLienKet;
     }
 
     public List<MonTrongDon> layDanhSachMon() {

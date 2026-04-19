@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quanlynhahang.adapter.MonTrongDonAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
+import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 import com.google.android.material.button.MaterialButton;
@@ -39,6 +41,7 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
     private TextView tvPaymentInfo;
     private TextView tvNoteInfo;
     private TextView tvTotal;
+    private MaterialButton btnCancelOrder;
     private MaterialButton btnRequestPayment;
     private MonTrongDonAdapter monTrongDonAdapter;
 
@@ -57,6 +60,19 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
             return;
         }
         ganDuLieu();
+        thietLapNutHuyDon();
+        thietLapNutYeuCauThanhToan();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!taiDonHang()) {
+            finish();
+            return;
+        }
+        ganDuLieu();
+        thietLapNutHuyDon();
         thietLapNutYeuCauThanhToan();
     }
 
@@ -70,6 +86,7 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
         tvPaymentInfo = findViewById(R.id.tvOrderDetailPayment);
         tvNoteInfo = findViewById(R.id.tvOrderDetailNote);
         tvTotal = findViewById(R.id.tvOrderDetailTotal);
+        btnCancelOrder = findViewById(R.id.btnOrderDetailCancel);
         btnRequestPayment = findViewById(R.id.btnOrderDetailRequestPayment);
 
         RecyclerView rvItems = findViewById(R.id.rvOrderDetailItems);
@@ -93,11 +110,11 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
 
     private void ganDuLieu() {
         tvHeaderTitle.setText(donHang.layMaDon());
-        int statusRes = layTextTrangThai(donHang);
+        int statusRes = TrangThaiHienThiHelper.layTextTrangThaiDon(donHang);
         tvStatusBadge.setText(statusRes);
         ViewCompat.setBackgroundTintList(
                 tvStatusBadge,
-                android.content.res.ColorStateList.valueOf(ContextCompat.getColor(this, layMauTrangThai(donHang.layTrangThai())))
+                android.content.res.ColorStateList.valueOf(ContextCompat.getColor(this, TrangThaiHienThiHelper.layMauTrangThaiDon(donHang.layTrangThai())))
         );
 
         boolean daHuy = donHang.layTrangThai() == DonHang.TrangThai.DA_HUY;
@@ -122,6 +139,36 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
         monTrongDonAdapter.capNhatDuLieu(donHang.layDanhSachMon());
     }
 
+    private void thietLapNutHuyDon() {
+        boolean hienNut = HanhDongNghiepVuHelper.khachCoTheHuyDon(donHang);
+        btnCancelOrder.setVisibility(hienNut ? android.view.View.VISIBLE : android.view.View.GONE);
+        btnCancelOrder.setEnabled(hienNut);
+        if (!hienNut) {
+            btnCancelOrder.setOnClickListener(null);
+            return;
+        }
+        btnCancelOrder.setOnClickListener(v -> new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle(R.string.order_cancel_confirm_title)
+                .setMessage(R.string.order_cancel_confirm_message)
+                .setNegativeButton(R.string.dialog_close, null)
+                .setPositiveButton(R.string.order_cancel, (dialog, which) -> {
+                    boolean daHuy = databaseHelper.huyDonHang(donHang.layId());
+                    if (!daHuy) {
+                        Toast.makeText(this, R.string.db_operation_failed, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Toast.makeText(this, getString(R.string.order_cancel_success, donHang.layMaDon()), Toast.LENGTH_SHORT).show();
+                    if (!taiDonHang()) {
+                        finish();
+                        return;
+                    }
+                    ganDuLieu();
+                    thietLapNutHuyDon();
+                    thietLapNutYeuCauThanhToan();
+                })
+                .show());
+    }
+
     private void thietLapNutYeuCauThanhToan() {
         boolean hienNut = donHang.laAnTaiQuan()
                 && donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN
@@ -132,6 +179,7 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
         btnRequestPayment.setVisibility(hienNut ? android.view.View.VISIBLE : android.view.View.GONE);
         btnRequestPayment.setEnabled(hienNut);
         if (!hienNut) {
+            btnRequestPayment.setOnClickListener(null);
             return;
         }
 
@@ -180,39 +228,6 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
             }
         }
         return getString(R.string.order_payment_status_unpaid);
-    }
-
-    private int layTextTrangThai(DonHang donHang) {
-        DonHang.TrangThai trangThai = donHang.layTrangThai();
-        if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
-            return R.string.order_status_pending;
-        }
-        if (trangThai == DonHang.TrangThai.DANG_CHUAN_BI) {
-            return R.string.order_status_making;
-        }
-        if (trangThai == DonHang.TrangThai.SAN_SANG_PHUC_VU) {
-            return donHang.laAnTaiQuan() ? R.string.order_status_ready : R.string.order_status_ready_takeaway;
-        }
-        if (trangThai == DonHang.TrangThai.HOAN_THANH) {
-            return R.string.order_status_completed;
-        }
-        return R.string.order_status_canceled;
-    }
-
-    private int layMauTrangThai(DonHang.TrangThai trangThai) {
-        if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
-            return R.color.warning;
-        }
-        if (trangThai == DonHang.TrangThai.DANG_CHUAN_BI) {
-            return R.color.brand_orange;
-        }
-        if (trangThai == DonHang.TrangThai.SAN_SANG_PHUC_VU) {
-            return R.color.primary;
-        }
-        if (trangThai == DonHang.TrangThai.HOAN_THANH) {
-            return R.color.success;
-        }
-        return R.color.error;
     }
 
     private String dinhDangGia(String chuoiGiaGoc) {

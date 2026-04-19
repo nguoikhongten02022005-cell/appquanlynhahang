@@ -3,11 +3,13 @@ package com.example.quanlynhahang;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -27,7 +29,10 @@ import com.example.quanlynhahang.model.DatBan;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class NhanVienActivity extends AppCompatActivity {
@@ -62,7 +67,7 @@ public class NhanVienActivity extends AppCompatActivity {
 
     private DonHangNhanVienAdapter orderAdapter;
     private DatBanNhanVienAdapter reservationAdapter;
-    private YeuCauPhucVuNhanVienAdapter serviceRequestAdapter;
+    private YeuCauPhucVuNhanVienAdapter boDieuHopYeuCauPhucVu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +77,7 @@ public class NhanVienActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
 
         if (!xacThucPhienNoiBo(true)) {
@@ -111,7 +116,7 @@ public class NhanVienActivity extends AppCompatActivity {
             hienTabYeuCauPhucVu();
             return;
         }
-        hienTabTongQuan();
+        hienTabDonHang();
     }
 
     private void khoiTaoView() {
@@ -161,7 +166,7 @@ public class NhanVienActivity extends AppCompatActivity {
 
             @Override
             public void khiHuy(DonHang order) {
-                xuLyTrangThaiDonHang(order, DonHang.TrangThai.DA_HUY);
+                xacNhanHuyDonHang(order);
             }
         });
         reservationAdapter = new DatBanNhanVienAdapter(new DatBanNhanVienAdapter.HanhDongListener() {
@@ -177,14 +182,34 @@ public class NhanVienActivity extends AppCompatActivity {
 
             @Override
             public void khiHuy(DatBan reservation) {
-                xuLyTrangThaiDatBan(reservation, DatBan.TrangThai.CANCELLED);
+                xacNhanHuyDatBan(reservation);
+            }
+
+            @Override
+            public void khiDoiBan(DatBan reservation) {
+                hienDialogDoiBan(reservation);
             }
         });
-        serviceRequestAdapter = new YeuCauPhucVuNhanVienAdapter(request -> xuLyTrangThaiYeuCau(request, YeuCauPhucVu.TrangThai.DA_XU_LY));
+        boDieuHopYeuCauPhucVu = new YeuCauPhucVuNhanVienAdapter(new YeuCauPhucVuNhanVienAdapter.HanhDongListener() {
+            @Override
+            public void khiNhanXuLy(YeuCauPhucVu yeuCau) {
+                xuLyTrangThaiYeuCau(yeuCau, YeuCauPhucVu.TrangThai.DANG_XU_LY);
+            }
+
+            @Override
+            public void khiDanhDauDaXong(YeuCauPhucVu yeuCau) {
+                xuLyTrangThaiYeuCau(yeuCau, YeuCauPhucVu.TrangThai.DA_XU_LY);
+            }
+
+            @Override
+            public void khiHuy(YeuCauPhucVu yeuCau) {
+                xacNhanHuyYeuCau(yeuCau);
+            }
+        });
 
         rvDonHangs.setAdapter(orderAdapter);
         rvReservations.setAdapter(reservationAdapter);
-        rvServiceRequests.setAdapter(serviceRequestAdapter);
+        rvServiceRequests.setAdapter(boDieuHopYeuCauPhucVu);
     }
 
     private void thietLapDieuHuong() {
@@ -244,8 +269,7 @@ public class NhanVienActivity extends AppCompatActivity {
 
     private void thucHienDangXuat() {
         sessionManager.xoaPhienDangNhap();
-        sessionManager.xoaVaiTroNoiBo();
-        Intent intent = new Intent(this, StaffLauncherActivity.class);
+        Intent intent = new Intent(this, CustomerLauncherActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
@@ -294,7 +318,7 @@ public class NhanVienActivity extends AppCompatActivity {
 
     private void taiYeuCauPhucVu() {
         List<YeuCauPhucVu> danhSachYeuCau = databaseHelper.layTatCaYeuCauPhucVu();
-        serviceRequestAdapter.capNhatDanhSach(danhSachYeuCau);
+        boDieuHopYeuCauPhucVu.capNhatDanhSach(danhSachYeuCau);
         tvServiceRequestsEmpty.setVisibility(danhSachYeuCau.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
@@ -310,7 +334,7 @@ public class NhanVienActivity extends AppCompatActivity {
         capNhatTrangThaiSidebar(btnSidebarOverview, true, R.drawable.ic_menu_24);
         capNhatTrangThaiSidebar(btnSidebarOrders, false, R.drawable.ic_receipt_24);
         capNhatTrangThaiSidebar(btnSidebarReservations, false, R.drawable.ic_calendar_24);
-        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_home_24);
+        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_person_24);
         dongSidebarNeuCan();
     }
 
@@ -326,7 +350,7 @@ public class NhanVienActivity extends AppCompatActivity {
         capNhatTrangThaiSidebar(btnSidebarOverview, false, R.drawable.ic_menu_24);
         capNhatTrangThaiSidebar(btnSidebarOrders, true, R.drawable.ic_receipt_24);
         capNhatTrangThaiSidebar(btnSidebarReservations, false, R.drawable.ic_calendar_24);
-        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_home_24);
+        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_person_24);
         dongSidebarNeuCan();
     }
 
@@ -342,7 +366,7 @@ public class NhanVienActivity extends AppCompatActivity {
         capNhatTrangThaiSidebar(btnSidebarOverview, false, R.drawable.ic_menu_24);
         capNhatTrangThaiSidebar(btnSidebarOrders, false, R.drawable.ic_receipt_24);
         capNhatTrangThaiSidebar(btnSidebarReservations, true, R.drawable.ic_calendar_24);
-        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_home_24);
+        capNhatTrangThaiSidebar(btnSidebarServiceRequests, false, R.drawable.ic_person_24);
         dongSidebarNeuCan();
     }
 
@@ -358,7 +382,7 @@ public class NhanVienActivity extends AppCompatActivity {
         capNhatTrangThaiSidebar(btnSidebarOverview, false, R.drawable.ic_menu_24);
         capNhatTrangThaiSidebar(btnSidebarOrders, false, R.drawable.ic_receipt_24);
         capNhatTrangThaiSidebar(btnSidebarReservations, false, R.drawable.ic_calendar_24);
-        capNhatTrangThaiSidebar(btnSidebarServiceRequests, true, R.drawable.ic_home_24);
+        capNhatTrangThaiSidebar(btnSidebarServiceRequests, true, R.drawable.ic_person_24);
         dongSidebarNeuCan();
     }
 
@@ -419,7 +443,7 @@ public class NhanVienActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.employee_status_update_failed, Toast.LENGTH_SHORT).show();
             return;
         }
-        if (trangThai == DatBan.TrangThai.COMPLETED && datBan.layLinkedOrderId() <= 0) {
+        if (trangThai == DatBan.TrangThai.COMPLETED && datBan.layIdDonHangLienKet() <= 0) {
             Toast.makeText(this, R.string.employee_reservation_complete_requires_order, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -436,6 +460,78 @@ public class NhanVienActivity extends AppCompatActivity {
         if (daCapNhat) {
             lamMoiToanBoDuLieuNhanVien();
         }
+    }
+
+    private void xacNhanHuyDonHang(DonHang donHang) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.employee_order_cancel_confirm_title)
+                .setMessage(R.string.employee_order_cancel_confirm_message)
+                .setNegativeButton(R.string.dialog_close, null)
+                .setPositiveButton(R.string.employee_action_cancel, (dialog, which) -> xuLyTrangThaiDonHang(donHang, DonHang.TrangThai.DA_HUY))
+                .show();
+    }
+
+    private void xacNhanHuyDatBan(DatBan datBan) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.employee_reservation_cancel_confirm_title)
+                .setMessage(R.string.employee_reservation_cancel_confirm_message)
+                .setNegativeButton(R.string.dialog_close, null)
+                .setPositiveButton(R.string.employee_action_cancel, (dialog, which) -> xuLyTrangThaiDatBan(datBan, DatBan.TrangThai.CANCELLED))
+                .show();
+    }
+
+    private void xacNhanHuyYeuCau(YeuCauPhucVu yeuCau) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.employee_service_request_cancel_confirm_title)
+                .setMessage(R.string.employee_service_request_cancel_confirm_message)
+                .setNegativeButton(R.string.dialog_close, null)
+                .setPositiveButton(R.string.employee_action_cancel, (dialog, which) -> xuLyTrangThaiYeuCau(yeuCau, YeuCauPhucVu.TrangThai.DA_HUY))
+                .show();
+    }
+
+    private void hienDialogDoiBan(DatBan datBan) {
+        if (datBan == null) {
+            Toast.makeText(this, R.string.employee_status_update_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        List<String> danhSachBanTrong = new ArrayList<>();
+        for (int soBan = 1; soBan <= 20; soBan++) {
+            String tenBan = getString(R.string.reservation_table_option_format, soBan);
+            if (tenBan.equalsIgnoreCase(datBan.laySoBan())
+                    || !databaseHelper.layDanhSachBanDaDat(datBan.layThoiGian(), datBan.layId()).contains(tenBan)) {
+                danhSachBanTrong.add(tenBan);
+            }
+        }
+        Collections.sort(danhSachBanTrong);
+        if (danhSachBanTrong.isEmpty()) {
+            Toast.makeText(this, R.string.employee_reservation_change_table_no_options, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        MaterialAutoCompleteTextView input = new MaterialAutoCompleteTextView(this);
+        input.setSimpleItems(danhSachBanTrong.toArray(new String[0]));
+        input.setText(datBan.laySoBan(), false);
+        input.setPadding(dp(4), dp(8), dp(4), dp(8));
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.employee_reservation_change_table_title)
+                .setMessage(getString(R.string.employee_reservation_change_table_message))
+                .setView(input)
+                .setNegativeButton(R.string.dialog_close, null)
+                .setPositiveButton(R.string.employee_reservation_action_change_table, (dialog, which) -> {
+                    String soBanMoi = input.getText() == null ? "" : input.getText().toString().trim();
+                    if (TextUtils.isEmpty(soBanMoi)) {
+                        Toast.makeText(this, R.string.reservation_validation_area_required, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    boolean daCapNhat = databaseHelper.capNhatBanDatBan(datBan.layId(), soBanMoi);
+                    Toast.makeText(this, daCapNhat ? R.string.employee_reservation_change_table_success : R.string.employee_status_update_failed, Toast.LENGTH_SHORT).show();
+                    if (daCapNhat) {
+                        lamMoiToanBoDuLieuNhanVien();
+                    }
+                })
+                .show();
     }
 
     private void dieuHuongSaiVaiTro() {

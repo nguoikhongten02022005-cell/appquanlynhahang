@@ -5,13 +5,13 @@ public class DanhMucMon {
     private final String tenHienThi;
     private final String tenDanhMuc;
 
-    public DanhMucMon(int iconResId, String tenHienThi, String tenDanhMuc) {
-        this.idIconTaiNguyen = iconResId;
+    public DanhMucMon(int idIconTaiNguyen, String tenHienThi, String tenDanhMuc) {
+        this.idIconTaiNguyen = idIconTaiNguyen;
         this.tenHienThi = tenHienThi;
         this.tenDanhMuc = tenDanhMuc;
     }
 
-    public int layIconResId() {
+    public int layIdIconTaiNguyen() {
         return idIconTaiNguyen;
     }
 
@@ -21,9 +21,5 @@ public class DanhMucMon {
 
     public String layTenDanhMuc() {
         return tenDanhMuc;
-    }
-
-    public String layTen() {
-        return layTenHienThi();
     }
 }

@@ -13,6 +13,7 @@ import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.NguoiDung;
+import com.example.quanlynhahang.model.VaiTroNguoiDung;
 import com.google.android.material.button.MaterialButton;
 
 public class DangNhapActivity extends AppCompatActivity {
@@ -26,8 +27,8 @@ public class DangNhapActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
 
-    private EditText etLoginEmail;
-    private EditText etLoginPassword;
+    private EditText oNhapEmailDangNhap;
+    private EditText oNhapMatKhauDangNhap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,32 +38,32 @@ public class DangNhapActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(this);
         databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
 
-        etLoginEmail = findViewById(R.id.etLoginEmail);
-        etLoginPassword = findViewById(R.id.etLoginPassword);
+        oNhapEmailDangNhap = findViewById(R.id.etLoginEmail);
+        oNhapMatKhauDangNhap = findViewById(R.id.etLoginPassword);
         MaterialButton btnLogin = findViewById(R.id.btnLogin);
-        MaterialButton btnQuickLoginCustomer = findViewById(R.id.btnQuickLoginCustomer);
-        MaterialButton btnQuickLoginEmployee = findViewById(R.id.btnQuickLoginEmployee);
-        MaterialButton btnQuickLoginAdmin = findViewById(R.id.btnQuickLoginAdmin);
+        MaterialButton nutDangNhapNhanhKhachHang = findViewById(R.id.btnQuickLoginCustomer);
+        MaterialButton nutDangNhapNhanhNhanVien = findViewById(R.id.btnQuickLoginEmployee);
+        MaterialButton nutDangNhapNhanhQuanTri = findViewById(R.id.btnQuickLoginAdmin);
         TextView tvGoToRegister = findViewById(R.id.tvGoToRegister);
 
         btnLogin.setOnClickListener(v -> xuLyDangNhap());
-        btnQuickLoginCustomer.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_KHACH_HANG_MAC_DINH));
-        btnQuickLoginEmployee.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_NHAN_VIEN_MAC_DINH));
-        btnQuickLoginAdmin.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_ADMIN_MAC_DINH));
+        nutDangNhapNhanhKhachHang.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_KHACH_HANG_MAC_DINH));
+        nutDangNhapNhanhNhanVien.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_NHAN_VIEN_MAC_DINH));
+        nutDangNhapNhanhQuanTri.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_ADMIN_MAC_DINH));
         tvGoToRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
     }
 
     private void dangNhapMacDinh(String taiKhoanMacDinh) {
-        etLoginEmail.setText(taiKhoanMacDinh);
-        etLoginPassword.setText(MAT_KHAU_MAC_DINH);
+        oNhapEmailDangNhap.setText(taiKhoanMacDinh);
+        oNhapMatKhauDangNhap.setText(MAT_KHAU_MAC_DINH);
         xuLyDangNhap();
     }
 
     private void xuLyDangNhap() {
-        String emailHoacSoDienThoai = layTextDaCatKhoangTrang(etLoginEmail);
-        String matKhau = layTextDaCatKhoangTrang(etLoginPassword);
+        String emailHoacSoDienThoai = layTextDaCatKhoangTrang(oNhapEmailDangNhap);
+        String matKhau = layTextDaCatKhoangTrang(oNhapMatKhauDangNhap);
 
         if (TextUtils.isEmpty(emailHoacSoDienThoai) || TextUtils.isEmpty(matKhau)) {
             Toast.makeText(this, getString(R.string.login_validation_required), Toast.LENGTH_SHORT).show();
@@ -79,7 +80,9 @@ public class DangNhapActivity extends AppCompatActivity {
 
         Toast.makeText(this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
 
-        if (getIntent().getBooleanExtra(EXTRA_RETURN_TO_CALLER, false)) {
+        boolean quayVeCaller = getIntent().getBooleanExtra(EXTRA_RETURN_TO_CALLER, false);
+        VaiTroNguoiDung vaiTroDangNhap = nguoiDungDaXacThuc.layVaiTro();
+        if (quayVeCaller && vaiTroDangNhap == VaiTroNguoiDung.KHACH_HANG) {
             setResult(RESULT_OK);
             finish();
             return;

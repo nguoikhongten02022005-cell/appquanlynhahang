@@ -337,8 +337,8 @@ public class DatBanFragment extends Fragment {
             return;
         }
 
-        datBan.huyDatBan();
-        reservationAdapter.notifyItemChanged(position);
+        taiDanhSachDatBan();
+        reservationAdapter.capNhatDanhSachDatBan(reservations);
         capNhatDanhSachBanTheoKhungGio();
         hienThiPhanHoiNgan(R.string.reservation_cancel_success);
     }

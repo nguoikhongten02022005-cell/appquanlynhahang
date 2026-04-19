@@ -9,20 +9,25 @@ public class NguoiDung {
     private final VaiTroNguoiDung vaiTro;
     private final boolean hoatDong;
 
-    public NguoiDung(long id, String name, String email, String phone, VaiTroNguoiDung role, boolean isActive) {
-        this.idNguoiDung = id;
-        this.hoTen = name;
-        this.diaChiEmail = email;
-        this.soDienThoai = phone;
-        this.vaiTro = role;
-        this.hoatDong = isActive;
+    public NguoiDung(long idNguoiDung,
+                     String hoTen,
+                     String diaChiEmail,
+                     String soDienThoai,
+                     VaiTroNguoiDung vaiTro,
+                     boolean hoatDong) {
+        this.idNguoiDung = idNguoiDung;
+        this.hoTen = hoTen;
+        this.diaChiEmail = diaChiEmail;
+        this.soDienThoai = soDienThoai;
+        this.vaiTro = vaiTro;
+        this.hoatDong = hoatDong;
     }
 
     public long layId() {
         return idNguoiDung;
     }
 
-    public String layTen() {
+    public String layHoTen() {
         return hoTen;
     }
 

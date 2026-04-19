@@ -13,12 +13,13 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapter.ServiceRequestViewHolder> {
+public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapter.ViewHolderYeuCauPhucVu> {
 
     public interface OnHuyYeuCauClickListener {
         void onHuyYeuCau(YeuCauPhucVu yeuCauPhucVu, int viTri);
@@ -46,14 +47,14 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
 
     @NonNull
     @Override
-    public ServiceRequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolderYeuCauPhucVu onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_yeu_cau_phuc_vu, parent, false);
-        return new ServiceRequestViewHolder(view);
+        return new ViewHolderYeuCauPhucVu(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ServiceRequestViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolderYeuCauPhucVu holder, int position) {
         holder.ganDuLieu(danhSachYeuCau.get(position));
     }
 
@@ -62,7 +63,7 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
         return danhSachYeuCau.size();
     }
 
-    class ServiceRequestViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolderYeuCauPhucVu extends RecyclerView.ViewHolder {
         private final TextView tvServiceRequestContent;
         private final TextView tvServiceRequestType;
         private final TextView tvServiceRequestTime;
@@ -70,7 +71,7 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
         private final TextView tvServiceRequestStatus;
         private final com.google.android.material.button.MaterialButton btnCancelServiceRequest;
 
-        ServiceRequestViewHolder(@NonNull View itemView) {
+        ViewHolderYeuCauPhucVu(@NonNull View itemView) {
             super(itemView);
             tvServiceRequestContent = itemView.findViewById(R.id.tvServiceRequestContent);
             tvServiceRequestType = itemView.findViewById(R.id.tvServiceRequestType);
@@ -83,30 +84,16 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
         void ganDuLieu(YeuCauPhucVu yeuCau) {
             Context context = itemView.getContext();
             tvServiceRequestContent.setText(yeuCau.layNoiDung());
-            tvServiceRequestType.setText(layTextLoaiYeuCau(context, yeuCau.layLoaiYeuCau()));
+            tvServiceRequestType.setText(TrangThaiHienThiHelper.layTextLoaiYeuCau(yeuCau.layLoaiYeuCau()));
             tvServiceRequestTime.setText(yeuCau.layThoiGianGui());
             tvServiceRequestTable.setVisibility(yeuCau.coBanLienQuan() ? View.VISIBLE : View.GONE);
             if (yeuCau.coBanLienQuan()) {
                 tvServiceRequestTable.setText(context.getString(R.string.order_table_format, yeuCau.laySoBan()));
             }
 
-            if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_CHO) {
-                tvServiceRequestStatus.setText(R.string.service_request_status_pending);
-                int mauDangCho = ContextCompat.getColor(context, R.color.primary);
-                ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauDangCho));
-            } else if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DANG_XU_LY) {
-                tvServiceRequestStatus.setText(R.string.service_request_status_processing);
-                int mauDangXuLy = ContextCompat.getColor(context, R.color.warning);
-                ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauDangXuLy));
-            } else if (yeuCau.layTrangThai() == YeuCauPhucVu.TrangThai.DA_HUY) {
-                tvServiceRequestStatus.setText(R.string.service_request_status_canceled);
-                int mauDaHuy = ContextCompat.getColor(context, R.color.error);
-                ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauDaHuy));
-            } else {
-                tvServiceRequestStatus.setText(R.string.service_request_status_done);
-                int mauDaXong = ContextCompat.getColor(context, R.color.success);
-                ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauDaXong));
-            }
+            tvServiceRequestStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiYeuCau(yeuCau.layTrangThai()));
+            int mauTrangThai = ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiYeuCau(yeuCau.layTrangThai()));
+            ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauTrangThai));
 
             boolean coTheHuy = yeuCau.coTheHuy() && onHuyYeuCauClickListener != null;
             btnCancelServiceRequest.setVisibility(coTheHuy ? View.VISIBLE : View.GONE);
@@ -119,14 +106,5 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
             } : null);
         }
 
-        private String layTextLoaiYeuCau(Context context, YeuCauPhucVu.LoaiYeuCau loaiYeuCau) {
-            if (loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THEM_NUOC) {
-                return context.getString(R.string.service_request_type_more_water);
-            }
-            if (loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THANH_TOAN) {
-                return context.getString(R.string.service_request_type_payment);
-            }
-            return context.getString(R.string.service_request_type_call_staff);
-        }
     }
 }

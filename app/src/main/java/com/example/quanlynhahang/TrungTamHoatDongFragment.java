@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
@@ -102,6 +102,12 @@ public class TrungTamHoatDongFragment extends Fragment {
         }
 
         chonTab(tabDangChon);
+        capNhatTomTatDichVu();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         capNhatTomTatDichVu();
     }
 
@@ -205,8 +211,8 @@ public class TrungTamHoatDongFragment extends Fragment {
         String banHienTai = DichVuKhachHangHelper.timBanHienTai(
                 sessionManager.layBanHienTai(),
                 donTaiQuanDangHoatDong,
-                () -> CartManager.getInstance().layNguCanhDonHang().laAnTaiQuan()
-                        ? CartManager.getInstance().layNguCanhDonHang().laySoBan()
+                () -> QuanLyGioHang.layInstance().layNguCanhDonHang().laAnTaiQuan()
+                        ? QuanLyGioHang.layInstance().layNguCanhDonHang().laySoBan()
                         : null
         );
         boolean coPhienHoatDong = banHienTai != null || donDangHoatDong != null;

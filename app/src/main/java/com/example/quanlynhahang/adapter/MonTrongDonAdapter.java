@@ -43,8 +43,8 @@ public class MonTrongDonAdapter extends RecyclerView.Adapter<MonTrongDonAdapter.
     public void onBindViewHolder(@NonNull MonTrongDonViewHolder holder, int position) {
         DonHang.MonTrongDon monDat = danhSachMon.get(position);
 
-        holder.ivMonTrongDonImage.setImageResource(monDat.layMonAn().layImageResId());
-        holder.tvMonTrongDonName.setText(monDat.layMonAn().layTen());
+        holder.ivMonTrongDonImage.setImageResource(monDat.layMonAn().layIdAnhTaiNguyen());
+        holder.tvMonTrongDonName.setText(monDat.layMonAn().layTenMon());
         holder.tvMonTrongDonQuantity.setText(
                 holder.itemView.getContext().getString(
                         R.string.order_quantity_format,
@@ -54,7 +54,7 @@ public class MonTrongDonAdapter extends RecyclerView.Adapter<MonTrongDonAdapter.
         holder.tvMonTrongDonPrice.setText(
                 holder.itemView.getContext().getString(
                         R.string.order_price_format,
-                        monDat.layMonAn().layGia()
+                        monDat.layMonAn().layGiaBan()
                 )
         );
 

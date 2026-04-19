@@ -16,7 +16,7 @@ public class DatBan {
     private final String soBan;
     private final int soKhach;
     private final String ghiChu;
-    private final long linkedOrderId;
+    private final long idDonHangLienKet;
     private TrangThai trangThai;
 
     public DatBan(long idDatBan,
@@ -26,7 +26,7 @@ public class DatBan {
                   int soKhach,
                   String ghiChu,
                   TrangThai trangThai,
-                  long linkedOrderId) {
+                  long idDonHangLienKet) {
         this.idDatBan = idDatBan;
         this.maDatBan = maDatBan == null ? "" : maDatBan.trim();
         this.thoiGian = thoiGian;
@@ -34,7 +34,7 @@ public class DatBan {
         this.soKhach = soKhach;
         this.ghiChu = ghiChu == null ? "" : ghiChu.trim();
         this.trangThai = trangThai == null ? TrangThai.PENDING : trangThai;
-        this.linkedOrderId = linkedOrderId;
+        this.idDonHangLienKet = idDonHangLienKet;
     }
 
     public long layId() {
@@ -65,8 +65,8 @@ public class DatBan {
         return trangThai;
     }
 
-    public long layLinkedOrderId() {
-        return linkedOrderId;
+    public long layIdDonHangLienKet() {
+        return idDonHangLienKet;
     }
 
     public boolean coMaDatBan() {

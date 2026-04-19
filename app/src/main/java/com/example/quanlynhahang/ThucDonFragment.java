@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.ThucDonAdapter;
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 
@@ -34,13 +34,13 @@ public class ThucDonFragment extends Fragment {
     public static final String ARG_MO_TIM_KIEM = "mo_tim_kiem";
     public static final String ARG_TU_KHOA_TIM_KIEM = "tu_khoa_tim_kiem";
 
-    private final List<MonAnDeXuat> allDishes = new ArrayList<>();
-    private final List<String> allDescriptions = new ArrayList<>();
-    private final List<MonAnDeXuat> filteredDishes = new ArrayList<>();
-    private final List<String> filteredDescriptions = new ArrayList<>();
+    private final List<MonAnDeXuat> tatCaMonAn = new ArrayList<>();
+    private final List<String> tatCaMoTa = new ArrayList<>();
+    private final List<MonAnDeXuat> danhSachMonDaLoc = new ArrayList<>();
+    private final List<String> danhSachMoTaDaLoc = new ArrayList<>();
 
     private DatabaseHelper databaseHelper;
-    private ThucDonAdapter menuAdapter;
+    private ThucDonAdapter boDieuHopThucDon;
     private EditText etMenuSearch;
     private TextView tvMenuFilterHint;
     private View layoutMenuEmptyState;
@@ -139,9 +139,9 @@ public class ThucDonFragment extends Fragment {
         RecyclerView rvMenu = view.findViewById(R.id.rvMenu);
         rvMenu.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        menuAdapter = new ThucDonAdapter(
-                filteredDishes,
-                filteredDescriptions,
+        boDieuHopThucDon = new ThucDonAdapter(
+                danhSachMonDaLoc,
+                danhSachMoTaDaLoc,
                 dish -> {
                     if (dish == null || !dish.laConPhucVu()) {
                         Toast.makeText(
@@ -151,7 +151,7 @@ public class ThucDonFragment extends Fragment {
                         ).show();
                         return;
                     }
-                    CartManager.getInstance().themVaoGio(dish);
+                    QuanLyGioHang.layInstance().themVaoGio(dish);
                     Toast.makeText(
                             requireContext(),
                             getString(R.string.menu_added_to_cart, dish.layTenMon()),
@@ -160,7 +160,7 @@ public class ThucDonFragment extends Fragment {
                 }
         );
 
-        rvMenu.setAdapter(menuAdapter);
+        rvMenu.setAdapter(boDieuHopThucDon);
         tvMenuFilterHint = view.findViewById(R.id.tvMenuFilterHint);
         layoutMenuEmptyState = view.findViewById(R.id.layoutMenuEmptyState);
         tvMenuEmptyMessage = view.findViewById(R.id.tvMenuEmptyMessage);
@@ -189,8 +189,8 @@ public class ThucDonFragment extends Fragment {
     }
 
     private void taiDuLieuMonAn() {
-        allDishes.clear();
-        allDescriptions.clear();
+        tatCaMonAn.clear();
+        tatCaMoTa.clear();
 
         List<DatabaseHelper.DishRecord> dishRecords = databaseHelper.layTatCaMonAn();
         for (DatabaseHelper.DishRecord record : dishRecords) {
@@ -199,8 +199,8 @@ public class ThucDonFragment extends Fragment {
                     && !TextUtils.equals(tenDanhMucDangChon, dishItem.layTenDanhMuc())) {
                 continue;
             }
-            allDishes.add(dishItem);
-            allDescriptions.add(record.layMoTa());
+            tatCaMonAn.add(dishItem);
+            tatCaMoTa.add(record.layMoTa());
         }
 
         apDungBoLocHienTai();
@@ -209,12 +209,12 @@ public class ThucDonFragment extends Fragment {
     public void apDungBoLocHienTai() {
         String tuKhoa = layTuKhoaHienTai().toLowerCase(Locale.ROOT);
 
-        filteredDishes.clear();
-        filteredDescriptions.clear();
+        danhSachMonDaLoc.clear();
+        danhSachMoTaDaLoc.clear();
 
-        for (int i = 0; i < allDishes.size(); i++) {
-            MonAnDeXuat monAn = allDishes.get(i);
-            String moTa = allDescriptions.get(i);
+        for (int i = 0; i < tatCaMonAn.size(); i++) {
+            MonAnDeXuat monAn = tatCaMonAn.get(i);
+            String moTa = tatCaMoTa.get(i);
 
             String tenMonLower = giaTriLowerAnToan(monAn == null ? null : monAn.layTenMon());
             String moTaLower = giaTriLowerAnToan(moTa);
@@ -224,12 +224,12 @@ public class ThucDonFragment extends Fragment {
                     || tenMonLower.contains(tuKhoa)
                     || moTaLower.contains(tuKhoa)
                     || danhMucLower.contains(tuKhoa)) {
-                filteredDishes.add(monAn);
-                filteredDescriptions.add(moTa == null ? "" : moTa);
+                danhSachMonDaLoc.add(monAn);
+                danhSachMoTaDaLoc.add(moTa == null ? "" : moTa);
             }
         }
 
-        menuAdapter.capNhatDuLieu(filteredDishes, filteredDescriptions);
+        boDieuHopThucDon.capNhatDuLieu(danhSachMonDaLoc, danhSachMoTaDaLoc);
         capNhatHintBoLoc();
         capNhatEmptyState();
     }
@@ -265,7 +265,7 @@ public class ThucDonFragment extends Fragment {
             return;
         }
 
-        boolean coKetQua = !filteredDishes.isEmpty();
+        boolean coKetQua = !danhSachMonDaLoc.isEmpty();
         layoutMenuEmptyState.setVisibility(coKetQua ? View.GONE : View.VISIBLE);
 
         boolean coBoLoc = !TextUtils.isEmpty(tenDanhMucDangChon) || !TextUtils.isEmpty(layTuKhoaHienTai());

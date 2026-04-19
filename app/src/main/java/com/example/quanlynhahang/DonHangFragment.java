@@ -176,8 +176,7 @@ public class DonHangFragment extends Fragment {
             return;
         }
 
-        donHang.huyDon();
-        orderAdapter.notifyItemChanged(viTri);
+        capNhatGiaoDienDonHang(false);
 
         Toast.makeText(
                 requireContext(),

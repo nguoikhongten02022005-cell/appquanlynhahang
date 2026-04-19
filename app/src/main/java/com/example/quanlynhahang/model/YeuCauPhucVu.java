@@ -21,7 +21,7 @@ public class YeuCauPhucVu {
     private final String thoiGianGui;
     private final String thoiGianXuLy;
     private final String soBan;
-    private final long orderId;
+    private final long idDonHang;
     private TrangThai trangThai;
 
     public YeuCauPhucVu(long idYeuCau,
@@ -30,7 +30,7 @@ public class YeuCauPhucVu {
                         String thoiGianGui,
                         String thoiGianXuLy,
                         String soBan,
-                        long orderId,
+                        long idDonHang,
                         TrangThai trangThai) {
         this.idYeuCau = idYeuCau;
         this.loaiYeuCau = loaiYeuCau == null ? LoaiYeuCau.GOI_NHAN_VIEN : loaiYeuCau;
@@ -38,7 +38,7 @@ public class YeuCauPhucVu {
         this.thoiGianGui = thoiGianGui == null ? "" : thoiGianGui.trim();
         this.thoiGianXuLy = thoiGianXuLy == null ? "" : thoiGianXuLy.trim();
         this.soBan = soBan == null ? "" : soBan.trim();
-        this.orderId = orderId;
+        this.idDonHang = idDonHang;
         this.trangThai = trangThai == null ? TrangThai.DANG_CHO : trangThai;
     }
 
@@ -66,8 +66,8 @@ public class YeuCauPhucVu {
         return soBan;
     }
 
-    public long layOrderId() {
-        return orderId;
+    public long layIdDonHang() {
+        return idDonHang;
     }
 
     public TrangThai layTrangThai() {
@@ -83,7 +83,7 @@ public class YeuCauPhucVu {
     }
 
     public boolean coDonHangLienQuan() {
-        return orderId > 0;
+        return idDonHang > 0;
     }
 
     public boolean coTheHuy() {

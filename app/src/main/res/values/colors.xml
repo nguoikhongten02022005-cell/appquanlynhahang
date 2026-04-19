@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
     <color name="brand_primary">#C96E3A</color>
@@ -26,23 +25,17 @@
     <color name="on_tertiary_container">#43270B</color>
 
     <color name="background">#F7F3ED</color>
-    <color name="on_background">#1A211A</color>
     <color name="surface">#FFFDFC</color>
     <color name="on_surface">#1B1F1A</color>
     <color name="surface_variant">#E8E4DC</color>
     <color name="on_surface_variant">#667065</color>
-    <color name="surface_container">#F3EEE6</color>
     <color name="surface_container_high">#EEE8DF</color>
-    <color name="inverse_surface">#273127</color>
-    <color name="inverse_on_surface">#EDF1EA</color>
 
     <color name="outline">#D9CBBE</color>
     <color name="outline_variant">#EADFD5</color>
 
     <color name="success">#2E7D32</color>
-    <color name="on_success">@color/white</color>
     <color name="warning">#B7791F</color>
-    <color name="on_warning">@color/white</color>
     <color name="error">#C85A48</color>
     <color name="on_error">@color/white</color>
 
@@ -50,17 +43,11 @@
     <color name="nav_unselected">#95877B</color>
     <color name="nav_indicator">#F4DED0</color>
 
-    <color name="ripple_brand">#1FC96E3A</color>
     <color name="ripple_accent">#1FD78440</color>
     <color name="ripple_neutral">#141B1F1A</color>
 
-    <color name="hero_gradient_start">#A85E31</color>
-    <color name="hero_gradient_center">#C97941</color>
-    <color name="hero_gradient_end">#E7A25E</color>
     <color name="hero_overlay">#14000000</color>
-    <color name="hero_glow">#40FFFFFF</color>
     <color name="hero_decor_light">#29FFFFFF</color>
-    <color name="hero_decor_dark">#12000000</color>
 
     <color name="category_selected_bg">#F7E2D5</color>
     <color name="category_unselected_bg">#FFFDFC</color>
@@ -85,7 +72,6 @@
     <color name="add_button_icon_disabled">#887C74</color>
 
     <color name="brand_orange">@color/brand_secondary</color>
-    <color name="brand_red">@color/error</color>
     <color name="text_primary">@color/on_surface</color>
     <color name="text_secondary">@color/on_surface_variant</color>
     <color name="text_on_color">@color/white</color>

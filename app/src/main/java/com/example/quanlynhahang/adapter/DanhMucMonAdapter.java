@@ -54,7 +54,7 @@ public class DanhMucMonAdapter extends RecyclerView.Adapter<DanhMucMonAdapter.Ca
         DanhMucMon danhMuc = danhSachDanhMuc.get(position);
         boolean dangChon = position == viTriDangChon;
 
-        holder.ivCategoryIcon.setImageResource(danhMuc.layIconResId());
+        holder.ivCategoryIcon.setImageResource(danhMuc.layIdIconTaiNguyen());
         holder.tvCategoryName.setText(danhMuc.layTenHienThi());
 
         holder.itemView.setSelected(dangChon);

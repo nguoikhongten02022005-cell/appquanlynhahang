@@ -48,7 +48,7 @@ public class MonAnDeXuatAdapter extends RecyclerView.Adapter<MonAnDeXuatAdapter.
         MonAnDeXuat monAn = danhSachMon.get(position);
         boolean conPhucVu = monAn.laConPhucVu();
 
-        holder.ivDishImage.setImageResource(monAn.layImageResId());
+        holder.ivDishImage.setImageResource(monAn.layIdAnhTaiNguyen());
         holder.tvDishName.setText(monAn.layTenMon());
         holder.tvDishPrice.setText(monAn.layGiaBan());
         holder.tvDishStatus.setText(conPhucVu ? R.string.dish_status_available : R.string.dish_status_unavailable);

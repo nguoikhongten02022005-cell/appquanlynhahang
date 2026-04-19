@@ -8,17 +8,17 @@ public class MonAnDeXuat {
     private final String tenDanhMuc;
     private final int diemDeXuat;
 
-    public MonAnDeXuat(int imageResId, String tenMon, String giaBan, boolean conPhucVu) {
-        this(imageResId, tenMon, giaBan, conPhucVu, "", 0);
+    public MonAnDeXuat(int idAnhTaiNguyen, String tenMon, String giaBan, boolean conPhucVu) {
+        this(idAnhTaiNguyen, tenMon, giaBan, conPhucVu, "", 0);
     }
 
-    public MonAnDeXuat(int imageResId,
+    public MonAnDeXuat(int idAnhTaiNguyen,
                        String tenMon,
                        String giaBan,
                        boolean conPhucVu,
                        String tenDanhMuc,
                        int diemDeXuat) {
-        this.idAnhTaiNguyen = imageResId;
+        this.idAnhTaiNguyen = idAnhTaiNguyen;
         this.tenMon = tenMon;
         this.giaBan = giaBan;
         this.conPhucVu = conPhucVu;
@@ -26,7 +26,7 @@ public class MonAnDeXuat {
         this.diemDeXuat = diemDeXuat;
     }
 
-    public int layImageResId() {
+    public int layIdAnhTaiNguyen() {
         return idAnhTaiNguyen;
     }
 
@@ -48,17 +48,5 @@ public class MonAnDeXuat {
 
     public int layDiemDeXuat() {
         return diemDeXuat;
-    }
-
-    public String layTen() {
-        return layTenMon();
-    }
-
-    public String layGia() {
-        return layGiaBan();
-    }
-
-    public boolean laDangPhucVu() {
-        return laConPhucVu();
     }
 }

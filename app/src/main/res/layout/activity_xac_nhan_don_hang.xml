@@ -128,7 +128,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/space_xs"
-                        android:text="ℹ️"
+                        android:text="@string/ky_hieu_thong_tin"
                         android:textColor="@color/brand_orange"
                         android:textSize="16sp" />
 

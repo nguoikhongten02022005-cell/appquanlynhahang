@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.DanhMucMonAdapter;
 import com.example.quanlynhahang.adapter.MonAnDeXuatAdapter;
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.model.DanhMucMon;
 import com.example.quanlynhahang.model.MonAnDeXuat;
@@ -56,14 +56,14 @@ public class TrangChuFragment extends Fragment {
     }
 
     private void thietLapHanhDongHero(View view) {
-        View actionDonHang = view.findViewById(R.id.actionQuickDonHang);
-        View actionBook = view.findViewById(R.id.actionQuickBook);
+        View hanhDongNhanhDonHang = view.findViewById(R.id.hanhDongNhanhDonHang);
+        View hanhDongNhanhDatBan = view.findViewById(R.id.actionQuickBook);
 
-        actionDonHang.setOnClickListener(v -> {
+        hanhDongNhanhDonHang.setOnClickListener(v -> {
             datLaiDanhMucDangChon();
             dieuHuongDenMenu(null, true, null);
         });
-        actionBook.setOnClickListener(v -> dieuHuongDenYeuCau());
+        hanhDongNhanhDatBan.setOnClickListener(v -> dieuHuongDenYeuCau());
     }
 
     private void thietLapDanhSachDanhMuc(View view) {
@@ -91,7 +91,7 @@ public class TrangChuFragment extends Fragment {
 
             @Override
             public void khiThemMon(MonAnDeXuat item) {
-                CartManager.getInstance().themVaoGio(item);
+                QuanLyGioHang.layInstance().themVaoGio(item);
                 Toast.makeText(
                         requireContext(),
                         getString(R.string.menu_added_to_cart, item.layTenMon()),

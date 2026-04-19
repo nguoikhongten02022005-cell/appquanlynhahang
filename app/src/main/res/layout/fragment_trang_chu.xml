@@ -112,7 +112,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:id="@+id/actionQuickDonHang"
+                android:id="@+id/hanhDongNhanhDonHang"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/quick_action_height"
                 android:layout_marginEnd="@dimen/space_sm"

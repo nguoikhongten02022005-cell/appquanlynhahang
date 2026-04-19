@@ -12,31 +12,31 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
-import com.example.quanlynhahang.data.CartManager;
+import com.example.quanlynhahang.data.QuanLyGioHang;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.CartDishViewHolder> {
+public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.ViewHolderMonTrongGio> {
 
     public interface OnHanhDongSoLuongListener {
-        void khiTangSoLuong(CartManager.CartItem item);
+        void khiTangSoLuong(QuanLyGioHang.MonTrongGio monTrongGio);
 
-        void khiGiamSoLuong(CartManager.CartItem item);
+        void khiGiamSoLuong(QuanLyGioHang.MonTrongGio monTrongGio);
 
-        void khiXoaMon(CartManager.CartItem item);
+        void khiXoaMon(QuanLyGioHang.MonTrongGio monTrongGio);
     }
 
-    private final List<CartManager.CartItem> danhSachMon = new ArrayList<>();
+    private final List<QuanLyGioHang.MonTrongGio> danhSachMon = new ArrayList<>();
     private final OnHanhDongSoLuongListener onHanhDongSoLuongListener;
 
-    public MonTrongGioAdapter(List<CartManager.CartItem> danhSachMon,
+    public MonTrongGioAdapter(List<QuanLyGioHang.MonTrongGio> danhSachMon,
                              OnHanhDongSoLuongListener onHanhDongSoLuongListener) {
         this.danhSachMon.addAll(danhSachMon);
         this.onHanhDongSoLuongListener = onHanhDongSoLuongListener;
     }
 
-    public void capNhatDuLieu(List<CartManager.CartItem> danhSachMoi) {
+    public void capNhatDuLieu(List<QuanLyGioHang.MonTrongGio> danhSachMoi) {
         danhSachMon.clear();
         danhSachMon.addAll(danhSachMoi);
         notifyDataSetChanged();
@@ -44,23 +44,23 @@ public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.
 
     @NonNull
     @Override
-    public CartDishViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolderMonTrongGio onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_mon_trong_don, parent, false);
-        return new CartDishViewHolder(view);
+        return new ViewHolderMonTrongGio(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CartDishViewHolder holder, int position) {
-        CartManager.CartItem monTrongGio = danhSachMon.get(position);
+    public void onBindViewHolder(@NonNull ViewHolderMonTrongGio holder, int position) {
+        QuanLyGioHang.MonTrongGio monTrongGio = danhSachMon.get(position);
 
-        holder.ivDishImage.setImageResource(monTrongGio.layMonAn().layImageResId());
-        holder.tvDishName.setText(monTrongGio.layMonAn().layTen());
+        holder.ivDishImage.setImageResource(monTrongGio.layMonAn().layIdAnhTaiNguyen());
+        holder.tvDishName.setText(monTrongGio.layMonAn().layTenMon());
         holder.tvDishQuantity.setText(
                 holder.itemView.getContext().getString(R.string.order_quantity_format, monTrongGio.laySoLuong())
         );
         holder.tvDishPrice.setText(
-                holder.itemView.getContext().getString(R.string.order_price_format, monTrongGio.layMonAn().layGia())
+                holder.itemView.getContext().getString(R.string.order_price_format, monTrongGio.layMonAn().layGiaBan())
         );
 
         holder.layoutActions.setVisibility(View.VISIBLE);
@@ -74,7 +74,7 @@ public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.
         return danhSachMon.size();
     }
 
-    static class CartDishViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolderMonTrongGio extends RecyclerView.ViewHolder {
         private final ImageView ivDishImage;
         private final TextView tvDishName;
         private final TextView tvDishQuantity;
@@ -84,7 +84,7 @@ public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.
         private final ImageButton btnDecrease;
         private final ImageButton btnRemove;
 
-        CartDishViewHolder(@NonNull View itemView) {
+        ViewHolderMonTrongGio(@NonNull View itemView) {
             super(itemView);
             ivDishImage = itemView.findViewById(R.id.ivMonTrongDonImage);
             tvDishName = itemView.findViewById(R.id.tvMonTrongDonName);

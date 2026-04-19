@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.ChiTietDonHangActivity;
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
+import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.DonHang;
 
 import java.text.DecimalFormat;
@@ -85,7 +87,7 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
 
             tvDonHangCode.setText(donHang.layMaDon());
             tvDonHangTime.setText(donHang.layThoiGian());
-            int trangThaiRes = layTextTrangThai(donHang, context);
+            int trangThaiRes = TrangThaiHienThiHelper.layTextTrangThaiDon(donHang);
             tvDonHangStatus.setText(trangThaiRes);
             tvDonHangType.setText(context.getString(
                     R.string.order_card_summary_format,
@@ -94,16 +96,17 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
                     dinhDangGia(donHang.layTongTien())
             ));
 
-            int mauTrangThai = ContextCompat.getColor(context, layMauTrangThai(donHang.layTrangThai()));
+            int mauTrangThai = ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiDon(donHang.layTrangThai()));
             ViewCompat.setBackgroundTintList(tvDonHangStatus, ColorStateList.valueOf(mauTrangThai));
 
             btnDonHangDetail.setText(R.string.order_view_details);
             btnDonHangDetail.setOnClickListener(v -> moChiTietDonHang(context, donHang));
 
-            btnDonHangCancel.setVisibility(donHang.coTheHuy() ? View.VISIBLE : View.GONE);
+            boolean coTheHuy = HanhDongNghiepVuHelper.khachCoTheHuyDon(donHang);
+            btnDonHangCancel.setVisibility(coTheHuy ? View.VISIBLE : View.GONE);
             btnDonHangCancel.setOnClickListener(v -> {
                 int viTriAdapter = getBindingAdapterPosition();
-                if (viTriAdapter == RecyclerView.NO_POSITION || !donHang.coTheHuy()) {
+                if (viTriAdapter == RecyclerView.NO_POSITION || !coTheHuy) {
                     return;
                 }
                 onHuyDonClickListener.onHuyDon(donHang, viTriAdapter);
@@ -147,36 +150,4 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
                 : R.string.order_type_take_away);
     }
 
-    private int layTextTrangThai(DonHang donHang, Context context) {
-        DonHang.TrangThai trangThai = donHang.layTrangThai();
-        if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
-            return R.string.order_status_pending;
-        }
-        if (trangThai == DonHang.TrangThai.DANG_CHUAN_BI) {
-            return R.string.order_status_making;
-        }
-        if (trangThai == DonHang.TrangThai.SAN_SANG_PHUC_VU) {
-            return donHang.laAnTaiQuan() ? R.string.order_status_ready : R.string.order_status_ready_takeaway;
-        }
-        if (trangThai == DonHang.TrangThai.HOAN_THANH) {
-            return R.string.order_status_completed;
-        }
-        return R.string.order_status_canceled;
-    }
-
-    private int layMauTrangThai(DonHang.TrangThai trangThai) {
-        if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
-            return R.color.warning;
-        }
-        if (trangThai == DonHang.TrangThai.DANG_CHUAN_BI) {
-            return R.color.brand_orange;
-        }
-        if (trangThai == DonHang.TrangThai.SAN_SANG_PHUC_VU) {
-            return R.color.primary;
-        }
-        if (trangThai == DonHang.TrangThai.HOAN_THANH) {
-            return R.color.success;
-        }
-        return R.color.error;
-    }
 }

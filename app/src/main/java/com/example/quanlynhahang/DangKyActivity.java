@@ -35,7 +35,7 @@ public class DangKyActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(this);
         databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.migrateLegacyAuthIfNeeded(databaseHelper);
+        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
 
         etRegisterFullName = findViewById(R.id.etRegisterFullName);
         etRegisterEmail = findViewById(R.id.etRegisterEmail);

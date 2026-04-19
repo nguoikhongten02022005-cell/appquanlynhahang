@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
+import com.google.android.material.button.MaterialButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 import com.google.android.material.badge.BadgeDrawable;
@@ -26,6 +28,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH = "extra_allow_customer_preview";
+    public static final String EXTRA_CHE_DO_PREVIEW_KHACH = DieuHuongNoiBoHelper.EXTRA_CHE_DO_PREVIEW_KHACH;
+    public static final String EXTRA_ROUTE_TRA_VE_NOI_BO = DieuHuongNoiBoHelper.EXTRA_ROUTE_TRA_VE_NOI_BO;
     private static final String TAG = "MainActivity";
     public static final String EXTRA_MO_TAB_TRUNG_TAM_HOAT_DONG = "extra_open_activity_hub_tab";
     private static final int SO_LUONG_BADGE_TOI_DA = 99;
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tvCartBadge;
     private TextView tvGreeting;
+    private MaterialButton btnExitCustomerPreview;
     private BottomNavigationView bottomNavigationView;
 
     private SessionManager sessionManager;
@@ -49,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private String tuKhoaMenuCho;
     private boolean coDieuHuongMenuCho;
     private boolean choPhepXemGiaoDienKhach;
+    private boolean cheDoPreviewKhach;
+    @Nullable
+    private String duongDanTraVeNoiBo;
 
     private final QuanLyGioHang.LangNgheGioHang cartListener = this::capNhatBadgeGioHang;
 
@@ -72,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
         sessionManager.damBaoVaiTroSession(databaseHelper);
         choPhepXemGiaoDienKhach = getIntent().getBooleanExtra(EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false);
+        cheDoPreviewKhach = getIntent().getBooleanExtra(EXTRA_CHE_DO_PREVIEW_KHACH, false);
+        duongDanTraVeNoiBo = getIntent().getStringExtra(EXTRA_ROUTE_TRA_VE_NOI_BO);
         if (sessionManager.daDangNhap() && sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.KHACH_HANG && !choPhepXemGiaoDienKhach) {
             startActivity(DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, false)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -82,7 +92,9 @@ public class MainActivity extends AppCompatActivity {
 
         tvCartBadge = findViewById(R.id.tvCartBadge);
         tvGreeting = findViewById(R.id.tvGreeting);
+        btnExitCustomerPreview = findViewById(R.id.btnExitCustomerPreview);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        capNhatNutThoatPreviewKhach();
 
         if (savedInstanceState != null) {
             tenDanhMucMenuCho = savedInstanceState.getString(ThucDonFragment.ARG_TEN_DANH_MUC);
@@ -110,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        QuanLyGioHang.layInstance().themLangNghe(cartListener);
+        layGioKhachHang().themLangNghe(cartListener);
         lamMoiTrangThaiHeader();
     }
 
@@ -126,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        QuanLyGioHang.layInstance().xoaLangNghe(cartListener);
+        layGioKhachHang().xoaLangNghe(cartListener);
         super.onStop();
     }
 
@@ -180,6 +192,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void thietLapHanhDongHeader() {
         findViewById(R.id.layoutCartIcon).setOnClickListener(v -> moGioHang());
+        if (btnExitCustomerPreview != null) {
+            btnExitCustomerPreview.setOnClickListener(v -> thoatPreviewKhachHang());
+        }
         View nutTimKiem = findViewById(R.id.layoutSearchAction);
         if (nutTimKiem != null) {
             nutTimKiem.setOnClickListener(v -> dieuHuongDenMenu(null, true, null));
@@ -347,8 +362,22 @@ public class MainActivity extends AppCompatActivity {
         tvGreeting.setText(R.string.home_greeting);
     }
 
+    private void capNhatNutThoatPreviewKhach() {
+        if (btnExitCustomerPreview == null) {
+            return;
+        }
+        btnExitCustomerPreview.setVisibility(cheDoPreviewKhach ? View.VISIBLE : View.GONE);
+    }
+
+    private void thoatPreviewKhachHang() {
+        Intent intent = DieuHuongNoiBoHelper.taoIntentTraVeNoiBoTuRoute(this, duongDanTraVeNoiBo);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     private void capNhatBadgeGioHang() {
-        int tongSoLuong = QuanLyGioHang.layInstance().layTongSoLuong();
+        int tongSoLuong = layGioKhachHang().layTongSoLuong();
         String chuoiBadge = dinhDangSoLuongBadge(tongSoLuong);
         boolean hienBadge = chuoiBadge != null;
 
@@ -372,6 +401,10 @@ public class MainActivity extends AppCompatActivity {
         badgeDrawable.setVisible(true);
         badgeDrawable.setMaxCharacterCount(3);
         badgeDrawable.setNumber(tongSoLuong);
+    }
+
+    private QuanLyGioHang layGioKhachHang() {
+        return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
     }
 
     @Nullable

@@ -211,8 +211,8 @@ public class TrungTamHoatDongFragment extends Fragment {
         String banHienTai = DichVuKhachHangHelper.timBanHienTai(
                 sessionManager.layBanHienTai(),
                 donTaiQuanDangHoatDong,
-                () -> QuanLyGioHang.layInstance().layNguCanhDonHang().laAnTaiQuan()
-                        ? QuanLyGioHang.layInstance().layNguCanhDonHang().laySoBan()
+                () -> layGioKhachHang().layNguCanhDonHang().laAnTaiQuan()
+                        ? layGioKhachHang().layNguCanhDonHang().laySoBan()
                         : null
         );
         boolean coPhienHoatDong = banHienTai != null || donDangHoatDong != null;
@@ -296,6 +296,10 @@ public class TrungTamHoatDongFragment extends Fragment {
         args.putBoolean(DatBanFragment.ARG_EMBEDDED, true);
         reservationsFragment.setArguments(args);
         return reservationsFragment;
+    }
+
+    private QuanLyGioHang layGioKhachHang() {
+        return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
     }
 
     private Fragment timHoacTaoYeuCauFragment() {

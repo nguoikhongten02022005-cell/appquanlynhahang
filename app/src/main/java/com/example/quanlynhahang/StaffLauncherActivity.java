@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
@@ -25,7 +26,7 @@ public class StaffLauncherActivity extends AppCompatActivity {
         if (sessionManager.daDangNhap() && sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
             VaiTroNguoiDung vaiTroDangNhap = sessionManager.layVaiTroSessionHopLe();
             if (vaiTroDangNhap == VaiTroNguoiDung.ADMIN || vaiTroDangNhap == VaiTroNguoiDung.NHAN_VIEN) {
-                Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(this, vaiTroDangNhap);
+                Intent intent = DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(this, DieuHuongNoiBoHelper.TAB_TONG_QUAN);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

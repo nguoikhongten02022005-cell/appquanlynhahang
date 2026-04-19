@@ -12,15 +12,22 @@ import com.example.quanlynhahang.QuanTriActivity;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
+import com.example.quanlynhahang.helper.CauHinhTinhNangHelper;
+
 public final class DieuHuongVaiTroHelper {
 
     private DieuHuongVaiTroHelper() {
     }
 
     public static Intent taoIntentTheoVaiTro(Context context, @Nullable VaiTroNguoiDung vaiTro) {
-        Class<?> dichDen = MainActivity.class;
         VaiTroNguoiDung vaiTroHienTai = vaiTro != null ? vaiTro : VaiTroNguoiDung.KHACH_HANG;
 
+        if ((vaiTroHienTai == VaiTroNguoiDung.NHAN_VIEN || vaiTroHienTai == VaiTroNguoiDung.ADMIN)
+                && CauHinhTinhNangHelper.coNoiBoShellMoi()) {
+            return DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(context, DieuHuongNoiBoHelper.TAB_TONG_QUAN);
+        }
+
+        Class<?> dichDen = MainActivity.class;
         if (vaiTroHienTai == VaiTroNguoiDung.NHAN_VIEN) {
             dichDen = NhanVienActivity.class;
         } else if (vaiTroHienTai == VaiTroNguoiDung.ADMIN) {

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
@@ -20,6 +21,26 @@ public class CustomerLauncherActivity extends AppCompatActivity {
         SessionManager sessionManager = new SessionManager(this);
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
+
+        boolean cheDoPreview = getIntent().getBooleanExtra(DieuHuongNoiBoHelper.EXTRA_CHE_DO_PREVIEW_KHACH, false);
+        if (cheDoPreview) {
+            sessionManager.luuNguonPreviewKhachHang(
+                    getIntent().getStringExtra(DieuHuongNoiBoHelper.EXTRA_ROUTE_TRA_VE_NOI_BO)
+            );
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, true);
+            intent.putExtra(MainActivity.EXTRA_CHE_DO_PREVIEW_KHACH, true);
+            intent.putExtra(
+                    MainActivity.EXTRA_ROUTE_TRA_VE_NOI_BO,
+                    sessionManager.layNguonPreviewKhachHang()
+            );
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         sessionManager.damBaoVaiTroSession(databaseHelper);
 
         Intent intent;

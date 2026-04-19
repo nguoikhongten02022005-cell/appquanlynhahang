@@ -19,6 +19,7 @@ import com.google.android.material.button.MaterialButton;
 public class DangNhapActivity extends AppCompatActivity {
 
     public static final String EXTRA_RETURN_TO_CALLER = "extra_return_to_caller";
+    public static final String EXTRA_ONLY_CUSTOMER_SESSION = "extra_only_customer_session";
     private static final String TAI_KHOAN_KHACH_HANG_MAC_DINH = "kh1";
     private static final String TAI_KHOAN_NHAN_VIEN_MAC_DINH = "nv1";
     private static final String TAI_KHOAN_ADMIN_MAC_DINH = "admin1";
@@ -42,26 +43,27 @@ public class DangNhapActivity extends AppCompatActivity {
 
         oNhapEmailDangNhap = findViewById(R.id.etLoginEmail);
         oNhapMatKhauDangNhap = findViewById(R.id.etLoginPassword);
+        boolean chiChoPhepPhienKhachHang = getIntent().getBooleanExtra(EXTRA_ONLY_CUSTOMER_SESSION, false);
         MaterialButton btnLogin = findViewById(R.id.btnLogin);
         MaterialButton nutDangNhapNhanhKhachHang = findViewById(R.id.btnQuickLoginCustomer);
         MaterialButton nutDangNhapNhanhNhanVien = findViewById(R.id.btnQuickLoginEmployee);
         MaterialButton nutDangNhapNhanhQuanTri = findViewById(R.id.btnQuickLoginAdmin);
         TextView tvGoToRegister = findViewById(R.id.tvGoToRegister);
 
-        btnLogin.setOnClickListener(v -> xuLyDangNhap());
-        nutDangNhapNhanhKhachHang.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_KHACH_HANG_MAC_DINH));
-        nutDangNhapNhanhNhanVien.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_NHAN_VIEN_MAC_DINH));
-        nutDangNhapNhanhQuanTri.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_ADMIN_MAC_DINH));
+        btnLogin.setOnClickListener(v -> xuLyDangNhap(chiChoPhepPhienKhachHang));
+        nutDangNhapNhanhKhachHang.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_KHACH_HANG_MAC_DINH, chiChoPhepPhienKhachHang));
+        nutDangNhapNhanhNhanVien.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_NHAN_VIEN_MAC_DINH, chiChoPhepPhienKhachHang));
+        nutDangNhapNhanhQuanTri.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_ADMIN_MAC_DINH, chiChoPhepPhienKhachHang));
         tvGoToRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
     }
 
-    private void dangNhapMacDinh(String taiKhoanMacDinh) {
+    private void dangNhapMacDinh(String taiKhoanMacDinh, boolean chiChoPhepPhienKhachHang) {
         oNhapEmailDangNhap.setText(taiKhoanMacDinh);
         oNhapMatKhauDangNhap.setText(MAT_KHAU_MAC_DINH);
-        xuLyDangNhap();
+        xuLyDangNhap(chiChoPhepPhienKhachHang);
     }
 
-    private void xuLyDangNhap() {
+    private void xuLyDangNhap(boolean chiChoPhepPhienKhachHang) {
         String emailHoacSoDienThoai = layTextDaCatKhoangTrang(oNhapEmailDangNhap);
         String matKhau = layTextDaCatKhoangTrang(oNhapMatKhauDangNhap);
 
@@ -73,6 +75,11 @@ public class DangNhapActivity extends AppCompatActivity {
         NguoiDung nguoiDungDaXacThuc = databaseHelper.kiemTraDangNhap(emailHoacSoDienThoai, matKhau);
         if (nguoiDungDaXacThuc == null || !nguoiDungDaXacThuc.dangHoatDong()) {
             Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (chiChoPhepPhienKhachHang && nguoiDungDaXacThuc.layVaiTro() != VaiTroNguoiDung.KHACH_HANG) {
+            Toast.makeText(this, getString(R.string.login_customer_only_blocked), Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -17,6 +17,7 @@ import com.example.quanlynhahang.adapter.DanhMucMonAdapter;
 import com.example.quanlynhahang.adapter.MonAnDeXuatAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.DanhMucMon;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 
@@ -32,6 +33,7 @@ public class TrangChuFragment extends Fragment {
     private final List<MonAnDeXuat> danhSachMonDeXuat = new ArrayList<>();
 
     private DatabaseHelper databaseHelper;
+    private SessionManager sessionManager;
     private DanhMucMonAdapter categoryAdapter;
 
     @Nullable
@@ -47,6 +49,7 @@ public class TrangChuFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         databaseHelper = new DatabaseHelper(requireContext());
+        sessionManager = new SessionManager(requireContext());
 
         thietLapDuLieuDanhMuc();
         thietLapDuLieuMonDeXuat();
@@ -91,7 +94,7 @@ public class TrangChuFragment extends Fragment {
 
             @Override
             public void khiThemMon(MonAnDeXuat item) {
-                QuanLyGioHang.layInstance().themVaoGio(item);
+                layGioKhachHang().themVaoGio(item);
                 Toast.makeText(
                         requireContext(),
                         getString(R.string.menu_added_to_cart, item.layTenMon()),
@@ -142,6 +145,10 @@ public class TrangChuFragment extends Fragment {
         if (requireActivity() instanceof MainActivity) {
             ((MainActivity) requireActivity()).dieuHuongDenMenu(tenDanhMuc, sanSangTimKiem, tuKhoaTimKiem);
         }
+    }
+
+    private QuanLyGioHang layGioKhachHang() {
+        return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
     }
 
     private void dieuHuongDenYeuCau() {

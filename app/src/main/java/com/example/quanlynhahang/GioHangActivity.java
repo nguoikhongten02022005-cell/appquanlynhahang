@@ -89,9 +89,9 @@ public class GioHangActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gio_hang);
 
-        quanLyGioHang = QuanLyGioHang.layInstance();
         sessionManager = new SessionManager(this);
         quanLyPhienBan = sessionManager;
+        quanLyGioHang = layGioKhachHang();
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
@@ -110,6 +110,10 @@ public class GioHangActivity extends AppCompatActivity {
         super.onResume();
         capNhatHienThiGioHang();
         dongBoNguCanhLenForm();
+    }
+
+    private QuanLyGioHang layGioKhachHang() {
+        return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
     }
 
     private void khoiTaoView() {

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quanlynhahang.adapter.ThucDonAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class ThucDonFragment extends Fragment {
     private final List<String> danhSachMoTaDaLoc = new ArrayList<>();
 
     private DatabaseHelper databaseHelper;
+    private SessionManager sessionManager;
     private ThucDonAdapter boDieuHopThucDon;
     private EditText etMenuSearch;
     private TextView tvMenuFilterHint;
@@ -76,6 +78,7 @@ public class ThucDonFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_thuc_don, container, false);
 
         databaseHelper = new DatabaseHelper(requireContext());
+        sessionManager = new SessionManager(requireContext());
         docTrangThaiDieuHuong(savedInstanceState);
         thietLapRecyclerView(view);
         thietLapTimKiem(view);
@@ -151,7 +154,7 @@ public class ThucDonFragment extends Fragment {
                         ).show();
                         return;
                     }
-                    QuanLyGioHang.layInstance().themVaoGio(dish);
+                    layGioKhachHang().themVaoGio(dish);
                     Toast.makeText(
                             requireContext(),
                             getString(R.string.menu_added_to_cart, dish.layTenMon()),
@@ -311,6 +314,10 @@ public class ThucDonFragment extends Fragment {
             return "";
         }
         return etMenuSearch.getText().toString().trim();
+    }
+
+    private QuanLyGioHang layGioKhachHang() {
+        return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
     }
 
     private void moBanPhimTimKiem() {

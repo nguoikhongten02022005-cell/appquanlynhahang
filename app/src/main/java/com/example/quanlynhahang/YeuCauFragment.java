@@ -287,8 +287,8 @@ public class YeuCauFragment extends Fragment {
         return DichVuKhachHangHelper.timBanHienTai(
                 sessionManager.layBanHienTai(),
                 donTaiQuanDangHoatDong,
-                () -> QuanLyGioHang.layInstance().layNguCanhDonHang().laAnTaiQuan()
-                        ? QuanLyGioHang.layInstance().layNguCanhDonHang().laySoBan()
+                () -> layGioKhachHang().layNguCanhDonHang().laAnTaiQuan()
+                        ? layGioKhachHang().layNguCanhDonHang().laySoBan()
                         : null
         );
     }
@@ -332,6 +332,10 @@ public class YeuCauFragment extends Fragment {
         }
         capNhatTrangThaiRong();
         hienThiPhanHoiNgan(R.string.service_request_cancel_success);
+    }
+
+    private QuanLyGioHang layGioKhachHang() {
+        return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
     }
 
     private String layChuoiThoiGianHienTai() {

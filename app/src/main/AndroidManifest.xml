@@ -43,6 +43,14 @@
         <activity android:name=".QuanTriActivity" />
 
         <activity
+            android:name=".TrungTamQuanTriActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".TrungTamNoiBoActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
 

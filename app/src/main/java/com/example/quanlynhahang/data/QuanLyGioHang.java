@@ -81,7 +81,8 @@ public class QuanLyGioHang {
         }
     }
 
-    private static QuanLyGioHang instance;
+    private static final String KHOA_MAC_DINH = "default";
+    private static final Map<String, QuanLyGioHang> CAC_INSTANCE = new LinkedHashMap<>();
 
     private final Map<String, MonTrongGio> bangMonTrongGio = new LinkedHashMap<>();
     private final List<LangNgheGioHang> danhSachLangNghe = new ArrayList<>();
@@ -91,10 +92,25 @@ public class QuanLyGioHang {
     }
 
     public static synchronized QuanLyGioHang layInstance() {
-        if (instance == null) {
-            instance = new QuanLyGioHang();
+        return layInstance(KHOA_MAC_DINH);
+    }
+
+    public static synchronized QuanLyGioHang layInstance(String phamVi) {
+        String khoaPhamVi = chuanHoaPhamVi(phamVi);
+        QuanLyGioHang quanLyGioHang = CAC_INSTANCE.get(khoaPhamVi);
+        if (quanLyGioHang == null) {
+            quanLyGioHang = new QuanLyGioHang();
+            CAC_INSTANCE.put(khoaPhamVi, quanLyGioHang);
         }
-        return instance;
+        return quanLyGioHang;
+    }
+
+    public static synchronized void xoaInstance(String phamVi) {
+        QuanLyGioHang quanLyGioHang = CAC_INSTANCE.remove(chuanHoaPhamVi(phamVi));
+        if (quanLyGioHang == null) {
+            return;
+        }
+        quanLyGioHang.donDepNoiBo();
     }
 
     public synchronized void themVaoGio(MonAnDeXuat monAn) {
@@ -204,6 +220,16 @@ public class QuanLyGioHang {
         return nguCanhDonHang.layHinhThucDon() == DonHang.HinhThucDon.MANG_DI
                 && nguCanhDonHang.laySoBan().isEmpty()
                 && nguCanhDonHang.layGhiChu().isEmpty();
+    }
+
+    private static String chuanHoaPhamVi(String phamVi) {
+        return phamVi == null || phamVi.trim().isEmpty() ? KHOA_MAC_DINH : phamVi.trim();
+    }
+
+    private synchronized void donDepNoiBo() {
+        bangMonTrongGio.clear();
+        danhSachLangNghe.clear();
+        nguCanhDonHang.datMacDinh();
     }
 
     private String taoKhoaMon(MonAnDeXuat monAn) {

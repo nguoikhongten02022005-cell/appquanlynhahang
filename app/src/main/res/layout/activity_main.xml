@@ -52,7 +52,7 @@
             android:orientation="vertical"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@id/layoutAvatarAction"
-            app:layout_constraintEnd_toStartOf="@id/layoutSearchAction"
+            app:layout_constraintEnd_toStartOf="@id/btnExitCustomerPreview"
             app:layout_constraintStart_toEndOf="@id/layoutAvatarAction"
             app:layout_constraintTop_toTopOf="@id/layoutAvatarAction">
 
@@ -68,6 +68,19 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnExitCustomerPreview"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_sm"
+            android:visibility="gone"
+            android:text="@string/customer_preview_exit"
+            app:layout_constraintBottom_toBottomOf="@id/layoutAvatarAction"
+            app:layout_constraintEnd_toStartOf="@id/layoutSearchAction"
+            app:layout_constraintStart_toEndOf="@id/layoutAvatarAction"
+            app:layout_constraintTop_toTopOf="@id/layoutAvatarAction" />
+
         <FrameLayout
             android:id="@+id/layoutSearchAction"
             android:layout_width="@dimen/header_icon_box_size"
@@ -79,6 +92,7 @@
             android:focusable="true"
             app:layout_constraintBottom_toBottomOf="@id/layoutAvatarAction"
             app:layout_constraintEnd_toStartOf="@id/layoutCartIcon"
+            app:layout_constraintStart_toEndOf="@id/btnExitCustomerPreview"
             app:layout_constraintTop_toTopOf="@id/layoutAvatarAction">
 
             <ImageView

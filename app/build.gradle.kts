@@ -41,6 +41,8 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     testImplementation(libs.junit)
+    androidTestImplementation(libs.androidxTestCore)
     androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.espressoCore)
+    androidTestImplementation(libs.espressoIntents)
 }

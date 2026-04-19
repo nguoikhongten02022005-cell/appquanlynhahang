@@ -61,9 +61,9 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xac_nhan_don_hang);
 
-        quanLyGioHang = QuanLyGioHang.layInstance();
         sessionManager = new SessionManager(this);
         tableSessionManager = sessionManager;
+        quanLyGioHang = layGioKhachHang();
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
 
@@ -74,6 +74,10 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         thietLapDanhSachMon();
         ganTomTatDonHang();
         thietLapNutHanhDong();
+    }
+
+    private QuanLyGioHang layGioKhachHang() {
+        return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
     }
 
     private void khoiTaoView() {

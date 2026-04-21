@@ -1,0 +1,1 @@
+Code style in this repo uses Java classes with Vietnamese identifiers without diacritics for code symbols, while user-facing text stays in strings.xml with Vietnamese diacritics. Android UI strings are centralized in app/src/main/res/values/strings.xml. Prefer minimal direct code changes over extra abstraction.

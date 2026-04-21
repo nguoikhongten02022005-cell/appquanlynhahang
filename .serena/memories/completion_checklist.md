@@ -1,0 +1,1 @@
+When a task is completed, run the smallest relevant Gradle verification first, then broader tests if needed. For Android compile issues, start with ./gradlew :app:assembleDebug or the narrowest unit test target, then confirm no new compile/test failures were introduced.

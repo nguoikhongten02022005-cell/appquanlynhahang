@@ -1,0 +1,1 @@
+Useful commands from repo root on Linux:\n- ./gradlew :app:assembleDebug\n- ./gradlew test\n- ./gradlew :app:testDebugUnitTest\n- ./gradlew :app:assembleDebug --stacktrace\n- git status\n- git diff -- <path>\nPrimary development module: :app

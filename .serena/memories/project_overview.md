@@ -1,0 +1,1 @@
+Android app quanlynhahang written in Java using AndroidX, Material Components, Gradle Kotlin DSL. Purpose: restaurant management/offline demo with customer, employee, and admin/internal flows. Main module is :app with package com.example.quanlynhahang. Entry/build commands use ./gradlew from repo root.

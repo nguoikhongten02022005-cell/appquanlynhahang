@@ -57,16 +57,14 @@ public class DonHangNoiBoFragment extends Fragment {
 
             @Override
             public void khiHoanTat(DonHang order) {
-                DonHang.TrangThai trangThaiDich = order.layTrangThai() == DonHang.TrangThai.DANG_CHUAN_BI
-                        ? DonHang.TrangThai.SAN_SANG_PHUC_VU
-                        : DonHang.TrangThai.HOAN_THANH;
-                capNhatTrangThaiDonHang(order, trangThaiDich);
+                capNhatTrangThaiDonHang(order, DonHang.TrangThai.HOAN_THANH);
             }
 
             @Override
             public void khiHuy(DonHang order) {
                 xacNhanHuyDonHang(order);
             }
+
         });
         rvDonHang.setAdapter(donHangAdapter);
 

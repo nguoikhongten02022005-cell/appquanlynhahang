@@ -16,6 +16,7 @@ import com.example.quanlynhahang.model.VaiTroNguoiDung;
 public class TrungTamQuanTriActivity extends AppCompatActivity {
 
     private static final String TAG_MON_AN = "mon_an_quan_tri";
+    private static final String TAG_BAN = "quan_ly_ban_quan_tri";
     private static final String TAG_NGUOI_DUNG = "nguoi_dung_quan_tri";
     private static final String TAG_BAO_CAO = "bao_cao_quan_tri";
     private static final String TAG_CAI_DAT = "cai_dat_quan_tri";
@@ -39,6 +40,7 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
         }
         String sectionDaRutGon = sectionDuocYeuCau.trim().toLowerCase(java.util.Locale.ROOT);
         if (DieuHuongNoiBoHelper.SECTION_MON.equals(sectionDaRutGon)
+                || DieuHuongNoiBoHelper.SECTION_BAN.equals(sectionDaRutGon)
                 || DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG.equals(sectionDaRutGon)
                 || DieuHuongNoiBoHelper.SECTION_BAO_CAO.equals(sectionDaRutGon)
                 || DieuHuongNoiBoHelper.SECTION_CAI_DAT.equals(sectionDaRutGon)) {
@@ -79,6 +81,10 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
         }
         if (DieuHuongNoiBoHelper.SECTION_MON.equals(section)) {
             toolbarQuanTri.setTitle(R.string.admin_dishes_title);
+            return;
+        }
+        if (DieuHuongNoiBoHelper.SECTION_BAN.equals(section)) {
+            toolbarQuanTri.setTitle(R.string.admin_table_management_title);
             return;
         }
         if (DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG.equals(section)) {
@@ -133,6 +139,15 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.quanTriFragmentContainer, new MonAnQuanTriFragment(), TAG_MON_AN)
+                    .commitNow();
+            return;
+        }
+
+        if (DieuHuongNoiBoHelper.SECTION_BAN.equals(sectionHopLe)) {
+            capNhatTieuDe(sectionHopLe);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.quanTriFragmentContainer, new QuanLyBanQuanTriFragment(), TAG_BAN)
                     .commitNow();
             return;
         }

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.example.quanlynhahang.R;
 import com.example.quanlynhahang.model.ThongKeTongQuanQuanTri;
 import com.example.quanlynhahang.model.ThongKeTongQuanNhanVien;
+import com.example.quanlynhahang.model.BanAn;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 import com.example.quanlynhahang.model.DatBan;
@@ -64,6 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_ORDER_ITEM = "order_items";
     public static final String TABLE_RESERVATION = "reservations";
     public static final String TABLE_SERVICE_REQUEST = "service_requests";
+    public static final String TABLE_BAN_AN = "ban_an";
 
     private static final String COL_USER_ID = "id";
     private static final String COL_USER_NAME = "name";
@@ -122,6 +124,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL_SERVICE_REQUEST_TABLE_NUMBER = "table_number";
     private static final String COL_SERVICE_REQUEST_ORDER_ID = "order_id";
     private static final String COL_SERVICE_REQUEST_HANDLED_TIME = "handled_time";
+
+    private static final String COL_BAN_AN_ID = "id";
+    private static final String COL_BAN_AN_MA_BAN = "ma_ban";
+    private static final String COL_BAN_AN_TEN_BAN = "ten_ban";
+    private static final String COL_BAN_AN_SO_CHO = "so_cho";
+    private static final String COL_BAN_AN_KHU_VUC = "khu_vuc";
+    private static final String COL_BAN_AN_TRANG_THAI = "trang_thai";
 
     private final Context appContext;
 
@@ -187,6 +196,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoBangTonTai(db, TABLE_ORDER_ITEM, taoBangChiTietDonHang());
         damBaoBangTonTai(db, TABLE_RESERVATION, taoBangDatBan());
         damBaoBangTonTai(db, TABLE_SERVICE_REQUEST, taoBangYeuCauPhucVu());
+        damBaoBangTonTai(db, TABLE_BAN_AN, taoBangBanAn());
 
         damBaoCotTonTai(db, TABLE_USER, COL_USER_NAME, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_USER, COL_USER_EMAIL, "TEXT NOT NULL DEFAULT ''");
@@ -250,6 +260,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_TABLE_NUMBER, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_ORDER_ID, "INTEGER NOT NULL DEFAULT 0");
         damBaoCotTonTai(db, TABLE_SERVICE_REQUEST, COL_SERVICE_REQUEST_HANDLED_TIME, "TEXT NOT NULL DEFAULT ''");
+
+        damBaoCotTonTai(db, TABLE_BAN_AN, COL_BAN_AN_MA_BAN, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_BAN_AN, COL_BAN_AN_TEN_BAN, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_BAN_AN, COL_BAN_AN_SO_CHO, "INTEGER NOT NULL DEFAULT 4");
+        damBaoCotTonTai(db, TABLE_BAN_AN, COL_BAN_AN_KHU_VUC, "TEXT NOT NULL DEFAULT ''");
+        damBaoCotTonTai(db, TABLE_BAN_AN, COL_BAN_AN_TRANG_THAI,
+                "TEXT NOT NULL DEFAULT '" + BanAn.TrangThai.TRONG.name() + "'");
     }
 
     private void damBaoDuLieuMacDinh(SQLiteDatabase db) {

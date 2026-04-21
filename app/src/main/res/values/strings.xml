@@ -458,10 +458,42 @@
     <string name="admin_sidebar_section_management">QUẢN LÝ</string>
     <string name="admin_sidebar_section_system">HỆ THỐNG</string>
     <string name="admin_shortcut_orders">Đơn hàng</string>
-    <string name="admin_shortcut_reservations">Đặt bàn</string>
+    <string name="admin_shortcut_reservations">Quản lý bàn</string>
+    <string name="admin_table_management_title">Quản lý bàn</string>
     <string name="admin_reports_title">Báo cáo</string>
     <string name="admin_empty_state">Không có dữ liệu để hiển thị.</string>
     <string name="admin_reports_subtitle">Theo dõi số liệu tổng quan dành cho quản trị viên</string>
+    <string name="quan_ly_ban_tim_kiem_hint">Tìm bàn theo tên, mã hoặc khu vực...</string>
+    <string name="quan_ly_ban_loc_trang_thai">Lọc trạng thái bàn</string>
+    <string name="quan_ly_ban_them_ban">Thêm bàn</string>
+    <string name="quan_ly_ban_empty">Không có bàn phù hợp.</string>
+    <string name="quan_ly_ban_xem_chi_tiet">Xem chi tiết</string>
+    <string name="quan_ly_ban_sua_ban">Sửa bàn</string>
+    <string name="quan_ly_ban_xoa_ban">Xóa bàn</string>
+    <string name="quan_ly_ban_trang_thai_tat_ca">Tất cả</string>
+    <string name="quan_ly_ban_trang_thai_trong">Trống</string>
+    <string name="quan_ly_ban_trang_thai_dang_phuc_vu">Đang phục vụ</string>
+    <string name="quan_ly_ban_trang_thai_da_dat">Đã đặt</string>
+    <string name="quan_ly_ban_xac_nhan_xoa">Bàn này sẽ bị xóa khỏi danh sách quản lý.</string>
+    <string name="quan_ly_ban_khong_the_xoa">Chỉ có thể xóa bàn đang ở trạng thái Trống.</string>
+    <string name="quan_ly_ban_xoa_thanh_cong">Đã xóa bàn khỏi danh sách quản lý</string>
+    <string name="quan_ly_ban_them_thanh_cong">Đã thêm bàn mới</string>
+    <string name="quan_ly_ban_cap_nhat_thanh_cong">Đã cập nhật thông tin bàn</string>
+    <string name="quan_ly_ban_validation_required">Vui lòng nhập đầy đủ mã bàn, tên bàn, số chỗ và khu vực.</string>
+    <string name="quan_ly_ban_ten_va_ma_ban">%1$s · %2$s</string>
+    <string name="quan_ly_ban_thong_tin_ban">%1$d chỗ · %2$s</string>
+    <string name="quan_ly_ban_chi_tiet_tieu_de">Chi tiết bàn</string>
+    <string name="quan_ly_ban_chi_tiet_noi_dung">Tên bàn: %1$s
+Mã bàn: %2$s
+Số chỗ: %3$d
+Khu vực: %4$s
+Trạng thái: %5$s</string>
+    <string name="quan_ly_ban_them_ban_tieu_de">Thêm bàn</string>
+    <string name="quan_ly_ban_sua_ban_tieu_de">Sửa bàn</string>
+    <string name="quan_ly_ban_ma_ban_hint">Mã bàn</string>
+    <string name="quan_ly_ban_ten_ban_hint">Tên bàn</string>
+    <string name="quan_ly_ban_so_cho_hint">Số chỗ</string>
+    <string name="quan_ly_ban_khu_vuc_hint">Khu vực</string>
     <string name="admin_report_total_users">Tổng người dùng</string>
     <string name="admin_report_total_dishes">Tổng món ăn</string>
     <string name="admin_report_total_orders">Tổng đơn hàng</string>

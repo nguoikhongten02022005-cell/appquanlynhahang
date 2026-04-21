@@ -21,7 +21,7 @@ import java.util.List;
 public class BoDieuHopNguoiDungQuanTri extends RecyclerView.Adapter<BoDieuHopNguoiDungQuanTri.ViewHolderNguoiDungQuanTri> {
 
     public interface HanhDongListener {
-        void khiDoiVaiTro(NguoiDung nguoiDung);
+        void khiSua(NguoiDung nguoiDung);
 
         void khiBatTatTrangThaiHoatDong(NguoiDung nguoiDung);
     }
@@ -85,7 +85,7 @@ public class BoDieuHopNguoiDungQuanTri extends RecyclerView.Adapter<BoDieuHopNgu
             tvTrangThai.setText(nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked);
             ViewCompat.setBackgroundTintList(tvTrangThai, ColorStateList.valueOf(ContextCompat.getColor(context, nguoiDung.dangHoatDong() ? R.color.success : R.color.error)));
             btnBatTat.setText(nguoiDung.dangHoatDong() ? R.string.admin_lock_user : R.string.admin_unlock_user);
-            btnDoiVaiTro.setOnClickListener(v -> hanhDongListener.khiDoiVaiTro(nguoiDung));
+            btnDoiVaiTro.setOnClickListener(v -> hanhDongListener.khiSua(nguoiDung));
             btnBatTat.setOnClickListener(v -> hanhDongListener.khiBatTatTrangThaiHoatDong(nguoiDung));
         }
 

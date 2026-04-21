@@ -50,7 +50,7 @@ public class NguoiDungQuanTriFragment extends Fragment {
 
         boDieuHopNguoiDung = new BoDieuHopNguoiDungQuanTri(new BoDieuHopNguoiDungQuanTri.HanhDongListener() {
             @Override
-            public void khiDoiVaiTro(NguoiDung nguoiDung) {
+            public void khiSua(NguoiDung nguoiDung) {
                 hienDialogDoiVaiTro(nguoiDung);
             }
 

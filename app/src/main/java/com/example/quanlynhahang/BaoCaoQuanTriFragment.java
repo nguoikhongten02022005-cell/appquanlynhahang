@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
 import com.example.quanlynhahang.model.ThongKeTongQuanQuanTri;
 
 public class BaoCaoQuanTriFragment extends Fragment {
@@ -41,6 +42,7 @@ public class BaoCaoQuanTriFragment extends Fragment {
         TextView tvDonHangChoXacNhan = view.findViewById(R.id.tvBaoCaoDonHangChoXacNhan);
         TextView tvDatBanChoDuyet = view.findViewById(R.id.tvBaoCaoDatBanChoDuyet);
         TextView tvYeuCauDangXuLy = view.findViewById(R.id.tvBaoCaoYeuCauDangXuLy);
+        TextView btnMoQuanLyBan = view.findViewById(R.id.btnMoQuanLyBan);
 
         tvTieuDe.setText(R.string.admin_reports_title);
         tvTongNguoiDung.setText(String.valueOf(thongKe.layTongNguoiDung()));
@@ -49,5 +51,9 @@ public class BaoCaoQuanTriFragment extends Fragment {
         tvDonHangChoXacNhan.setText(String.valueOf(thongKe.laySoDonHangChoXacNhan()));
         tvDatBanChoDuyet.setText(String.valueOf(thongKe.laySoDatBanChoDuyet()));
         tvYeuCauDangXuLy.setText(String.valueOf(thongKe.laySoYeuCauDangXuLy()));
+        btnMoQuanLyBan.setOnClickListener(v -> {
+            startActivity(TrungTamQuanTriActivity.taoIntent(requireContext(), DieuHuongNoiBoHelper.SECTION_BAN));
+            requireActivity().finish();
+        });
     }
 }

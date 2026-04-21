@@ -442,6 +442,198 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + ")";
     }
 
+    private String taoBangBanAn() {
+        return "CREATE TABLE IF NOT EXISTS " + TABLE_BAN_AN + " ("
+                + COL_BAN_AN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COL_BAN_AN_MA_BAN + " TEXT NOT NULL UNIQUE, "
+                + COL_BAN_AN_TEN_BAN + " TEXT NOT NULL, "
+                + COL_BAN_AN_SO_CHO + " INTEGER NOT NULL DEFAULT 4, "
+                + COL_BAN_AN_KHU_VUC + " TEXT NOT NULL DEFAULT '', "
+                + COL_BAN_AN_TRANG_THAI + " TEXT NOT NULL DEFAULT '" + BanAn.TrangThai.TRONG.name() + "'"
+                + ")";
+    }
+
+    public List<BanAn> layTatCaBanAn() {
+        List<BanAn> danhSachBan = queryBanAn();
+        if (danhSachBan.isEmpty()) {
+            SQLiteDatabase db = getWritableDatabase();
+            damBaoBanAnMau(db);
+            danhSachBan = queryBanAn();
+        }
+        return danhSachBan;
+    }
+
+    public long themBanAn(String maBan,
+                          String tenBan,
+                          int soCho,
+                          @Nullable String khuVuc,
+                          BanAn.TrangThai trangThai) {
+        if (TextUtils.isEmpty(maBan) || TextUtils.isEmpty(tenBan) || soCho <= 0 || TextUtils.isEmpty(khuVuc)) {
+            return -1;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = taoGiaTriBanAn(maBan, tenBan, soCho, khuVuc, trangThai);
+        return db.insert(TABLE_BAN_AN, null, values);
+    }
+
+    public boolean capNhatBanAn(long idBan,
+                                String maBan,
+                                String tenBan,
+                                int soCho,
+                                @Nullable String khuVuc,
+                                BanAn.TrangThai trangThai) {
+        if (idBan <= 0 || TextUtils.isEmpty(maBan) || TextUtils.isEmpty(tenBan) || soCho <= 0 || TextUtils.isEmpty(khuVuc)) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = taoGiaTriBanAn(maBan, tenBan, soCho, khuVuc, trangThai);
+        int rows = db.update(TABLE_BAN_AN, values, COL_BAN_AN_ID + " = ?", new String[]{String.valueOf(idBan)});
+        return rows > 0;
+    }
+
+    public boolean xoaBanAnNeuTrong(long idBan) {
+        if (idBan <= 0) {
+            return false;
+        }
+        BanAn banAn = layBanAnTheoId(idBan);
+        if (banAn == null || banAn.layTrangThai() != BanAn.TrangThai.TRONG) {
+            return false;
+        }
+        SQLiteDatabase db = getWritableDatabase();
+        int rows = db.delete(TABLE_BAN_AN, COL_BAN_AN_ID + " = ?", new String[]{String.valueOf(idBan)});
+        return rows > 0;
+    }
+
+    @Nullable
+    public BanAn layBanAnTheoId(long idBan) {
+        if (idBan <= 0) {
+            return null;
+        }
+        List<BanAn> ketQua = queryBanAn(COL_BAN_AN_ID + " = ?", new String[]{String.valueOf(idBan)});
+        return ketQua.isEmpty() ? null : ketQua.get(0);
+    }
+
+    private ContentValues taoGiaTriBanAn(String maBan,
+                                         String tenBan,
+                                         int soCho,
+                                         @Nullable String khuVuc,
+                                         @Nullable BanAn.TrangThai trangThai) {
+        ContentValues values = new ContentValues();
+        values.put(COL_BAN_AN_MA_BAN, maBan == null ? "" : maBan.trim());
+        values.put(COL_BAN_AN_TEN_BAN, tenBan == null ? "" : tenBan.trim());
+        values.put(COL_BAN_AN_SO_CHO, Math.max(soCho, 1));
+        values.put(COL_BAN_AN_KHU_VUC, khuVuc == null ? "" : khuVuc.trim());
+        values.put(COL_BAN_AN_TRANG_THAI, (trangThai == null ? BanAn.TrangThai.TRONG : trangThai).name());
+        return values;
+    }
+
+    private List<BanAn> queryBanAn() {
+        return queryBanAn(null, null);
+    }
+
+    private List<BanAn> queryBanAn(@Nullable String selection, @Nullable String[] selectionArgs) {
+        List<BanAn> danhSachBan = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = getReadableDatabase().query(
+                    TABLE_BAN_AN,
+                    new String[]{
+                            COL_BAN_AN_ID,
+                            COL_BAN_AN_MA_BAN,
+                            COL_BAN_AN_TEN_BAN,
+                            COL_BAN_AN_SO_CHO,
+                            COL_BAN_AN_KHU_VUC,
+                            COL_BAN_AN_TRANG_THAI
+                    },
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    COL_BAN_AN_ID + " ASC"
+            );
+            while (cursor.moveToNext()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_BAN_AN_ID));
+                String maBan = cursor.getString(cursor.getColumnIndexOrThrow(COL_BAN_AN_MA_BAN));
+                String tenBan = cursor.getString(cursor.getColumnIndexOrThrow(COL_BAN_AN_TEN_BAN));
+                int soCho = cursor.getInt(cursor.getColumnIndexOrThrow(COL_BAN_AN_SO_CHO));
+                String khuVuc = cursor.getString(cursor.getColumnIndexOrThrow(COL_BAN_AN_KHU_VUC));
+                BanAn.TrangThai trangThai = parseBanAnTrangThai(cursor.getString(cursor.getColumnIndexOrThrow(COL_BAN_AN_TRANG_THAI)));
+                danhSachBan.add(new BanAn(id, maBan, tenBan, soCho, khuVuc, xacDinhTrangThaiBanAn(tenBan, trangThai)));
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return danhSachBan;
+    }
+
+    private BanAn.TrangThai xacDinhTrangThaiBanAn(@Nullable String maBan, @Nullable BanAn.TrangThai trangThaiLuu) {
+        String ban = maBan == null ? "" : maBan.trim();
+        if (!TextUtils.isEmpty(ban)) {
+            for (DonHang donHang : queryDonHangs(COL_ORDER_TABLE_NUMBER + " = ?", new String[]{ban})) {
+                if (donHang.laAnTaiQuan()
+                        && (donHang.layTrangThai() == DonHang.TrangThai.DANG_CHUAN_BI
+                        || donHang.layTrangThai() == DonHang.TrangThai.SAN_SANG_PHUC_VU)) {
+                    return BanAn.TrangThai.DANG_PHUC_VU;
+                }
+            }
+            for (DatBan datBan : layTatCaDatBan()) {
+                if (ban.equalsIgnoreCase(datBan.laySoBan()) && datBan.layTrangThai() == DatBan.TrangThai.PENDING) {
+                    return BanAn.TrangThai.DA_DAT;
+                }
+            }
+        }
+        return trangThaiLuu == null ? BanAn.TrangThai.TRONG : trangThaiLuu;
+    }
+
+    private BanAn.TrangThai parseBanAnTrangThai(@Nullable String raw) {
+        if (TextUtils.isEmpty(raw)) {
+            return BanAn.TrangThai.TRONG;
+        }
+        try {
+            return BanAn.TrangThai.valueOf(raw);
+        } catch (IllegalArgumentException ex) {
+            return BanAn.TrangThai.TRONG;
+        }
+    }
+
+    private void damBaoBanAnMau(SQLiteDatabase db) {
+        taoBanAnNeuChuaCo(db, "B01", "Bàn 01", 4, "Tầng trệt", BanAn.TrangThai.TRONG);
+        taoBanAnNeuChuaCo(db, "B02", "Bàn 02", 4, "Tầng trệt", BanAn.TrangThai.DANG_PHUC_VU);
+        taoBanAnNeuChuaCo(db, "B05", "Bàn 05", 6, "Ban công", BanAn.TrangThai.DA_DAT);
+        taoBanAnNeuChuaCo(db, "B08", "Bàn 08", 8, "Phòng riêng", BanAn.TrangThai.TRONG);
+    }
+
+    private void taoBanAnNeuChuaCo(SQLiteDatabase db,
+                                   String maBan,
+                                   String tenBan,
+                                   int soCho,
+                                   String khuVuc,
+                                   BanAn.TrangThai trangThai) {
+        Cursor cursor = null;
+        try {
+            cursor = db.query(
+                    TABLE_BAN_AN,
+                    new String[]{COL_BAN_AN_ID},
+                    COL_BAN_AN_MA_BAN + " = ?",
+                    new String[]{maBan},
+                    null,
+                    null,
+                    null,
+                    "1"
+            );
+            if (cursor.moveToFirst()) {
+                return;
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        db.insert(TABLE_BAN_AN, null, taoGiaTriBanAn(maBan, tenBan, soCho, khuVuc, trangThai));
+    }
+
     public long insertUser(String name, String email, String phone, String password) {
         return insertUser(name, email, phone, password, VaiTroNguoiDung.KHACH_HANG, true);
     }
@@ -1980,6 +2172,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         damBaoMonAnMauBoSung(db);
+        damBaoBanAnMau(db);
         damBaoDatBanMau(db, idKhachHang);
         damBaoDonHangMau(db, idKhachHang);
         damBaoYeuCauPhucVuMau(db, idKhachHang);

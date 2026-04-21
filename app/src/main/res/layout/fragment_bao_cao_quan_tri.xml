@@ -23,6 +23,16 @@
             android:layout_marginTop="8dp"
             android:text="@string/admin_reports_subtitle" />
 
+        <TextView
+            android:id="@+id/btnMoQuanLyBan"
+            style="@style/Widget.Quanlynhahang.FilledButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="@string/admin_shortcut_reservations" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

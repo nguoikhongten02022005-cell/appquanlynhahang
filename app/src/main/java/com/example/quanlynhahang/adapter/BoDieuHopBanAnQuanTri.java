@@ -102,7 +102,7 @@ public class BoDieuHopBanAnQuanTri extends RecyclerView.Adapter<BoDieuHopBanAnQu
                 return R.color.warning;
             }
             if (trangThai == BanAn.TrangThai.DA_DAT) {
-                return R.color.primary;
+                return R.color.table_booked_badge;
             }
             return R.color.success;
         }

@@ -58,6 +58,7 @@
     <color name="status_available_text">#F1B68B</color>
     <color name="status_unavailable_bg">#44221F</color>
     <color name="status_unavailable_text">#F2A9A0</color>
+    <color name="table_booked_badge">#90CAF9</color>
 
     <color name="add_button_enabled">@color/secondary</color>
     <color name="add_button_disabled">#4B3D37</color>

@@ -64,6 +64,7 @@
     <color name="table_reserved_badge_text">#B76829</color>
     <color name="table_busy_badge_bg">#FFEEEE</color>
     <color name="table_busy_badge_text">#CC3333</color>
+    <color name="table_booked_badge">#1565C0</color>
     <color name="table_current_border">#C8743A</color>
 
     <color name="add_button_enabled">@color/secondary</color>

@@ -22,12 +22,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quanlynhahang.adapter.DatBanAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DateTimeUtils;
 import com.example.quanlynhahang.model.DatBan;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -42,8 +42,6 @@ public class DatBanFragment extends Fragment {
 
     private static final int SO_KHACH_TOI_DA = 20;
     private static final int SO_BAN_TOI_DA = 20;
-    private static final SimpleDateFormat DINH_DANG_THOI_GIAN =
-            new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 
     private final List<DatBan> reservations = new ArrayList<>();
     private final List<String> tableOptions = new ArrayList<>();
@@ -486,7 +484,7 @@ public class DatBanFragment extends Fragment {
     }
 
     private String layChuoiThoiGian(Calendar calendar) {
-        return DINH_DANG_THOI_GIAN.format(calendar.getTime());
+        return DateTimeUtils.formatCalendar(calendar);
     }
 
     private void taiDanhSachDatBan() {

@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -29,5 +30,12 @@ public final class DateTimeUtils {
         } catch (ParseException ex) {
             return 0L;
         }
+    }
+
+    public static String formatCalendar(@Nullable Calendar calendar) {
+        if (calendar == null) {
+            return "";
+        }
+        return new SimpleDateFormat(DINH_DANG_THOI_GIAN_DON_HANG, Locale.getDefault()).format(calendar.getTime());
     }
 }

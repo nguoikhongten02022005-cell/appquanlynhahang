@@ -18,16 +18,12 @@ public final class DieuHuongVaiTroHelper {
 
     public static Intent taoIntentTheoVaiTro(Context context, @Nullable VaiTroNguoiDung vaiTro) {
         VaiTroNguoiDung vaiTroHienTai = vaiTro != null ? vaiTro : VaiTroNguoiDung.KHACH_HANG;
-
-        if ((vaiTroHienTai == VaiTroNguoiDung.NHAN_VIEN || vaiTroHienTai == VaiTroNguoiDung.ADMIN)
-                && CauHinhTinhNangHelper.coNoiBoShellMoi()) {
+        if (laVaiTroNoiBo(vaiTroHienTai) && CauHinhTinhNangHelper.coNoiBoShellMoi()) {
             return DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(context, DieuHuongNoiBoHelper.TAB_TONG_QUAN);
         }
-
-        if (vaiTroHienTai == VaiTroNguoiDung.NHAN_VIEN || vaiTroHienTai == VaiTroNguoiDung.ADMIN) {
+        if (laVaiTroNoiBo(vaiTroHienTai)) {
             return new Intent(context, StaffLauncherActivity.class);
         }
-
         return new Intent(context, MainActivity.class);
     }
 
@@ -36,18 +32,28 @@ public final class DieuHuongVaiTroHelper {
                                             boolean choPhepXemGiaoDienKhach) {
         if (sessionManager != null && sessionManager.daDangNhap()) {
             VaiTroNguoiDung vaiTroSession = sessionManager.layVaiTroSessionHopLe();
-            if (vaiTroSession == VaiTroNguoiDung.NHAN_VIEN || vaiTroSession == VaiTroNguoiDung.ADMIN) {
+            if (laVaiTroNoiBo(vaiTroSession)) {
                 return taoIntentTheoVaiTro(context, vaiTroSession);
             }
             if (choPhepXemGiaoDienKhach) {
-                Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, true);
-                return intent;
+                return taoIntentKhachHang(context, true);
             }
             return new Intent(context, CustomerLauncherActivity.class);
         }
         return choPhepXemGiaoDienKhach
-                ? new Intent(context, MainActivity.class).putExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, true)
+                ? taoIntentKhachHang(context, true)
                 : new Intent(context, CustomerLauncherActivity.class);
+    }
+
+    private static boolean laVaiTroNoiBo(@Nullable VaiTroNguoiDung vaiTro) {
+        return vaiTro == VaiTroNguoiDung.NHAN_VIEN || vaiTro == VaiTroNguoiDung.ADMIN;
+    }
+
+    private static Intent taoIntentKhachHang(Context context, boolean choPhepXemGiaoDienKhach) {
+        Intent intent = new Intent(context, MainActivity.class);
+        if (choPhepXemGiaoDienKhach) {
+            intent.putExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, true);
+        }
+        return intent;
     }
 }

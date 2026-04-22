@@ -27,6 +27,7 @@ import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
+import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.model.DatBan;
 import com.example.quanlynhahang.model.DonHang;
 
@@ -43,7 +44,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
-import java.util.Locale;
 
 public class GioHangActivity extends AppCompatActivity {
 
@@ -66,7 +66,6 @@ public class GioHangActivity extends AppCompatActivity {
     private QuanLyGioHang quanLyGioHang;
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
-    private SessionManager quanLyPhienBan;
 
     private boolean choXacNhanSauDangNhap;
 
@@ -90,7 +89,6 @@ public class GioHangActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gio_hang);
 
         sessionManager = new SessionManager(this);
-        quanLyPhienBan = sessionManager;
         quanLyGioHang = layGioKhachHang();
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
@@ -185,7 +183,7 @@ public class GioHangActivity extends AppCompatActivity {
         }
         String soBanUuTien = !TextUtils.isEmpty(nguCanhDonHang.laySoBan())
                 ? nguCanhDonHang.laySoBan()
-                : quanLyPhienBan.layBanHienTai();
+                : sessionManager.layBanHienTai();
         capNhatNhanBan(soBanUuTien);
         etCartNote.setText(nguCanhDonHang.layGhiChu());
         capNhatHienThiTheoHinhThucDon(nguCanhDonHang.laAnTaiQuan(), false);
@@ -222,27 +220,14 @@ public class GioHangActivity extends AppCompatActivity {
     private long tinhTongTien(List<QuanLyGioHang.MonTrongGio> danhSachMon) {
         long tongTien = 0;
         for (QuanLyGioHang.MonTrongGio monTrongGio : danhSachMon) {
-            long giaTien = tachGiaTienTuChuoi(monTrongGio.layMonAn().layGiaBan());
+            long giaTien = MoneyUtils.tachGiaTienTuChuoi(monTrongGio.layMonAn().layGiaBan());
             tongTien += giaTien * monTrongGio.laySoLuong();
         }
         return tongTien;
     }
 
-    private long tachGiaTienTuChuoi(@Nullable String chuoiGia) {
-        if (chuoiGia == null || chuoiGia.isEmpty()) {
-            return 0;
-        }
-
-        String chuoiDaLamSach = chuoiGia.replaceAll("[^0-9]", "");
-        try {
-            return Long.parseLong(chuoiDaLamSach);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
     private String dinhDangGia(long giaTien) {
-        return String.format(Locale.forLanguageTag("vi-VN"), "%,d đ", giaTien).replace(',', '.');
+        return MoneyUtils.dinhDangTienViet(giaTien);
     }
 
     private void xoaTungMon(@NonNull QuanLyGioHang.MonTrongGio monTrongGio) {
@@ -263,7 +248,7 @@ public class GioHangActivity extends AppCompatActivity {
                 .setMessage(R.string.cart_clear_confirm_message)
                 .setPositiveButton(R.string.cart_clear_confirm_action, (dialog, which) -> {
                     quanLyGioHang.xoaToanBoGio();
-                    quanLyPhienBan.xoaBanHienTai();
+                    sessionManager.xoaBanHienTai();
                     dongBoNguCanhLenForm();
                     capNhatHienThiGioHang();
                     Toast.makeText(this, R.string.cart_cleared, Toast.LENGTH_SHORT).show();
@@ -330,9 +315,9 @@ public class GioHangActivity extends AppCompatActivity {
 
         quanLyGioHang.capNhatNguCanhDonHang(hinhThucDon, soBan, ghiChu);
         if (hinhThucDon == DonHang.HinhThucDon.AN_TAI_QUAN) {
-            quanLyPhienBan.luuBanHienTai(soBan);
+            sessionManager.luuBanHienTai(soBan);
         } else {
-            quanLyPhienBan.xoaBanHienTai();
+            sessionManager.xoaBanHienTai();
         }
         return true;
     }
@@ -425,7 +410,7 @@ public class GioHangActivity extends AppCompatActivity {
         }
 
         String banHienTai = DichVuKhachHangHelper.timBanHienTai(
-                quanLyPhienBan.layBanHienTai(),
+                sessionManager.layBanHienTai(),
                 DichVuKhachHangHelper.timDonHangTaiQuanDangHoatDong(databaseHelper.layDonHangTheoNguoiDung(sessionManager.layIdNguoiDungHienTai())),
                 () -> quanLyGioHang.layNguCanhDonHang().laAnTaiQuan()
                         ? quanLyGioHang.layNguCanhDonHang().laySoBan()

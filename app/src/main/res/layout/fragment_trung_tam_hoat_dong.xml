@@ -72,14 +72,6 @@
                     tools:text="Có yêu cầu hỗ trợ đang chờ xử lý"
                     tools:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/tvServiceHubSummaryEmpty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
-                    android:visibility="gone"
-                    tools:text=""
-                    tools:visibility="gone" />
             </LinearLayout>
 
             <TextView

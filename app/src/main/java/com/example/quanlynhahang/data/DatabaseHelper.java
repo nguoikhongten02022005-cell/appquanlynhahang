@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -13,10 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.quanlynhahang.R;
 import com.example.quanlynhahang.helper.DateTimeUtils;
-import com.example.quanlynhahang.helper.MoneyUtils;
-import com.example.quanlynhahang.helper.PasswordHelper;
 import com.example.quanlynhahang.model.ThongKeTongQuanQuanTri;
 import com.example.quanlynhahang.model.ThongKeTongQuanNhanVien;
 import com.example.quanlynhahang.model.BanAn;
@@ -118,10 +114,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String COL_BAN_AN_TRANG_THAI = "trang_thai";
 
     private final Context appContext;
+    private final UserRepository userRepository;
+    private final DishRepository dishRepository;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         appContext = context.getApplicationContext();
+        userRepository = new UserRepository(this);
+        dishRepository = new DishRepository(this, appContext);
     }
 
     public void chuanBiCoSoDuLieu() {
@@ -586,345 +586,110 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public long insertUser(String name, String email, String phone, String password, VaiTroNguoiDung role, boolean isActive) {
-        if (TextUtils.isEmpty(name)
-                || TextUtils.isEmpty(email)
-                || TextUtils.isEmpty(phone)
-                || TextUtils.isEmpty(password)) {
-            return -1;
-        }
-
-        SQLiteDatabase db = getWritableDatabase();
-        return insertUser(db, name, email, phone, password, role, isActive);
+        return userRepository.insertUser(name, email, phone, password, role, isActive);
     }
 
     long insertUser(SQLiteDatabase db, String name, String email, String phone, String password, VaiTroNguoiDung role, boolean isActive) {
-        if (isPhoneInUse(db, phone, -1)) {
-            return -1;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(COL_USER_NAME, name);
-        values.put(COL_USER_EMAIL, email);
-        values.put(COL_USER_PHONE, phone);
-        values.put(COL_USER_PASSWORD, PasswordHelper.hashPassword(password));
-        values.put(COL_USER_ROLE, role != null ? role.name() : VaiTroNguoiDung.KHACH_HANG.name());
-        values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
-
-        try {
-            return db.insertOrThrow(TABLE_USER, null, values);
-        } catch (SQLiteConstraintException ex) {
-            Log.w(TAG, "insertUser: email đã tồn tại hoặc vi phạm ràng buộc. email=" + email, ex);
-            return -1;
-        } catch (SQLiteException ex) {
-            Log.e(TAG, "insertUser: lỗi khi thêm người dùng. email=" + email, ex);
-            throw ex;
-        }
+        return userRepository.insertUser(db, name, email, phone, password, role, isActive);
     }
 
     @Nullable
     public NguoiDung getUserByEmail(String email) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
-                    COL_USER_EMAIL + " = ?",
-                    new String[]{email},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-
-            if (cursor.moveToFirst()) {
-                return mapUser(cursor);
-            }
-            return null;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        return userRepository.getUserByEmail(email);
     }
 
     @Nullable
     public NguoiDung getUserById(long userId) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
-                    COL_USER_ID + " = ?",
-                    new String[]{String.valueOf(userId)},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-
-            if (cursor.moveToFirst()) {
-                return mapUser(cursor);
-            }
-            return null;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        return userRepository.getUserById(userId);
     }
 
     @Nullable
     public NguoiDung layNguoiDungTheoId(long userId) {
-        return getUserById(userId);
+        return userRepository.getUserById(userId);
     }
 
     @Nullable
     public NguoiDung getUserByPhone(String phone) {
-        if (TextUtils.isEmpty(phone)) {
-            return null;
-        }
-
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
-                    COL_USER_PHONE + " = ?",
-                    new String[]{phone},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-
-            if (cursor.moveToFirst()) {
-                return mapUser(cursor);
-            }
-            return null;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        return userRepository.getUserByPhone(phone);
     }
 
     @Nullable
     public NguoiDung layNguoiDungTheoSoDienThoai(String phone) {
-        return getUserByPhone(phone);
+        return userRepository.getUserByPhone(phone);
     }
 
     public boolean isPhoneInUse(String phone, long excludeUserId) {
-        SQLiteDatabase db = getReadableDatabase();
-        return isPhoneInUse(db, phone, excludeUserId);
-    }
-
-    private boolean isPhoneInUse(SQLiteDatabase db, String phone, long excludeUserId) {
-        if (TextUtils.isEmpty(phone)) {
-            return false;
-        }
-
-        Cursor cursor = null;
-        try {
-            String selection = COL_USER_PHONE + " = ?";
-            List<String> selectionArgs = new ArrayList<>();
-            selectionArgs.add(phone);
-            if (excludeUserId > 0) {
-                selection += " AND " + COL_USER_ID + " != ?";
-                selectionArgs.add(String.valueOf(excludeUserId));
-            }
-
-            cursor = db.query(
-                    TABLE_USER,
-                    new String[]{COL_USER_ID},
-                    selection,
-                    selectionArgs.toArray(new String[0]),
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-            return cursor.moveToFirst();
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        return userRepository.isPhoneInUse(phone, excludeUserId);
     }
 
     public boolean soDienThoaiDaDuocSuDung(String phone, long excludeUserId) {
-        return isPhoneInUse(phone, excludeUserId);
+        return userRepository.isPhoneInUse(phone, excludeUserId);
     }
 
     @Nullable
     public NguoiDung checkLogin(String usernameOrEmail, String password) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE, COL_USER_PASSWORD},
-                    "(" + COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?) AND " + COL_USER_IS_ACTIVE + " = 1",
-                    new String[]{usernameOrEmail, usernameOrEmail},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-
-            if (!cursor.moveToFirst()) {
-                return null;
-            }
-
-            String storedPassword = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PASSWORD));
-            if (!PasswordHelper.verifyPassword(password, storedPassword)) {
-                return null;
-            }
-
-            NguoiDung user = mapUser(cursor);
-            if (user != null && !PasswordHelper.isHashedPassword(storedPassword)) {
-                migrateLegacyPasswordHash(user.layId(), password);
-            }
-            return user;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        return userRepository.checkLogin(usernameOrEmail, password);
     }
 
     @Nullable
     public NguoiDung kiemTraDangNhap(String usernameOrEmail, String password) {
-        return checkLogin(usernameOrEmail, password);
+        return userRepository.checkLogin(usernameOrEmail, password);
     }
 
     public boolean updateUserProfile(long userId, String name, String phone) {
-        if (isPhoneInUse(phone, userId)) {
-            return false;
-        }
-
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_USER_NAME, name);
-        values.put(COL_USER_PHONE, phone);
-
-        int rows = db.update(
-                TABLE_USER,
-                values,
-                COL_USER_ID + " = ?",
-                new String[]{String.valueOf(userId)}
-        );
-        return rows > 0;
+        return userRepository.updateUserProfile(userId, name, phone);
     }
 
     public boolean capNhatThongTinNguoiDung(long userId, String name, String phone) {
-        return updateUserProfile(userId, name, phone);
+        return userRepository.updateUserProfile(userId, name, phone);
     }
 
     public boolean updateUserPassword(long userId, String newPassword) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_USER_PASSWORD, PasswordHelper.hashPassword(newPassword));
-
-        int rows = db.update(
-                TABLE_USER,
-                values,
-                COL_USER_ID + " = ?",
-                new String[]{String.valueOf(userId)}
-        );
-        return rows > 0;
+        return userRepository.updateUserPassword(userId, newPassword);
     }
 
     public boolean capNhatMatKhauNguoiDung(long userId, String newPassword) {
-        return updateUserPassword(userId, newPassword);
+        return userRepository.updateUserPassword(userId, newPassword);
     }
 
     public List<NguoiDung> getAllUsers() {
-        return getUsersByRole(null);
+        return userRepository.getUsersByRole(null);
     }
 
     public List<NguoiDung> layTatCaNguoiDung() {
-        return getAllUsers();
+        return userRepository.getUsersByRole(null);
     }
 
     public List<NguoiDung> getUsersByRole(@Nullable VaiTroNguoiDung role) {
-        List<NguoiDung> users = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            String selection = null;
-            String[] selectionArgs = null;
-            if (role != null) {
-                selection = COL_USER_ROLE + " = ?";
-                selectionArgs = new String[]{role.name()};
-            }
-
-            cursor = db.query(
-                    TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_NAME, COL_USER_EMAIL, COL_USER_PHONE, COL_USER_ROLE, COL_USER_IS_ACTIVE},
-                    selection,
-                    selectionArgs,
-                    null,
-                    null,
-                    COL_USER_ROLE + " ASC, " + COL_USER_NAME + " COLLATE NOCASE ASC, " + COL_USER_ID + " ASC"
-            );
-
-            while (cursor.moveToNext()) {
-                users.add(mapUser(cursor));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return users;
+        return userRepository.getUsersByRole(role);
     }
 
     public List<NguoiDung> layNguoiDungTheoVaiTro(@Nullable VaiTroNguoiDung role) {
-        return getUsersByRole(role);
+        return userRepository.getUsersByRole(role);
     }
 
     public boolean updateVaiTroNguoiDung(long userId, VaiTroNguoiDung role) {
-        if (userId <= 0 || role == null) {
-            return false;
-        }
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_USER_ROLE, role.name());
-        int rows = db.update(TABLE_USER, values, COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
-        return rows > 0;
+        return userRepository.updateVaiTroNguoiDung(userId, role);
     }
 
     public boolean capNhatVaiTroNguoiDung(long userId, VaiTroNguoiDung role) {
-        return updateVaiTroNguoiDung(userId, role);
+        return userRepository.updateVaiTroNguoiDung(userId, role);
     }
 
     public boolean updateUserActive(long userId, boolean isActive) {
-        if (userId <= 0) {
-            return false;
-        }
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
-        int rows = db.update(TABLE_USER, values, COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
-        return rows > 0;
+        return userRepository.updateUserActive(userId, isActive);
     }
 
     public boolean capNhatTrangThaiHoatDongNguoiDung(long userId, boolean isActive) {
-        return updateUserActive(userId, isActive);
+        return userRepository.updateUserActive(userId, isActive);
     }
 
     public int countAllUsers() {
-        return demSoBanGhi(TABLE_USER, null, null);
+        return userRepository.countAllUsers();
     }
 
     public int countUsersByRole(VaiTroNguoiDung role) {
-        if (role == null) {
-            return countAllUsers();
-        }
-        return demSoBanGhi(TABLE_USER, COL_USER_ROLE + " = ?", new String[]{role.name()});
+        return userRepository.countUsersByRole(role);
     }
 
     public void seedDishesIfEmpty(Context context) {
@@ -933,23 +698,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public List<DishRecord> layTatCaMonAn() {
-        return queryDishes(null, null);
+        return dishRepository.layTatCaMonAn();
     }
 
     List<DishRecord> layTatCaMonAn(SQLiteDatabase db) {
-        return queryDishes(db, null, null);
+        return dishRepository.layTatCaMonAn(db);
     }
 
     public List<DishRecord> timKiemMonAn(@Nullable String keyword) {
-        if (TextUtils.isEmpty(keyword)) {
-            return layTatCaMonAn();
-        }
-        String trimmedKeyword = keyword.trim();
-        String likeValue = "%" + trimmedKeyword + "%";
-        return queryDishes(
-                COL_DISH_NAME + " LIKE ? OR " + COL_DISH_CATEGORY + " LIKE ? OR " + COL_DISH_DESCRIPTION + " LIKE ?",
-                new String[]{likeValue, likeValue, likeValue}
-        );
+        return dishRepository.timKiemMonAn(keyword);
     }
 
     public long themBanGhiMonAn(String name,
@@ -959,12 +716,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 boolean isAvailable,
                                 @Nullable String category,
                                 int recommendScore) {
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)) {
-            return -1;
-        }
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, category, recommendScore);
-        return db.insert(TABLE_DISH, null, values);
+        return dishRepository.themBanGhiMonAn(name, price, description, imageResName, isAvailable, category, recommendScore);
     }
 
     public boolean capNhatBanGhiMonAn(long dishId,
@@ -975,138 +727,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                       boolean isAvailable,
                                       @Nullable String category,
                                       int recommendScore) {
-        if (dishId <= 0 || TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)) {
-            return false;
-        }
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, category, recommendScore);
-        int rows = db.update(TABLE_DISH, values, COL_DISH_ID + " = ?", new String[]{String.valueOf(dishId)});
-        return rows > 0;
+        return dishRepository.capNhatBanGhiMonAn(dishId, name, price, description, imageResName, isAvailable, category, recommendScore);
     }
 
     public boolean xoaMonAnTheoId(long dishId) {
-        if (dishId <= 0) {
-            return false;
-        }
-        SQLiteDatabase db = getWritableDatabase();
-        int rows = db.delete(TABLE_DISH, COL_DISH_ID + " = ?", new String[]{String.valueOf(dishId)});
-        return rows > 0;
+        return dishRepository.xoaMonAnTheoId(dishId);
     }
 
     public boolean capNhatTrangThaiPhucVuMon(long dishId, boolean isAvailable) {
-        if (dishId <= 0) {
-            return false;
-        }
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_DISH_IS_AVAILABLE, isAvailable ? 1 : 0);
-        int rows = db.update(TABLE_DISH, values, COL_DISH_ID + " = ?", new String[]{String.valueOf(dishId)});
-        return rows > 0;
+        return dishRepository.capNhatTrangThaiPhucVuMon(dishId, isAvailable);
     }
 
     public int countAllDishes() {
-        return demSoBanGhi(TABLE_DISH, null, null);
-    }
-
-    private List<DishRecord> queryDishes(@Nullable String selection, @Nullable String[] selectionArgs) {
-        return queryDishes(getReadableDatabase(), selection, selectionArgs);
-    }
-
-    private List<DishRecord> queryDishes(SQLiteDatabase db,
-                                         @Nullable String selection,
-                                         @Nullable String[] selectionArgs) {
-        List<DishRecord> dishRecords = new ArrayList<>();
-        Cursor cursor = null;
-
-        try {
-            cursor = db.query(
-                    TABLE_DISH,
-                    new String[]{
-                            COL_DISH_ID,
-                            COL_DISH_NAME,
-                            COL_DISH_PRICE,
-                            COL_DISH_DESCRIPTION,
-                            COL_DISH_IMAGE_RES_NAME,
-                            COL_DISH_IS_AVAILABLE,
-                            COL_DISH_CATEGORY,
-                            COL_DISH_RECOMMEND_SCORE
-                    },
-                    selection,
-                    selectionArgs,
-                    null,
-                    null,
-                    COL_DISH_ID + " ASC"
-            );
-
-            while (cursor.moveToNext()) {
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_DISH_ID));
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_NAME));
-                String price = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_PRICE));
-                String description = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_DESCRIPTION));
-                String imageResName = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_IMAGE_RES_NAME));
-                boolean isAvailable = cursor.getInt(cursor.getColumnIndexOrThrow(COL_DISH_IS_AVAILABLE)) == 1;
-                String category = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_CATEGORY));
-                int recommendScore = cursor.getInt(cursor.getColumnIndexOrThrow(COL_DISH_RECOMMEND_SCORE));
-
-                int imageResId = resolveImageResId(imageResName);
-                MonAnDeXuat dishItem = new MonAnDeXuat(
-                        imageResId,
-                        name,
-                        price,
-                        isAvailable,
-                        category,
-                        recommendScore
-                );
-                dishRecords.add(new DishRecord(id, dishItem, description, imageResName));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return dishRecords;
+        return dishRepository.countAllDishes();
     }
 
     public List<MonAnDeXuat> layTatCaMonHienThi() {
-        List<MonAnDeXuat> dishes = new ArrayList<>();
-        List<DishRecord> dishRecords = layTatCaMonAn();
-
-        for (DishRecord record : dishRecords) {
-            dishes.add(record.layMonAn());
-        }
-
-        return dishes;
+        return dishRepository.layTatCaMonHienThi();
     }
 
     public List<MonAnDeXuat> layDanhSachMonTheoDanhMuc(@Nullable String tenDanhMuc) {
-        List<MonAnDeXuat> dishes = new ArrayList<>();
-        for (DishRecord record : layTatCaMonAn()) {
-            MonAnDeXuat dishItem = record.layMonAn();
-            if (TextUtils.isEmpty(tenDanhMuc) || TextUtils.equals(tenDanhMuc, dishItem.layTenDanhMuc())) {
-                dishes.add(dishItem);
-            }
-        }
-        return dishes;
+        return dishRepository.layDanhSachMonTheoDanhMuc(tenDanhMuc);
     }
 
     public List<MonAnDeXuat> layMonDeXuatTrangChu(int soLuongToiDa) {
-        List<MonAnDeXuat> available = new ArrayList<>();
-        List<MonAnDeXuat> fallback = new ArrayList<>();
-
-        for (DishRecord record : layTatCaMonAn()) {
-            MonAnDeXuat dishItem = record.layMonAn();
-            fallback.add(dishItem);
-            if (dishItem.laConPhucVu()) {
-                available.add(dishItem);
-            }
-        }
-
-        List<MonAnDeXuat> source = available.isEmpty() ? fallback : available;
-        source.sort((first, second) -> Integer.compare(second.layDiemDeXuat(), first.layDiemDeXuat()));
-
-        int gioiHan = Math.min(Math.max(soLuongToiDa, 0), source.size());
-        return new ArrayList<>(source.subList(0, gioiHan));
+        return dishRepository.layMonDeXuatTrangChu(soLuongToiDa);
     }
 
     public long themDonHang(int userId,
@@ -1880,66 +1525,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     boolean hasAnyDish(SQLiteDatabase db) {
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_DISH, null);
-            if (cursor.moveToFirst()) {
-                return cursor.getInt(0) > 0;
-            }
-            return false;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        return dishRepository.hasAnyDish(db);
     }
 
     void insertDish(SQLiteDatabase db,
-                            String name,
-                            String price,
-                            String description,
-                            String imageResName,
-                            boolean isAvailable,
-                            String tenDanhMuc,
-                            int diemDeXuat) {
-        ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, tenDanhMuc, diemDeXuat);
-        db.insert(TABLE_DISH, null, values);
-    }
-
-    private ContentValues taoGiaTriMonAn(String name,
-                                         String price,
-                                         String description,
-                                         @Nullable String imageResName,
-                                         boolean isAvailable,
-                                         @Nullable String category,
-                                         int recommendScore) {
-        ContentValues values = new ContentValues();
-        values.put(COL_DISH_NAME, name != null ? name.trim() : "");
-        values.put(COL_DISH_PRICE, price != null ? price.trim() : "");
-        values.put(COL_DISH_DESCRIPTION, description != null ? description.trim() : "");
-        values.put(COL_DISH_IMAGE_RES_NAME, TextUtils.isEmpty(imageResName) ? TEN_ANH_MAC_DINH : imageResName.trim());
-        values.put(COL_DISH_IS_AVAILABLE, isAvailable ? 1 : 0);
-        values.put(COL_DISH_CATEGORY, category != null ? category.trim() : "");
-        values.put(COL_DISH_RECOMMEND_SCORE, Math.max(recommendScore, 0));
-        return values;
-    }
-
-    private void migrateLegacyPasswordHash(long userId, String rawPassword) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COL_USER_PASSWORD, PasswordHelper.hashPassword(rawPassword));
-        db.update(TABLE_USER, values, COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
-    }
-
-    @Nullable
-    private NguoiDung mapUser(Cursor cursor) {
-        long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_USER_ID));
-        String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_NAME));
-        String email = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_EMAIL));
-        String phone = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PHONE));
-        String roleValue = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_ROLE));
-        boolean isActive = cursor.getInt(cursor.getColumnIndexOrThrow(COL_USER_IS_ACTIVE)) == 1;
-        return new NguoiDung(id, name, email, phone, VaiTroNguoiDung.tuChuoi(roleValue), isActive);
+                    String name,
+                    String price,
+                    String description,
+                    String imageResName,
+                    boolean isAvailable,
+                    String tenDanhMuc,
+                    int diemDeXuat) {
+        dishRepository.insertDish(db, name, price, description, imageResName, isAvailable, tenDanhMuc, diemDeXuat);
     }
 
     private List<DonHang> queryDonHangs(@Nullable String selection, @Nullable String[] selectionArgs) {
@@ -2206,7 +1803,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ORDER_ITEM_QUANTITY));
 
                 MonAnDeXuat dishItem = new MonAnDeXuat(
-                        resolveImageResId(imageResName),
+                        dishRepository.resolveImageResId(imageResName),
                         dishName,
                         dishPrice,
                         isAvailable,
@@ -2228,18 +1825,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         T parse(String rawValue) throws IllegalArgumentException;
     }
 
-    private int resolveImageResId(String imageResName) {
-        if (TextUtils.isEmpty(imageResName)) {
-            return R.drawable.menu_1;
-        }
-
-        int resId = appContext.getResources().getIdentifier(
-                imageResName,
-                "drawable",
-                appContext.getPackageName()
-        );
-        return resId == 0 ? R.drawable.menu_1 : resId;
-    }
 
     private String taoMaDatBan() {
         return "#GB" + (System.currentTimeMillis() % 100000);

@@ -28,6 +28,8 @@ public class SessionManager {
 
     private static final String LEGACY_KEY_REGISTERED_EMAIL = "registered_email";
     private static final String LEGACY_KEY_REGISTERED_PASSWORD = "registered_password";
+    private static final String TIEN_TO_PHIEN_KHACH = "customer:";
+    private static final String KHOA_PHIEN_KHACH_VANG_LAI = TIEN_TO_PHIEN_KHACH + "guest";
 
     private final Context ungDungContext;
     private final SharedPreferences boNhoCu;
@@ -57,51 +59,22 @@ public class SessionManager {
             NguoiDung nguoiDungHienTai = databaseHelper.getUserById(idNguoiDungPhienHienTai);
             if (nguoiDungHienTai != null) {
                 Log.i(TAG, "Giữ nguyên phiên đăng nhập hiện tại vì người dùng đã tồn tại trong cơ sở dữ liệu.");
-                if (nguoiDungHienTai.laKhachHang()) {
-                    luuPhienKhachHang(idNguoiDungPhienHienTai);
-                } else {
-                    luuPhienNoiBo(idNguoiDungPhienHienTai, nguoiDungHienTai.layVaiTro());
-                }
-                boNhoCu.edit().putBoolean(KEY_LEGACY_AUTH_MIGRATED, true).apply();
+                luuPhienDangNhap(idNguoiDungPhienHienTai, nguoiDungHienTai.layVaiTro());
+                danhDauDaMigrationCu();
                 return;
             }
             boNhoCu.edit().remove(KEY_CURRENT_USER_ROLE).apply();
         }
 
-        long idNguoiDungAnhXa = -1;
-
-        if (!TextUtils.isEmpty(emailCu) && !TextUtils.isEmpty(matKhauCu)) {
-            Log.i(TAG, "Tìm hoặc tạo người dùng tương ứng cho dữ liệu đăng nhập cũ. email=" + emailCu);
-            NguoiDung nguoiDungDaTonTai = databaseHelper.getUserByEmail(emailCu);
-            if (nguoiDungDaTonTai != null) {
-                idNguoiDungAnhXa = nguoiDungDaTonTai.layId();
-            } else {
-                long idMoi = databaseHelper.insertUser(
-                        ungDungContext.getString(R.string.account_default_name),
-                        emailCu,
-                        ungDungContext.getString(R.string.account_default_phone),
-                        matKhauCu
-                );
-                if (idMoi > 0) {
-                    idNguoiDungAnhXa = idMoi;
-                } else {
-                    NguoiDung nguoiDungDuPhong = databaseHelper.getUserByEmail(emailCu);
-                    if (nguoiDungDuPhong != null) {
-                        idNguoiDungAnhXa = nguoiDungDuPhong.layId();
-                    }
-                }
-            }
-        }
-
+        long idNguoiDungAnhXa = timHoacTaoNguoiDungTuDuLieuCu(databaseHelper, emailCu, matKhauCu);
         if (daDangNhapCu && idNguoiDungAnhXa > 0) {
             Log.i(TAG, "Migration dữ liệu đăng nhập cũ thành công. userId=" + idNguoiDungAnhXa);
             luuPhienKhachHang(idNguoiDungAnhXa);
         } else {
             Log.i(TAG, "Không thể khôi phục phiên đăng nhập cũ, xóa phiên mới.");
-            xoaPhienNoiBo();
-            xoaPhienKhachHang();
+            xoaPhienDangNhap();
         }
-        boNhoCu.edit().putBoolean(KEY_LEGACY_AUTH_MIGRATED, true).apply();
+        danhDauDaMigrationCu();
     }
 
     public boolean daDangNhap() {
@@ -109,11 +82,11 @@ public class SessionManager {
     }
 
     public boolean daDangNhapNoiBo() {
-        return boNhoNoiBo.getBoolean(KEY_IS_LOGGED_IN, false) && layIdNguoiDungNoiBo() > 0;
+        return coPhienHopLe(boNhoNoiBo, layIdNguoiDungNoiBo());
     }
 
     public boolean daDangNhapKhachHang() {
-        return boNhoKhachHang.getBoolean(KEY_IS_LOGGED_IN, false) && layIdKhachHangHienTai() > 0;
+        return coPhienHopLe(boNhoKhachHang, layIdKhachHangHienTai());
     }
 
     public long layIdNguoiDungNoiBo() {
@@ -154,35 +127,12 @@ public class SessionManager {
         if (!daDangNhap()) {
             return;
         }
-
         if (daDangNhapNoiBo()) {
-            NguoiDung nguoiDungHienTai = databaseHelper.getUserById(layIdNguoiDungNoiBo());
-            if (nguoiDungHienTai == null || !nguoiDungHienTai.dangHoatDong()) {
-                xoaPhienNoiBo();
-                return;
-            }
-
-            VaiTroNguoiDung vaiTroPhien = layVaiTroNoiBoHopLe();
-            VaiTroNguoiDung vaiTroTuDb = nguoiDungHienTai.layVaiTro();
-            if (vaiTroPhien != vaiTroTuDb) {
-                boNhoNoiBo.edit()
-                        .putString(KEY_CURRENT_USER_ROLE, vaiTroTuDb.name())
-                        .apply();
-            }
+            damBaoPhienNoiBoHopLe(databaseHelper);
             return;
         }
-
         if (daDangNhapKhachHang()) {
-            NguoiDung nguoiDungHienTai = databaseHelper.getUserById(layIdKhachHangHienTai());
-            if (nguoiDungHienTai == null || !nguoiDungHienTai.dangHoatDong()) {
-                xoaPhienKhachHang();
-                return;
-            }
-            if (layVaiTroSessionHopLe() != VaiTroNguoiDung.KHACH_HANG) {
-                boNhoKhachHang.edit()
-                        .putBoolean(KEY_IS_LOGGED_IN, true)
-                        .apply();
-            }
+            damBaoPhienKhachHangHopLe(databaseHelper);
         }
     }
 
@@ -190,32 +140,13 @@ public class SessionManager {
         if (!daDangNhap()) {
             return false;
         }
-
         if (daDangNhapNoiBo()) {
-            NguoiDung nguoiDungHienTai = databaseHelper.getUserById(layIdNguoiDungNoiBo());
-            if (nguoiDungHienTai == null || !nguoiDungHienTai.dangHoatDong()) {
-                xoaPhienNoiBo();
-                return false;
-            }
-
-            if (layVaiTroNoiBoHopLe() != nguoiDungHienTai.layVaiTro()) {
-                boNhoNoiBo.edit()
-                        .putString(KEY_CURRENT_USER_ROLE, nguoiDungHienTai.layVaiTro().name())
-                        .apply();
-            }
-            return true;
+            return damBaoPhienNoiBoHopLe(databaseHelper);
         }
-
         if (!daDangNhapKhachHang()) {
             return false;
         }
-
-        NguoiDung nguoiDungHienTai = databaseHelper.getUserById(layIdKhachHangHienTai());
-        if (nguoiDungHienTai == null || !nguoiDungHienTai.dangHoatDong()) {
-            xoaPhienKhachHang();
-            return false;
-        }
-        return true;
+        return damBaoPhienKhachHangHopLe(databaseHelper);
     }
 
     public boolean laKhachHang() {
@@ -248,11 +179,11 @@ public class SessionManager {
 
     public void luuPhienDangNhap(long idNguoiDung, VaiTroNguoiDung vaiTro) {
         VaiTroNguoiDung vaiTroHopLe = vaiTro != null ? vaiTro : VaiTroNguoiDung.KHACH_HANG;
-        if (vaiTroHopLe == VaiTroNguoiDung.ADMIN || vaiTroHopLe == VaiTroNguoiDung.NHAN_VIEN) {
+        if (laVaiTroNoiBo(vaiTroHopLe)) {
             luuPhienNoiBo(idNguoiDung, vaiTroHopLe);
-        } else {
-            luuPhienKhachHang(idNguoiDung);
+            return;
         }
+        luuPhienKhachHang(idNguoiDung);
     }
 
     public void luuDuongDanNoiBoCuoi(@Nullable String duongDan) {
@@ -288,9 +219,9 @@ public class SessionManager {
     public String layKhoaPhienKhachHang() {
         long idKhachHang = layIdKhachHangHienTai();
         if (daDangNhapKhachHang() && idKhachHang > 0) {
-            return "customer:" + idKhachHang;
+            return TIEN_TO_PHIEN_KHACH + idKhachHang;
         }
-        return "customer:guest";
+        return KHOA_PHIEN_KHACH_VANG_LAI;
     }
 
     public void xoaPhienNoiBo() {
@@ -335,4 +266,69 @@ public class SessionManager {
         boNhoKhachHang.edit().remove(KEY_CURRENT_TABLE).apply();
     }
 
+    private void danhDauDaMigrationCu() {
+        boNhoCu.edit().putBoolean(KEY_LEGACY_AUTH_MIGRATED, true).apply();
+    }
+
+    private long timHoacTaoNguoiDungTuDuLieuCu(DatabaseHelper databaseHelper,
+                                               @Nullable String emailCu,
+                                               @Nullable String matKhauCu) {
+        if (TextUtils.isEmpty(emailCu) || TextUtils.isEmpty(matKhauCu)) {
+            return -1;
+        }
+
+        Log.i(TAG, "Tìm hoặc tạo người dùng tương ứng cho dữ liệu đăng nhập cũ. email=" + emailCu);
+        NguoiDung nguoiDungDaTonTai = databaseHelper.getUserByEmail(emailCu);
+        if (nguoiDungDaTonTai != null) {
+            return nguoiDungDaTonTai.layId();
+        }
+
+        long idMoi = databaseHelper.insertUser(
+                ungDungContext.getString(R.string.account_default_name),
+                emailCu,
+                ungDungContext.getString(R.string.account_default_phone),
+                matKhauCu
+        );
+        if (idMoi > 0) {
+            return idMoi;
+        }
+
+        NguoiDung nguoiDungDuPhong = databaseHelper.getUserByEmail(emailCu);
+        return nguoiDungDuPhong != null ? nguoiDungDuPhong.layId() : -1;
+    }
+
+    private boolean coPhienHopLe(SharedPreferences boNho, long idNguoiDung) {
+        return boNho.getBoolean(KEY_IS_LOGGED_IN, false) && idNguoiDung > 0;
+    }
+
+    private boolean laVaiTroNoiBo(@Nullable VaiTroNguoiDung vaiTro) {
+        return vaiTro == VaiTroNguoiDung.ADMIN || vaiTro == VaiTroNguoiDung.NHAN_VIEN;
+    }
+
+    private boolean damBaoPhienNoiBoHopLe(DatabaseHelper databaseHelper) {
+        NguoiDung nguoiDungHienTai = databaseHelper.getUserById(layIdNguoiDungNoiBo());
+        if (nguoiDungHienTai == null || !nguoiDungHienTai.dangHoatDong()) {
+            xoaPhienNoiBo();
+            return false;
+        }
+
+        VaiTroNguoiDung vaiTroTuDb = nguoiDungHienTai.layVaiTro();
+        if (!laVaiTroNoiBo(vaiTroTuDb)) {
+            xoaPhienNoiBo();
+            return false;
+        }
+        if (layVaiTroNoiBoHopLe() != vaiTroTuDb) {
+            boNhoNoiBo.edit().putString(KEY_CURRENT_USER_ROLE, vaiTroTuDb.name()).apply();
+        }
+        return true;
+    }
+
+    private boolean damBaoPhienKhachHangHopLe(DatabaseHelper databaseHelper) {
+        NguoiDung nguoiDungHienTai = databaseHelper.getUserById(layIdKhachHangHienTai());
+        if (nguoiDungHienTai == null || !nguoiDungHienTai.dangHoatDong()) {
+            xoaPhienKhachHang();
+            return false;
+        }
+        return true;
+    }
 }

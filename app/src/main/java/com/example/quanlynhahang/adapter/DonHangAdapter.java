@@ -17,14 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quanlynhahang.ChiTietDonHangActivity;
 import com.example.quanlynhahang.R;
 import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
+import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.DonHang;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangViewHolder> {
 
@@ -122,26 +120,8 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
     }
 
     private String dinhDangGia(String chuoiGiaGoc) {
-        if (chuoiGiaGoc == null) {
-            return "0đ";
-        }
-
-        String chuSo = chuoiGiaGoc.replaceAll("[^0-9]", "");
-        if (chuSo.isEmpty()) {
-            return "0đ";
-        }
-
-        long soTien;
-        try {
-            soTien = Long.parseLong(chuSo);
-        } catch (NumberFormatException ex) {
-            return "0đ";
-        }
-
-        DecimalFormatSymbols kyHieu = new DecimalFormatSymbols(Locale.forLanguageTag("vi-VN"));
-        kyHieu.setGroupingSeparator('.');
-        DecimalFormat dinhDangSo = new DecimalFormat("#,###", kyHieu);
-        return dinhDangSo.format(soTien) + "đ";
+        long soTien = chuoiGiaGoc == null ? 0L : MoneyUtils.tachGiaTienTuChuoi(chuoiGiaGoc);
+        return soTien <= 0L ? "0đ" : MoneyUtils.dinhDangTienViet(soTien);
     }
 
     private String layTextHinhThuc(Context context, DonHang donHang) {

@@ -42,7 +42,6 @@ public class TrungTamHoatDongFragment extends Fragment {
     private TextView tvServiceHubSummaryTable;
     private TextView tvServiceHubSummaryOrder;
     private TextView tvServiceHubSummarySupport;
-    private TextView tvServiceHubSummaryEmpty;
     private TextView tvServiceHubSummaryChevron;
     private View cardServiceHubSummary;
     private SessionManager sessionManager;
@@ -78,7 +77,6 @@ public class TrungTamHoatDongFragment extends Fragment {
         tvServiceHubSummaryTable = view.findViewById(R.id.tvServiceHubSummaryTable);
         tvServiceHubSummaryOrder = view.findViewById(R.id.tvServiceHubSummaryOrder);
         tvServiceHubSummarySupport = view.findViewById(R.id.tvServiceHubSummarySupport);
-        tvServiceHubSummaryEmpty = view.findViewById(R.id.tvServiceHubSummaryEmpty);
         tvServiceHubSummaryChevron = view.findViewById(R.id.tvServiceHubSummaryChevron);
         cardServiceHubSummary = view.findViewById(R.id.cardServiceHubSummary);
         sessionManager = new SessionManager(requireContext());
@@ -237,7 +235,6 @@ public class TrungTamHoatDongFragment extends Fragment {
                 yeuCauDangCho == null ? null : getString(R.string.activity_hub_summary_support_waiting));
 
         boolean khongCoGiHoatDong = banHienTai == null && donDangHoatDong == null && yeuCauDangCho == null;
-        capNhatDongTomTat(tvServiceHubSummaryEmpty, false, null);
         if (tvServiceHubSummaryChevron != null) {
             tvServiceHubSummaryChevron.setVisibility(yeuCauDangCho != null ? View.VISIBLE : View.GONE);
         }

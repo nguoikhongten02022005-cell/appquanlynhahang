@@ -104,36 +104,6 @@ public class TaiKhoanFragment extends Fragment {
         return coCheDoPreviewKhach() ? sessionManager.daDangNhapKhachHang() : sessionManager.daDangNhap();
     }
 
-    private boolean phienKhachHangPreviewHopLe(boolean hienToast) {
-        if (!coCheDoPreviewKhach() || sessionManager == null || databaseHelper == null) {
-            return true;
-        }
-
-        if (!sessionManager.daDangNhapKhachHang()) {
-            return false;
-        }
-
-        long idKhachHangHienTai = sessionManager.layIdKhachHangHienTai();
-        if (idKhachHangHienTai <= 0) {
-            sessionManager.xoaPhienKhachHang();
-            if (hienToast) {
-                Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
-            }
-            return false;
-        }
-
-        NguoiDung khachHang = databaseHelper.layNguoiDungTheoId(idKhachHangHienTai);
-        if (khachHang == null || !khachHang.dangHoatDong()) {
-            sessionManager.xoaPhienKhachHang();
-            if (hienToast) {
-                Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
-            }
-            return false;
-        }
-
-        return true;
-    }
-
     private void khoiTaoView(View view) {
         layoutAccountLoggedIn = view.findViewById(R.id.layoutAccountLoggedIn);
         tvAccountName = view.findViewById(R.id.tvAccountName);
@@ -404,110 +374,28 @@ public class TaiKhoanFragment extends Fragment {
             return;
         }
 
-        if (coCheDoPreviewKhach()) {
-            if (!sessionManager.daDangNhapKhachHang()) {
-                xoaGiaoDienKhiDangXuat();
-                return;
-            }
-
-            if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
-                xoaPhienKhachHangPhuHopTheoCheDo();
-                xoaGiaoDienKhiDangXuat();
-                dieuHuongDenTabTrangChu();
-                Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            long idKhachHangHienTai = sessionManager.layIdKhachHangHienTai();
-            if (idKhachHangHienTai <= 0) {
-                xoaPhienKhachHangPhuHopTheoCheDo();
-                xoaGiaoDienKhiDangXuat();
-                Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            NguoiDung user = databaseHelper.layNguoiDungTheoId(idKhachHangHienTai);
-            if (user == null) {
-                xoaPhienKhachHangPhuHopTheoCheDo();
-                xoaGiaoDienKhiDangXuat();
-                Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            nguoiDungHienTai = user;
-            layoutAccountLoggedIn.setVisibility(View.VISIBLE);
-            ganDuLieuNguoiDung(nguoiDungHienTai);
-            return;
-        }
-
-        if (!sessionManager.daDangNhap()) {
-            xoaGiaoDienKhiDangXuat();
-            return;
-        }
-
-        if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
-            xoaGiaoDienKhiDangXuat();
-            dieuHuongDenTabTrangChu();
-            Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
-        if (idNguoiDungHienTai <= 0) {
-            xoaPhienKhachHangPhuHopTheoCheDo();
-            xoaGiaoDienKhiDangXuat();
-            Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        NguoiDung user = databaseHelper.layNguoiDungTheoId(idNguoiDungHienTai);
+        NguoiDung user = taiNguoiDungHienTaiHopLe(false);
         if (user == null) {
-            xoaPhienKhachHangPhuHopTheoCheDo();
             xoaGiaoDienKhiDangXuat();
-            Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
             return;
         }
-
-        nguoiDungHienTai = user;
-        layoutAccountLoggedIn.setVisibility(View.VISIBLE);
-        ganDuLieuNguoiDung(nguoiDungHienTai);
+        capNhatGiaoDienChoNguoiDungHienTai(user);
     }
 
     private boolean xacThucPhienKhachHang(boolean hienToast) {
         if (!isAdded() || sessionManager == null || databaseHelper == null) {
             return false;
         }
-
-        if (coCheDoPreviewKhach()) {
-            if (!sessionManager.daDangNhapKhachHang()) {
-                return true;
-            }
-            if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
-                xoaPhienKhachHangPhuHopTheoCheDo();
-                xoaGiaoDienKhiDangXuat();
-                lamMoiTrangThaiHeader();
-                dieuHuongDenTabTrangChu();
-                if (hienToast) {
-                    Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
-                }
-                return false;
-            }
+        if (taiNguoiDungHienTaiHopLe(hienToast) != null) {
             return true;
         }
-
-        if (!sessionManager.daDangNhap()) {
+        if (!coPhienDangNhapHienTai()) {
             return true;
         }
-        if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
-            xoaGiaoDienKhiDangXuat();
-            lamMoiTrangThaiHeader();
-            dieuHuongDenTabTrangChu();
-            if (hienToast) {
-                Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
-            }
-            return false;
-        }
-        return true;
+        xoaGiaoDienKhiDangXuat();
+        lamMoiTrangThaiHeader();
+        dieuHuongDenTabTrangChu();
+        return false;
     }
 
     private void xoaPhienKhachHangPhuHopTheoCheDo() {
@@ -516,6 +404,63 @@ public class TaiKhoanFragment extends Fragment {
             return;
         }
         sessionManager.xoaPhienDangNhap();
+    }
+
+    @Nullable
+    private NguoiDung taiNguoiDungHienTaiHopLe(boolean hienToast) {
+        if (coCheDoPreviewKhach()) {
+            if (!sessionManager.daDangNhapKhachHang()) {
+                return null;
+            }
+            return taiNguoiDungTheoId(sessionManager.layIdKhachHangHienTai(), true, hienToast);
+        }
+        if (!sessionManager.daDangNhap()) {
+            return null;
+        }
+        return taiNguoiDungTheoId(sessionManager.layIdNguoiDungHienTai(), false, hienToast);
+    }
+
+    @Nullable
+    private NguoiDung taiNguoiDungTheoId(long idNguoiDung, boolean chiXoaPhienKhach, boolean hienToast) {
+        if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
+            if (chiXoaPhienKhach) {
+                sessionManager.xoaPhienKhachHang();
+            }
+            if (hienToast) {
+                Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            }
+            return null;
+        }
+        if (idNguoiDung <= 0) {
+            if (chiXoaPhienKhach) {
+                sessionManager.xoaPhienKhachHang();
+            } else {
+                xoaPhienKhachHangPhuHopTheoCheDo();
+            }
+            if (hienToast) {
+                Toast.makeText(requireContext(), getString(R.string.session_invalid), Toast.LENGTH_SHORT).show();
+            }
+            return null;
+        }
+        NguoiDung user = databaseHelper.layNguoiDungTheoId(idNguoiDung);
+        if (user == null) {
+            if (chiXoaPhienKhach) {
+                sessionManager.xoaPhienKhachHang();
+            } else {
+                xoaPhienKhachHangPhuHopTheoCheDo();
+            }
+            if (hienToast) {
+                Toast.makeText(requireContext(), getString(R.string.account_user_not_found), Toast.LENGTH_SHORT).show();
+            }
+        }
+        return user;
+    }
+
+    private boolean capNhatGiaoDienChoNguoiDungHienTai(@NonNull NguoiDung user) {
+        nguoiDungHienTai = user;
+        layoutAccountLoggedIn.setVisibility(View.VISIBLE);
+        ganDuLieuNguoiDung(user);
+        return true;
     }
 
     private void xoaGiaoDienKhiDangXuat() {

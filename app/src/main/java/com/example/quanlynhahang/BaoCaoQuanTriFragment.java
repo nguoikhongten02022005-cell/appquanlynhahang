@@ -17,6 +17,12 @@ import com.example.quanlynhahang.model.ThongKeTongQuanQuanTri;
 public class BaoCaoQuanTriFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
+    private TextView tvTongNguoiDung;
+    private TextView tvTongMonAn;
+    private TextView tvTongDonHang;
+    private TextView tvDonHangChoXacNhan;
+    private TextView tvDatBanChoDuyet;
+    private TextView tvYeuCauDangXuLy;
 
     @Nullable
     @Override
@@ -33,27 +39,39 @@ public class BaoCaoQuanTriFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
 
-        ThongKeTongQuanQuanTri thongKe = databaseHelper.layThongKeTongQuanQuanTri();
-
         TextView tvTieuDe = view.findViewById(R.id.tvBaoCaoQuanTriTitle);
-        TextView tvTongNguoiDung = view.findViewById(R.id.tvBaoCaoTongNguoiDung);
-        TextView tvTongMonAn = view.findViewById(R.id.tvBaoCaoTongMonAn);
-        TextView tvTongDonHang = view.findViewById(R.id.tvBaoCaoTongDonHang);
-        TextView tvDonHangChoXacNhan = view.findViewById(R.id.tvBaoCaoDonHangChoXacNhan);
-        TextView tvDatBanChoDuyet = view.findViewById(R.id.tvBaoCaoDatBanChoDuyet);
-        TextView tvYeuCauDangXuLy = view.findViewById(R.id.tvBaoCaoYeuCauDangXuLy);
+        tvTongNguoiDung = view.findViewById(R.id.tvBaoCaoTongNguoiDung);
+        tvTongMonAn = view.findViewById(R.id.tvBaoCaoTongMonAn);
+        tvTongDonHang = view.findViewById(R.id.tvBaoCaoTongDonHang);
+        tvDonHangChoXacNhan = view.findViewById(R.id.tvBaoCaoDonHangChoXacNhan);
+        tvDatBanChoDuyet = view.findViewById(R.id.tvBaoCaoDatBanChoDuyet);
+        tvYeuCauDangXuLy = view.findViewById(R.id.tvBaoCaoYeuCauDangXuLy);
         TextView btnMoQuanLyBan = view.findViewById(R.id.btnMoQuanLyBan);
 
         tvTieuDe.setText(R.string.admin_reports_title);
+        capNhatThongKe();
+        btnMoQuanLyBan.setOnClickListener(v -> {
+            startActivity(TrungTamQuanTriActivity.taoIntent(requireContext(), DieuHuongNoiBoHelper.SECTION_BAN));
+            requireActivity().finish();
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        capNhatThongKe();
+    }
+
+    private void capNhatThongKe() {
+        if (databaseHelper == null || tvTongNguoiDung == null) {
+            return;
+        }
+        ThongKeTongQuanQuanTri thongKe = databaseHelper.layThongKeTongQuanQuanTri();
         tvTongNguoiDung.setText(String.valueOf(thongKe.layTongNguoiDung()));
         tvTongMonAn.setText(String.valueOf(thongKe.layTongMonAn()));
         tvTongDonHang.setText(String.valueOf(thongKe.layTongDonHang()));
         tvDonHangChoXacNhan.setText(String.valueOf(thongKe.laySoDonHangChoXacNhan()));
         tvDatBanChoDuyet.setText(String.valueOf(thongKe.laySoDatBanChoDuyet()));
         tvYeuCauDangXuLy.setText(String.valueOf(thongKe.laySoYeuCauDangXuLy()));
-        btnMoQuanLyBan.setOnClickListener(v -> {
-            startActivity(TrungTamQuanTriActivity.taoIntent(requireContext(), DieuHuongNoiBoHelper.SECTION_BAN));
-            requireActivity().finish();
-        });
     }
 }

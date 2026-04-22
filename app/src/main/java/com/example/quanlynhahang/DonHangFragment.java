@@ -118,7 +118,7 @@ public class DonHangFragment extends Fragment {
 
     private void thietLapRecyclerView() {
         rvDonHangs.setLayoutManager(new LinearLayoutManager(requireContext()));
-        orderAdapter = new DonHangAdapter(new ArrayList<>(), this::huyDonHang);
+        orderAdapter = new DonHangAdapter(new ArrayList<>(), (donHang, viTri) -> huyDonHang(donHang));
         rvDonHangs.setAdapter(orderAdapter);
     }
 
@@ -160,16 +160,16 @@ public class DonHangFragment extends Fragment {
         hienTrangThaiDanhSach();
     }
 
-    private void huyDonHang(DonHang donHang, int viTri) {
+    private void huyDonHang(DonHang donHang) {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.order_cancel_confirm_title)
                 .setMessage(R.string.order_cancel_confirm_message)
                 .setNegativeButton(R.string.dialog_close, null)
-                .setPositiveButton(R.string.order_cancel, (dialog, which) -> thucHienHuyDon(donHang, viTri))
+                .setPositiveButton(R.string.order_cancel, (dialog, which) -> thucHienHuyDon(donHang))
                 .show();
     }
 
-    private void thucHienHuyDon(DonHang donHang, int viTri) {
+    private void thucHienHuyDon(DonHang donHang) {
         boolean daHuy = databaseHelper.huyDonHang(donHang.layId());
         if (!daHuy) {
             Toast.makeText(requireContext(), getString(R.string.db_operation_failed), Toast.LENGTH_SHORT).show();

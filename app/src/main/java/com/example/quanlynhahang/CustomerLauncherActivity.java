@@ -35,9 +35,7 @@ public class CustomerLauncherActivity extends AppCompatActivity {
                     MainActivity.EXTRA_ROUTE_TRA_VE_NOI_BO,
                     sessionManager.layNguonPreviewKhachHang()
             );
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            chuyenDen(intent);
             return;
         }
 
@@ -56,6 +54,10 @@ public class CustomerLauncherActivity extends AppCompatActivity {
             intent = new Intent(this, MainActivity.class);
             intent.putExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, true);
         }
+        chuyenDen(intent);
+    }
+
+    private void chuyenDen(Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

@@ -18,17 +18,15 @@ import com.example.quanlynhahang.adapter.YeuCauPhucVuAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DateTimeUtils;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class YeuCauFragment extends Fragment {
 
@@ -339,7 +337,7 @@ public class YeuCauFragment extends Fragment {
     }
 
     private String layChuoiThoiGianHienTai() {
-        return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+        return DateTimeUtils.layThoiGianHienTai();
     }
 
     private void hienThiPhanHoiNgan(int messageRes) {

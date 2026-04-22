@@ -26,21 +26,17 @@ public class StaffLauncherActivity extends AppCompatActivity {
         if (sessionManager.daDangNhap() && sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
             VaiTroNguoiDung vaiTroDangNhap = sessionManager.layVaiTroSessionHopLe();
             if (vaiTroDangNhap == VaiTroNguoiDung.ADMIN || vaiTroDangNhap == VaiTroNguoiDung.NHAN_VIEN) {
-                Intent intent = DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(this, DieuHuongNoiBoHelper.TAB_TONG_QUAN);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
+                chuyenDen(DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(this, DieuHuongNoiBoHelper.TAB_TONG_QUAN));
                 return;
             }
-
-            Intent intent = DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, true);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            chuyenDen(DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, true));
             return;
         }
 
-        Intent intent = new Intent(this, DangNhapActivity.class);
+        chuyenDen(new Intent(this, DangNhapActivity.class));
+    }
+
+    private void chuyenDen(Intent intent) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

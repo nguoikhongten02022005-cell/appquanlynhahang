@@ -73,20 +73,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Log.i(TAG, "Bắt đầu khởi tạo SessionManager và DatabaseHelper.");
-        sessionManager = new SessionManager(this);
-        databaseHelper = new DatabaseHelper(this);
-        Log.i(TAG, "Bắt đầu mở cơ sở dữ liệu và chạy migration phiên đăng nhập cũ.");
-        databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
-        sessionManager.damBaoVaiTroSession(databaseHelper);
-        choPhepXemGiaoDienKhach = getIntent().getBooleanExtra(EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false);
-        cheDoPreviewKhach = getIntent().getBooleanExtra(EXTRA_CHE_DO_PREVIEW_KHACH, false);
-        duongDanTraVeNoiBo = getIntent().getStringExtra(EXTRA_ROUTE_TRA_VE_NOI_BO);
-        if (sessionManager.daDangNhap() && sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.KHACH_HANG && !choPhepXemGiaoDienKhach) {
-            startActivity(DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, false)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-            finish();
+        khoiTaoHeThong();
+        docDieuHuongDauVao();
+        if (canChuyenHuongVaiTro()) {
+            chuyenHuongSaiVaiTro();
             return;
         }
         Log.i(TAG, "Hoàn tất chuẩn bị cơ sở dữ liệu và migration phiên đăng nhập.");
@@ -97,18 +87,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         capNhatNutThoatPreviewKhach();
 
-        if (savedInstanceState != null) {
-            tenDanhMucMenuCho = savedInstanceState.getString(ThucDonFragment.ARG_TEN_DANH_MUC);
-            moTimKiemMenuCho = savedInstanceState.getBoolean(ThucDonFragment.ARG_MO_TIM_KIEM, false);
-            tuKhoaMenuCho = savedInstanceState.getString(ThucDonFragment.ARG_TU_KHOA_TIM_KIEM);
-            coDieuHuongMenuCho = savedInstanceState.getBoolean(KEY_CO_DIEU_HUONG_MENU_CHO, false);
-            tabTrungTamHoatDongCho = savedInstanceState.getInt(KEY_TAB_HOAT_DONG_CHO, TrungTamHoatDongFragment.TAB_ORDERS);
-        } else {
-            tabTrungTamHoatDongCho = getIntent().getIntExtra(
-                    EXTRA_MO_TAB_TRUNG_TAM_HOAT_DONG,
-                    TrungTamHoatDongFragment.TAB_ORDERS
-            );
-        }
+        khoiPhucTrangThaiDieuHuong(savedInstanceState);
 
         thietLapDieuHuongDuoi();
         thietLapHanhDongHeader();
@@ -154,41 +133,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void thietLapDieuHuongDuoi() {
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == bottomNavigationView.getSelectedItemId()) {
-                if (itemId == R.id.nav_menu) {
-                    hienMenu();
-                } else if (itemId == R.id.nav_orders) {
-                    hienTrungTamHoatDong();
-                } else if (itemId == R.id.nav_account) {
-                    hienTaiKhoan();
-                }
-                return itemId != R.id.nav_cart;
-            }
-
-            if (itemId == R.id.nav_home) {
-                hienTrangChu();
-                return true;
-            }
-            if (itemId == R.id.nav_menu) {
-                hienMenu();
-                return true;
-            }
-            if (itemId == R.id.nav_orders) {
-                hienTrungTamHoatDong();
-                return true;
-            }
-            if (itemId == R.id.nav_cart) {
-                moGioHang();
-                return false;
-            }
-            if (itemId == R.id.nav_account) {
-                hienTaiKhoan();
-                return true;
-            }
-            return false;
-        });
+        bottomNavigationView.setOnItemSelectedListener(item -> xuLyChonDieuHuongDuoi(item.getItemId()));
     }
 
     private void thietLapHanhDongHeader() {
@@ -323,22 +268,12 @@ public class MainActivity extends AppCompatActivity {
         if (!sessionManager.daDangNhap()) {
             return true;
         }
-
         if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
-            if (hienToast) {
-                android.widget.Toast.makeText(this, getString(R.string.session_invalid), android.widget.Toast.LENGTH_SHORT).show();
-            }
-            Intent intent = new Intent(this, CustomerLauncherActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            chuyenVeLauncherKhach(hienToast);
             return false;
         }
-
-        if (sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.KHACH_HANG && !choPhepXemGiaoDienKhach) {
-            startActivity(DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, false)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-            finish();
+        if (canChuyenHuongVaiTro()) {
+            chuyenHuongSaiVaiTro();
             return false;
         }
         return true;
@@ -416,5 +351,95 @@ public class MainActivity extends AppCompatActivity {
         return totalQuantity > SO_LUONG_BADGE_TOI_DA
                 ? getString(R.string.cart_badge_overflow)
                 : String.valueOf(totalQuantity);
+    }
+
+    private void khoiTaoHeThong() {
+        Log.i(TAG, "Bắt đầu khởi tạo SessionManager và DatabaseHelper.");
+        sessionManager = new SessionManager(this);
+        databaseHelper = new DatabaseHelper(this);
+        Log.i(TAG, "Bắt đầu mở cơ sở dữ liệu và chạy migration phiên đăng nhập cũ.");
+        databaseHelper.chuanBiCoSoDuLieu();
+        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
+        sessionManager.damBaoVaiTroSession(databaseHelper);
+    }
+
+    private void docDieuHuongDauVao() {
+        choPhepXemGiaoDienKhach = getIntent().getBooleanExtra(EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false);
+        cheDoPreviewKhach = getIntent().getBooleanExtra(EXTRA_CHE_DO_PREVIEW_KHACH, false);
+        duongDanTraVeNoiBo = getIntent().getStringExtra(EXTRA_ROUTE_TRA_VE_NOI_BO);
+    }
+
+    private void khoiPhucTrangThaiDieuHuong(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            tenDanhMucMenuCho = savedInstanceState.getString(ThucDonFragment.ARG_TEN_DANH_MUC);
+            moTimKiemMenuCho = savedInstanceState.getBoolean(ThucDonFragment.ARG_MO_TIM_KIEM, false);
+            tuKhoaMenuCho = savedInstanceState.getString(ThucDonFragment.ARG_TU_KHOA_TIM_KIEM);
+            coDieuHuongMenuCho = savedInstanceState.getBoolean(KEY_CO_DIEU_HUONG_MENU_CHO, false);
+            tabTrungTamHoatDongCho = savedInstanceState.getInt(KEY_TAB_HOAT_DONG_CHO, TrungTamHoatDongFragment.TAB_ORDERS);
+            return;
+        }
+        tabTrungTamHoatDongCho = getIntent().getIntExtra(
+                EXTRA_MO_TAB_TRUNG_TAM_HOAT_DONG,
+                TrungTamHoatDongFragment.TAB_ORDERS
+        );
+    }
+
+    private boolean canChuyenHuongVaiTro() {
+        return sessionManager.daDangNhap()
+                && sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.KHACH_HANG
+                && !choPhepXemGiaoDienKhach;
+    }
+
+    private void chuyenHuongSaiVaiTro() {
+        startActivity(DieuHuongVaiTroHelper.taoIntentSaiVaiTro(this, sessionManager, false)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        finish();
+    }
+
+    private void chuyenVeLauncherKhach(boolean hienToast) {
+        if (hienToast) {
+            android.widget.Toast.makeText(this, getString(R.string.session_invalid), android.widget.Toast.LENGTH_SHORT).show();
+        }
+        Intent intent = new Intent(this, CustomerLauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private boolean xuLyChonDieuHuongDuoi(int itemId) {
+        if (itemId == bottomNavigationView.getSelectedItemId()) {
+            return xuLyChonLaiTab(itemId);
+        }
+        if (itemId == R.id.nav_cart) {
+            moGioHang();
+            return false;
+        }
+        moManHinhTheoTab(itemId);
+        return true;
+    }
+
+    private boolean xuLyChonLaiTab(int itemId) {
+        if (itemId == R.id.nav_menu || itemId == R.id.nav_orders || itemId == R.id.nav_account) {
+            moManHinhTheoTab(itemId);
+        }
+        return itemId != R.id.nav_cart;
+    }
+
+    private void moManHinhTheoTab(int itemId) {
+        if (itemId == R.id.nav_home) {
+            hienTrangChu();
+            return;
+        }
+        if (itemId == R.id.nav_menu) {
+            hienMenu();
+            return;
+        }
+        if (itemId == R.id.nav_orders) {
+            hienTrungTamHoatDong();
+            return;
+        }
+        if (itemId == R.id.nav_account) {
+            hienTaiKhoan();
+        }
     }
 }

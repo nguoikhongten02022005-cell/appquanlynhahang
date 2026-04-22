@@ -27,10 +27,6 @@ public class TrungTamNoiBoActivity extends AppCompatActivity {
         return intent;
     }
 
-    public static Intent taoIntentQuanTri(Context context, String section) {
-        return TrungTamQuanTriActivity.taoIntent(context, DieuHuongNoiBoHelper.chuanHoaSection(section));
-    }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

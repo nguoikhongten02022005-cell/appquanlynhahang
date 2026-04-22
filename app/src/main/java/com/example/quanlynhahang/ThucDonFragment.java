@@ -51,7 +51,6 @@ public class ThucDonFragment extends Fragment {
     private String tenDanhMucDangChon;
     private boolean moTimKiemKhiMoMan;
     private String tuKhoaTimKiemBanDau;
-    private String tuKhoaTimKiemDaApDung;
     private boolean dangCapNhatTimKiemNoiBo;
 
     public static ThucDonFragment newInstance(@Nullable String tenDanhMuc, boolean moTimKiem) {
@@ -113,7 +112,6 @@ public class ThucDonFragment extends Fragment {
         tenDanhMucDangChon = TextUtils.isEmpty(tenDanhMuc) ? null : tenDanhMuc;
         moTimKiemKhiMoMan = moTimKiem;
         tuKhoaTimKiemBanDau = tuKhoaTimKiem == null ? "" : tuKhoaTimKiem.trim();
-        tuKhoaTimKiemDaApDung = null;
         if (isAdded()) {
             apDungTuKhoaTimKiemNeuCan();
             taiDuLieuMonAn();
@@ -135,7 +133,6 @@ public class ThucDonFragment extends Fragment {
         tenDanhMucDangChon = source.getString(ARG_TEN_DANH_MUC);
         moTimKiemKhiMoMan = source.getBoolean(ARG_MO_TIM_KIEM, false);
         tuKhoaTimKiemBanDau = source.getString(ARG_TU_KHOA_TIM_KIEM);
-        tuKhoaTimKiemDaApDung = null;
     }
 
     private void thietLapRecyclerView(View view) {
@@ -282,21 +279,13 @@ public class ThucDonFragment extends Fragment {
     }
 
     private void apDungTuKhoaTimKiemNeuCan() {
-        if (etMenuSearch == null) {
+        if (etMenuSearch == null || tuKhoaTimKiemBanDau == null) {
             return;
         }
 
         String tuKhoaMucTieu = tuKhoaTimKiemBanDau;
-        if (tuKhoaMucTieu == null) {
-            if (tuKhoaTimKiemDaApDung == null) {
-                return;
-            }
-            tuKhoaMucTieu = "";
-        }
-
         String tuKhoaHienTai = layTuKhoaHienTai();
         if (TextUtils.equals(tuKhoaMucTieu, tuKhoaHienTai)) {
-            tuKhoaTimKiemDaApDung = tuKhoaMucTieu;
             tuKhoaTimKiemBanDau = null;
             return;
         }
@@ -305,7 +294,6 @@ public class ThucDonFragment extends Fragment {
         etMenuSearch.setText(tuKhoaMucTieu);
         etMenuSearch.setSelection(etMenuSearch.length());
         dangCapNhatTimKiemNoiBo = false;
-        tuKhoaTimKiemDaApDung = tuKhoaMucTieu;
         tuKhoaTimKiemBanDau = null;
     }
 

@@ -17,15 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quanlynhahang.adapter.MonTrongDonAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DateTimeUtils;
 import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
 import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 import com.google.android.material.button.MaterialButton;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 public class ChiTietDonHangActivity extends AppCompatActivity {
 
@@ -195,7 +193,7 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
                     getString(R.string.service_request_payment_for_order_format, donHang.layMaDon()),
                     donHang.laySoBan(),
                     donHang.layId(),
-                    new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new java.util.Date()),
+                    DateTimeUtils.layThoiGianHienTai(),
                     YeuCauPhucVu.TrangThai.DANG_CHO
             );
             if (idYeuCau <= 0) {
@@ -231,22 +229,7 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
     }
 
     private String dinhDangGia(String chuoiGiaGoc) {
-        if (TextUtils.isEmpty(chuoiGiaGoc)) {
-            return "0đ";
-        }
-        String chuSo = chuoiGiaGoc.replaceAll("[^0-9]", "");
-        if (chuSo.isEmpty()) {
-            return "0đ";
-        }
-        long soTien;
-        try {
-            soTien = Long.parseLong(chuSo);
-        } catch (NumberFormatException ex) {
-            return "0đ";
-        }
-        DecimalFormatSymbols kyHieu = new DecimalFormatSymbols(Locale.forLanguageTag("vi-VN"));
-        kyHieu.setGroupingSeparator('.');
-        DecimalFormat dinhDangSo = new DecimalFormat("#,###", kyHieu);
-        return dinhDangSo.format(soTien) + "đ";
+        long soTien = TextUtils.isEmpty(chuoiGiaGoc) ? 0L : com.example.quanlynhahang.helper.MoneyUtils.tachGiaTienTuChuoi(chuoiGiaGoc);
+        return soTien <= 0L ? getString(R.string.admin_price_zero) : com.example.quanlynhahang.helper.MoneyUtils.dinhDangTienViet(soTien);
     }
 }

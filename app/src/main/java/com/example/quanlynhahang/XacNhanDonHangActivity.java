@@ -25,17 +25,16 @@ import com.example.quanlynhahang.adapter.MonTrongDonAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.helper.DateTimeUtils;
+import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class XacNhanDonHangActivity extends AppCompatActivity {
 
@@ -53,7 +52,6 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     private QuanLyGioHang quanLyGioHang;
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
-    private SessionManager tableSessionManager;
     private DonHang.PhuongThucThanhToan phuongThucThanhToanMangDi = DonHang.PhuongThucThanhToan.TIEN_MAT_KHI_NHAN;
 
     @Override
@@ -62,7 +60,6 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         setContentView(R.layout.activity_xac_nhan_don_hang);
 
         sessionManager = new SessionManager(this);
-        tableSessionManager = sessionManager;
         quanLyGioHang = layGioKhachHang();
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
@@ -210,7 +207,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         }
 
         if (nguCanhDonHang.laAnTaiQuan()) {
-            tableSessionManager.luuBanHienTai(nguCanhDonHang.laySoBan());
+            sessionManager.luuBanHienTai(nguCanhDonHang.laySoBan());
         }
         quanLyGioHang.xoaToanBoGio();
         setResult(RESULT_OK);
@@ -274,25 +271,13 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     private long tinhTongTien(List<QuanLyGioHang.MonTrongGio> danhSachMon) {
         long tongTien = 0;
         for (QuanLyGioHang.MonTrongGio monTrongGio : danhSachMon) {
-            tongTien += tachGiaTienTuChuoi(monTrongGio.layMonAn().layGiaBan()) * monTrongGio.laySoLuong();
+            tongTien += MoneyUtils.tachGiaTienTuChuoi(monTrongGio.layMonAn().layGiaBan()) * monTrongGio.laySoLuong();
         }
         return tongTien;
     }
 
-    private long tachGiaTienTuChuoi(@Nullable String chuoiGia) {
-        if (chuoiGia == null || chuoiGia.isEmpty()) {
-            return 0;
-        }
-        String chuoiDaLamSach = chuoiGia.replaceAll("[^0-9]", "");
-        try {
-            return Long.parseLong(chuoiDaLamSach);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
     private String dinhDangGia(long giaTien) {
-        return String.format(Locale.forLanguageTag("vi-VN"), "%,d đ", giaTien).replace(',', '.');
+        return MoneyUtils.dinhDangTienViet(giaTien);
     }
 
     private void hienThiPhanHoiNgan(int messageRes) {
@@ -332,7 +317,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     }
 
     private String layThoiGianHienTai() {
-        return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+        return DateTimeUtils.layThoiGianHienTai();
     }
 
     private void moLuaChonThanhToanMangDi() {

@@ -1,10 +1,12 @@
 package com.example.quanlynhahang;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.BoDieuHopMonQuanTri;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.helper.MoneyUtils;
 
 import java.util.List;
 
@@ -43,11 +46,12 @@ public class MonAnQuanTriFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rvMonAnQuanTri);
         tvEmptyState = view.findViewById(R.id.tvMonAnQuanTriEmpty);
+        View btnThemMon = view.findViewById(R.id.btnAdminDishAdd);
 
         boDieuHopMon = new BoDieuHopMonQuanTri(new BoDieuHopMonQuanTri.HanhDongListener() {
             @Override
             public void khiSua(DatabaseHelper.DishRecord banGhiMon) {
-                hienGoiYChinhSua(banGhiMon);
+                hienDialogThemHoacSuaMon(banGhiMon);
             }
 
             @Override
@@ -68,6 +72,7 @@ public class MonAnQuanTriFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(boDieuHopMon);
+        btnThemMon.setOnClickListener(v -> hienDialogThemHoacSuaMon(null));
 
         taiDanhSachMon();
     }
@@ -88,11 +93,121 @@ public class MonAnQuanTriFragment extends Fragment {
         }
     }
 
-    private void hienGoiYChinhSua(DatabaseHelper.DishRecord banGhiMon) {
+    private void hienDialogThemHoacSuaMon(@Nullable DatabaseHelper.DishRecord banGhiMon) {
         if (!isAdded()) {
             return;
         }
-        Toast.makeText(requireContext(), "Chức năng sửa món đang tạm tắt", Toast.LENGTH_SHORT).show();
+
+        View noiDungDialog = getLayoutInflater().inflate(R.layout.dialog_add_edit_dish, null);
+        EditText etTenMon = noiDungDialog.findViewById(R.id.etAdminDishName);
+        EditText etGiaMon = noiDungDialog.findViewById(R.id.etAdminDishPrice);
+        EditText etDanhMuc = noiDungDialog.findViewById(R.id.etAdminDishCategory);
+        EditText etMoTa = noiDungDialog.findViewById(R.id.etAdminDishDescription);
+        EditText etTenAnh = noiDungDialog.findViewById(R.id.etAdminDishImage);
+        EditText etDiemDeXuat = noiDungDialog.findViewById(R.id.etAdminDishScore);
+        CheckBox cbDangPhucVu = noiDungDialog.findViewById(R.id.cbAdminDishAvailable);
+
+        if (banGhiMon != null) {
+            etTenMon.setText(banGhiMon.layMonAn().layTenMon());
+            etGiaMon.setText(String.valueOf(MoneyUtils.tachGiaTienTuChuoi(banGhiMon.layMonAn().layGiaBan())));
+            etDanhMuc.setText(banGhiMon.layMonAn().layTenDanhMuc());
+            etMoTa.setText(banGhiMon.layMoTa());
+            etTenAnh.setText(banGhiMon.layTenAnhTaiNguyen());
+            etDiemDeXuat.setText(String.valueOf(banGhiMon.layMonAn().layDiemDeXuat()));
+            cbDangPhucVu.setChecked(banGhiMon.layMonAn().laConPhucVu());
+        } else {
+            cbDangPhucVu.setChecked(true);
+            etDiemDeXuat.setText("0");
+        }
+
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle(banGhiMon == null ? R.string.admin_dialog_add_dish_title : R.string.admin_dialog_edit_dish_title)
+                .setView(noiDungDialog)
+                .setNegativeButton(R.string.account_cancel_action, null)
+                .setPositiveButton(R.string.admin_save, null)
+                .create();
+
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String tenMon = layChuoiDaCatKhoangTrang(etTenMon);
+            String giaNhap = layChuoiDaCatKhoangTrang(etGiaMon);
+            String danhMuc = layChuoiDaCatKhoangTrang(etDanhMuc);
+            String moTa = layChuoiDaCatKhoangTrang(etMoTa);
+            String tenAnh = layChuoiDaCatKhoangTrang(etTenAnh);
+            String diemNhap = layChuoiDaCatKhoangTrang(etDiemDeXuat);
+
+            if (TextUtils.isEmpty(tenMon)
+                    || TextUtils.isEmpty(giaNhap)
+                    || TextUtils.isEmpty(danhMuc)
+                    || TextUtils.isEmpty(moTa)) {
+                Toast.makeText(requireContext(), R.string.admin_dish_validation_required, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            long giaTien = MoneyUtils.tachGiaTienTuChuoi(giaNhap);
+            if (giaTien <= 0) {
+                Toast.makeText(requireContext(), R.string.admin_dish_validation_price, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (moTa.length() < 10) {
+                Toast.makeText(requireContext(), R.string.admin_dish_validation_description, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int diemDeXuat;
+            try {
+                diemDeXuat = TextUtils.isEmpty(diemNhap) ? 0 : Integer.parseInt(diemNhap);
+            } catch (NumberFormatException ex) {
+                Toast.makeText(requireContext(), R.string.admin_dish_validation_score, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (diemDeXuat < 0) {
+                Toast.makeText(requireContext(), R.string.admin_dish_validation_score, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String giaBan = MoneyUtils.dinhDangTienViet(giaTien);
+            String tenAnhTaiNguyen = TextUtils.isEmpty(tenAnh) ? null : tenAnh;
+            boolean dangPhucVu = cbDangPhucVu.isChecked();
+
+            boolean daLuu;
+            if (banGhiMon == null) {
+                daLuu = databaseHelper.themBanGhiMonAn(
+                        tenMon,
+                        giaBan,
+                        moTa,
+                        tenAnhTaiNguyen,
+                        dangPhucVu,
+                        danhMuc,
+                        diemDeXuat
+                ) > 0;
+            } else {
+                daLuu = databaseHelper.capNhatBanGhiMonAn(
+                        banGhiMon.layId(),
+                        tenMon,
+                        giaBan,
+                        moTa,
+                        tenAnhTaiNguyen,
+                        dangPhucVu,
+                        danhMuc,
+                        diemDeXuat
+                );
+            }
+
+            if (!daLuu) {
+                Toast.makeText(requireContext(), R.string.admin_action_failed, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Toast.makeText(
+                    requireContext(),
+                    banGhiMon == null ? R.string.admin_dish_create_success : R.string.admin_dish_update_success,
+                    Toast.LENGTH_SHORT
+            ).show();
+            dialog.dismiss();
+            taiDanhSachMon();
+        }));
+        dialog.show();
     }
 
     private void xacNhanXoaMon(DatabaseHelper.DishRecord banGhiMon) {
@@ -103,16 +218,20 @@ public class MonAnQuanTriFragment extends Fragment {
                 .setTitle(R.string.admin_delete_confirm_title)
                 .setMessage(R.string.admin_delete_confirm_message)
                 .setNegativeButton(R.string.account_cancel_action, null)
-                .setPositiveButton(R.string.admin_delete_dish, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        boolean daXoa = databaseHelper.xoaMonAnTheoId(banGhiMon.layId());
-                        Toast.makeText(requireContext(), daXoa ? R.string.admin_dish_delete_success : R.string.admin_action_failed, Toast.LENGTH_SHORT).show();
-                        if (daXoa) {
-                            taiDanhSachMon();
-                        }
+                .setPositiveButton(R.string.admin_delete_dish, (dialog, which) -> {
+                    boolean daXoa = databaseHelper.xoaMonAnTheoId(banGhiMon.layId());
+                    Toast.makeText(requireContext(), daXoa ? R.string.admin_dish_delete_success : R.string.admin_action_failed, Toast.LENGTH_SHORT).show();
+                    if (daXoa) {
+                        taiDanhSachMon();
                     }
                 })
                 .show();
+    }
+
+    private String layChuoiDaCatKhoangTrang(EditText editText) {
+        if (editText.getText() == null) {
+            return "";
+        }
+        return editText.getText().toString().trim();
     }
 }

@@ -7,12 +7,9 @@ import androidx.annotation.Nullable;
 
 import com.example.quanlynhahang.CustomerLauncherActivity;
 import com.example.quanlynhahang.MainActivity;
-import com.example.quanlynhahang.NhanVienActivity;
-import com.example.quanlynhahang.QuanTriActivity;
+import com.example.quanlynhahang.StaffLauncherActivity;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
-
-import com.example.quanlynhahang.helper.CauHinhTinhNangHelper;
 
 public final class DieuHuongVaiTroHelper {
 
@@ -27,14 +24,11 @@ public final class DieuHuongVaiTroHelper {
             return DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(context, DieuHuongNoiBoHelper.TAB_TONG_QUAN);
         }
 
-        Class<?> dichDen = MainActivity.class;
-        if (vaiTroHienTai == VaiTroNguoiDung.NHAN_VIEN) {
-            dichDen = NhanVienActivity.class;
-        } else if (vaiTroHienTai == VaiTroNguoiDung.ADMIN) {
-            dichDen = QuanTriActivity.class;
+        if (vaiTroHienTai == VaiTroNguoiDung.NHAN_VIEN || vaiTroHienTai == VaiTroNguoiDung.ADMIN) {
+            return new Intent(context, StaffLauncherActivity.class);
         }
 
-        return new Intent(context, dichDen);
+        return new Intent(context, MainActivity.class);
     }
 
     public static Intent taoIntentSaiVaiTro(Context context,

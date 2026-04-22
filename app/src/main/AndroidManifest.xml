@@ -38,10 +38,6 @@
 
         <activity android:name=".XacNhanDonHangActivity" />
 
-        <activity android:name=".NhanVienActivity" />
-
-        <activity android:name=".QuanTriActivity" />
-
         <activity
             android:name=".TrungTamQuanTriActivity"
             android:exported="false" />

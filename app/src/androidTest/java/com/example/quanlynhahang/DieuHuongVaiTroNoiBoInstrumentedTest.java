@@ -3,9 +3,7 @@ package com.example.quanlynhahang;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
@@ -16,20 +14,14 @@ import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class DieuHuongVaiTroNoiBoInstrumentedTest {
@@ -74,53 +66,30 @@ public class DieuHuongVaiTroNoiBoInstrumentedTest {
     public void mapTabNhanVienCu_voiTabDatBan_giuNguyenTab() {
         assertEquals(
                 DieuHuongNoiBoHelper.TAB_DAT_BAN,
-                DieuHuongNoiBoHelper.mapTabNhanVienCu(NhanVienActivity.TAB_DAT_BAN)
+                DieuHuongNoiBoHelper.mapTabNhanVienCu(DieuHuongNoiBoHelper.TAB_DAT_BAN)
         );
     }
 
     @Test
-    public void nhanVienActivity_luonChuyenHuongSauKhiXacThucVaThemDayDuTaskFlags() {
-        CauHinhTinhNangHelper.setChoPhepNoiBoShellMoi(false);
+    public void taoIntentTrungTamNoiBo_voiTabDatBan_giuDungExtraTabNoiBo() {
+        Intent intent = DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(appContext, DieuHuongNoiBoHelper.TAB_DAT_BAN);
 
-        Intent intentMoNhanVien = new Intent(appContext, NhanVienActivity.class);
-        intentMoNhanVien.putExtra(NhanVienActivity.EXTRA_TAB_MUC_TIEU, NhanVienActivity.TAB_DAT_BAN);
-        intentMoNhanVien.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intentMoNhanVien.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-
-        Intents.init();
-        try (ActivityScenario<NhanVienActivity> scenario = ActivityScenario.launch(intentMoNhanVien)) {
-            intended(allOf(
-                    hasComponent(TrungTamNoiBoActivity.class.getName()),
-                    hasExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO, DieuHuongNoiBoHelper.TAB_DAT_BAN),
-                    hasExtra(NhanVienActivity.EXTRA_TAB_MUC_TIEU, NhanVienActivity.TAB_DAT_BAN),
-                    coTaskFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            | Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            ));
-        } finally {
-            Intents.release();
-        }
+        assertEquals(TrungTamNoiBoActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals(
+                DieuHuongNoiBoHelper.TAB_DAT_BAN,
+                intent.getStringExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO)
+        );
     }
 
     @Test
-    public void nhanVienActivity_khiDangNhapKhachHang_thiChuyenTheoVaiTroVaGiuCoCheKhachHang() {
+    public void taoIntentSaiVaiTro_khiChiConPhienKhachHang_thiChuyenTheoVaiTroVaGiuCoCheKhachHang() {
+        sessionManager.xoaPhienNoiBo();
         dangNhapKhachHang();
 
-        Intent intentMoNhanVien = new Intent(appContext, NhanVienActivity.class);
-        intentMoNhanVien.putExtra(NhanVienActivity.EXTRA_TAB_MUC_TIEU, NhanVienActivity.TAB_DON_HANG);
+        Intent intent = DieuHuongVaiTroHelper.taoIntentSaiVaiTro(appContext, sessionManager, true);
 
-        Intents.init();
-        try (ActivityScenario<NhanVienActivity> scenario = ActivityScenario.launch(intentMoNhanVien)) {
-            intended(allOf(
-                    hasComponent(MainActivity.class.getName()),
-                    hasExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, true),
-                    coTaskFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            | Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            ));
-        } finally {
-            Intents.release();
-        }
+        assertEquals(MainActivity.class.getName(), intent.getComponent().getClassName());
+        assertTrue(intent.getBooleanExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, false));
     }
 
     private void dangNhapNhanVienNoiBo() {
@@ -157,22 +126,5 @@ public class DieuHuongVaiTroNoiBoInstrumentedTest {
             throw new IllegalStateException("Khong the chuan bi phien khach hang cho test cau noi");
         }
         sessionManager.luuPhienKhachHang(idKhachHang);
-    }
-
-    private static Matcher<Intent> coTaskFlags(final int flagsKyVong) {
-        return new TypeSafeMatcher<Intent>() {
-            @Override
-            protected boolean matchesSafely(Intent intent) {
-                int taskFlags = intent.getFlags() & (Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                return taskFlags == flagsKyVong;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Intent co task flags bang ").appendValue(flagsKyVong);
-            }
-        };
     }
 }

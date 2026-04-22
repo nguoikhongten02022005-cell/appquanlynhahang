@@ -14,6 +14,9 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.helper.DateTimeUtils;
+import com.example.quanlynhahang.helper.MoneyUtils;
+import com.example.quanlynhahang.helper.PasswordHelper;
 import com.example.quanlynhahang.model.ThongKeTongQuanQuanTri;
 import com.example.quanlynhahang.model.ThongKeTongQuanNhanVien;
 import com.example.quanlynhahang.model.BanAn;
@@ -24,15 +27,8 @@ import com.example.quanlynhahang.model.YeuCauPhucVu;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -42,19 +38,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 9;
 
     private static final String TEN_ANH_MAC_DINH = "menu_1";
-    private static final String TEN_ANH_MON_LAU = "dish_6";
-    private static final String TEN_ANH_SALAD = "menu_2";
-    private static final String TEN_ANH_DO_UONG = "image3";
     private static final String BAN_MAC_DINH = "Bàn 01";
     private static final int SO_PHUT_CHAN_GUI_TRUNG_YEU_CAU = 5;
-    private static final String EMAIL_TAI_KHOAN_TEST_KHACH_HANG = "kh1";
-    private static final String SDT_TAI_KHOAN_TEST_KHACH_HANG = "0123456789";
-    private static final String EMAIL_TAI_KHOAN_TEST_NHAN_VIEN = "nv1";
-    private static final String SDT_TAI_KHOAN_TEST_NHAN_VIEN = "0123456790";
-    private static final String EMAIL_TAI_KHOAN_TEST_ADMIN = "admin1";
-    private static final String SDT_TAI_KHOAN_TEST_ADMIN = "0123456791";
-    private static final String MAT_KHAU_TAI_KHOAN_TEST = "1";
-    private static final String PASSWORD_PREFIX_SHA256 = "sha256:";
     private static final int SO_KHACH_DAT_BAN_TOI_DA = 20;
     private static final long DAT_BAN_TOI_THIEU_TRUOC_PHUT = 30L;
     private static final long CUA_SO_KICH_HOAT_DAT_BAN_PHUT = 30L;
@@ -67,70 +52,70 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_SERVICE_REQUEST = "service_requests";
     public static final String TABLE_BAN_AN = "ban_an";
 
-    private static final String COL_USER_ID = "id";
-    private static final String COL_USER_NAME = "name";
-    private static final String COL_USER_EMAIL = "email";
-    private static final String COL_USER_PHONE = "phone";
-    private static final String COL_USER_PASSWORD = "password";
-    private static final String COL_USER_ROLE = "role";
-    private static final String COL_USER_IS_ACTIVE = "is_active";
+    static final String COL_USER_ID = "id";
+    static final String COL_USER_NAME = "name";
+    static final String COL_USER_EMAIL = "email";
+    static final String COL_USER_PHONE = "phone";
+    static final String COL_USER_PASSWORD = "password";
+    static final String COL_USER_ROLE = "role";
+    static final String COL_USER_IS_ACTIVE = "is_active";
 
-    private static final String COL_DISH_ID = "id";
-    private static final String COL_DISH_NAME = "name";
-    private static final String COL_DISH_PRICE = "price";
-    private static final String COL_DISH_DESCRIPTION = "description";
-    private static final String COL_DISH_IMAGE_RES_NAME = "image_res_name";
-    private static final String COL_DISH_IS_AVAILABLE = "is_available";
-    private static final String COL_DISH_CATEGORY = "category";
-    private static final String COL_DISH_RECOMMEND_SCORE = "recommend_score";
+    static final String COL_DISH_ID = "id";
+    static final String COL_DISH_NAME = "name";
+    static final String COL_DISH_PRICE = "price";
+    static final String COL_DISH_DESCRIPTION = "description";
+    static final String COL_DISH_IMAGE_RES_NAME = "image_res_name";
+    static final String COL_DISH_IS_AVAILABLE = "is_available";
+    static final String COL_DISH_CATEGORY = "category";
+    static final String COL_DISH_RECOMMEND_SCORE = "recommend_score";
 
-    private static final String COL_ORDER_ID = "id";
-    private static final String COL_ORDER_USER_ID = "user_id";
-    private static final String COL_ORDER_CODE = "code";
-    private static final String COL_ORDER_TIME = "time";
-    private static final String COL_ORDER_TOTAL_PRICE = "total_price";
-    private static final String COL_ORDER_STATUS = "status";
-    private static final String COL_ORDER_TYPE = "order_type";
-    private static final String COL_ORDER_TABLE_NUMBER = "table_number";
-    private static final String COL_ORDER_NOTE = "note";
-    private static final String COL_ORDER_PAYMENT_STATUS = "payment_status";
-    private static final String COL_ORDER_PAYMENT_METHOD = "payment_method";
-    private static final String COL_ORDER_RESERVATION_ID = "reservation_id";
+    static final String COL_ORDER_ID = "id";
+    static final String COL_ORDER_USER_ID = "user_id";
+    static final String COL_ORDER_CODE = "code";
+    static final String COL_ORDER_TIME = "time";
+    static final String COL_ORDER_TOTAL_PRICE = "total_price";
+    static final String COL_ORDER_STATUS = "status";
+    static final String COL_ORDER_TYPE = "order_type";
+    static final String COL_ORDER_TABLE_NUMBER = "table_number";
+    static final String COL_ORDER_NOTE = "note";
+    static final String COL_ORDER_PAYMENT_STATUS = "payment_status";
+    static final String COL_ORDER_PAYMENT_METHOD = "payment_method";
+    static final String COL_ORDER_RESERVATION_ID = "reservation_id";
 
-    private static final String COL_ORDER_ITEM_ID = "id";
-    private static final String COL_ORDER_ITEM_ORDER_ID = "order_id";
-    private static final String COL_ORDER_ITEM_DISH_NAME = "dish_name";
-    private static final String COL_ORDER_ITEM_DISH_PRICE = "dish_price";
-    private static final String COL_ORDER_ITEM_IMAGE_RES_NAME = "image_res_name";
-    private static final String COL_ORDER_ITEM_IS_AVAILABLE = "is_available";
-    private static final String COL_ORDER_ITEM_QUANTITY = "quantity";
+    static final String COL_ORDER_ITEM_ID = "id";
+    static final String COL_ORDER_ITEM_ORDER_ID = "order_id";
+    static final String COL_ORDER_ITEM_DISH_NAME = "dish_name";
+    static final String COL_ORDER_ITEM_DISH_PRICE = "dish_price";
+    static final String COL_ORDER_ITEM_IMAGE_RES_NAME = "image_res_name";
+    static final String COL_ORDER_ITEM_IS_AVAILABLE = "is_available";
+    static final String COL_ORDER_ITEM_QUANTITY = "quantity";
 
-    private static final String COL_RESERVATION_ID = "id";
-    private static final String COL_RESERVATION_USER_ID = "user_id";
-    private static final String COL_RESERVATION_TIME = "time";
-    private static final String COL_RESERVATION_TABLE_NUMBER = "table_number";
-    private static final String COL_RESERVATION_GUEST_COUNT = "guest_count";
-    private static final String COL_RESERVATION_NOTE = "note";
-    private static final String COL_RESERVATION_STATUS = "status";
-    private static final String COL_RESERVATION_CODE = "reservation_code";
-    private static final String COL_RESERVATION_LINKED_ORDER_ID = "linked_order_id";
+    static final String COL_RESERVATION_ID = "id";
+    static final String COL_RESERVATION_USER_ID = "user_id";
+    static final String COL_RESERVATION_TIME = "time";
+    static final String COL_RESERVATION_TABLE_NUMBER = "table_number";
+    static final String COL_RESERVATION_GUEST_COUNT = "guest_count";
+    static final String COL_RESERVATION_NOTE = "note";
+    static final String COL_RESERVATION_STATUS = "status";
+    static final String COL_RESERVATION_CODE = "reservation_code";
+    static final String COL_RESERVATION_LINKED_ORDER_ID = "linked_order_id";
 
-    private static final String COL_SERVICE_REQUEST_ID = "id";
-    private static final String COL_SERVICE_REQUEST_USER_ID = "user_id";
-    private static final String COL_SERVICE_REQUEST_CONTENT = "content";
-    private static final String COL_SERVICE_REQUEST_SENT_TIME = "sent_time";
-    private static final String COL_SERVICE_REQUEST_STATUS = "status";
-    private static final String COL_SERVICE_REQUEST_TYPE = "request_type";
-    private static final String COL_SERVICE_REQUEST_TABLE_NUMBER = "table_number";
-    private static final String COL_SERVICE_REQUEST_ORDER_ID = "order_id";
-    private static final String COL_SERVICE_REQUEST_HANDLED_TIME = "handled_time";
+    static final String COL_SERVICE_REQUEST_ID = "id";
+    static final String COL_SERVICE_REQUEST_USER_ID = "user_id";
+    static final String COL_SERVICE_REQUEST_CONTENT = "content";
+    static final String COL_SERVICE_REQUEST_SENT_TIME = "sent_time";
+    static final String COL_SERVICE_REQUEST_STATUS = "status";
+    static final String COL_SERVICE_REQUEST_TYPE = "request_type";
+    static final String COL_SERVICE_REQUEST_TABLE_NUMBER = "table_number";
+    static final String COL_SERVICE_REQUEST_ORDER_ID = "order_id";
+    static final String COL_SERVICE_REQUEST_HANDLED_TIME = "handled_time";
 
-    private static final String COL_BAN_AN_ID = "id";
-    private static final String COL_BAN_AN_MA_BAN = "ma_ban";
-    private static final String COL_BAN_AN_TEN_BAN = "ten_ban";
-    private static final String COL_BAN_AN_SO_CHO = "so_cho";
-    private static final String COL_BAN_AN_KHU_VUC = "khu_vuc";
-    private static final String COL_BAN_AN_TRANG_THAI = "trang_thai";
+    static final String COL_BAN_AN_ID = "id";
+    static final String COL_BAN_AN_MA_BAN = "ma_ban";
+    static final String COL_BAN_AN_TEN_BAN = "ten_ban";
+    static final String COL_BAN_AN_SO_CHO = "so_cho";
+    static final String COL_BAN_AN_KHU_VUC = "khu_vuc";
+    static final String COL_BAN_AN_TRANG_THAI = "trang_thai";
 
     private final Context appContext;
 
@@ -270,10 +255,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void damBaoDuLieuMacDinh(SQLiteDatabase db) {
-        seedDishesIfEmpty(appContext, db);
-        chuanHoaSeedMonAnSaiDanhMuc(db);
-        ensureTestUserExists(db);
-        damBaoDuLieuTongQuanMau(db);
+        SeedDataHelper.damBaoDuLieuMacDinh(this, appContext, db);
     }
 
     private void damBaoBangTonTai(SQLiteDatabase db, String tenBang, String cauLenhTao) {
@@ -457,7 +439,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<BanAn> danhSachBan = queryBanAn();
         if (danhSachBan.isEmpty()) {
             SQLiteDatabase db = getWritableDatabase();
-            damBaoBanAnMau(db);
+            SeedDataHelper.damBaoBanAnMau(db);
             danhSachBan = queryBanAn();
         }
         return danhSachBan;
@@ -598,41 +580,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void damBaoBanAnMau(SQLiteDatabase db) {
-        taoBanAnNeuChuaCo(db, "B01", "Bàn 01", 4, "Tầng trệt", BanAn.TrangThai.TRONG);
-        taoBanAnNeuChuaCo(db, "B02", "Bàn 02", 4, "Tầng trệt", BanAn.TrangThai.DANG_PHUC_VU);
-        taoBanAnNeuChuaCo(db, "B05", "Bàn 05", 6, "Ban công", BanAn.TrangThai.DA_DAT);
-        taoBanAnNeuChuaCo(db, "B08", "Bàn 08", 8, "Phòng riêng", BanAn.TrangThai.TRONG);
-    }
-
-    private void taoBanAnNeuChuaCo(SQLiteDatabase db,
-                                   String maBan,
-                                   String tenBan,
-                                   int soCho,
-                                   String khuVuc,
-                                   BanAn.TrangThai trangThai) {
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_BAN_AN,
-                    new String[]{COL_BAN_AN_ID},
-                    COL_BAN_AN_MA_BAN + " = ?",
-                    new String[]{maBan},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-            if (cursor.moveToFirst()) {
-                return;
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        db.insert(TABLE_BAN_AN, null, taoGiaTriBanAn(maBan, tenBan, soCho, khuVuc, trangThai));
-    }
 
     public long insertUser(String name, String email, String phone, String password) {
         return insertUser(name, email, phone, password, VaiTroNguoiDung.KHACH_HANG, true);
@@ -650,7 +597,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return insertUser(db, name, email, phone, password, role, isActive);
     }
 
-    private long insertUser(SQLiteDatabase db, String name, String email, String phone, String password, VaiTroNguoiDung role, boolean isActive) {
+    long insertUser(SQLiteDatabase db, String name, String email, String phone, String password, VaiTroNguoiDung role, boolean isActive) {
         if (isPhoneInUse(db, phone, -1)) {
             return -1;
         }
@@ -659,7 +606,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COL_USER_NAME, name);
         values.put(COL_USER_EMAIL, email);
         values.put(COL_USER_PHONE, phone);
-        values.put(COL_USER_PASSWORD, hashPassword(password));
+        values.put(COL_USER_PASSWORD, PasswordHelper.hashPassword(password));
         values.put(COL_USER_ROLE, role != null ? role.name() : VaiTroNguoiDung.KHACH_HANG.name());
         values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
 
@@ -832,12 +779,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
 
             String storedPassword = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PASSWORD));
-            if (!verifyPassword(password, storedPassword)) {
+            if (!PasswordHelper.verifyPassword(password, storedPassword)) {
                 return null;
             }
 
             NguoiDung user = mapUser(cursor);
-            if (user != null && !isHashedPassword(storedPassword)) {
+            if (user != null && !PasswordHelper.isHashedPassword(storedPassword)) {
                 migrateLegacyPasswordHash(user.layId(), password);
             }
             return user;
@@ -879,7 +826,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean updateUserPassword(long userId, String newPassword) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_USER_PASSWORD, hashPassword(newPassword));
+        values.put(COL_USER_PASSWORD, PasswordHelper.hashPassword(newPassword));
 
         int rows = db.update(
                 TABLE_USER,
@@ -982,14 +929,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void seedDishesIfEmpty(Context context) {
         SQLiteDatabase db = getWritableDatabase();
-        seedDishesIfEmpty(context == null ? appContext : context.getApplicationContext(), db);
+        SeedDataHelper.seedDishesIfEmpty(this, context == null ? appContext : context.getApplicationContext(), db);
     }
 
     public List<DishRecord> layTatCaMonAn() {
         return queryDishes(null, null);
     }
 
-    private List<DishRecord> layTatCaMonAn(SQLiteDatabase db) {
+    List<DishRecord> layTatCaMonAn(SQLiteDatabase db) {
         return queryDishes(db, null, null);
     }
 
@@ -1373,7 +1320,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<String> layDanhSachBanDaDat(String thoiGianDatBan, long reservationIdBoQua) {
         List<String> occupiedTables = new ArrayList<>();
-        long thoiGianMucTieu = parseDonHangTimeToMillis(thoiGianDatBan);
+        long thoiGianMucTieu = DateTimeUtils.parseDonHangTimeToMillis(thoiGianDatBan);
         if (thoiGianMucTieu <= 0L) {
             return occupiedTables;
         }
@@ -1533,7 +1480,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         String soBanDaLamSach = soBan == null ? "" : soBan.trim();
-        long thoiGianMucTieu = parseDonHangTimeToMillis(thoiGianDonHang);
+        long thoiGianMucTieu = DateTimeUtils.parseDonHangTimeToMillis(thoiGianDonHang);
         DatBan datBanUuTien = null;
         long khoangCachNhoNhat = Long.MAX_VALUE;
 
@@ -1553,7 +1500,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
 
             if (thoiGianMucTieu > 0L) {
-                long thoiGianDatBan = parseDonHangTimeToMillis(datBan.layThoiGian());
+                long thoiGianDatBan = DateTimeUtils.parseDonHangTimeToMillis(datBan.layThoiGian());
                 long khoangCach = thoiGianDatBan <= 0L ? Long.MAX_VALUE : Math.abs(thoiGianMucTieu - thoiGianDatBan);
                 if (khoangCach <= CUA_SO_KICH_HOAT_DAT_BAN_PHUT * 60_000L && khoangCach < khoangCachNhoNhat) {
                     khoangCachNhoNhat = khoangCach;
@@ -1597,7 +1544,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(COL_SERVICE_REQUEST_STATUS, status.name());
             if (status == YeuCauPhucVu.TrangThai.DA_XU_LY || status == YeuCauPhucVu.TrangThai.DA_HUY) {
-                values.put(COL_SERVICE_REQUEST_HANDLED_TIME, layThoiGianHienTai());
+                values.put(COL_SERVICE_REQUEST_HANDLED_TIME, DateTimeUtils.layThoiGianHienTai());
             }
             int rows = db.update(TABLE_SERVICE_REQUEST, values, COL_SERVICE_REQUEST_ID + " = ?", new String[]{String.valueOf(requestId)});
             if (rows <= 0) {
@@ -1656,7 +1603,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
 
             String thoiGianGui = cursor.getString(cursor.getColumnIndexOrThrow(COL_SERVICE_REQUEST_SENT_TIME));
-            long mocGui = parseDonHangTimeToMillis(thoiGianGui);
+            long mocGui = DateTimeUtils.parseDonHangTimeToMillis(thoiGianGui);
             if (mocGui <= 0) {
                 return false;
             }
@@ -1932,55 +1879,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void seedDishesIfEmpty(Context context, SQLiteDatabase db) {
-        if (hasAnyDish(db)) {
-            return;
-        }
-
-        Log.i(TAG, "Seed dữ liệu món ăn mặc định vì bảng dishes đang trống.");
-        insertDish(
-                db,
-                context.getString(R.string.dish_bo_luc_lac),
-                context.getString(R.string.price_145k),
-                context.getString(R.string.menu_desc_bo_luc_lac),
-                TEN_ANH_MAC_DINH,
-                true,
-                context.getString(R.string.category_main_course),
-                96
-        );
-        insertDish(
-                db,
-                context.getString(R.string.dish_lau_thai),
-                context.getString(R.string.price_259k),
-                context.getString(R.string.menu_desc_lau_thai),
-                TEN_ANH_MON_LAU,
-                true,
-                context.getString(R.string.category_hotpot),
-                93
-        );
-        insertDish(
-                db,
-                context.getString(R.string.dish_salad_ca_hoi),
-                context.getString(R.string.price_129k),
-                context.getString(R.string.menu_desc_salad_ca_hoi),
-                TEN_ANH_SALAD,
-                true,
-                context.getString(R.string.category_salad),
-                89
-        );
-        insertDish(
-                db,
-                context.getString(R.string.dish_tra_dao),
-                context.getString(R.string.price_45k),
-                context.getString(R.string.menu_desc_tra_dao),
-                TEN_ANH_DO_UONG,
-                true,
-                context.getString(R.string.category_drink),
-                82
-        );
-    }
-
-    private boolean hasAnyDish(SQLiteDatabase db) {
+    boolean hasAnyDish(SQLiteDatabase db) {
         Cursor cursor = null;
         try {
             cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_DISH, null);
@@ -1995,75 +1894,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void chuanHoaSeedMonAnSaiDanhMuc(SQLiteDatabase db) {
-        chuanHoaMonAnMacDinh(
-                db,
-                appContext.getString(R.string.dish_bo_luc_lac),
-                appContext.getString(R.string.category_main_course),
-                96,
-                true,
-                null
-        );
-        chuanHoaMonAnMacDinh(
-                db,
-                appContext.getString(R.string.dish_lau_thai),
-                appContext.getString(R.string.category_hotpot),
-                93,
-                true,
-                null
-        );
-        chuanHoaMonAnMacDinh(
-                db,
-                appContext.getString(R.string.dish_salad_ca_hoi),
-                appContext.getString(R.string.category_salad),
-                89,
-                true,
-                appContext.getString(R.string.category_main_course)
-        );
-        chuanHoaMonAnMacDinh(
-                db,
-                appContext.getString(R.string.dish_tra_dao),
-                appContext.getString(R.string.category_drink),
-                82,
-                true,
-                null
-        );
-    }
-
-    private void chuanHoaMonAnMacDinh(SQLiteDatabase db,
-                                      String tenMon,
-                                      String danhMucDung,
-                                      int diemDeXuat,
-                                      boolean conPhucVu,
-                                      @Nullable String danhMucCuSai) {
-        if (TextUtils.isEmpty(tenMon)) {
-            return;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(COL_DISH_CATEGORY, danhMucDung);
-        values.put(COL_DISH_RECOMMEND_SCORE, diemDeXuat);
-        values.put(COL_DISH_IS_AVAILABLE, conPhucVu ? 1 : 0);
-        values.put(COL_DISH_IMAGE_RES_NAME, layTenAnhMacDinhTheoMon(tenMon));
-
-        if (!TextUtils.isEmpty(danhMucCuSai)) {
-            db.update(
-                    TABLE_DISH,
-                    values,
-                    COL_DISH_NAME + " = ? AND " + COL_DISH_CATEGORY + " = ?",
-                    new String[]{tenMon, danhMucCuSai}
-            );
-        }
-
-        db.update(
-                TABLE_DISH,
-                values,
-                COL_DISH_NAME + " = ?",
-                new String[]{tenMon}
-        );
-    }
-
-    private void insertDish(SQLiteDatabase db,
+    void insertDish(SQLiteDatabase db,
                             String name,
                             String price,
                             String description,
@@ -2093,712 +1924,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return values;
     }
 
-    private void ensureTestUserExists(SQLiteDatabase db) {
-        ensureSeedUser(
-                db,
-                appContext.getString(R.string.db_test_customer_name),
-                EMAIL_TAI_KHOAN_TEST_KHACH_HANG,
-                SDT_TAI_KHOAN_TEST_KHACH_HANG,
-                MAT_KHAU_TAI_KHOAN_TEST,
-                VaiTroNguoiDung.KHACH_HANG,
-                true
-        );
-        ensureSeedUser(
-                db,
-                appContext.getString(R.string.db_test_employee_name),
-                EMAIL_TAI_KHOAN_TEST_NHAN_VIEN,
-                SDT_TAI_KHOAN_TEST_NHAN_VIEN,
-                MAT_KHAU_TAI_KHOAN_TEST,
-                VaiTroNguoiDung.NHAN_VIEN,
-                true
-        );
-        ensureSeedUser(
-                db,
-                appContext.getString(R.string.db_test_admin_name),
-                EMAIL_TAI_KHOAN_TEST_ADMIN,
-                SDT_TAI_KHOAN_TEST_ADMIN,
-                MAT_KHAU_TAI_KHOAN_TEST,
-                VaiTroNguoiDung.ADMIN,
-                true
-        );
-    }
-
-    private void ensureSeedUser(SQLiteDatabase db,
-                                String name,
-                                String email,
-                                String phone,
-                                String password,
-                                VaiTroNguoiDung role,
-                                boolean isActive) {
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_USER,
-                    new String[]{COL_USER_ID, COL_USER_ROLE, COL_USER_IS_ACTIVE},
-                    COL_USER_EMAIL + " = ? OR " + COL_USER_PHONE + " = ?",
-                    new String[]{email, phone},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-            if (cursor.moveToFirst()) {
-                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(COL_USER_ID));
-                ContentValues values = new ContentValues();
-                values.put(COL_USER_ROLE, role.name());
-                values.put(COL_USER_IS_ACTIVE, isActive ? 1 : 0);
-                db.update(
-                        TABLE_USER,
-                        values,
-                        COL_USER_ID + " = ?",
-                        new String[]{String.valueOf(userId)}
-                );
-                return;
-            }
-
-            Log.i(TAG, "Tạo tài khoản thử nghiệm: " + email);
-            insertUser(db, name, email, phone, password, role, isActive);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    private void damBaoDuLieuTongQuanMau(SQLiteDatabase db) {
-        long idKhachHang = layIdNguoiDungTheoEmail(db, EMAIL_TAI_KHOAN_TEST_KHACH_HANG);
-        if (idKhachHang <= 0) {
-            return;
-        }
-
-        damBaoMonAnMauBoSung(db);
-        damBaoBanAnMau(db);
-        damBaoDatBanMau(db, idKhachHang);
-        damBaoDonHangMau(db, idKhachHang);
-        damBaoYeuCauPhucVuMau(db, idKhachHang);
-        damBaoTaiKhoanMauBoSung(db);
-    }
-
-    private void damBaoMonAnMauBoSung(SQLiteDatabase db) {
-        taoMonAnNeuChuaCo(
-                db,
-                "Cơm chiên hải sản",
-                "98.000 đ",
-                "Cơm chiên tơi hạt cùng tôm, mực và rau củ.",
-                TEN_ANH_MAC_DINH,
-                true,
-                appContext.getString(R.string.category_main_course),
-                88
-        );
-        taoMonAnNeuChuaCo(
-                db,
-                "Mì Ý bò bằm",
-                "115.000 đ",
-                "Mì Ý sốt bò bằm đậm vị, dùng kèm phô mai bào.",
-                TEN_ANH_MON_LAU,
-                true,
-                appContext.getString(R.string.category_main_course),
-                84
-        );
-        taoMonAnNeuChuaCo(
-                db,
-                "Gỏi tôm xoài xanh",
-                "92.000 đ",
-                "Tôm tươi, xoài xanh bào sợi, rau thơm và nước mắm chua ngọt.",
-                TEN_ANH_SALAD,
-                true,
-                appContext.getString(R.string.category_salad),
-                80
-        );
-        taoMonAnNeuChuaCo(
-                db,
-                "Nước cam ép",
-                "39.000 đ",
-                "Nước cam tươi nguyên chất, không dùng syrup.",
-                TEN_ANH_DO_UONG,
-                true,
-                appContext.getString(R.string.category_drink),
-                76
-        );
-    }
-
-    private void damBaoTaiKhoanMauBoSung(SQLiteDatabase db) {
-        ensureSeedUser(
-                db,
-                "Nguyễn Minh Anh",
-                "kh_demo_2",
-                "0123456792",
-                MAT_KHAU_TAI_KHOAN_TEST,
-                VaiTroNguoiDung.KHACH_HANG,
-                true
-        );
-        ensureSeedUser(
-                db,
-                "Lê Thu Hà",
-                "kh_demo_3",
-                "0123456793",
-                MAT_KHAU_TAI_KHOAN_TEST,
-                VaiTroNguoiDung.KHACH_HANG,
-                true
-        );
-        ensureSeedUser(
-                db,
-                "Phạm Hoàng Long",
-                "nv_demo_2",
-                "0123456794",
-                MAT_KHAU_TAI_KHOAN_TEST,
-                VaiTroNguoiDung.NHAN_VIEN,
-                true
-        );
-        ensureSeedUser(
-                db,
-                "Admin dự phòng",
-                "admin_demo_2",
-                "0123456795",
-                MAT_KHAU_TAI_KHOAN_TEST,
-                VaiTroNguoiDung.ADMIN,
-                true
-        );
-    }
-
-    private void damBaoDatBanMau(SQLiteDatabase db, long userId) {
-        taoDatBanNeuChuaCo(
-                db,
-                userId,
-                "#GB10001",
-                "20/04/2026 18:30",
-                "Bàn 05",
-                4,
-                "Sinh nhật gia đình, ưu tiên khu yên tĩnh.",
-                DatBan.TrangThai.PENDING,
-                0
-        );
-        taoDatBanNeuChuaCo(
-                db,
-                userId,
-                "#GB10002",
-                "19/04/2026 19:00",
-                "Bàn 02",
-                2,
-                "Khách đã tới quán.",
-                DatBan.TrangThai.ACTIVE,
-                0
-        );
-        taoDatBanNeuChuaCo(
-                db,
-                userId,
-                "#GB10003",
-                "18/04/2026 18:00",
-                "Bàn 08",
-                6,
-                "Đã dùng bữa xong.",
-                DatBan.TrangThai.COMPLETED,
-                0
-        );
-        taoDatBanNeuChuaCo(
-                db,
-                userId,
-                "#GB10004",
-                "17/04/2026 20:00",
-                "Bàn 10",
-                3,
-                "Khách báo bận nên hủy.",
-                DatBan.TrangThai.CANCELLED,
-                0
-        );
-    }
-
-    private void damBaoDonHangMau(SQLiteDatabase db, long userId) {
-        List<DishRecord> danhSachMon = layTatCaMonAn(db);
-        DishRecord boLucLac = timMonTheoTen(danhSachMon, appContext.getString(R.string.dish_bo_luc_lac));
-        DishRecord lauThai = timMonTheoTen(danhSachMon, appContext.getString(R.string.dish_lau_thai));
-        DishRecord salad = timMonTheoTen(danhSachMon, appContext.getString(R.string.dish_salad_ca_hoi));
-        DishRecord traDao = timMonTheoTen(danhSachMon, appContext.getString(R.string.dish_tra_dao));
-        if (boLucLac == null || lauThai == null || salad == null || traDao == null) {
-            return;
-        }
-
-        long idDatBanDangHoatDong = layIdDatBanTheoMa(db, "#GB10002");
-        taoDonHangNeuChuaCo(
-                db,
-                userId,
-                "#DH10001",
-                "19/04/2026 18:45",
-                DonHang.TrangThai.CHO_XAC_NHAN,
-                DonHang.HinhThucDon.MANG_DI,
-                "",
-                "Ít đá, giao ngay khi xong.",
-                DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN,
-                DonHang.PhuongThucThanhToan.TIEN_MAT_KHI_NHAN,
-                0,
-                taoDanhSachMonMau(
-                        taoMonTrongDon(boLucLac, 1),
-                        taoMonTrongDon(traDao, 2)
-                )
-        );
-        taoDonHangNeuChuaCo(
-                db,
-                userId,
-                "#DH10002",
-                "19/04/2026 19:05",
-                DonHang.TrangThai.DANG_CHUAN_BI,
-                DonHang.HinhThucDon.AN_TAI_QUAN,
-                "Bàn 02",
-                "Đang phục vụ món chính.",
-                DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN,
-                DonHang.PhuongThucThanhToan.TAI_QUAY,
-                idDatBanDangHoatDong,
-                taoDanhSachMonMau(
-                        taoMonTrongDon(lauThai, 1),
-                        taoMonTrongDon(traDao, 2)
-                )
-        );
-        taoDonHangNeuChuaCo(
-                db,
-                userId,
-                "#DH10003",
-                "18/04/2026 18:20",
-                DonHang.TrangThai.SAN_SANG_PHUC_VU,
-                DonHang.HinhThucDon.AN_TAI_QUAN,
-                "Bàn 08",
-                "Báo khách món đã lên đủ.",
-                DonHang.TrangThaiThanhToan.DA_GOI_THANH_TOAN,
-                DonHang.PhuongThucThanhToan.TAI_QUAY,
-                0,
-                taoDanhSachMonMau(
-                        taoMonTrongDon(boLucLac, 2),
-                        taoMonTrongDon(salad, 1),
-                        taoMonTrongDon(traDao, 3)
-                )
-        );
-        taoDonHangNeuChuaCo(
-                db,
-                userId,
-                "#DH10004",
-                "17/04/2026 12:10",
-                DonHang.TrangThai.HOAN_THANH,
-                DonHang.HinhThucDon.MANG_DI,
-                "",
-                "Khách đã nhận món.",
-                DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG,
-                DonHang.PhuongThucThanhToan.THANH_TOAN_NGAY_MO_PHONG,
-                0,
-                taoDanhSachMonMau(
-                        taoMonTrongDon(boLucLac, 1),
-                        taoMonTrongDon(salad, 1)
-                )
-        );
-        taoDonHangNeuChuaCo(
-                db,
-                userId,
-                "#DH10005",
-                "16/04/2026 20:15",
-                DonHang.TrangThai.DA_HUY,
-                DonHang.HinhThucDon.MANG_DI,
-                "",
-                "Khách đổi ý sau khi đặt.",
-                DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN,
-                DonHang.PhuongThucThanhToan.CHUA_CHON,
-                0,
-                taoDanhSachMonMau(
-                        taoMonTrongDon(lauThai, 1),
-                        taoMonTrongDon(traDao, 1)
-                )
-        );
-    }
-
-    private void damBaoYeuCauPhucVuMau(SQLiteDatabase db, long userId) {
-        long idDonDangChuanBi = layIdDonHangTheoMa(db, "#DH10002");
-        long idDonSanSang = layIdDonHangTheoMa(db, "#DH10003");
-        taoYeuCauNeuChuaCo(
-                db,
-                userId,
-                YeuCauPhucVu.LoaiYeuCau.GOI_NHAN_VIEN,
-                "Khách cần thêm chén và đĩa.",
-                "Bàn 02",
-                idDonDangChuanBi,
-                "19/04/2026 19:08",
-                YeuCauPhucVu.TrangThai.DANG_CHO,
-                ""
-        );
-        taoYeuCauNeuChuaCo(
-                db,
-                userId,
-                YeuCauPhucVu.LoaiYeuCau.THEM_NUOC,
-                "Xin thêm nước lọc cho bàn 02.",
-                "Bàn 02",
-                idDonDangChuanBi,
-                "19/04/2026 19:10",
-                YeuCauPhucVu.TrangThai.DANG_XU_LY,
-                "19/04/2026 19:12"
-        );
-        taoYeuCauNeuChuaCo(
-                db,
-                userId,
-                YeuCauPhucVu.LoaiYeuCau.THANH_TOAN,
-                "Yêu cầu thanh toán cho bàn 08.",
-                "Bàn 08",
-                idDonSanSang,
-                "18/04/2026 19:15",
-                YeuCauPhucVu.TrangThai.DA_XU_LY,
-                "18/04/2026 19:20"
-        );
-        taoYeuCauNeuChuaCo(
-                db,
-                userId,
-                YeuCauPhucVu.LoaiYeuCau.GOI_NHAN_VIEN,
-                "Khách đã tự xử lý nên không cần hỗ trợ nữa.",
-                "Bàn 08",
-                idDonSanSang,
-                "18/04/2026 18:40",
-                YeuCauPhucVu.TrangThai.DA_HUY,
-                "18/04/2026 18:45"
-        );
-    }
-
-    private long layIdNguoiDungTheoEmail(SQLiteDatabase db, String email) {
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_USER,
-                    new String[]{COL_USER_ID},
-                    COL_USER_EMAIL + " = ?",
-                    new String[]{email},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-            if (!cursor.moveToFirst()) {
-                return -1;
-            }
-            return cursor.getLong(cursor.getColumnIndexOrThrow(COL_USER_ID));
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    private long layIdDatBanTheoMa(SQLiteDatabase db, String maDatBan) {
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_RESERVATION,
-                    new String[]{COL_RESERVATION_ID},
-                    COL_RESERVATION_CODE + " = ?",
-                    new String[]{maDatBan},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-            if (!cursor.moveToFirst()) {
-                return 0;
-            }
-            return cursor.getLong(cursor.getColumnIndexOrThrow(COL_RESERVATION_ID));
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    private long layIdDonHangTheoMa(SQLiteDatabase db, String maDonHang) {
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_ORDER,
-                    new String[]{COL_ORDER_ID},
-                    COL_ORDER_CODE + " = ?",
-                    new String[]{maDonHang},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-            if (!cursor.moveToFirst()) {
-                return 0;
-            }
-            return cursor.getLong(cursor.getColumnIndexOrThrow(COL_ORDER_ID));
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    private void taoDatBanNeuChuaCo(SQLiteDatabase db,
-                                    long userId,
-                                    String maDatBan,
-                                    String thoiGian,
-                                    String soBan,
-                                    int soKhach,
-                                    String ghiChu,
-                                    DatBan.TrangThai trangThai,
-                                    long idDonHangLienKet) {
-        if (layIdDatBanTheoMa(db, maDatBan) > 0) {
-            return;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(COL_RESERVATION_USER_ID, userId);
-        values.put(COL_RESERVATION_CODE, maDatBan);
-        values.put(COL_RESERVATION_TIME, thoiGian);
-        values.put(COL_RESERVATION_TABLE_NUMBER, soBan);
-        values.put(COL_RESERVATION_GUEST_COUNT, soKhach);
-        values.put(COL_RESERVATION_NOTE, ghiChu == null ? "" : ghiChu.trim());
-        values.put(COL_RESERVATION_STATUS, trangThai.name());
-        values.put(COL_RESERVATION_LINKED_ORDER_ID, Math.max(idDonHangLienKet, 0));
-        db.insert(TABLE_RESERVATION, null, values);
-    }
-
-    private void taoDonHangNeuChuaCo(SQLiteDatabase db,
-                                     long userId,
-                                     String maDonHang,
-                                     String thoiGian,
-                                     DonHang.TrangThai trangThai,
-                                     DonHang.HinhThucDon hinhThucDon,
-                                     String soBan,
-                                     String ghiChu,
-                                     DonHang.TrangThaiThanhToan trangThaiThanhToan,
-                                     DonHang.PhuongThucThanhToan phuongThucThanhToan,
-                                     long idDatBanLienKet,
-                                     List<DonHang.MonTrongDon> danhSachMon) {
-        if (layIdDonHangTheoMa(db, maDonHang) > 0 || danhSachMon == null || danhSachMon.isEmpty()) {
-            return;
-        }
-
-        long tongTien = 0;
-        for (DonHang.MonTrongDon monTrongDon : danhSachMon) {
-            if (monTrongDon == null || monTrongDon.layMonAn() == null) {
-                continue;
-            }
-            tongTien += tachGiaTienTuChuoi(monTrongDon.layMonAn().layGiaBan()) * monTrongDon.laySoLuong();
-        }
-        if (tongTien <= 0) {
-            return;
-        }
-
-        ContentValues valuesDon = new ContentValues();
-        valuesDon.put(COL_ORDER_USER_ID, userId);
-        valuesDon.put(COL_ORDER_CODE, maDonHang);
-        valuesDon.put(COL_ORDER_TIME, thoiGian);
-        valuesDon.put(COL_ORDER_TOTAL_PRICE, dinhDangTienViet(tongTien));
-        valuesDon.put(COL_ORDER_STATUS, trangThai.name());
-        valuesDon.put(COL_ORDER_TYPE, hinhThucDon.name());
-        valuesDon.put(COL_ORDER_TABLE_NUMBER, soBan == null ? "" : soBan.trim());
-        valuesDon.put(COL_ORDER_NOTE, ghiChu == null ? "" : ghiChu.trim());
-        valuesDon.put(COL_ORDER_PAYMENT_STATUS, trangThaiThanhToan.name());
-        valuesDon.put(COL_ORDER_PAYMENT_METHOD, phuongThucThanhToan.name());
-        valuesDon.put(COL_ORDER_RESERVATION_ID, Math.max(idDatBanLienKet, 0));
-        long idDonHang = db.insert(TABLE_ORDER, null, valuesDon);
-        if (idDonHang <= 0) {
-            return;
-        }
-
-        for (DonHang.MonTrongDon monTrongDon : danhSachMon) {
-            if (monTrongDon == null || monTrongDon.layMonAn() == null) {
-                continue;
-            }
-            MonAnDeXuat monAn = monTrongDon.layMonAn();
-            ContentValues valuesChiTiet = new ContentValues();
-            valuesChiTiet.put(COL_ORDER_ITEM_ORDER_ID, idDonHang);
-            valuesChiTiet.put(COL_ORDER_ITEM_DISH_NAME, monAn.layTenMon());
-            valuesChiTiet.put(COL_ORDER_ITEM_DISH_PRICE, monAn.layGiaBan());
-            valuesChiTiet.put(COL_ORDER_ITEM_IMAGE_RES_NAME, resolveImageResName(monAn.layIdAnhTaiNguyen()));
-            valuesChiTiet.put(COL_ORDER_ITEM_IS_AVAILABLE, monAn.laConPhucVu() ? 1 : 0);
-            valuesChiTiet.put(COL_ORDER_ITEM_QUANTITY, monTrongDon.laySoLuong());
-            db.insert(TABLE_ORDER_ITEM, null, valuesChiTiet);
-        }
-
-        if (idDatBanLienKet > 0) {
-            ContentValues valuesDatBan = new ContentValues();
-            valuesDatBan.put(COL_RESERVATION_LINKED_ORDER_ID, idDonHang);
-            db.update(
-                    TABLE_RESERVATION,
-                    valuesDatBan,
-                    COL_RESERVATION_ID + " = ?",
-                    new String[]{String.valueOf(idDatBanLienKet)}
-            );
-        }
-    }
-
-    private void taoYeuCauNeuChuaCo(SQLiteDatabase db,
-                                    long userId,
-                                    YeuCauPhucVu.LoaiYeuCau loaiYeuCau,
-                                    String noiDung,
-                                    String soBan,
-                                    long idDonHang,
-                                    String thoiGianGui,
-                                    YeuCauPhucVu.TrangThai trangThai,
-                                    String thoiGianXuLy) {
-        if (daCoYeuCauMau(db, userId, loaiYeuCau, noiDung, thoiGianGui)) {
-            return;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(COL_SERVICE_REQUEST_USER_ID, userId);
-        values.put(COL_SERVICE_REQUEST_TYPE, loaiYeuCau.name());
-        values.put(COL_SERVICE_REQUEST_CONTENT, noiDung);
-        values.put(COL_SERVICE_REQUEST_TABLE_NUMBER, soBan == null ? "" : soBan.trim());
-        values.put(COL_SERVICE_REQUEST_ORDER_ID, Math.max(idDonHang, 0));
-        values.put(COL_SERVICE_REQUEST_SENT_TIME, thoiGianGui);
-        values.put(COL_SERVICE_REQUEST_STATUS, trangThai.name());
-        values.put(COL_SERVICE_REQUEST_HANDLED_TIME, thoiGianXuLy == null ? "" : thoiGianXuLy.trim());
-        db.insert(TABLE_SERVICE_REQUEST, null, values);
-    }
-
-    private boolean daCoYeuCauMau(SQLiteDatabase db,
-                                  long userId,
-                                  YeuCauPhucVu.LoaiYeuCau loaiYeuCau,
-                                  String noiDung,
-                                  String thoiGianGui) {
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_SERVICE_REQUEST,
-                    new String[]{COL_SERVICE_REQUEST_ID},
-                    COL_SERVICE_REQUEST_USER_ID + " = ? AND "
-                            + COL_SERVICE_REQUEST_TYPE + " = ? AND "
-                            + COL_SERVICE_REQUEST_CONTENT + " = ? AND "
-                            + COL_SERVICE_REQUEST_SENT_TIME + " = ?",
-                    new String[]{
-                            String.valueOf(userId),
-                            loaiYeuCau.name(),
-                            noiDung,
-                            thoiGianGui
-                    },
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-            return cursor.moveToFirst();
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
-
-    @Nullable
-    private DishRecord timMonTheoTen(List<DishRecord> danhSachMon, String tenMon) {
-        if (danhSachMon == null || TextUtils.isEmpty(tenMon)) {
-            return null;
-        }
-        for (DishRecord banGhi : danhSachMon) {
-            if (banGhi != null && banGhi.layMonAn() != null
-                    && TextUtils.equals(tenMon, banGhi.layMonAn().layTenMon())) {
-                return banGhi;
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    private DonHang.MonTrongDon taoMonTrongDon(@Nullable DishRecord banGhiMon, int soLuong) {
-        if (banGhiMon == null || banGhiMon.layMonAn() == null || soLuong <= 0) {
-            return null;
-        }
-        return new DonHang.MonTrongDon(banGhiMon.layMonAn(), soLuong);
-    }
-
-    private List<DonHang.MonTrongDon> taoDanhSachMonMau(@Nullable DonHang.MonTrongDon... danhSachMon) {
-        List<DonHang.MonTrongDon> ketQua = new ArrayList<>();
-        if (danhSachMon == null) {
-            return ketQua;
-        }
-        for (DonHang.MonTrongDon monTrongDon : danhSachMon) {
-            if (monTrongDon != null) {
-                ketQua.add(monTrongDon);
-            }
-        }
-        return ketQua;
-    }
-
-    private void taoMonAnNeuChuaCo(SQLiteDatabase db,
-                                   String tenMon,
-                                   String giaBan,
-                                   String moTa,
-                                   String tenAnh,
-                                   boolean conPhucVu,
-                                   String danhMuc,
-                                   int diemDeXuat) {
-        if (TextUtils.isEmpty(tenMon)) {
-            return;
-        }
-        Cursor cursor = null;
-        try {
-            cursor = db.query(
-                    TABLE_DISH,
-                    new String[]{COL_DISH_ID},
-                    COL_DISH_NAME + " = ?",
-                    new String[]{tenMon},
-                    null,
-                    null,
-                    null,
-                    "1"
-            );
-            if (cursor.moveToFirst()) {
-                return;
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        insertDish(db, tenMon, giaBan, moTa, tenAnh, conPhucVu, danhMuc, diemDeXuat);
-    }
-
-    private long tachGiaTienTuChuoi(@Nullable String chuoiGia) {
-        if (chuoiGia == null || chuoiGia.isEmpty()) {
-            return 0;
-        }
-        String chuoiDaLamSach = chuoiGia.replaceAll("[^0-9]", "");
-        try {
-            return Long.parseLong(chuoiDaLamSach);
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
-    }
-
-    private String dinhDangTienViet(long soTien) {
-        return String.format(Locale.forLanguageTag("vi-VN"), "%,d đ", soTien).replace(',', '.');
-    }
-
-    private boolean isHashedPassword(@Nullable String stored) {
-        return stored != null && stored.startsWith(PASSWORD_PREFIX_SHA256);
-    }
-
-    private String hashPassword(String raw) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] bytes = digest.digest((raw == null ? "" : raw).getBytes(StandardCharsets.UTF_8));
-            StringBuilder builder = new StringBuilder(PASSWORD_PREFIX_SHA256);
-            for (byte b : bytes) {
-                builder.append(String.format(Locale.US, "%02x", b));
-            }
-            return builder.toString();
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException("SHA-256 không khả dụng", ex);
-        }
-    }
-
-    private boolean verifyPassword(String input, @Nullable String stored) {
-        if (stored == null) {
-            return false;
-        }
-        if (isHashedPassword(stored)) {
-            return TextUtils.equals(hashPassword(input), stored);
-        }
-        return TextUtils.equals(input, stored);
-    }
-
     private void migrateLegacyPasswordHash(long userId, String rawPassword) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_USER_PASSWORD, hashPassword(rawPassword));
+        values.put(COL_USER_PASSWORD, PasswordHelper.hashPassword(rawPassword));
         db.update(TABLE_USER, values, COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 
@@ -2876,8 +2005,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         orders.sort((first, second) -> Long.compare(
-                parseDonHangTimeToMillis(second.layThoiGian()),
-                parseDonHangTimeToMillis(first.layThoiGian())
+                DateTimeUtils.parseDonHangTimeToMillis(second.layThoiGian()),
+                DateTimeUtils.parseDonHangTimeToMillis(first.layThoiGian())
         ));
         return orders;
     }
@@ -2990,8 +2119,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         requests.sort((first, second) -> Long.compare(
-                parseDonHangTimeToMillis(second.layThoiGianGui()),
-                parseDonHangTimeToMillis(first.layThoiGianGui())
+                DateTimeUtils.parseDonHangTimeToMillis(second.layThoiGianGui()),
+                DateTimeUtils.parseDonHangTimeToMillis(first.layThoiGianGui())
         ));
         return requests;
     }
@@ -3099,19 +2228,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         T parse(String rawValue) throws IllegalArgumentException;
     }
 
-    private String layTenAnhMacDinhTheoMon(@Nullable String tenMon) {
-        if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_lau_thai))) {
-            return TEN_ANH_MON_LAU;
-        }
-        if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_salad_ca_hoi))) {
-            return TEN_ANH_SALAD;
-        }
-        if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_tra_dao))) {
-            return TEN_ANH_DO_UONG;
-        }
-        return TEN_ANH_MAC_DINH;
-    }
-
     private int resolveImageResId(String imageResName) {
         if (TextUtils.isEmpty(imageResName)) {
             return R.drawable.menu_1;
@@ -3129,12 +2245,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return "#GB" + (System.currentTimeMillis() % 100000);
     }
 
-    private String layThoiGianHienTai() {
-        return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
-    }
-
     private boolean laThoiGianDatBanHopLe(@Nullable String time) {
-        long reservationTime = parseDonHangTimeToMillis(time);
+        long reservationTime = DateTimeUtils.parseDonHangTimeToMillis(time);
         if (reservationTime <= 0L) {
             return false;
         }
@@ -3162,7 +2274,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 || thoiGianMucTieu <= 0L) {
             return false;
         }
-        long thoiGianDat = parseDonHangTimeToMillis(thoiGianDatBan);
+        long thoiGianDat = DateTimeUtils.parseDonHangTimeToMillis(thoiGianDatBan);
         if (thoiGianDat <= 0L) {
             return false;
         }
@@ -3227,7 +2339,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return DatBan.TrangThai.ACTIVE;
         }
 
-        long reservationTime = parseDonHangTimeToMillis(thoiGianDat);
+        long reservationTime = DateTimeUtils.parseDonHangTimeToMillis(thoiGianDat);
         long now = System.currentTimeMillis();
         long startActive = reservationTime - CUA_SO_KICH_HOAT_DAT_BAN_PHUT * 60_000L;
         long expireAt = reservationTime + CUA_SO_KICH_HOAT_DAT_BAN_PHUT * 60_000L;
@@ -3367,19 +2479,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return DonHang.PhuongThucThanhToan.valueOf(paymentMethodRaw);
         } catch (IllegalArgumentException ex) {
             return DonHang.PhuongThucThanhToan.CHUA_CHON;
-        }
-    }
-
-    private long parseDonHangTimeToMillis(@Nullable String timeRaw) {
-        if (TextUtils.isEmpty(timeRaw)) {
-            return 0L;
-        }
-
-        try {
-            Date parsedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse(timeRaw);
-            return parsedDate == null ? 0L : parsedDate.getTime();
-        } catch (ParseException ex) {
-            return 0L;
         }
     }
 

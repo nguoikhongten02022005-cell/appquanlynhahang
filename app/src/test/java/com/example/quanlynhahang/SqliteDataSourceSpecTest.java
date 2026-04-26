@@ -19,7 +19,7 @@ public class SqliteDataSourceSpecTest {
         String source = read("src/main/java/com/example/quanlynhahang/data/SeedDataHelper.java");
 
         assertFalse(source.contains("Cơm chiên hải sản"));
-        assertFalse(source.contains("quanghuy@nhahang.local"));
+        assertFalse(source.contains("old-local-domain.example"));
         assertFalse(source.contains("#DH10001"));
         assertFalse(source.contains("#GB10001"));
         assertFalse(source.contains("Khách cần thêm chén"));
@@ -27,15 +27,29 @@ public class SqliteDataSourceSpecTest {
     }
 
     @Test
+    public void databaseOpen_removesLegacyDemoAndTestUsers() throws Exception {
+        String source = read("src/main/java/com/example/quanlynhahang/data/SeedDataHelper.java");
+
+        assertTrue(source.contains("xoaNguoiDungCuKhongConDung"));
+        assertTrue(source.contains("%thử nghiệm%"));
+        assertTrue(source.contains("db.delete("));
+    }
+
+    @Test
     public void seedDataAsset_containsBusinessSeedRecords() throws Exception {
         String json = read("src/main/assets/seed_data.json");
 
         assertTrue(json.contains("Cơm chiên hải sản"));
-        assertTrue(json.contains("quanghuy@nhahang.local"));
+        assertTrue(json.contains("minhanh@nhahang.vn"));
+        assertTrue(json.contains("quocbao@nhahang.vn"));
+        assertTrue(json.contains("thaovy@nhahang.vn"));
+        assertTrue(json.contains("0912 345 678"));
         assertTrue(json.contains("#DH10001"));
         assertTrue(json.contains("#GB10001"));
         assertTrue(json.contains("Khách cần thêm chén"));
         assertTrue(json.contains("\"tables\""));
+        assertFalse(json.contains("old-local-domain.example"));
+        assertFalse(json.contains("thử nghiệm"));
     }
 
     @Test
@@ -67,7 +81,7 @@ public class SqliteDataSourceSpecTest {
         assertFalse(source.contains("TAI_KHOAN_NHAN_VIEN_MAC_DINH"));
         assertFalse(source.contains("TAI_KHOAN_ADMIN_MAC_DINH"));
         assertFalse(source.contains("MAT_KHAU_MAC_DINH"));
-        assertTrue(source.contains("layTaiKhoanDemoTheoVaiTro"));
+        assertTrue(source.contains("layGoiYDangNhapNhanhTheoVaiTro"));
     }
 
     private static String read(String relativePath) throws IOException {

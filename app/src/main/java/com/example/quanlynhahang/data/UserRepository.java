@@ -276,6 +276,18 @@ final class UserRepository {
         return rows > 0;
     }
 
+    boolean deleteUser(long userId) {
+        if (userId <= 0) {
+            return false;
+        }
+        int rows = databaseHelper.getWritableDatabase().delete(
+                DatabaseHelper.TABLE_USER,
+                DatabaseHelper.COL_USER_ID + " = ?",
+                new String[]{String.valueOf(userId)}
+        );
+        return rows > 0;
+    }
+
     int countAllUsers() {
         return demSoBanGhi(null, null);
     }

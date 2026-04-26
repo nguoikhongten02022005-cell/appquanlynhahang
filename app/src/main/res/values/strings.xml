@@ -117,7 +117,7 @@
     <string name="order_view_details">Chi tiết</string>
     <string name="order_cancel">Hủy đơn</string>
     <string name="order_cancel_confirm_title">Hủy đơn hàng?</string>
-    <string name="order_cancel_confirm_message">Đơn đang chờ xác nhận sẽ bị hủy khỏi luồng demo hiện tại.</string>
+    <string name="order_cancel_confirm_message">Đơn đang chờ xác nhận sẽ bị hủy khỏi danh sách xử lý hiện tại.</string>
     <string name="order_detail_dishes_title">Món trong đơn</string>
     <string name="order_context_title">Ngữ cảnh đơn hàng</string>
     <string name="order_type_dine_in">Ăn tại quán</string>
@@ -131,7 +131,7 @@
     <string name="order_payment_status_pay_on_pickup">Thanh toán: Tiền mặt khi nhận</string>
     <string name="order_payment_status_bank_transfer">Thanh toán: Chuyển khoản ngân hàng</string>
     <string name="order_payment_status_ewallet">Thanh toán: Ví điện tử</string>
-    <string name="order_payment_status_paid_mock">Thanh toán: Đã thanh toán</string>
+    <string name="order_payment_status_paid">Thanh toán: Đã thanh toán</string>
     <string name="order_confirmation_title">Xác nhận đơn hàng</string>
     <string name="order_confirmation_subtitle">Kiểm tra lại ngữ cảnh đơn và món đã chọn trước khi xác nhận.</string>
     <string name="order_confirmation_payment_hint_dine_in">Bạn chỉ cần gửi món. Thanh toán sẽ là bước sau khi dùng bữa.</string>
@@ -141,7 +141,7 @@
     <string name="order_request_payment">Thanh toán khi nhận</string>
     <string name="order_submitting">Đang xử lý…</string>
     <string name="order_submit_success">Đã gửi món thành công</string>
-    <string name="order_submit_success_paid_mock">Đã đặt đơn và ghi nhận thanh toán mô phỏng</string>
+    <string name="order_submit_success_paid">Đã đặt đơn và ghi nhận thanh toán</string>
     <string name="order_submit_success_payment_requested">Đã đặt đơn với lựa chọn thanh toán khi nhận</string>
     <string name="order_payment_request_sent">Đã gửi yêu cầu thanh toán</string>
 
@@ -273,7 +273,7 @@
     <string name="account_support_fallback">Vui lòng gọi %1$s để được hỗ trợ.</string>
 
     <string name="account_default_name">Nguyễn Minh Anh</string>
-    <string name="account_default_phone">0901234567</string>
+    <string name="account_default_phone">0912 345 678</string>
 
     <string name="login_title">Đăng nhập</string>
     <string name="login_identifier_hint">Email hoặc số điện thoại</string>
@@ -310,9 +310,9 @@
     <string name="db_operation_failed">Không thể lưu dữ liệu, vui lòng thử lại</string>
     <string name="session_invalid">Phiên đăng nhập không hợp lệ, vui lòng đăng nhập lại</string>
     <string name="account_logout_success">Đăng xuất thành công</string>
-    <string name="db_test_customer_name">Khách hàng thử nghiệm</string>
-    <string name="db_test_employee_name">Nhân viên thử nghiệm</string>
-    <string name="db_test_admin_name">Quản trị viên thử nghiệm</string>
+    <string name="db_seed_customer_name">Trần Quốc Bảo</string>
+    <string name="db_seed_employee_name">Lê Thảo Vy</string>
+    <string name="db_seed_admin_name">Nguyễn Minh Anh</string>
 
     <string name="employee_title">Bảng điều khiển nhân viên</string>
     <string name="employee_subtitle">Vào thẳng khu vực xử lý đơn hàng, đặt bàn và yêu cầu phục vụ trong ca làm.</string>
@@ -415,12 +415,14 @@
     <string name="admin_user_lock_account">Khóa tài khoản</string>
     <string name="admin_user_unlock_account">Mở khóa tài khoản</string>
     <string name="admin_user_delete_account">Xóa tài khoản</string>
+    <string name="admin_user_delete_success">Đã xóa tài khoản</string>
+    <string name="admin_self_delete_blocked">Không thể xóa tài khoản đang đăng nhập</string>
     <string name="admin_user_view_detail">Xem chi tiết</string>
     <string name="admin_user_edit_info">Chỉnh sửa thông tin</string>
     <string name="admin_user_reset_password">Đặt lại mật khẩu</string>
     <string name="admin_user_action_title_detail">Thao tác tài khoản</string>
-    <string name="admin_user_status_active">Hoạt động</string>
-    <string name="admin_user_status_locked">Đã khoá</string>
+    <string name="admin_user_status_active">Đang hoạt động</string>
+    <string name="admin_user_status_locked">Đã khóa</string>
     <string name="admin_user_role_format">Vai trò: %1$s</string>
     <string name="admin_user_phone_format">SĐT: %1$s</string>
     <string name="admin_user_email_hint">Email hoặc tên đăng nhập</string>
@@ -460,9 +462,9 @@
     <string name="admin_action_failed">Không thể thực hiện thao tác, vui lòng thử lại</string>
     <string name="admin_self_lock_blocked">Bạn không thể tự khoá chính mình</string>
     <string name="admin_self_demote_blocked">Bạn không thể tự hạ quyền của chính mình</string>
-    <string name="admin_role_customer">Khách hàng</string>
+    <string name="admin_role_customer">Quản lý</string>
     <string name="admin_role_employee">Nhân viên</string>
-    <string name="admin_role_admin">Quản trị viên</string>
+    <string name="admin_role_admin">Admin</string>
     <string name="admin_header_greeting">Xin chào, Quản trị viên</string>
     <string name="admin_overview_date_label">Hôm nay, %1$s</string>
     <string name="admin_restaurant_name">Nhà hàng của bạn</string>

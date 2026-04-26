@@ -31,6 +31,7 @@ public class DatabaseRepositoryDelegationTest {
         assertTrue(databaseHelperSource.contains("private final DishRepository dishRepository"));
         assertTrue(databaseHelperSource.contains("return userRepository.getUserById(userId)"));
         assertTrue(databaseHelperSource.contains("return userRepository.getUserByEmail(email)"));
+        assertTrue(databaseHelperSource.contains("return userRepository.deleteUser(userId)"));
         assertTrue(databaseHelperSource.contains("return dishRepository.layTatCaMonAn()"));
         assertTrue(databaseHelperSource.contains("return dishRepository.capNhatBanGhiMonAn("));
 
@@ -38,6 +39,8 @@ public class DatabaseRepositoryDelegationTest {
         assertTrue(userRepositorySource.contains("NguoiDung getUserById(long userId)"));
         assertTrue(userRepositorySource.contains("NguoiDung checkLogin(String usernameOrEmail, String password)"));
         assertTrue(userRepositorySource.contains("List<NguoiDung> getUsersByRole"));
+        assertTrue(userRepositorySource.contains("boolean deleteUser(long userId)"));
+        assertTrue(userRepositorySource.contains("databaseHelper.getWritableDatabase().delete("));
 
         assertTrue(dishRepositorySource.contains("class DishRepository"));
         assertTrue(dishRepositorySource.contains("List<DatabaseHelper.DishRecord> layTatCaMonAn()"));

@@ -34,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 10;
 
     private static final String TEN_ANH_MAC_DINH = "menu_1";
-    private static final String MAT_KHAU_DEMO_MAC_DINH = "1";
+    private static final String MAT_KHAU_DANG_NHAP_NHANH_MAC_DINH = "1";
     private static final String BAN_MAC_DINH = "Bàn 01";
     private static final int SO_PHUT_CHAN_GUI_TRUNG_YEU_CAU = 5;
     private static final int SO_KHACH_DAT_BAN_TOI_DA = 20;
@@ -691,6 +691,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userRepository.updateUserActive(userId, isActive);
     }
 
+    public boolean xoaNguoiDung(long userId) {
+        return userRepository.deleteUser(userId);
+    }
+
     public int countAllUsers() {
         return userRepository.countAllUsers();
     }
@@ -700,7 +704,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Nullable
-    public TaiKhoanDemo layTaiKhoanDemoTheoVaiTro(VaiTroNguoiDung vaiTro) {
+    public GoiYDangNhapNhanh layGoiYDangNhapNhanhTheoVaiTro(VaiTroNguoiDung vaiTro) {
         if (vaiTro == null) {
             return null;
         }
@@ -722,7 +726,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String email = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_EMAIL));
             String soDienThoai = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PHONE));
             String matKhau = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PASSWORD));
-            return new TaiKhoanDemo(TextUtils.isEmpty(email) ? soDienThoai : email, TextUtils.isEmpty(matKhau) ? MAT_KHAU_DEMO_MAC_DINH : matKhau);
+            return new GoiYDangNhapNhanh(TextUtils.isEmpty(email) ? soDienThoai : email, TextUtils.isEmpty(matKhau) ? MAT_KHAU_DANG_NHAP_NHANH_MAC_DINH : matKhau);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -1514,7 +1518,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return capNhatThanhToanDonHangTrongGiaoDich(
                 db,
                 orderId,
-                DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG,
+                DonHang.TrangThaiThanhToan.DA_THANH_TOAN,
                 donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.CHUA_CHON
                         ? DonHang.PhuongThucThanhToan.TAI_QUAY
                         : donHang.layPhuongThucThanhToan()
@@ -2120,6 +2124,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (TextUtils.isEmpty(paymentStatusRaw)) {
             return DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN;
         }
+        if ("DA_THANH_TOAN_MO_PHONG".equals(paymentStatusRaw)) {
+            return DonHang.TrangThaiThanhToan.DA_THANH_TOAN;
+        }
         try {
             return DonHang.TrangThaiThanhToan.valueOf(paymentStatusRaw);
         } catch (IllegalArgumentException ex) {
@@ -2130,6 +2137,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private DonHang.PhuongThucThanhToan parsePaymentMethod(@Nullable String paymentMethodRaw) {
         if (TextUtils.isEmpty(paymentMethodRaw)) {
             return DonHang.PhuongThucThanhToan.CHUA_CHON;
+        }
+        if ("THANH_TOAN_NGAY_MO_PHONG".equals(paymentMethodRaw)) {
+            return DonHang.PhuongThucThanhToan.THANH_TOAN_NGAY;
         }
         try {
             return DonHang.PhuongThucThanhToan.valueOf(paymentMethodRaw);
@@ -2233,11 +2243,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static class TaiKhoanDemo {
+    public static class GoiYDangNhapNhanh {
         private final String tenDangNhap;
         private final String matKhau;
 
-        public TaiKhoanDemo(String tenDangNhap, String matKhau) {
+        public GoiYDangNhapNhanh(String tenDangNhap, String matKhau) {
             this.tenDangNhap = tenDangNhap;
             this.matKhau = matKhau;
         }

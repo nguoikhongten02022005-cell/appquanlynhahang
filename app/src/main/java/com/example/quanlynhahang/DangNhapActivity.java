@@ -54,13 +54,13 @@ public class DangNhapActivity extends AppCompatActivity {
     }
 
     private void dangNhapMacDinh(VaiTroNguoiDung vaiTro, boolean chiChoPhepPhienKhachHang) {
-        DatabaseHelper.TaiKhoanDemo taiKhoanDemo = databaseHelper.layTaiKhoanDemoTheoVaiTro(vaiTro);
-        if (taiKhoanDemo == null || TextUtils.isEmpty(taiKhoanDemo.layTenDangNhap())) {
+        DatabaseHelper.GoiYDangNhapNhanh goiYDangNhapNhanh = databaseHelper.layGoiYDangNhapNhanhTheoVaiTro(vaiTro);
+        if (goiYDangNhapNhanh == null || TextUtils.isEmpty(goiYDangNhapNhanh.layTenDangNhap())) {
             Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
             return;
         }
-        oNhapEmailDangNhap.setText(taiKhoanDemo.layTenDangNhap());
-        oNhapMatKhauDangNhap.setText(taiKhoanDemo.layMatKhau());
+        oNhapEmailDangNhap.setText(goiYDangNhapNhanh.layTenDangNhap());
+        oNhapMatKhauDangNhap.setText(goiYDangNhapNhanh.layMatKhau());
         xuLyDangNhap(chiChoPhepPhienKhachHang);
     }
 
@@ -107,5 +107,13 @@ public class DangNhapActivity extends AppCompatActivity {
             return "";
         }
         return editText.getText().toString().trim();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (databaseHelper != null) {
+            databaseHelper.close();
+        }
     }
 }

@@ -55,7 +55,7 @@ public class SqliteDataSourceSpecTest {
         String source = read("src/main/java/com/example/quanlynhahang/data/SeedDataHelper.java");
 
         assertFalse(source.contains("Cơm chiên hải sản"));
-        assertFalse(source.contains("quanghuy@nhahang.local"));
+        assertFalse(source.contains("old-local-domain.example"));
         assertFalse(source.contains("#DH10001"));
         assertFalse(source.contains("#GB10001"));
         assertFalse(source.contains("Khách cần thêm chén"));
@@ -67,7 +67,7 @@ public class SqliteDataSourceSpecTest {
         String json = read("src/main/assets/seed_data.json");
 
         assertTrue(json.contains("Cơm chiên hải sản"));
-        assertTrue(json.contains("quanghuy@nhahang.local"));
+        assertTrue(json.contains("minhanh@nhahang.vn"));
         assertTrue(json.contains("#DH10001"));
         assertTrue(json.contains("#GB10001"));
         assertTrue(json.contains("Khách cần thêm chén"));
@@ -146,16 +146,9 @@ Create `app/src/main/assets/seed_data.json` containing the existing seed records
     {"name":"Nước cam ép","price":"39.000 đ","description":"Nước cam tươi nguyên chất, không dùng syrup.","image":"image3","available":true,"category_res":"category_drink","score":76}
   ],
   "users": [
-    {"name_res":"db_test_customer_name","email":"khach.demo@nhahang.local","phone":"0123456789","password":"1","role":"KHACH_HANG","active":true,"demo_key":"customer"},
-    {"name_res":"db_test_employee_name","email":"nhanvien.demo@nhahang.local","phone":"0123456790","password":"1","role":"NHAN_VIEN","active":true,"demo_key":"employee"},
-    {"name_res":"db_test_admin_name","email":"admin.demo@nhahang.local","phone":"0123456791","password":"1","role":"ADMIN","active":true,"demo_key":"admin"},
-    {"name":"Trần Quang Huy","email":"quanghuy@nhahang.local","phone":"0123456792","password":"1","role":"NHAN_VIEN","active":true},
-    {"name":"Lê Thu Hà","email":"thuha@nhahang.local","phone":"0123456793","password":"1","role":"NHAN_VIEN","active":true},
-    {"name":"Phạm Hoàng Long - Trưởng ca sảnh tối","email":"hoanglong@nhahang.local","phone":"0123456794","password":"1","role":"NHAN_VIEN","active":true},
-    {"name":"Đỗ Ngọc Mai","email":"ngocmai@nhahang.local","phone":"0123456795","password":"1","role":"NHAN_VIEN","active":true},
-    {"name":"Vũ Anh Dũng","email":"anhdung@nhahang.local","phone":"0123456796","password":"1","role":"NHAN_VIEN","active":true},
-    {"name":"Admin dự phòng","email":"admin.backup@nhahang.local","phone":"0123456797","password":"1","role":"ADMIN","active":false},
-    {"name":"Admin vận hành","email":"admin.ops@nhahang.local","phone":"0123456798","password":"1","role":"ADMIN","active":true}
+    {"name":"Trần Quốc Bảo","email":"quocbao@nhahang.vn","phone":"0912 345 678","password":"1","role":"KHACH_HANG","active":true},
+    {"name":"Lê Thảo Vy","email":"thaovy@nhahang.vn","phone":"0912 345 679","password":"1","role":"NHAN_VIEN","active":true},
+    {"name":"Nguyễn Minh Anh","email":"minhanh@nhahang.vn","phone":"0912 345 680","password":"1","role":"ADMIN","active":true}
   ],
   "tables": [
     {"code":"B01","name":"Bàn 01","seats":4,"area":"Tầng trệt","status":"TRONG"},
@@ -554,9 +547,9 @@ Expected: PASS.
 Delete:
 
 ```java
-private static final String TAI_KHOAN_KHACH_HANG_MAC_DINH = "khach.demo@nhahang.local";
-private static final String TAI_KHOAN_NHAN_VIEN_MAC_DINH = "nhanvien.demo@nhahang.local";
-private static final String TAI_KHOAN_ADMIN_MAC_DINH = "admin.demo@nhahang.local";
+private static final String TAI_KHOAN_KHACH_HANG_MAC_DINH = "customer@example.invalid";
+private static final String TAI_KHOAN_NHAN_VIEN_MAC_DINH = "staff@example.invalid";
+private static final String TAI_KHOAN_ADMIN_MAC_DINH = "admin@example.invalid";
 private static final String MAT_KHAU_MAC_DINH = "1";
 ```
 

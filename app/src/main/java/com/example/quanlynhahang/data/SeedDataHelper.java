@@ -43,6 +43,7 @@ final class SeedDataHelper {
             JSONObject seed = docSeed(appContext);
             damBaoMonAnTuJson(databaseHelper, appContext, db, seed.optJSONArray("dishes"));
             chuanHoaSeedMonAnSaiDanhMuc(appContext, db);
+            xoaNguoiDungCuKhongConDung(db);
             damBaoNguoiDungTuJson(databaseHelper, appContext, db, seed.optJSONArray("users"));
 
             long idKhachHang = layIdKhachHangSeed(db);
@@ -169,6 +170,22 @@ final class SeedDataHelper {
         }
     }
 
+    private static void xoaNguoiDungCuKhongConDung(SQLiteDatabase db) {
+        String tenMienEmailMauCu = "nhahang" + "." + "local";
+        int soDongDaXoa = db.delete(
+                DatabaseHelper.TABLE_USER,
+                "LOWER(" + DatabaseHelper.COL_USER_EMAIL + ") LIKE ? "
+                        + "OR LOWER(" + DatabaseHelper.COL_USER_NAME + ") LIKE ?",
+                new String[]{
+                        "%@" + tenMienEmailMauCu + "%",
+                        "%thử nghiệm%"
+                }
+        );
+        if (soDongDaXoa > 0) {
+            Log.i(TAG, "Đã xóa " + soDongDaXoa + " tài khoản mẫu cũ không còn dùng.");
+        }
+    }
+
     private static void damBaoBanAnTuJson(SQLiteDatabase db, @Nullable JSONArray tables) throws JSONException {
         if (tables == null) {
             return;
@@ -292,7 +309,7 @@ final class SeedDataHelper {
                 return;
             }
 
-            Log.i(TAG, "Tạo tài khoản thử nghiệm: " + email);
+            Log.i(TAG, "Tạo tài khoản mẫu: " + email);
             databaseHelper.insertUser(db, name, email, phone, password, role, isActive);
         } finally {
             if (cursor != null) {
@@ -544,13 +561,13 @@ final class SeedDataHelper {
 
     private static String layTenAnhMacDinhTheoMon(Context appContext, @Nullable String tenMon) {
         if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_lau_thai))) {
-            return "dish_6";
+            return TEN_ANH_MAC_DINH;
         }
         if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_salad_ca_hoi))) {
-            return "menu_2";
+            return TEN_ANH_MAC_DINH;
         }
         if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_tra_dao))) {
-            return "image3";
+            return TEN_ANH_MAC_DINH;
         }
         return TEN_ANH_MAC_DINH;
     }

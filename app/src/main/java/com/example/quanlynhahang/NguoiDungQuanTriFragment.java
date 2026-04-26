@@ -272,7 +272,7 @@ public class NguoiDungQuanTriFragment extends Fragment {
         });
         btnXoaTaiKhoan.setOnClickListener(v -> {
             dialog.dismiss();
-            Toast.makeText(requireContext(), R.string.admin_action_failed, Toast.LENGTH_SHORT).show();
+            xuLyXoaTaiKhoan(nguoiDung);
         });
         dialog.show();
     }
@@ -467,6 +467,19 @@ public class NguoiDungQuanTriFragment extends Fragment {
         boolean daCapNhat = databaseHelper.capNhatTrangThaiHoatDongNguoiDung(nguoiDung.layId(), trangThaiMoi);
         Toast.makeText(requireContext(), daCapNhat ? R.string.admin_user_active_update_success : R.string.admin_action_failed, Toast.LENGTH_SHORT).show();
         if (daCapNhat) {
+            taiDanhSachNguoiDung();
+        }
+    }
+
+    private void xuLyXoaTaiKhoan(NguoiDung nguoiDung) {
+        long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
+        if (nguoiDung.layId() == idNguoiDungHienTai) {
+            Toast.makeText(requireContext(), R.string.admin_self_delete_blocked, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        boolean daXoa = databaseHelper.xoaNguoiDung(nguoiDung.layId());
+        Toast.makeText(requireContext(), daXoa ? R.string.admin_user_delete_success : R.string.admin_action_failed, Toast.LENGTH_SHORT).show();
+        if (daXoa) {
             taiDanhSachNguoiDung();
         }
     }

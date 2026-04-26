@@ -35,7 +35,7 @@ final class TableRepository {
         List<BanAn> danhSachBan = queryBanAn();
         if (danhSachBan.isEmpty()) {
             SQLiteDatabase db = databaseHelper.getWritableDatabase();
-            SeedDataHelper.damBaoBanAnMau(databaseHelper.appContext, db);
+            SeedDataHelper.damBaoBanAnMau(databaseHelper.layAppContext(), db);
             danhSachBan = queryBanAn();
         }
         return danhSachBan;

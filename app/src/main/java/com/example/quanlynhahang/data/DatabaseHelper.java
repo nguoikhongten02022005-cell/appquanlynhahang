@@ -126,6 +126,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dishRepository = new DishRepository(this, appContext);
     }
 
+    Context layAppContext() {
+        return appContext;
+    }
+
     public void chuanBiCoSoDuLieu() {
         Log.i(TAG, "Bắt đầu mở và chuẩn hóa cơ sở dữ liệu.");
         SQLiteDatabase db = getWritableDatabase();

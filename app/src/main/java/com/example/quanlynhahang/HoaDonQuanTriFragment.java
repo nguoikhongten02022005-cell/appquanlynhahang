@@ -103,7 +103,7 @@ public class HoaDonQuanTriFragment extends Fragment {
                 continue;
             }
             long giaTri = MoneyUtils.tachGiaTienTuChuoi(donHang.layTongTien());
-            if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG) {
+            if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN) {
                 tongDoanhThu += giaTri;
                 soHoaDonHopLe++;
                 soDaThanhToan++;
@@ -155,7 +155,7 @@ public class HoaDonQuanTriFragment extends Fragment {
                 : donHang.layPhuongThucThanhToan();
         boolean daCapNhat = databaseHelper.capNhatThanhToanDonHang(
                 donHang.layId(),
-                DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG,
+                DonHang.TrangThaiThanhToan.DA_THANH_TOAN,
                 phuongThucThanhToan
         );
         Toast.makeText(

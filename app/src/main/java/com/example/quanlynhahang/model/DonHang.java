@@ -21,7 +21,7 @@ public class DonHang {
     public enum TrangThaiThanhToan {
         CHUA_THANH_TOAN,
         DA_GOI_THANH_TOAN,
-        DA_THANH_TOAN_MO_PHONG
+        DA_THANH_TOAN
     }
 
     public enum PhuongThucThanhToan {
@@ -30,7 +30,7 @@ public class DonHang {
         TIEN_MAT_KHI_NHAN,
         CHUYEN_KHOAN_NGAN_HANG,
         VI_DIEN_TU,
-        THANH_TOAN_NGAY_MO_PHONG
+        THANH_TOAN_NGAY
     }
 
     private final long idDonHang;

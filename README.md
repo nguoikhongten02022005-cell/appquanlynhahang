@@ -55,9 +55,9 @@ app/src/main/java/com/example/quanlynhahang/
 - `DatabaseHelper` tập trung vào schema, migration và CRUD/query/update.
 
 ## Tài khoản demo
-- Khách hàng: `kh1` / `1`
-- Nhân viên: `nv1` / `1`
-- Quản trị: `admin1` / `1`
+- Khách hàng: `quocbao@nhahang.vn` / `1`
+- Nhân viên: `thaovy@nhahang.vn` / `1`
+- Quản trị: `minhanh@nhahang.vn` / `1`
 
 Các nút đăng nhập nhanh nằm ngay trên màn hình `DangNhapActivity`.
 

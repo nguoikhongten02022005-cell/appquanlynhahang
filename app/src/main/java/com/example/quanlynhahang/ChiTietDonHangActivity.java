@@ -207,8 +207,8 @@ public class ChiTietDonHangActivity extends AppCompatActivity {
     }
 
     private String layTextThanhToan(DonHang donHang) {
-        if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG) {
-            return getString(R.string.order_payment_status_paid_mock);
+        if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN) {
+            return getString(R.string.order_payment_status_paid);
         }
         if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_GOI_THANH_TOAN) {
             return getString(R.string.order_payment_status_requested);

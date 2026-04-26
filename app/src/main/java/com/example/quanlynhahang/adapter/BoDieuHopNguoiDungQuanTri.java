@@ -68,9 +68,9 @@ public class BoDieuHopNguoiDungQuanTri extends RecyclerView.Adapter<BoDieuHopNgu
             return "Admin";
         }
         if (nguoiDung.laNhanVien()) {
-            return "NV";
+            return "Nhân viên";
         }
-        return "QL khách";
+        return "Quản lý";
     }
 
     public static String taoChuCaiDaiDien(NguoiDung nguoiDung) {
@@ -78,7 +78,7 @@ public class BoDieuHopNguoiDungQuanTri extends RecyclerView.Adapter<BoDieuHopNgu
     }
 
     public static String taoTrangThaiHienThi(NguoiDung nguoiDung) {
-        return nguoiDung.dangHoatDong() ? "online" : "offline";
+        return nguoiDung.dangHoatDong() ? "Đang hoạt động" : "Đã khóa";
     }
 
     private static String taoChuCaiDaiDienTuTen(String hoTen) {

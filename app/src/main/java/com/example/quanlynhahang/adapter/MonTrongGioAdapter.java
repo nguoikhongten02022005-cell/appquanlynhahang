@@ -31,16 +31,21 @@ public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.
     private final OnHanhDongSoLuongListener onHanhDongSoLuongListener;
 
     public MonTrongGioAdapter(List<QuanLyGioHang.MonTrongGio> danhSachMon,
-                             OnHanhDongSoLuongListener onHanhDongSoLuongListener) {
-        this.danhSachMon.addAll(danhSachMon);
+                              OnHanhDongSoLuongListener onHanhDongSoLuongListener) {
+        if (danhSachMon != null) {
+            this.danhSachMon.addAll(danhSachMon);
+        }
         this.onHanhDongSoLuongListener = onHanhDongSoLuongListener;
     }
 
     public void capNhatDuLieu(List<QuanLyGioHang.MonTrongGio> danhSachMoi) {
         danhSachMon.clear();
-        danhSachMon.addAll(danhSachMoi);
+        if (danhSachMoi != null) {
+            danhSachMon.addAll(danhSachMoi);
+        }
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
@@ -64,9 +69,21 @@ public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.
         );
 
         holder.layoutActions.setVisibility(View.VISIBLE);
-        holder.btnIncrease.setOnClickListener(v -> onHanhDongSoLuongListener.khiTangSoLuong(monTrongGio));
-        holder.btnDecrease.setOnClickListener(v -> onHanhDongSoLuongListener.khiGiamSoLuong(monTrongGio));
-        holder.btnRemove.setOnClickListener(v -> onHanhDongSoLuongListener.khiXoaMon(monTrongGio));
+        holder.btnIncrease.setOnClickListener(v -> {
+            if (onHanhDongSoLuongListener != null) {
+                onHanhDongSoLuongListener.khiTangSoLuong(monTrongGio);
+            }
+        });
+        holder.btnDecrease.setOnClickListener(v -> {
+            if (onHanhDongSoLuongListener != null) {
+                onHanhDongSoLuongListener.khiGiamSoLuong(monTrongGio);
+            }
+        });
+        holder.btnRemove.setOnClickListener(v -> {
+            if (onHanhDongSoLuongListener != null) {
+                onHanhDongSoLuongListener.khiXoaMon(monTrongGio);
+            }
+        });
     }
 
     @Override

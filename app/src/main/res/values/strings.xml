@@ -279,10 +279,7 @@
     <string name="login_identifier_hint">Email hoặc số điện thoại</string>
     <string name="login_password_hint">Mật khẩu</string>
     <string name="login_button">Đăng nhập</string>
-    <string name="login_quick_section_title">Đăng nhập nhanh</string>
-    <string name="login_quick_customer">Khách hàng</string>
-    <string name="login_quick_employee">Nhân viên</string>
-    <string name="login_quick_admin">Quản trị</string>
+
     <string name="login_go_to_register">Chưa có tài khoản? Đăng ký ngay</string>
     <string name="login_validation_required">Vui lòng nhập email hoặc số điện thoại cùng mật khẩu</string>
     <string name="login_failed">Đăng nhập thất bại, vui lòng kiểm tra lại thông tin</string>

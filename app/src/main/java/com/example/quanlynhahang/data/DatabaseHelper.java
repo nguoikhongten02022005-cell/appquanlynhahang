@@ -34,7 +34,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 10;
 
     private static final String TEN_ANH_MAC_DINH = "menu_1";
-    private static final String MAT_KHAU_DANG_NHAP_NHANH_MAC_DINH = "1";
     private static final String BAN_MAC_DINH = "Bàn 01";
     private static final int SO_PHUT_CHAN_GUI_TRUNG_YEU_CAU = 5;
     private static final int SO_KHACH_DAT_BAN_TOI_DA = 20;
@@ -701,38 +700,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int countUsersByRole(VaiTroNguoiDung role) {
         return userRepository.countUsersByRole(role);
-    }
-
-    @Nullable
-    public GoiYDangNhapNhanh layGoiYDangNhapNhanhTheoVaiTro(VaiTroNguoiDung vaiTro) {
-        if (vaiTro == null) {
-            return null;
-        }
-        Cursor cursor = null;
-        try {
-            cursor = getReadableDatabase().query(
-                    TABLE_USER,
-                    new String[]{COL_USER_EMAIL, COL_USER_PHONE, COL_USER_PASSWORD},
-                    COL_USER_ROLE + " = ? AND " + COL_USER_IS_ACTIVE + " = 1",
-                    new String[]{vaiTro.name()},
-                    null,
-                    null,
-                    COL_USER_ID + " ASC",
-                    "1"
-            );
-            if (!cursor.moveToFirst()) {
-                return null;
-            }
-            String email = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_EMAIL));
-            String soDienThoai = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PHONE));
-            String matKhau = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PASSWORD));
-            return new GoiYDangNhapNhanh(TextUtils.isEmpty(email) ? soDienThoai : email, TextUtils.isEmpty(matKhau) ? MAT_KHAU_DANG_NHAP_NHANH_MAC_DINH : matKhau);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
+}
 
     public void seedDishesIfEmpty(Context context) {
         SQLiteDatabase db = getWritableDatabase();
@@ -2243,23 +2211,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static class GoiYDangNhapNhanh {
-        private final String tenDangNhap;
-        private final String matKhau;
 
-        public GoiYDangNhapNhanh(String tenDangNhap, String matKhau) {
-            this.tenDangNhap = tenDangNhap;
-            this.matKhau = matKhau;
-        }
-
-        public String layTenDangNhap() {
-            return tenDangNhap;
-        }
-
-        public String layMatKhau() {
-            return matKhau;
-        }
-    }
 
     public static class DishRecord {
         private final long id;

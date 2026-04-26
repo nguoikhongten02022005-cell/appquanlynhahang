@@ -41,27 +41,10 @@ public class DangNhapActivity extends AppCompatActivity {
         oNhapMatKhauDangNhap = findViewById(R.id.etLoginPassword);
         boolean chiChoPhepPhienKhachHang = getIntent().getBooleanExtra(EXTRA_ONLY_CUSTOMER_SESSION, false);
         MaterialButton btnLogin = findViewById(R.id.btnLogin);
-        MaterialButton nutDangNhapNhanhKhachHang = findViewById(R.id.btnQuickLoginCustomer);
-        MaterialButton nutDangNhapNhanhNhanVien = findViewById(R.id.btnQuickLoginEmployee);
-        MaterialButton nutDangNhapNhanhQuanTri = findViewById(R.id.btnQuickLoginAdmin);
         TextView tvGoToRegister = findViewById(R.id.tvGoToRegister);
 
         btnLogin.setOnClickListener(v -> xuLyDangNhap(chiChoPhepPhienKhachHang));
-        nutDangNhapNhanhKhachHang.setOnClickListener(v -> dangNhapMacDinh(VaiTroNguoiDung.KHACH_HANG, chiChoPhepPhienKhachHang));
-        nutDangNhapNhanhNhanVien.setOnClickListener(v -> dangNhapMacDinh(VaiTroNguoiDung.NHAN_VIEN, chiChoPhepPhienKhachHang));
-        nutDangNhapNhanhQuanTri.setOnClickListener(v -> dangNhapMacDinh(VaiTroNguoiDung.ADMIN, chiChoPhepPhienKhachHang));
         tvGoToRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
-    }
-
-    private void dangNhapMacDinh(VaiTroNguoiDung vaiTro, boolean chiChoPhepPhienKhachHang) {
-        DatabaseHelper.GoiYDangNhapNhanh goiYDangNhapNhanh = databaseHelper.layGoiYDangNhapNhanhTheoVaiTro(vaiTro);
-        if (goiYDangNhapNhanh == null || TextUtils.isEmpty(goiYDangNhapNhanh.layTenDangNhap())) {
-            Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        oNhapEmailDangNhap.setText(goiYDangNhapNhanh.layTenDangNhap());
-        oNhapMatKhauDangNhap.setText(goiYDangNhapNhanh.layMatKhau());
-        xuLyDangNhap(chiChoPhepPhienKhachHang);
     }
 
     private void xuLyDangNhap(boolean chiChoPhepPhienKhachHang) {

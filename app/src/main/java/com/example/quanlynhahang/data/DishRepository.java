@@ -413,7 +413,7 @@ final class DishRepository {
 
     int resolveImageResId(String imageResName) {
         if (TextUtils.isEmpty(imageResName) || imageResName.startsWith("content://")) {
-            return 0;
+            return R.drawable.menu_1;
         }
 
         int resId = appContext.getResources().getIdentifier(
@@ -421,7 +421,7 @@ final class DishRepository {
                 "drawable",
                 appContext.getPackageName()
         );
-        return resId == 0 ? 0 : resId;
+        return resId == 0 ? R.drawable.menu_1 : resId;
     }
 
     @SuppressWarnings("unused")

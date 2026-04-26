@@ -75,7 +75,7 @@ public class BoDieuHopHoaDonQuanTri extends RecyclerView.Adapter<BoDieuHopHoaDon
                     + " · " + donHang.layThoiGian());
             tvTongTien.setText(donHang.layTongTien());
 
-            boolean daThanhToan = donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG;
+            boolean daThanhToan = donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN;
             boolean coTheXacNhan = !daThanhToan && donHang.layTrangThai() != DonHang.TrangThai.DA_HUY;
             int mauNen = ContextCompat.getColor(context, daThanhToan ? R.color.admin_metric_green_bg : R.color.admin_metric_yellow_bg);
             int mauChu = ContextCompat.getColor(context, daThanhToan ? R.color.success : R.color.admin_warning);
@@ -104,14 +104,14 @@ public class BoDieuHopHoaDonQuanTri extends RecyclerView.Adapter<BoDieuHopHoaDon
             if (donHang.layTrangThai() == DonHang.TrangThai.DA_HUY) {
                 return context.getString(R.string.admin_status_cancelled);
             }
-            if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG) {
+            if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN) {
                 if (donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.CHUYEN_KHOAN_NGAN_HANG) {
                     return context.getString(R.string.admin_invoice_method_bank);
                 }
                 if (donHang.layPhuongThucThanhToan() == DonHang.PhuongThucThanhToan.VI_DIEN_TU) {
                     return context.getString(R.string.admin_invoice_method_digital);
                 }
-                return context.getString(R.string.order_payment_status_paid_mock);
+                return context.getString(R.string.order_payment_status_paid);
             }
             if (donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_GOI_THANH_TOAN) {
                 return context.getString(R.string.order_payment_status_requested);

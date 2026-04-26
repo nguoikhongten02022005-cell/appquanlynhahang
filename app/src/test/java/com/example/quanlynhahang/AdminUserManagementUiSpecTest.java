@@ -151,18 +151,18 @@ public class AdminUserManagementUiSpecTest {
 
     @Test
     public void userPresenter_returnsExpectedBadgesAndStatusColors() {
-        NguoiDung admin = new NguoiDung(1L, "Quản trị viên thử nghiệm", "admin@anhduong.vn", "0900000001", VaiTroNguoiDung.ADMIN, true);
-        NguoiDung nhanVien = new NguoiDung(2L, "Lê Nhân viên B", "nvb@anhduong.vn", "0900000002", VaiTroNguoiDung.NHAN_VIEN, true);
-        NguoiDung khachHang = new NguoiDung(3L, "Bùi Văn E", "vane@anhduong.vn", "0900000003", VaiTroNguoiDung.KHACH_HANG, false);
+        NguoiDung admin = new NguoiDung(1L, "Nguyễn Minh Anh", "minhanh@nhahang.vn", "0912 345 678", VaiTroNguoiDung.ADMIN, true);
+        NguoiDung quanLy = new NguoiDung(2L, "Trần Quốc Bảo", "quocbao@nhahang.vn", "0987 654 321", VaiTroNguoiDung.KHACH_HANG, true);
+        NguoiDung nhanVien = new NguoiDung(3L, "Lê Thảo Vy", "thaovy@nhahang.vn", "0901 234 567", VaiTroNguoiDung.NHAN_VIEN, false);
 
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoMoTaHienThi(admin).contains("Quản trị viên"));
+        assertTrue(BoDieuHopNguoiDungQuanTri.taoMoTaHienThi(admin).contains("Nguyễn Minh Anh"));
         assertTrue(BoDieuHopNguoiDungQuanTri.taoNhanVaiTro(admin).contains("Admin"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoNhanVaiTro(nhanVien).contains("NV"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoNhanVaiTro(khachHang).contains("QL"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoChuCaiDaiDien(admin).startsWith("Q"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoChuCaiDaiDien(nhanVien).contains("LN"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoTrangThaiHienThi(admin).contains("online"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoTrangThaiHienThi(khachHang).contains("offline"));
+        assertTrue(BoDieuHopNguoiDungQuanTri.taoNhanVaiTro(quanLy).contains("Quản lý"));
+        assertTrue(BoDieuHopNguoiDungQuanTri.taoNhanVaiTro(nhanVien).contains("Nhân viên"));
+        assertTrue(BoDieuHopNguoiDungQuanTri.taoChuCaiDaiDien(admin).contains("NM"));
+        assertTrue(BoDieuHopNguoiDungQuanTri.taoChuCaiDaiDien(nhanVien).contains("LT"));
+        assertTrue(BoDieuHopNguoiDungQuanTri.taoTrangThaiHienThi(admin).contains("Đang hoạt động"));
+        assertTrue(BoDieuHopNguoiDungQuanTri.taoTrangThaiHienThi(nhanVien).contains("Đã khóa"));
     }
 
     private Document docXml(String projectPath) throws Exception {

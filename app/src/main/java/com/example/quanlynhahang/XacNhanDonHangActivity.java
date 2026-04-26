@@ -174,8 +174,8 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         DonHang.TrangThaiThanhToan trangThaiThanhToan = DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN;
         DonHang.PhuongThucThanhToan phuongThucThanhToan = DonHang.PhuongThucThanhToan.CHUA_CHON;
         if (cheDoGuiDon == CheDoGuiDon.THANH_TOAN_NGAY) {
-            trangThaiThanhToan = DonHang.TrangThaiThanhToan.DA_THANH_TOAN_MO_PHONG;
-            phuongThucThanhToan = DonHang.PhuongThucThanhToan.THANH_TOAN_NGAY_MO_PHONG;
+            trangThaiThanhToan = DonHang.TrangThaiThanhToan.DA_THANH_TOAN;
+            phuongThucThanhToan = DonHang.PhuongThucThanhToan.THANH_TOAN_NGAY;
         } else if (cheDoGuiDon == CheDoGuiDon.GOI_THANH_TOAN) {
             trangThaiThanhToan = DonHang.TrangThaiThanhToan.CHUA_THANH_TOAN;
             phuongThucThanhToan = DonHang.PhuongThucThanhToan.TAI_QUAY;
@@ -225,7 +225,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
 
     private int layThongBaoThanhCong(CheDoGuiDon cheDoGuiDon) {
         if (cheDoGuiDon == CheDoGuiDon.THANH_TOAN_NGAY) {
-            return R.string.order_submit_success_paid_mock;
+            return R.string.order_submit_success_paid;
         }
         if (cheDoGuiDon == CheDoGuiDon.GOI_THANH_TOAN) {
             return R.string.order_submit_success_payment_requested;

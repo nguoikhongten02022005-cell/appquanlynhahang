@@ -14,3 +14,7 @@
 .cxx
 local.properties
 .worktrees/
+.agents/
+.opencode/
+.serena/
+docs/superpowers/

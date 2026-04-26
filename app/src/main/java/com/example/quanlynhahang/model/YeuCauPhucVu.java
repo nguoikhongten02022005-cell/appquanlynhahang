@@ -1,108 +1,21 @@
 package com.example.quanlynhahang.model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "bang_yeu_cau_phuc_vu")
 public class YeuCauPhucVu {
-
-    public enum LoaiYeuCau {
-        GOI_NHAN_VIEN,
-        THEM_NUOC,
-        THANH_TOAN
-    }
-
-    public enum TrangThai {
-        DANG_CHO,
-        DANG_XU_LY,
-        DA_XU_LY,
-        DA_HUY
-    }
-
-    private final long idYeuCau;
-    private final LoaiYeuCau loaiYeuCau;
-    private final String noiDung;
-    private final String thoiGianGui;
-    private final String thoiGianXuLy;
-    private final String soBan;
-    private final long idDonHang;
-    private TrangThai trangThai;
-
-    public YeuCauPhucVu(long idYeuCau,
-                        LoaiYeuCau loaiYeuCau,
-                        String noiDung,
-                        String thoiGianGui,
-                        String thoiGianXuLy,
-                        String soBan,
-                        long idDonHang,
-                        TrangThai trangThai) {
-        this.idYeuCau = idYeuCau;
-        this.loaiYeuCau = loaiYeuCau == null ? LoaiYeuCau.GOI_NHAN_VIEN : loaiYeuCau;
-        this.noiDung = noiDung == null ? "" : noiDung.trim();
-        this.thoiGianGui = thoiGianGui == null ? "" : thoiGianGui.trim();
-        this.thoiGianXuLy = thoiGianXuLy == null ? "" : thoiGianXuLy.trim();
-        this.soBan = soBan == null ? "" : soBan.trim();
-        this.idDonHang = idDonHang;
-        this.trangThai = trangThai == null ? TrangThai.DANG_CHO : trangThai;
-    }
-
-    public long layId() {
-        return idYeuCau;
-    }
-
-    public LoaiYeuCau layLoaiYeuCau() {
-        return loaiYeuCau;
-    }
-
-    public String layNoiDung() {
-        return noiDung;
-    }
-
-    public String layThoiGianGui() {
-        return thoiGianGui;
-    }
-
-    public String layThoiGianXuLy() {
-        return thoiGianXuLy;
-    }
-
-    public String laySoBan() {
-        return soBan;
-    }
-
-    public long layIdDonHang() {
-        return idDonHang;
-    }
-
-    public TrangThai layTrangThai() {
-        return trangThai;
-    }
-
-    public boolean coBanLienQuan() {
-        return !soBan.isEmpty();
-    }
-
-    public boolean coThoiGianXuLy() {
-        return !thoiGianXuLy.isEmpty();
-    }
-
-    public boolean coDonHangLienQuan() {
-        return idDonHang > 0;
-    }
-
-    public boolean coTheHuy() {
-        return trangThai == TrangThai.DANG_CHO;
-    }
-
-    public boolean dangHoatDong() {
-        return trangThai == TrangThai.DANG_CHO || trangThai == TrangThai.DANG_XU_LY;
-    }
-
-    public void danhDauDaXong() {
-        trangThai = TrangThai.DA_XU_LY;
-    }
-
-    public void danhDauDaHuy() {
-        trangThai = TrangThai.DA_HUY;
-    }
-
-    public void capNhatDaXuLyXong() {
-        danhDauDaXong();
-    }
+    @PrimaryKey(autoGenerate = true)
+    public long id;
+    
+    public long nguoiDungId;
+    public String noiDung;
+    public long guiLuc;
+    public String trangThai;
+    public String loaiYeuCau;
+    public String soBan;
+    public long donHangId;
+    public long xuLyLuc;
+    
+    public YeuCauPhucVu() {}
 }

@@ -4,11 +4,7 @@ plugins {
 
 android {
     namespace = "com.example.quanlynhahang"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.quanlynhahang"
@@ -40,6 +36,11 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.roomRuntime)
+    annotationProcessor(libs.roomCompiler)
+    implementation(libs.lifecycleViewmodel)
+    implementation(libs.lifecycleLivedata)
+    implementation(libs.lifecycleRuntime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidxTestCore)
     androidTestImplementation(libs.ext.junit)

@@ -106,26 +106,27 @@ public class TrangChuFragment extends Fragment {
 
     private void thietLapDuLieuDanhMuc() {
         danhSachDanhMuc.clear();
-        danhSachDanhMuc.add(new DanhMucMon(
-                R.drawable.ic_restaurant_24,
-                getString(R.string.category_main_course),
-                getString(R.string.category_main_course)
-        ));
-        danhSachDanhMuc.add(new DanhMucMon(
-                R.drawable.ic_receipt_24,
-                getString(R.string.category_hotpot),
-                getString(R.string.category_hotpot)
-        ));
-        danhSachDanhMuc.add(new DanhMucMon(
-                R.drawable.ic_local_drink_24,
-                getString(R.string.category_drink),
-                getString(R.string.category_drink)
-        ));
-        danhSachDanhMuc.add(new DanhMucMon(
-                R.drawable.ic_calendar_24,
-                getString(R.string.category_salad),
-                getString(R.string.category_salad)
-        ));
+        for (String tenDanhMuc : databaseHelper.layDanhMucMonAn()) {
+            themDanhMucMon(tenDanhMuc);
+        }
+    }
+
+    private void themDanhMucMon(String tenDanhMuc) {
+        DanhMucMon danhMucMon = new DanhMucMon(layBieuTuongDanhMuc(tenDanhMuc), tenDanhMuc, tenDanhMuc);
+        danhSachDanhMuc.add(danhMucMon);
+    }
+
+    private int layBieuTuongDanhMuc(@Nullable String tenDanhMuc) {
+        if (getString(R.string.category_hotpot).equals(tenDanhMuc)) {
+            return R.drawable.ic_receipt_24;
+        }
+        if (getString(R.string.category_drink).equals(tenDanhMuc)) {
+            return R.drawable.ic_local_drink_24;
+        }
+        if (getString(R.string.category_salad).equals(tenDanhMuc)) {
+            return R.drawable.ic_calendar_24;
+        }
+        return R.drawable.ic_restaurant_24;
     }
 
     private void thietLapDuLieuMonDeXuat() {

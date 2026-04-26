@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.DatBanNhanVienAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.model.BanAn;
 import com.example.quanlynhahang.model.DatBan;
 
 import java.util.ArrayList;
@@ -127,10 +128,13 @@ public class DatBanNoiBoFragment extends Fragment {
         }
 
         List<String> danhSachBanTrong = new ArrayList<>();
-        for (int soBan = 1; soBan <= 20; soBan++) {
-            String tenBan = getString(R.string.reservation_table_option_format, soBan);
-            if (tenBan.equalsIgnoreCase(datBan.laySoBan())
-                    || !databaseHelper.layDanhSachBanDaDat(datBan.layThoiGian(), datBan.layId()).contains(tenBan)) {
+        List<String> danhSachBanDaDat = databaseHelper.layDanhSachBanDaDat(datBan.layThoiGian(), datBan.layId());
+        for (BanAn banAn : databaseHelper.layTatCaBanAn()) {
+            String tenBan = banAn.layTenBan();
+            if (TextUtils.isEmpty(tenBan)) {
+                continue;
+            }
+            if (tenBan.equalsIgnoreCase(datBan.laySoBan()) || !danhSachBanDaDat.contains(tenBan)) {
                 danhSachBanTrong.add(tenBan);
             }
         }

@@ -6,17 +6,21 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.helper.DateTimeUtils;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 final class DishRepository {
 
+    private static final String TAG = "DishRepository";
     private static final String TEN_ANH_MAC_DINH = "menu_1";
 
     private final DatabaseHelper databaseHelper;
@@ -56,11 +60,16 @@ final class DishRepository {
                          boolean isAvailable,
                          @Nullable String category,
                          int recommendScore) {
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)) {
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)
+                || tenMonDangDuocDung(name, 0)) {
             return -1;
         }
         ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, category, recommendScore);
-        return databaseHelper.getWritableDatabase().insert(DatabaseHelper.TABLE_DISH, null, values);
+        long idMon = databaseHelper.getWritableDatabase().insert(DatabaseHelper.TABLE_DISH, null, values);
+        if (idMon > 0) {
+            Log.i(TAG, "Thêm món ăn id=" + idMon + ", tên=" + chuanHoaChuoi(name));
+        }
+        return idMon;
     }
 
     boolean capNhatBanGhiMonAn(long dishId,
@@ -71,16 +80,20 @@ final class DishRepository {
                                boolean isAvailable,
                                @Nullable String category,
                                int recommendScore) {
-        if (dishId <= 0 || TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)) {
+        if (dishId <= 0 || TextUtils.isEmpty(name) || TextUtils.isEmpty(price) || TextUtils.isEmpty(description) || TextUtils.isEmpty(category)
+                || tenMonDangDuocDung(name, dishId)) {
             return false;
         }
         ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, category, recommendScore);
         int rows = databaseHelper.getWritableDatabase().update(
                 DatabaseHelper.TABLE_DISH,
                 values,
-                DatabaseHelper.COL_DISH_ID + " = ?",
+                DatabaseHelper.COL_DISH_ID + " = ? AND " + DatabaseHelper.COL_DISH_IS_ARCHIVED + " = 0",
                 new String[]{String.valueOf(dishId)}
         );
+        if (rows > 0) {
+            Log.i(TAG, "Cập nhật món ăn id=" + dishId + ", tên=" + chuanHoaChuoi(name));
+        }
         return rows > 0;
     }
 
@@ -88,12 +101,67 @@ final class DishRepository {
         if (dishId <= 0) {
             return false;
         }
-        int rows = databaseHelper.getWritableDatabase().delete(
+        String tenMon = layTenMonTheoId(dishId);
+        if (TextUtils.isEmpty(tenMon)) {
+            return false;
+        }
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        if (coLichSuDonHangChoTenMon(tenMon)) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.COL_DISH_IS_ARCHIVED, 1);
+            values.put(DatabaseHelper.COL_DISH_IS_AVAILABLE, 0);
+            values.put(DatabaseHelper.COL_DISH_ARCHIVED_AT, DateTimeUtils.layThoiGianHienTai());
+            int rows = db.update(
+                    DatabaseHelper.TABLE_DISH,
+                    values,
+                    DatabaseHelper.COL_DISH_ID + " = ? AND " + DatabaseHelper.COL_DISH_IS_ARCHIVED + " = 0",
+                    new String[]{String.valueOf(dishId)}
+            );
+            if (rows > 0) {
+                Log.i(TAG, "Lưu trữ món ăn id=" + dishId + ", tên=" + tenMon);
+            }
+            return rows > 0;
+        }
+        int rows = db.delete(
                 DatabaseHelper.TABLE_DISH,
                 DatabaseHelper.COL_DISH_ID + " = ?",
                 new String[]{String.valueOf(dishId)}
         );
+        if (rows > 0) {
+            Log.i(TAG, "Xóa vĩnh viễn món ăn id=" + dishId + ", tên=" + tenMon);
+        }
         return rows > 0;
+    }
+
+    boolean tenMonDangDuocDung(String name, long excludeDishId) {
+        String tenCanKiemTra = chuanHoaChuoi(name);
+        if (TextUtils.isEmpty(tenCanKiemTra)) {
+            return false;
+        }
+        Cursor cursor = null;
+        try {
+            cursor = databaseHelper.getReadableDatabase().query(
+                    DatabaseHelper.TABLE_DISH,
+                    new String[]{DatabaseHelper.COL_DISH_ID, DatabaseHelper.COL_DISH_NAME},
+                    taoSelectionMonChuaLuuTru(null),
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            while (cursor.moveToNext()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_DISH_ID));
+                String tenDaLuu = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_DISH_NAME));
+                if (id != excludeDishId && tenCanKiemTra.equals(chuanHoaChuoi(tenDaLuu))) {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     boolean capNhatTrangThaiPhucVuMon(long dishId, boolean isAvailable) {
@@ -105,7 +173,7 @@ final class DishRepository {
         int rows = databaseHelper.getWritableDatabase().update(
                 DatabaseHelper.TABLE_DISH,
                 values,
-                DatabaseHelper.COL_DISH_ID + " = ?",
+                DatabaseHelper.COL_DISH_ID + " = ? AND " + DatabaseHelper.COL_DISH_IS_ARCHIVED + " = 0",
                 new String[]{String.valueOf(dishId)}
         );
         return rows > 0;
@@ -117,7 +185,7 @@ final class DishRepository {
             cursor = databaseHelper.getReadableDatabase().query(
                     DatabaseHelper.TABLE_DISH,
                     new String[]{"COUNT(*)"},
-                    null,
+                    taoSelectionMonChuaLuuTru(null),
                     null,
                     null,
                     null,
@@ -199,6 +267,73 @@ final class DishRepository {
         db.insert(DatabaseHelper.TABLE_DISH, null, values);
     }
 
+    private String taoSelectionMonChuaLuuTru(@Nullable String selection) {
+        String dieuKienChuaLuuTru = DatabaseHelper.COL_DISH_IS_ARCHIVED + " = 0";
+        if (TextUtils.isEmpty(selection)) {
+            return dieuKienChuaLuuTru;
+        }
+        return "(" + selection + ") AND " + dieuKienChuaLuuTru;
+    }
+
+    @Nullable
+    private String layTenMonTheoId(long dishId) {
+        Cursor cursor = null;
+        try {
+            cursor = databaseHelper.getReadableDatabase().query(
+                    DatabaseHelper.TABLE_DISH,
+                    new String[]{DatabaseHelper.COL_DISH_NAME},
+                    DatabaseHelper.COL_DISH_ID + " = ? AND " + DatabaseHelper.COL_DISH_IS_ARCHIVED + " = 0",
+                    new String[]{String.valueOf(dishId)},
+                    null,
+                    null,
+                    null
+            );
+            return cursor.moveToFirst() ? cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_DISH_NAME)) : null;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private boolean coLichSuDonHangChoTenMon(String tenMon) {
+        String tenDaChuanHoa = chuanHoaChuoi(tenMon);
+        Cursor cursor = null;
+        try {
+            cursor = databaseHelper.getReadableDatabase().query(
+                    DatabaseHelper.TABLE_ORDER_ITEM,
+                    new String[]{DatabaseHelper.COL_ORDER_ITEM_DISH_NAME},
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            while (cursor.moveToNext()) {
+                String tenTrongDon = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ORDER_ITEM_DISH_NAME));
+                if (tenDaChuanHoa.equals(chuanHoaChuoi(tenTrongDon))) {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private String chuanHoaChuoi(@Nullable String raw) {
+        return chuanHoaKhoangTrang(raw).toLowerCase(Locale.ROOT);
+    }
+
+    private String chuanHoaKhoangTrang(@Nullable String raw) {
+        if (raw == null) {
+            return "";
+        }
+        return raw.trim().replaceAll("\\s+", " ");
+    }
+
     private List<DatabaseHelper.DishRecord> queryDishes(@Nullable String selection, @Nullable String[] selectionArgs) {
         return queryDishes(databaseHelper.getReadableDatabase(), selection, selectionArgs);
     }
@@ -221,7 +356,7 @@ final class DishRepository {
                             DatabaseHelper.COL_DISH_CATEGORY,
                             DatabaseHelper.COL_DISH_RECOMMEND_SCORE
                     },
-                    selection,
+                    taoSelectionMonChuaLuuTru(selection),
                     selectionArgs,
                     null,
                     null,
@@ -264,19 +399,21 @@ final class DishRepository {
                                          @Nullable String category,
                                          int recommendScore) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COL_DISH_NAME, name != null ? name.trim() : "");
-        values.put(DatabaseHelper.COL_DISH_PRICE, price != null ? price.trim() : "");
-        values.put(DatabaseHelper.COL_DISH_DESCRIPTION, description != null ? description.trim() : "");
-        values.put(DatabaseHelper.COL_DISH_IMAGE_RES_NAME, TextUtils.isEmpty(imageResName) ? TEN_ANH_MAC_DINH : imageResName.trim());
+        values.put(DatabaseHelper.COL_DISH_NAME, chuanHoaKhoangTrang(name));
+        values.put(DatabaseHelper.COL_DISH_PRICE, chuanHoaKhoangTrang(price));
+        values.put(DatabaseHelper.COL_DISH_DESCRIPTION, chuanHoaKhoangTrang(description));
+        values.put(DatabaseHelper.COL_DISH_IMAGE_RES_NAME, chuanHoaKhoangTrang(imageResName));
         values.put(DatabaseHelper.COL_DISH_IS_AVAILABLE, isAvailable ? 1 : 0);
-        values.put(DatabaseHelper.COL_DISH_CATEGORY, category != null ? category.trim() : "");
+        values.put(DatabaseHelper.COL_DISH_CATEGORY, chuanHoaKhoangTrang(category));
         values.put(DatabaseHelper.COL_DISH_RECOMMEND_SCORE, Math.max(recommendScore, 0));
+        values.put(DatabaseHelper.COL_DISH_IS_ARCHIVED, 0);
+        values.put(DatabaseHelper.COL_DISH_ARCHIVED_AT, "");
         return values;
     }
 
     int resolveImageResId(String imageResName) {
-        if (TextUtils.isEmpty(imageResName)) {
-            return R.drawable.menu_1;
+        if (TextUtils.isEmpty(imageResName) || imageResName.startsWith("content://")) {
+            return 0;
         }
 
         int resId = appContext.getResources().getIdentifier(
@@ -284,7 +421,7 @@ final class DishRepository {
                 "drawable",
                 appContext.getPackageName()
         );
-        return resId == 0 ? R.drawable.menu_1 : resId;
+        return resId == 0 ? 0 : resId;
     }
 
     @SuppressWarnings("unused")

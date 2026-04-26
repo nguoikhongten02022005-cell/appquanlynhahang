@@ -25,7 +25,11 @@ public class StaffLauncherActivity extends AppCompatActivity {
 
         if (sessionManager.daDangNhap() && sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
             VaiTroNguoiDung vaiTroDangNhap = sessionManager.layVaiTroSessionHopLe();
-            if (vaiTroDangNhap == VaiTroNguoiDung.ADMIN || vaiTroDangNhap == VaiTroNguoiDung.NHAN_VIEN) {
+            if (vaiTroDangNhap == VaiTroNguoiDung.ADMIN) {
+                chuyenDen(TrungTamQuanTriActivity.taoIntent(this, DieuHuongNoiBoHelper.SECTION_BAO_CAO));
+                return;
+            }
+            if (vaiTroDangNhap == VaiTroNguoiDung.NHAN_VIEN) {
                 chuyenDen(DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(this, DieuHuongNoiBoHelper.TAB_TONG_QUAN));
                 return;
             }

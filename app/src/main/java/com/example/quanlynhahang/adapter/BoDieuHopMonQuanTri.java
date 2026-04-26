@@ -2,9 +2,12 @@ package com.example.quanlynhahang.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,6 +62,7 @@ public class BoDieuHopMonQuanTri extends RecyclerView.Adapter<BoDieuHopMonQuanTr
     }
 
     class ViewHolderMonQuanTri extends RecyclerView.ViewHolder {
+        private final ImageView ivAnhMon;
         private final TextView tvTen;
         private final TextView tvGia;
         private final TextView tvDanhMuc;
@@ -70,6 +74,7 @@ public class BoDieuHopMonQuanTri extends RecyclerView.Adapter<BoDieuHopMonQuanTr
 
         ViewHolderMonQuanTri(@NonNull View itemView) {
             super(itemView);
+            ivAnhMon = itemView.findViewById(R.id.ivAdminDishImage);
             tvTen = itemView.findViewById(R.id.tvAdminDishName);
             tvGia = itemView.findViewById(R.id.tvAdminDishPrice);
             tvDanhMuc = itemView.findViewById(R.id.tvAdminDishCategory);
@@ -82,6 +87,7 @@ public class BoDieuHopMonQuanTri extends RecyclerView.Adapter<BoDieuHopMonQuanTr
 
         void ganDuLieu(DatabaseHelper.DishRecord banGhiMon) {
             Context context = itemView.getContext();
+            hienAnhMon(banGhiMon);
             tvTen.setText(banGhiMon.layMonAn().layTenMon());
             tvGia.setText(banGhiMon.layMonAn().layGiaBan());
             tvDanhMuc.setText(context.getString(R.string.admin_dish_category_format, banGhiMon.layMonAn().layTenDanhMuc()));
@@ -93,6 +99,21 @@ public class BoDieuHopMonQuanTri extends RecyclerView.Adapter<BoDieuHopMonQuanTr
             btnSua.setOnClickListener(v -> hanhDongListener.khiSua(banGhiMon));
             btnXoa.setOnClickListener(v -> hanhDongListener.khiXoa(banGhiMon));
             btnBatTat.setOnClickListener(v -> hanhDongListener.khiBatTatTrangThaiPhucVu(banGhiMon));
+        }
+
+        private void hienAnhMon(DatabaseHelper.DishRecord banGhiMon) {
+            String tenAnh = banGhiMon.layTenAnhTaiNguyen();
+            if (!TextUtils.isEmpty(tenAnh) && tenAnh.startsWith("content://")) {
+                ivAnhMon.setImageURI(Uri.parse(tenAnh));
+                return;
+            }
+            int idAnh = banGhiMon.layMonAn().layIdAnhTaiNguyen();
+            if (idAnh == 0) {
+                ivAnhMon.setImageDrawable(null);
+                ivAnhMon.setBackgroundResource(R.drawable.bg_dish_image_placeholder);
+                return;
+            }
+            ivAnhMon.setImageResource(idAnh);
         }
     }
 }

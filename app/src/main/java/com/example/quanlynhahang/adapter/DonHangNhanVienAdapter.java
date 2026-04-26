@@ -129,16 +129,17 @@ public class DonHangNhanVienAdapter extends RecyclerView.Adapter<DonHangNhanVien
             tvToggleDetails.setOnClickListener(v -> chuyenTrangThaiChiTiet(donHang));
 
             btnConfirm.setText(R.string.employee_order_action_accept);
-            ganHanhDong(btnConfirm, HanhDongNghiepVuHelper.nhanVienCoTheNhanDon(donHang), v -> hanhDongListener.khiXacNhan(donHang));
+            boolean hienThiXacNhan = HanhDongNghiepVuHelper.nhanVienCoTheNhanDon(donHang);
+            boolean hienThiHoanTat = HanhDongNghiepVuHelper.nhanVienCoTheChuyenSangPhucVu(donHang)
+                    || HanhDongNghiepVuHelper.nhanVienCoTheHoanTatDon(donHang);
+            boolean hienThiHuy = HanhDongNghiepVuHelper.nhanVienCoTheHuyDon(donHang);
+
+            ganHanhDong(btnConfirm, hienThiXacNhan, v -> hanhDongListener.khiXacNhan(donHang));
 
             btnComplete.setText(HanhDongNghiepVuHelper.layTextHanhDongChinhDon(donHang));
-            ganHanhDong(
-                    btnComplete,
-                    HanhDongNghiepVuHelper.nhanVienCoTheChuyenSangPhucVu(donHang)
-                            || HanhDongNghiepVuHelper.nhanVienCoTheHoanTatDon(donHang),
-                    v -> hanhDongListener.khiHoanTat(donHang)
-            );
-            ganHanhDong(btnCancel, HanhDongNghiepVuHelper.nhanVienCoTheHuyDon(donHang), v -> hanhDongListener.khiHuy(donHang));
+            ganHanhDong(btnComplete, hienThiHoanTat, v -> hanhDongListener.khiHoanTat(donHang));
+            ganHanhDong(btnCancel, hienThiHuy, v -> hanhDongListener.khiHuy(donHang));
+            capNhatKhoangCachNutHanhDong();
         }
 
         private void chuyenTrangThaiChiTiet(DonHang donHang) {
@@ -153,6 +154,26 @@ public class DonHangNhanVienAdapter extends RecyclerView.Adapter<DonHangNhanVien
         private void ganHanhDong(TextView view, boolean hienThi, View.OnClickListener suKienClick) {
             view.setVisibility(hienThi ? View.VISIBLE : View.GONE);
             view.setOnClickListener(hienThi ? suKienClick : null);
+        }
+
+        private void capNhatKhoangCachNutHanhDong() {
+            datKhoangCachTrai(btnConfirm, false);
+            datKhoangCachTrai(btnComplete, btnConfirm.getVisibility() == View.VISIBLE);
+            datKhoangCachTrai(
+                    btnCancel,
+                    btnConfirm.getVisibility() == View.VISIBLE || btnComplete.getVisibility() == View.VISIBLE
+            );
+        }
+
+        private void datKhoangCachTrai(TextView view, boolean coKhoangCach) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            int khoangCach = coKhoangCach ? dp(view.getContext(), 8) : 0;
+            params.setMarginStart(khoangCach);
+            view.setLayoutParams(params);
+        }
+
+        private int dp(Context context, int value) {
+            return Math.round(value * context.getResources().getDisplayMetrics().density);
         }
     }
 

@@ -1,18 +1,28 @@
 package com.example.quanlynhahang;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,14 +30,43 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quanlynhahang.adapter.BoDieuHopMonQuanTri;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.helper.MoneyUtils;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class MonAnQuanTriFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
     private BoDieuHopMonQuanTri boDieuHopMon;
+    private final List<DatabaseHelper.DishRecord> danhSachTatCaMon = new ArrayList<>();
     private TextView tvEmptyState;
+    private TextView tvTongQuan;
+    private EditText etTimKiem;
+    private LinearLayout layoutDanhMucChips;
+    private ActivityResultLauncher<String[]> chonAnhMonLauncher;
+    private ImageView ivAnhDialogDangMo;
+    private EditText etTenAnhDialogDangMo;
+    private String danhMucDangChon = "";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        chonAnhMonLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+            if (uri == null || ivAnhDialogDangMo == null || etTenAnhDialogDangMo == null) {
+                return;
+            }
+            requireContext().getContentResolver().takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+            );
+            etTenAnhDialogDangMo.setText(uri.toString());
+            ivAnhDialogDangMo.setImageURI(uri);
+        });
+    }
 
     @Nullable
     @Override
@@ -46,6 +85,9 @@ public class MonAnQuanTriFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rvMonAnQuanTri);
         tvEmptyState = view.findViewById(R.id.tvMonAnQuanTriEmpty);
+        tvTongQuan = view.findViewById(R.id.tvAdminDishSummary);
+        etTimKiem = view.findViewById(R.id.etAdminDishSearch);
+        layoutDanhMucChips = view.findViewById(R.id.layoutAdminDishCategoryChips);
         View btnThemMon = view.findViewById(R.id.btnAdminDishAdd);
 
         boDieuHopMon = new BoDieuHopMonQuanTri(new BoDieuHopMonQuanTri.HanhDongListener() {
@@ -73,6 +115,20 @@ public class MonAnQuanTriFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(boDieuHopMon);
         btnThemMon.setOnClickListener(v -> hienDialogThemHoacSuaMon(null));
+        etTimKiem.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                apDungBoLocMon();
+            }
+        });
 
         taiDanhSachMon();
     }
@@ -86,11 +142,102 @@ public class MonAnQuanTriFragment extends Fragment {
     }
 
     private void taiDanhSachMon() {
-        List<DatabaseHelper.DishRecord> danhSachMon = databaseHelper.layTatCaMonAn();
-        boDieuHopMon.capNhatDanhSach(danhSachMon);
-        if (tvEmptyState != null) {
-            tvEmptyState.setVisibility(danhSachMon.isEmpty() ? View.VISIBLE : View.GONE);
+        danhSachTatCaMon.clear();
+        danhSachTatCaMon.addAll(databaseHelper.layTatCaMonAn());
+        if (!danhMucConTonTai()) {
+            danhMucDangChon = "";
         }
+        capNhatTongQuanMon();
+        capNhatChipDanhMuc();
+        apDungBoLocMon();
+    }
+
+    private boolean danhMucConTonTai() {
+        if (TextUtils.isEmpty(danhMucDangChon)) {
+            return true;
+        }
+        for (DatabaseHelper.DishRecord banGhiMon : danhSachTatCaMon) {
+            if (danhMucDangChon.equalsIgnoreCase(banGhiMon.layMonAn().layTenDanhMuc())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void capNhatTongQuanMon() {
+        int soMonDangPhucVu = 0;
+        for (DatabaseHelper.DishRecord banGhiMon : danhSachTatCaMon) {
+            if (banGhiMon.layMonAn().laConPhucVu()) {
+                soMonDangPhucVu++;
+            }
+        }
+        tvTongQuan.setText(getString(R.string.admin_dish_summary_format, danhSachTatCaMon.size(), soMonDangPhucVu));
+    }
+
+    private void capNhatChipDanhMuc() {
+        layoutDanhMucChips.removeAllViews();
+        themChipDanhMuc(getString(R.string.admin_filter_all), "");
+        Set<String> danhMuc = new LinkedHashSet<>();
+        for (DatabaseHelper.DishRecord banGhiMon : danhSachTatCaMon) {
+            if (!TextUtils.isEmpty(banGhiMon.layMonAn().layTenDanhMuc())) {
+                danhMuc.add(banGhiMon.layMonAn().layTenDanhMuc());
+            }
+        }
+        for (String item : danhMuc) {
+            themChipDanhMuc(item, item);
+        }
+    }
+
+    private void themChipDanhMuc(String nhan, String giaTri) {
+        TextView chip = new TextView(requireContext());
+        boolean duocChon = giaTri.equalsIgnoreCase(danhMucDangChon);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        if (layoutDanhMucChips.getChildCount() > 0) {
+            params.setMarginStart(dp(8));
+        }
+        chip.setLayoutParams(params);
+        chip.setPadding(dp(14), dp(8), dp(14), dp(8));
+        chip.setText(nhan);
+        chip.setTextSize(12f);
+        chip.setTypeface(chip.getTypeface(), android.graphics.Typeface.BOLD);
+        chip.setBackgroundResource(duocChon ? R.drawable.bg_button_orange : R.drawable.bg_search_rounded);
+        chip.setTextColor(ContextCompat.getColor(requireContext(), duocChon ? android.R.color.white : R.color.on_surface_variant));
+        chip.setOnClickListener(v -> {
+            danhMucDangChon = giaTri;
+            capNhatChipDanhMuc();
+            apDungBoLocMon();
+        });
+        layoutDanhMucChips.addView(chip);
+    }
+
+    private void apDungBoLocMon() {
+        String tuKhoa = etTimKiem.getText() == null ? "" : etTimKiem.getText().toString().trim().toLowerCase(Locale.ROOT);
+        List<DatabaseHelper.DishRecord> ketQua = new ArrayList<>();
+        for (DatabaseHelper.DishRecord banGhiMon : danhSachTatCaMon) {
+            if (!khopDanhMuc(banGhiMon) || !khopTuKhoa(banGhiMon, tuKhoa)) {
+                continue;
+            }
+            ketQua.add(banGhiMon);
+        }
+        boDieuHopMon.capNhatDanhSach(ketQua);
+        tvEmptyState.setVisibility(ketQua.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean khopDanhMuc(DatabaseHelper.DishRecord banGhiMon) {
+        return TextUtils.isEmpty(danhMucDangChon)
+                || danhMucDangChon.equalsIgnoreCase(banGhiMon.layMonAn().layTenDanhMuc());
+    }
+
+    private boolean khopTuKhoa(DatabaseHelper.DishRecord banGhiMon, String tuKhoa) {
+        if (TextUtils.isEmpty(tuKhoa)) {
+            return true;
+        }
+        return banGhiMon.layMonAn().layTenMon().toLowerCase(Locale.ROOT).contains(tuKhoa)
+                || banGhiMon.layMonAn().layTenDanhMuc().toLowerCase(Locale.ROOT).contains(tuKhoa)
+                || banGhiMon.layMoTa().toLowerCase(Locale.ROOT).contains(tuKhoa);
     }
 
     private void hienDialogThemHoacSuaMon(@Nullable DatabaseHelper.DishRecord banGhiMon) {
@@ -101,11 +248,13 @@ public class MonAnQuanTriFragment extends Fragment {
         View noiDungDialog = getLayoutInflater().inflate(R.layout.dialog_add_edit_dish, null);
         EditText etTenMon = noiDungDialog.findViewById(R.id.etAdminDishName);
         EditText etGiaMon = noiDungDialog.findViewById(R.id.etAdminDishPrice);
-        EditText etDanhMuc = noiDungDialog.findViewById(R.id.etAdminDishCategory);
+        MaterialAutoCompleteTextView etDanhMuc = noiDungDialog.findViewById(R.id.autoCompleteAdminDishCategory);
         EditText etMoTa = noiDungDialog.findViewById(R.id.etAdminDishDescription);
         EditText etTenAnh = noiDungDialog.findViewById(R.id.etAdminDishImage);
-        EditText etDiemDeXuat = noiDungDialog.findViewById(R.id.etAdminDishScore);
         CheckBox cbDangPhucVu = noiDungDialog.findViewById(R.id.cbAdminDishAvailable);
+        ImageView ivAnhPreview = noiDungDialog.findViewById(R.id.ivAdminDishPreview);
+        TextView btnChonAnh = noiDungDialog.findViewById(R.id.btnAdminDishPickImage);
+        caiDatLuaChonDanhMuc(etDanhMuc);
 
         if (banGhiMon != null) {
             etTenMon.setText(banGhiMon.layMonAn().layTenMon());
@@ -113,12 +262,17 @@ public class MonAnQuanTriFragment extends Fragment {
             etDanhMuc.setText(banGhiMon.layMonAn().layTenDanhMuc());
             etMoTa.setText(banGhiMon.layMoTa());
             etTenAnh.setText(banGhiMon.layTenAnhTaiNguyen());
-            etDiemDeXuat.setText(String.valueOf(banGhiMon.layMonAn().layDiemDeXuat()));
             cbDangPhucVu.setChecked(banGhiMon.layMonAn().laConPhucVu());
+            hienAnhTrongDialog(ivAnhPreview, banGhiMon.layTenAnhTaiNguyen(), banGhiMon.layMonAn().layIdAnhTaiNguyen());
         } else {
             cbDangPhucVu.setChecked(true);
-            etDiemDeXuat.setText("0");
+            ivAnhPreview.setImageDrawable(null);
+            ivAnhPreview.setBackgroundResource(R.drawable.bg_dish_image_placeholder);
         }
+
+        ivAnhDialogDangMo = ivAnhPreview;
+        etTenAnhDialogDangMo = etTenAnh;
+        btnChonAnh.setOnClickListener(v -> chonAnhMonLauncher.launch(new String[]{"image/*"}));
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setTitle(banGhiMon == null ? R.string.admin_dialog_add_dish_title : R.string.admin_dialog_edit_dish_title)
@@ -127,13 +281,16 @@ public class MonAnQuanTriFragment extends Fragment {
                 .setPositiveButton(R.string.admin_save, null)
                 .create();
 
+        dialog.setOnDismissListener(ignored -> {
+            ivAnhDialogDangMo = null;
+            etTenAnhDialogDangMo = null;
+        });
         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String tenMon = layChuoiDaCatKhoangTrang(etTenMon);
             String giaNhap = layChuoiDaCatKhoangTrang(etGiaMon);
             String danhMuc = layChuoiDaCatKhoangTrang(etDanhMuc);
             String moTa = layChuoiDaCatKhoangTrang(etMoTa);
             String tenAnh = layChuoiDaCatKhoangTrang(etTenAnh);
-            String diemNhap = layChuoiDaCatKhoangTrang(etDiemDeXuat);
 
             if (TextUtils.isEmpty(tenMon)
                     || TextUtils.isEmpty(giaNhap)
@@ -154,15 +311,11 @@ public class MonAnQuanTriFragment extends Fragment {
                 return;
             }
 
-            int diemDeXuat;
-            try {
-                diemDeXuat = TextUtils.isEmpty(diemNhap) ? 0 : Integer.parseInt(diemNhap);
-            } catch (NumberFormatException ex) {
-                Toast.makeText(requireContext(), R.string.admin_dish_validation_score, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (diemDeXuat < 0) {
-                Toast.makeText(requireContext(), R.string.admin_dish_validation_score, Toast.LENGTH_SHORT).show();
+            int diemDeXuat = layDiemDeXuatMacDinh(banGhiMon);
+
+            long idMonBoQua = banGhiMon == null ? 0 : banGhiMon.layId();
+            if (databaseHelper.tenMonAnDangTonTai(tenMon, idMonBoQua)) {
+                Toast.makeText(requireContext(), R.string.admin_dish_validation_duplicate_name, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -210,13 +363,29 @@ public class MonAnQuanTriFragment extends Fragment {
         dialog.show();
     }
 
+    private int layDiemDeXuatMacDinh(@Nullable DatabaseHelper.DishRecord banGhiMon) {
+        return banGhiMon == null ? 0 : Math.max(0, banGhiMon.layMonAn().layDiemDeXuat());
+    }
+
+    private void caiDatLuaChonDanhMuc(MaterialAutoCompleteTextView etDanhMuc) {
+        List<String> danhMuc = new ArrayList<>();
+        for (DatabaseHelper.DishRecord banGhiMon : danhSachTatCaMon) {
+            String tenDanhMuc = banGhiMon.layMonAn().layTenDanhMuc();
+            if (!TextUtils.isEmpty(tenDanhMuc) && !danhMuc.contains(tenDanhMuc)) {
+                danhMuc.add(tenDanhMuc);
+            }
+        }
+        etDanhMuc.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, danhMuc));
+        etDanhMuc.setThreshold(0);
+    }
+
     private void xacNhanXoaMon(DatabaseHelper.DishRecord banGhiMon) {
         if (!isAdded()) {
             return;
         }
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.admin_delete_confirm_title)
-                .setMessage(R.string.admin_delete_confirm_message)
+                .setMessage(getString(R.string.admin_delete_confirm_message_named, banGhiMon.layMonAn().layTenMon()))
                 .setNegativeButton(R.string.account_cancel_action, null)
                 .setPositiveButton(R.string.admin_delete_dish, (dialog, which) -> {
                     boolean daXoa = databaseHelper.xoaMonAnTheoId(banGhiMon.layId());
@@ -233,5 +402,22 @@ public class MonAnQuanTriFragment extends Fragment {
             return "";
         }
         return editText.getText().toString().trim();
+    }
+
+    private void hienAnhTrongDialog(ImageView imageView, String tenAnh, int anhMacDinh) {
+        if (!TextUtils.isEmpty(tenAnh) && tenAnh.startsWith("content://")) {
+            imageView.setImageURI(Uri.parse(tenAnh));
+            return;
+        }
+        if (anhMacDinh == 0) {
+            imageView.setImageDrawable(null);
+            imageView.setBackgroundResource(R.drawable.bg_dish_image_placeholder);
+            return;
+        }
+        imageView.setImageResource(anhMacDinh);
+    }
+
+    private int dp(int value) {
+        return Math.round(value * requireContext().getResources().getDisplayMetrics().density);
     }
 }

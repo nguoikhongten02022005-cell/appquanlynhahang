@@ -31,9 +31,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
 
     private static final String DATABASE_NAME = "restaurant.db";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
 
     private static final String TEN_ANH_MAC_DINH = "menu_1";
+    private static final String MAT_KHAU_DEMO_MAC_DINH = "1";
     private static final String BAN_MAC_DINH = "Bàn 01";
     private static final int SO_PHUT_CHAN_GUI_TRUNG_YEU_CAU = 5;
     private static final int SO_KHACH_DAT_BAN_TOI_DA = 20;
@@ -64,6 +65,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String COL_DISH_IS_AVAILABLE = "is_available";
     static final String COL_DISH_CATEGORY = "category";
     static final String COL_DISH_RECOMMEND_SCORE = "recommend_score";
+    static final String COL_DISH_IS_ARCHIVED = "is_archived";
+    static final String COL_DISH_ARCHIVED_AT = "archived_at";
 
     static final String COL_ORDER_ID = "id";
     static final String COL_ORDER_USER_ID = "user_id";
@@ -199,6 +202,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         damBaoCotTonTai(db, TABLE_DISH, COL_DISH_IS_AVAILABLE, "INTEGER NOT NULL DEFAULT 1");
         damBaoCotTonTai(db, TABLE_DISH, COL_DISH_CATEGORY, "TEXT NOT NULL DEFAULT ''");
         damBaoCotTonTai(db, TABLE_DISH, COL_DISH_RECOMMEND_SCORE, "INTEGER NOT NULL DEFAULT 0");
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_IS_ARCHIVED, "INTEGER NOT NULL DEFAULT 0");
+        damBaoCotTonTai(db, TABLE_DISH, COL_DISH_ARCHIVED_AT, "TEXT NOT NULL DEFAULT ''");
 
         damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_USER_ID, "INTEGER NOT NULL DEFAULT 0");
         damBaoCotTonTai(db, TABLE_ORDER, COL_ORDER_CODE, "TEXT NOT NULL DEFAULT ''");
@@ -363,7 +368,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_DISH_IMAGE_RES_NAME + " TEXT NOT NULL DEFAULT '" + TEN_ANH_MAC_DINH + "', "
                 + COL_DISH_IS_AVAILABLE + " INTEGER NOT NULL DEFAULT 1, "
                 + COL_DISH_CATEGORY + " TEXT NOT NULL DEFAULT '', "
-                + COL_DISH_RECOMMEND_SCORE + " INTEGER NOT NULL DEFAULT 0"
+                + COL_DISH_RECOMMEND_SCORE + " INTEGER NOT NULL DEFAULT 0, "
+                + COL_DISH_IS_ARCHIVED + " INTEGER NOT NULL DEFAULT 0, "
+                + COL_DISH_ARCHIVED_AT + " TEXT NOT NULL DEFAULT ''"
                 + ")";
     }
 
@@ -439,7 +446,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<BanAn> danhSachBan = queryBanAn();
         if (danhSachBan.isEmpty()) {
             SQLiteDatabase db = getWritableDatabase();
-            SeedDataHelper.damBaoBanAnMau(db);
+            SeedDataHelper.damBaoBanAnMau(appContext, db);
             danhSachBan = queryBanAn();
         }
         return danhSachBan;
@@ -692,6 +699,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userRepository.countUsersByRole(role);
     }
 
+    @Nullable
+    public TaiKhoanDemo layTaiKhoanDemoTheoVaiTro(VaiTroNguoiDung vaiTro) {
+        if (vaiTro == null) {
+            return null;
+        }
+        Cursor cursor = null;
+        try {
+            cursor = getReadableDatabase().query(
+                    TABLE_USER,
+                    new String[]{COL_USER_EMAIL, COL_USER_PHONE, COL_USER_PASSWORD},
+                    COL_USER_ROLE + " = ? AND " + COL_USER_IS_ACTIVE + " = 1",
+                    new String[]{vaiTro.name()},
+                    null,
+                    null,
+                    COL_USER_ID + " ASC",
+                    "1"
+            );
+            if (!cursor.moveToFirst()) {
+                return null;
+            }
+            String email = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_EMAIL));
+            String soDienThoai = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PHONE));
+            String matKhau = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PASSWORD));
+            return new TaiKhoanDemo(TextUtils.isEmpty(email) ? soDienThoai : email, TextUtils.isEmpty(matKhau) ? MAT_KHAU_DEMO_MAC_DINH : matKhau);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
     public void seedDishesIfEmpty(Context context) {
         SQLiteDatabase db = getWritableDatabase();
         SeedDataHelper.seedDishesIfEmpty(this, context == null ? appContext : context.getApplicationContext(), db);
@@ -699,6 +737,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<DishRecord> layTatCaMonAn() {
         return dishRepository.layTatCaMonAn();
+    }
+
+    public List<String> layDanhMucMonAn() {
+        List<String> danhSachDanhMuc = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = getReadableDatabase().query(
+                    true,
+                    TABLE_DISH,
+                    new String[]{COL_DISH_CATEGORY},
+                    COL_DISH_CATEGORY + " <> ? AND " + COL_DISH_IS_ARCHIVED + " = 0",
+                    new String[]{""},
+                    null,
+                    null,
+                    COL_DISH_CATEGORY + " COLLATE NOCASE ASC",
+                    null
+            );
+            while (cursor.moveToNext()) {
+                String tenDanhMuc = cursor.getString(cursor.getColumnIndexOrThrow(COL_DISH_CATEGORY));
+                if (!TextUtils.isEmpty(tenDanhMuc)) {
+                    danhSachDanhMuc.add(tenDanhMuc);
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return danhSachDanhMuc;
     }
 
     List<DishRecord> layTatCaMonAn(SQLiteDatabase db) {
@@ -732,6 +799,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean xoaMonAnTheoId(long dishId) {
         return dishRepository.xoaMonAnTheoId(dishId);
+    }
+
+    public boolean tenMonAnDangTonTai(String tenMon, long boQuaId) {
+        return dishRepository.tenMonDangDuocDung(tenMon, boQuaId);
     }
 
     public boolean capNhatTrangThaiPhucVuMon(long dishId, boolean isAvailable) {
@@ -2159,6 +2230,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return YeuCauPhucVu.LoaiYeuCau.valueOf(typeRaw);
         } catch (IllegalArgumentException ex) {
             return YeuCauPhucVu.LoaiYeuCau.GOI_NHAN_VIEN;
+        }
+    }
+
+    public static class TaiKhoanDemo {
+        private final String tenDangNhap;
+        private final String matKhau;
+
+        public TaiKhoanDemo(String tenDangNhap, String matKhau) {
+            this.tenDangNhap = tenDangNhap;
+            this.matKhau = matKhau;
+        }
+
+        public String layTenDangNhap() {
+            return tenDangNhap;
+        }
+
+        public String layMatKhau() {
+            return matKhau;
         }
     }
 

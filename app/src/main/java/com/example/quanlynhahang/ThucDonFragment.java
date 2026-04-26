@@ -37,8 +37,10 @@ public class ThucDonFragment extends Fragment {
 
     private final List<MonAnDeXuat> tatCaMonAn = new ArrayList<>();
     private final List<String> tatCaMoTa = new ArrayList<>();
+    private final List<String> tatCaTenAnh = new ArrayList<>();
     private final List<MonAnDeXuat> danhSachMonDaLoc = new ArrayList<>();
     private final List<String> danhSachMoTaDaLoc = new ArrayList<>();
+    private final List<String> danhSachTenAnhDaLoc = new ArrayList<>();
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
@@ -142,6 +144,7 @@ public class ThucDonFragment extends Fragment {
         boDieuHopThucDon = new ThucDonAdapter(
                 danhSachMonDaLoc,
                 danhSachMoTaDaLoc,
+                danhSachTenAnhDaLoc,
                 dish -> {
                     if (dish == null || !dish.laConPhucVu()) {
                         Toast.makeText(
@@ -191,6 +194,7 @@ public class ThucDonFragment extends Fragment {
     private void taiDuLieuMonAn() {
         tatCaMonAn.clear();
         tatCaMoTa.clear();
+        tatCaTenAnh.clear();
 
         List<DatabaseHelper.DishRecord> dishRecords = databaseHelper.layTatCaMonAn();
         for (DatabaseHelper.DishRecord record : dishRecords) {
@@ -201,6 +205,7 @@ public class ThucDonFragment extends Fragment {
             }
             tatCaMonAn.add(dishItem);
             tatCaMoTa.add(record.layMoTa());
+            tatCaTenAnh.add(record.layTenAnhTaiNguyen());
         }
 
         apDungBoLocHienTai();
@@ -211,6 +216,7 @@ public class ThucDonFragment extends Fragment {
 
         danhSachMonDaLoc.clear();
         danhSachMoTaDaLoc.clear();
+        danhSachTenAnhDaLoc.clear();
 
         for (int i = 0; i < tatCaMonAn.size(); i++) {
             MonAnDeXuat monAn = tatCaMonAn.get(i);
@@ -226,10 +232,11 @@ public class ThucDonFragment extends Fragment {
                     || danhMucLower.contains(tuKhoa)) {
                 danhSachMonDaLoc.add(monAn);
                 danhSachMoTaDaLoc.add(moTa == null ? "" : moTa);
+                danhSachTenAnhDaLoc.add(i < tatCaTenAnh.size() ? tatCaTenAnh.get(i) : "");
             }
         }
 
-        boDieuHopThucDon.capNhatDuLieu(danhSachMonDaLoc, danhSachMoTaDaLoc);
+        boDieuHopThucDon.capNhatDuLieu(danhSachMonDaLoc, danhSachMoTaDaLoc, danhSachTenAnhDaLoc);
         capNhatHintBoLoc();
         capNhatEmptyState();
     }

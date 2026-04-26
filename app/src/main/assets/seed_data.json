@@ -1,0 +1,50 @@
+{
+  "dishes": [
+    {"name_res":"dish_bo_luc_lac","price_res":"price_145k","description_res":"menu_desc_bo_luc_lac","image":"menu_1","available":true,"category_res":"category_main_course","score":96},
+    {"name_res":"dish_lau_thai","price_res":"price_259k","description_res":"menu_desc_lau_thai","image":"dish_6","available":true,"category_res":"category_hotpot","score":93},
+    {"name_res":"dish_salad_ca_hoi","price_res":"price_129k","description_res":"menu_desc_salad_ca_hoi","image":"menu_2","available":true,"category_res":"category_salad","score":89},
+    {"name_res":"dish_tra_dao","price_res":"price_45k","description_res":"menu_desc_tra_dao","image":"image3","available":true,"category_res":"category_drink","score":82},
+    {"name":"Cơm chiên hải sản","price":"98.000 đ","description":"Cơm chiên tơi hạt cùng tôm, mực và rau củ.","image":"menu_1","available":true,"category_res":"category_main_course","score":88},
+    {"name":"Mì Ý bò bằm","price":"115.000 đ","description":"Mì Ý sốt bò bằm đậm vị, dùng kèm phô mai bào.","image":"dish_6","available":true,"category_res":"category_main_course","score":84},
+    {"name":"Gỏi tôm xoài xanh","price":"92.000 đ","description":"Tôm tươi, xoài xanh bào sợi, rau thơm và nước mắm chua ngọt.","image":"menu_2","available":true,"category_res":"category_salad","score":80},
+    {"name":"Nước cam ép","price":"39.000 đ","description":"Nước cam tươi nguyên chất, không dùng syrup.","image":"image3","available":true,"category_res":"category_drink","score":76}
+  ],
+  "users": [
+    {"name_res":"db_test_customer_name","email":"khach.demo@nhahang.local","phone":"0123456789","password":"1","role":"KHACH_HANG","active":true,"demo_key":"customer"},
+    {"name_res":"db_test_employee_name","email":"nhanvien.demo@nhahang.local","phone":"0123456790","password":"1","role":"NHAN_VIEN","active":true,"demo_key":"employee"},
+    {"name_res":"db_test_admin_name","email":"admin.demo@nhahang.local","phone":"0123456791","password":"1","role":"ADMIN","active":true,"demo_key":"admin"},
+    {"name":"Trần Quang Huy","email":"quanghuy@nhahang.local","phone":"0123456792","password":"1","role":"NHAN_VIEN","active":true},
+    {"name":"Lê Thu Hà","email":"thuha@nhahang.local","phone":"0123456793","password":"1","role":"NHAN_VIEN","active":true},
+    {"name":"Phạm Hoàng Long - Trưởng ca sảnh tối","email":"hoanglong@nhahang.local","phone":"0123456794","password":"1","role":"NHAN_VIEN","active":true},
+    {"name":"Đỗ Ngọc Mai","email":"ngocmai@nhahang.local","phone":"0123456795","password":"1","role":"NHAN_VIEN","active":true},
+    {"name":"Vũ Anh Dũng","email":"anhdung@nhahang.local","phone":"0123456796","password":"1","role":"NHAN_VIEN","active":true},
+    {"name":"Admin dự phòng","email":"admin.backup@nhahang.local","phone":"0123456797","password":"1","role":"ADMIN","active":false},
+    {"name":"Admin vận hành","email":"admin.ops@nhahang.local","phone":"0123456798","password":"1","role":"ADMIN","active":true}
+  ],
+  "tables": [
+    {"code":"B01","name":"Bàn 01","seats":4,"area":"Tầng trệt","status":"TRONG"},
+    {"code":"B02","name":"Bàn 02","seats":4,"area":"Tầng trệt","status":"DANG_PHUC_VU"},
+    {"code":"B05","name":"Bàn 05","seats":6,"area":"Ban công","status":"DA_DAT"},
+    {"code":"B08","name":"Bàn 08","seats":8,"area":"Phòng riêng","status":"TRONG"},
+    {"code":"B10","name":"Bàn 10","seats":4,"area":"Tầng trệt","status":"TRONG"}
+  ],
+  "reservations": [
+    {"code":"#GB10001","time":"20/04/2026 18:30","table":"Bàn 05","guests":4,"note":"Sinh nhật gia đình, ưu tiên khu yên tĩnh.","status":"PENDING","linked_order_id":0},
+    {"code":"#GB10002","time":"19/04/2026 19:00","table":"Bàn 02","guests":2,"note":"Khách đã tới quán.","status":"ACTIVE","linked_order_id":0},
+    {"code":"#GB10003","time":"18/04/2026 18:00","table":"Bàn 08","guests":6,"note":"Đã dùng bữa xong.","status":"COMPLETED","linked_order_id":0},
+    {"code":"#GB10004","time":"17/04/2026 20:00","table":"Bàn 10","guests":3,"note":"Khách báo bận nên hủy.","status":"CANCELLED","linked_order_id":0}
+  ],
+  "orders": [
+    {"code":"#DH10001","time":"19/04/2026 18:45","status":"CHO_XAC_NHAN","type":"MANG_DI","table":"","note":"Ít đá, giao ngay khi xong.","payment_status":"CHUA_THANH_TOAN","payment_method":"TIEN_MAT_KHI_NHAN","reservation_code":"","items":[{"dish":"Bò lúc lắc","quantity":1},{"dish":"Trà đào cam sả","quantity":2}]},
+    {"code":"#DH10002","time":"19/04/2026 19:05","status":"DANG_CHUAN_BI","type":"AN_TAI_QUAN","table":"Bàn 02","note":"Đang phục vụ món chính.","payment_status":"CHUA_THANH_TOAN","payment_method":"TAI_QUAY","reservation_code":"#GB10002","items":[{"dish":"Lẩu Thái hải sản","quantity":1},{"dish":"Trà đào cam sả","quantity":2}]},
+    {"code":"#DH10003","time":"18/04/2026 18:20","status":"SAN_SANG_PHUC_VU","type":"AN_TAI_QUAN","table":"Bàn 08","note":"Báo khách món đã lên đủ.","payment_status":"DA_GOI_THANH_TOAN","payment_method":"TAI_QUAY","reservation_code":"","items":[{"dish":"Bò lúc lắc","quantity":2},{"dish":"Salad cá hồi","quantity":1},{"dish":"Trà đào cam sả","quantity":3}]},
+    {"code":"#DH10004","time":"17/04/2026 12:10","status":"HOAN_THANH","type":"MANG_DI","table":"","note":"Khách đã nhận món.","payment_status":"DA_THANH_TOAN_MO_PHONG","payment_method":"THANH_TOAN_NGAY_MO_PHONG","reservation_code":"","items":[{"dish":"Bò lúc lắc","quantity":1},{"dish":"Salad cá hồi","quantity":1}]},
+    {"code":"#DH10005","time":"16/04/2026 20:15","status":"DA_HUY","type":"MANG_DI","table":"","note":"Khách đổi ý sau khi đặt.","payment_status":"CHUA_THANH_TOAN","payment_method":"CHUA_CHON","reservation_code":"","items":[{"dish":"Lẩu Thái hải sản","quantity":1},{"dish":"Trà đào cam sả","quantity":1}]}
+  ],
+  "service_requests": [
+    {"type":"GOI_NHAN_VIEN","content":"Khách cần thêm chén và đĩa.","table":"Bàn 02","order_code":"#DH10002","sent_time":"19/04/2026 19:08","status":"DANG_CHO","handled_time":""},
+    {"type":"THEM_NUOC","content":"Xin thêm nước lọc cho bàn 02.","table":"Bàn 02","order_code":"#DH10002","sent_time":"19/04/2026 19:10","status":"DANG_XU_LY","handled_time":"19/04/2026 19:12"},
+    {"type":"THANH_TOAN","content":"Yêu cầu thanh toán cho bàn 08.","table":"Bàn 08","order_code":"#DH10003","sent_time":"18/04/2026 19:15","status":"DA_XU_LY","handled_time":"18/04/2026 19:20"},
+    {"type":"GOI_NHAN_VIEN","content":"Khách đã tự xử lý nên không cần hỗ trợ nữa.","table":"Bàn 08","order_code":"#DH10003","sent_time":"18/04/2026 18:40","status":"DA_HUY","handled_time":"18/04/2026 18:45"}
+  ]
+}

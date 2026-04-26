@@ -37,6 +37,39 @@ public class AdminDishAndUiCleanupTest {
     }
 
     @Test
+    public void dialogThemSuaMon_hienFormQuanLyBepThucTeVaAnDiemNoiBo() throws Exception {
+        String layoutSource = readText(
+                "src/main/res/layout/dialog_add_edit_dish.xml",
+                "app/src/main/res/layout/dialog_add_edit_dish.xml"
+        );
+        String fragmentSource = readText(
+                "src/main/java/com/example/quanlynhahang/MonAnQuanTriFragment.java",
+                "app/src/main/java/com/example/quanlynhahang/MonAnQuanTriFragment.java"
+        );
+        String stringsSource = readText(
+                "src/main/res/values/strings.xml",
+                "app/src/main/res/values/strings.xml"
+        );
+
+        assertFalse(layoutSource.contains("etAdminDishScore"));
+        assertFalse(stringsSource.contains("admin_dish_score_hint"));
+        assertFalse(fragmentSource.contains("findViewById(R.id.etAdminDishScore)"));
+        assertTrue(layoutSource.contains("TextInputLayout"));
+        assertTrue(layoutSource.contains("@string/admin_dish_price_helper"));
+        assertTrue(layoutSource.contains("@string/admin_dish_status_helper"));
+        assertTrue(stringsSource.contains("name=\"admin_dish_category_hint\">Danh mục</string>"));
+        assertTrue(layoutSource.contains("MaterialAutoCompleteTextView"));
+        assertTrue(layoutSource.contains("@+id/autoCompleteAdminDishCategory"));
+        assertFalse(layoutSource.contains("android:id=\"@+id/etAdminDishCategory\""));
+        assertTrue(layoutSource.contains("android:id=\"@+id/autoCompleteAdminDishCategory\""));
+        assertTrue(layoutSource.contains("android:inputType=\"none\""));
+        assertTrue(layoutSource.contains("app:boxCollapsedPaddingTop=\"6dp\""));
+        assertTrue(layoutSource.contains("app:hintTextColor=\"@color/primary\""));
+        assertTrue(fragmentSource.contains("caiDatLuaChonDanhMuc"));
+        assertTrue(fragmentSource.contains("private int layDiemDeXuatMacDinh"));
+    }
+
+    @Test
     public void uiCustomerFlows_tanDungMoneyUtilsVaDateTimeUtils() throws Exception {
         String gioHangSource = readText(
                 "src/main/java/com/example/quanlynhahang/GioHangActivity.java",

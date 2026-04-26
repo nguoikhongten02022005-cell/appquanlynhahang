@@ -11,12 +11,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +37,8 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
     private BoDieuHopBanAnQuanTri boDieuHopBan;
     private final List<BanAn> danhSachTatCaBan = new ArrayList<>();
     private TextView tvEmptyState;
+    private TextView tvQuanLyBanOccupancyRate;
+    private ProgressBar progressQuanLyBanOccupancy;
     private EditText etQuanLyBanSearch;
     private MaterialAutoCompleteTextView autoCompleteQuanLyBanStatusFilter;
     private String trangThaiDangChon;
@@ -57,7 +62,13 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
         autoCompleteQuanLyBanStatusFilter = view.findViewById(R.id.autoCompleteQuanLyBanStatusFilter);
         TextView btnThemBan = view.findViewById(R.id.btnThemBan);
         tvEmptyState = view.findViewById(R.id.tvQuanLyBanEmpty);
+        tvQuanLyBanOccupancyRate = view.findViewById(R.id.tvQuanLyBanOccupancyRate);
+        progressQuanLyBanOccupancy = view.findViewById(R.id.progressQuanLyBanOccupancy);
         RecyclerView rvDanhSachBan = view.findViewById(R.id.rvDanhSachBan);
+        TextViewCompat.setCompoundDrawableTintList(
+                etQuanLyBanSearch,
+                android.content.res.ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.on_surface))
+        );
 
         boDieuHopBan = new BoDieuHopBanAnQuanTri(new BoDieuHopBanAnQuanTri.HanhDongListener() {
             @Override
@@ -77,6 +88,7 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
         });
 
         rvDanhSachBan.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvDanhSachBan.setNestedScrollingEnabled(false);
         rvDanhSachBan.setAdapter(boDieuHopBan);
 
         caiDatBoLocTrangThai();
@@ -146,6 +158,25 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
         }
         boDieuHopBan.capNhatDanhSach(danhSachLoc);
         tvEmptyState.setVisibility(danhSachLoc.isEmpty() ? View.VISIBLE : View.GONE);
+        capNhatTongQuanBan(danhSachLoc);
+    }
+
+    private void capNhatTongQuanBan(List<BanAn> danhSachLoc) {
+        if (tvQuanLyBanOccupancyRate == null || progressQuanLyBanOccupancy == null) {
+            return;
+        }
+        int tongSoBan = danhSachLoc == null ? 0 : danhSachLoc.size();
+        int soBanDangDung = 0;
+        if (danhSachLoc != null) {
+            for (BanAn banAn : danhSachLoc) {
+                if (banAn.layTrangThai() == BanAn.TrangThai.DANG_PHUC_VU) {
+                    soBanDangDung++;
+                }
+            }
+        }
+        int tiLe = tongSoBan == 0 ? 0 : Math.round(soBanDangDung * 100f / tongSoBan);
+        tvQuanLyBanOccupancyRate.setText(tiLe + "%");
+        progressQuanLyBanOccupancy.setProgress(tiLe);
     }
 
     private boolean khopTuKhoa(BanAn banAn, String tuKhoa) {

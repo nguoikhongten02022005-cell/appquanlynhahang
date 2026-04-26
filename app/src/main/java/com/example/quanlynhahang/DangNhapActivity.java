@@ -20,10 +20,6 @@ public class DangNhapActivity extends AppCompatActivity {
 
     public static final String EXTRA_RETURN_TO_CALLER = "extra_return_to_caller";
     public static final String EXTRA_ONLY_CUSTOMER_SESSION = "extra_only_customer_session";
-    private static final String TAI_KHOAN_KHACH_HANG_MAC_DINH = "kh1";
-    private static final String TAI_KHOAN_NHAN_VIEN_MAC_DINH = "nv1";
-    private static final String TAI_KHOAN_ADMIN_MAC_DINH = "admin1";
-    private static final String MAT_KHAU_MAC_DINH = "1";
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
@@ -51,15 +47,20 @@ public class DangNhapActivity extends AppCompatActivity {
         TextView tvGoToRegister = findViewById(R.id.tvGoToRegister);
 
         btnLogin.setOnClickListener(v -> xuLyDangNhap(chiChoPhepPhienKhachHang));
-        nutDangNhapNhanhKhachHang.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_KHACH_HANG_MAC_DINH, chiChoPhepPhienKhachHang));
-        nutDangNhapNhanhNhanVien.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_NHAN_VIEN_MAC_DINH, chiChoPhepPhienKhachHang));
-        nutDangNhapNhanhQuanTri.setOnClickListener(v -> dangNhapMacDinh(TAI_KHOAN_ADMIN_MAC_DINH, chiChoPhepPhienKhachHang));
+        nutDangNhapNhanhKhachHang.setOnClickListener(v -> dangNhapMacDinh(VaiTroNguoiDung.KHACH_HANG, chiChoPhepPhienKhachHang));
+        nutDangNhapNhanhNhanVien.setOnClickListener(v -> dangNhapMacDinh(VaiTroNguoiDung.NHAN_VIEN, chiChoPhepPhienKhachHang));
+        nutDangNhapNhanhQuanTri.setOnClickListener(v -> dangNhapMacDinh(VaiTroNguoiDung.ADMIN, chiChoPhepPhienKhachHang));
         tvGoToRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
     }
 
-    private void dangNhapMacDinh(String taiKhoanMacDinh, boolean chiChoPhepPhienKhachHang) {
-        oNhapEmailDangNhap.setText(taiKhoanMacDinh);
-        oNhapMatKhauDangNhap.setText(MAT_KHAU_MAC_DINH);
+    private void dangNhapMacDinh(VaiTroNguoiDung vaiTro, boolean chiChoPhepPhienKhachHang) {
+        DatabaseHelper.TaiKhoanDemo taiKhoanDemo = databaseHelper.layTaiKhoanDemoTheoVaiTro(vaiTro);
+        if (taiKhoanDemo == null || TextUtils.isEmpty(taiKhoanDemo.layTenDangNhap())) {
+            Toast.makeText(this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        oNhapEmailDangNhap.setText(taiKhoanDemo.layTenDangNhap());
+        oNhapMatKhauDangNhap.setText(taiKhoanDemo.layMatKhau());
         xuLyDangNhap(chiChoPhepPhienKhachHang);
     }
 

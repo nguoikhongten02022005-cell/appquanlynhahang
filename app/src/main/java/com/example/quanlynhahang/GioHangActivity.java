@@ -28,6 +28,7 @@ import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
 import com.example.quanlynhahang.helper.MoneyUtils;
+import com.example.quanlynhahang.model.BanAn;
 import com.example.quanlynhahang.model.DatBan;
 import com.example.quanlynhahang.model.DonHang;
 
@@ -46,8 +47,6 @@ import com.google.android.material.textview.MaterialTextView;
 import java.util.List;
 
 public class GioHangActivity extends AppCompatActivity {
-
-    private static final int SO_BAN_TOI_DA = 20;
 
     private RecyclerView rvCartItems;
     private TextView tvCartTotal;
@@ -417,8 +416,11 @@ public class GioHangActivity extends AppCompatActivity {
                         : null
         );
 
-        for (int index = 0; index < SO_BAN_TOI_DA; index++) {
-            String tenBan = getString(R.string.reservation_table_option_format, index + 1);
+        for (BanAn banAn : databaseHelper.layTatCaBanAn()) {
+            String tenBan = banAn.layTenBan();
+            if (TextUtils.isEmpty(tenBan)) {
+                continue;
+            }
             boolean laBanHienTai = DichVuKhachHangHelper.laBanHienTai(banHienTai, tenBan);
             boolean dangDung = banDangDung.contains(tenBan) && !laBanHienTai;
             boolean daGiu = banDaGiu.contains(tenBan) && !laBanHienTai && !dangDung;

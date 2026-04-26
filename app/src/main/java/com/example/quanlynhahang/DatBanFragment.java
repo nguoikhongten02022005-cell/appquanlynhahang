@@ -23,6 +23,7 @@ import com.example.quanlynhahang.adapter.DatBanAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.helper.DateTimeUtils;
+import com.example.quanlynhahang.model.BanAn;
 import com.example.quanlynhahang.model.DatBan;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -41,7 +42,6 @@ public class DatBanFragment extends Fragment {
     public static final String ARG_EMBEDDED = "embedded";
 
     private static final int SO_KHACH_TOI_DA = 20;
-    private static final int SO_BAN_TOI_DA = 20;
 
     private final List<DatBan> reservations = new ArrayList<>();
     private final List<String> tableOptions = new ArrayList<>();
@@ -258,9 +258,9 @@ public class DatBanFragment extends Fragment {
 
         tableOptions.clear();
         Set<String> occupiedTableSet = new HashSet<>(occupiedTables);
-        for (int soBan = 1; soBan <= SO_BAN_TOI_DA; soBan++) {
-            String tenBan = getString(R.string.reservation_table_option_format, soBan);
-            if (!occupiedTableSet.contains(tenBan)) {
+        for (BanAn banAn : databaseHelper.layTatCaBanAn()) {
+            String tenBan = banAn.layTenBan();
+            if (!TextUtils.isEmpty(tenBan) && !occupiedTableSet.contains(tenBan)) {
                 tableOptions.add(tenBan);
             }
         }
@@ -288,9 +288,10 @@ public class DatBanFragment extends Fragment {
             return;
         }
 
+        int tongSoBan = databaseHelper.layTatCaBanAn().size();
         if (tableOptions.isEmpty()) {
             tvReservationAvailableTables.setText(getString(R.string.reservation_no_tables_available));
-        } else if (tableOptions.size() == SO_BAN_TOI_DA) {
+        } else if (tongSoBan > 0 && tableOptions.size() == tongSoBan) {
             tvReservationAvailableTables.setText(getString(R.string.reservation_all_tables_available));
         } else {
             tvReservationAvailableTables.setText(getString(

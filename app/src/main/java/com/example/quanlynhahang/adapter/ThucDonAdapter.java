@@ -1,5 +1,7 @@
 package com.example.quanlynhahang.adapter;
 
+import android.net.Uri;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,21 +28,36 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
 
     private final List<MonAnDeXuat> danhSachMon = new ArrayList<>();
     private final List<String> danhSachMoTa = new ArrayList<>();
+    private final List<String> danhSachTenAnh = new ArrayList<>();
     private final OnThemMonClickListener onThemMonClickListener;
 
     public ThucDonAdapter(List<MonAnDeXuat> danhSachMon,
                        List<String> danhSachMoTa,
                        OnThemMonClickListener onThemMonClickListener) {
+        this(danhSachMon, danhSachMoTa, new ArrayList<>(), onThemMonClickListener);
+    }
+
+    public ThucDonAdapter(List<MonAnDeXuat> danhSachMon,
+                       List<String> danhSachMoTa,
+                       List<String> danhSachTenAnh,
+                       OnThemMonClickListener onThemMonClickListener) {
         this.danhSachMon.addAll(danhSachMon);
         this.danhSachMoTa.addAll(danhSachMoTa);
+        this.danhSachTenAnh.addAll(danhSachTenAnh);
         this.onThemMonClickListener = onThemMonClickListener;
     }
 
     public void capNhatDuLieu(List<MonAnDeXuat> danhSachMonMoi, List<String> danhSachMoTaMoi) {
+        capNhatDuLieu(danhSachMonMoi, danhSachMoTaMoi, new ArrayList<>());
+    }
+
+    public void capNhatDuLieu(List<MonAnDeXuat> danhSachMonMoi, List<String> danhSachMoTaMoi, List<String> danhSachTenAnhMoi) {
         danhSachMon.clear();
         danhSachMoTa.clear();
+        danhSachTenAnh.clear();
         danhSachMon.addAll(danhSachMonMoi);
         danhSachMoTa.addAll(danhSachMoTaMoi);
+        danhSachTenAnh.addAll(danhSachTenAnhMoi);
         notifyDataSetChanged();
     }
 
@@ -56,7 +73,7 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
     public void onBindViewHolder(@NonNull MenuViewHolder holder, int position) {
         MonAnDeXuat monAn = danhSachMon.get(position);
 
-        holder.ivMenuDishImage.setImageResource(monAn.layIdAnhTaiNguyen());
+        hienAnhMon(holder.ivMenuDishImage, monAn, position);
         holder.tvMenuDishName.setText(monAn.layTenMon());
         holder.tvMenuDishDescription.setText(danhSachMoTa.get(position));
         holder.tvMenuDishPrice.setText(monAn.layGiaBan());
@@ -81,6 +98,21 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
     @Override
     public int getItemCount() {
         return danhSachMon.size();
+    }
+
+    private void hienAnhMon(ImageView imageView, MonAnDeXuat monAn, int position) {
+        String tenAnh = position < danhSachTenAnh.size() ? danhSachTenAnh.get(position) : "";
+        if (!TextUtils.isEmpty(tenAnh) && tenAnh.startsWith("content://")) {
+            imageView.setImageURI(Uri.parse(tenAnh));
+            return;
+        }
+        int idAnh = monAn.layIdAnhTaiNguyen();
+        if (idAnh == 0) {
+            imageView.setImageDrawable(null);
+            imageView.setBackgroundResource(R.drawable.bg_dish_image_placeholder);
+            return;
+        }
+        imageView.setImageResource(idAnh);
     }
 
     static class MenuViewHolder extends RecyclerView.ViewHolder {

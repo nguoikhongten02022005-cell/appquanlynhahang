@@ -19,7 +19,10 @@ public final class DieuHuongNoiBoHelper {
     public static final String TAB_YEU_CAU = "service_requests";
 
     public static final String SECTION_MON = "dishes";
-    public static final String SECTION_BAN = "tables";
+    public static final String SECTION_BAN = "tables"; // SECTION_BAN = "tables"
+    public static final String SECTION_DON_HANG = "orders";
+    public static final String SECTION_HOA_DON = "invoices";
+    public static final String SECTION_YEU_CAU = "service_requests";
     public static final String SECTION_NGUOI_DUNG = "users";
     public static final String SECTION_BAO_CAO = "reports";
     public static final String SECTION_CAI_DAT = "settings";
@@ -50,6 +53,9 @@ public final class DieuHuongNoiBoHelper {
         String giaTri = chuanHoaChuoi(section);
         if (SECTION_MON.equals(giaTri)
                 || SECTION_BAN.equals(giaTri)
+                || SECTION_DON_HANG.equals(giaTri)
+                || SECTION_HOA_DON.equals(giaTri)
+                || SECTION_YEU_CAU.equals(giaTri)
                 || SECTION_NGUOI_DUNG.equals(giaTri)
                 || SECTION_BAO_CAO.equals(giaTri)
                 || SECTION_CAI_DAT.equals(giaTri)) {

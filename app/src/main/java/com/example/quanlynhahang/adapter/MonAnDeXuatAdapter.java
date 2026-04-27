@@ -4,17 +4,14 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemMonAnDeXuatBinding;
 import com.example.quanlynhahang.model.MonAnDeXuat;
-import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -38,9 +35,8 @@ public class MonAnDeXuatAdapter extends RecyclerView.Adapter<MonAnDeXuatAdapter.
     @NonNull
     @Override
     public RecommendedDishViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_mon_an_de_xuat, parent, false);
-        return new RecommendedDishViewHolder(view);
+        ItemMonAnDeXuatBinding binding = ItemMonAnDeXuatBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new RecommendedDishViewHolder(binding);
     }
 
     @Override
@@ -48,21 +44,21 @@ public class MonAnDeXuatAdapter extends RecyclerView.Adapter<MonAnDeXuatAdapter.
         MonAnDeXuat monAn = danhSachMon.get(position);
         boolean conPhucVu = monAn.laConPhucVu();
 
-        holder.ivDishImage.setImageResource(monAn.layIdAnhTaiNguyen());
-        holder.tvDishName.setText(monAn.layTenMon());
-        holder.tvDishPrice.setText(monAn.layGiaBan());
-        holder.tvDishStatus.setText(conPhucVu ? R.string.dish_status_available : R.string.dish_status_unavailable);
-        holder.tvDishStatus.setBackgroundResource(
+        holder.binding.ivDishImage.setImageResource(monAn.layIdAnhTaiNguyen());
+        holder.binding.tvDishName.setText(monAn.layTenMon());
+        holder.binding.tvDishPrice.setText(monAn.layGiaBan());
+        holder.binding.tvDishStatus.setText(conPhucVu ? R.string.dish_status_available : R.string.dish_status_unavailable);
+        holder.binding.tvDishStatus.setBackgroundResource(
                 conPhucVu ? R.drawable.bg_status_available : R.drawable.bg_status_unavailable
         );
-        holder.tvDishStatus.setTextColor(ContextCompat.getColor(
+        holder.binding.tvDishStatus.setTextColor(ContextCompat.getColor(
                 holder.itemView.getContext(),
                 conPhucVu ? R.color.status_available_text : R.color.status_unavailable_text
         ));
 
-        holder.btnAddDish.setEnabled(conPhucVu);
-        holder.btnAddDish.setAlpha(conPhucVu ? 1f : 0.85f);
-        holder.btnAddDish.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(
+        holder.binding.btnAddDish.setEnabled(conPhucVu);
+        holder.binding.btnAddDish.setAlpha(conPhucVu ? 1f : 0.85f);
+        holder.binding.btnAddDish.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(
                 holder.itemView.getContext(),
                 conPhucVu ? R.color.add_button_icon_enabled : R.color.add_button_icon_disabled
         )));
@@ -72,10 +68,10 @@ public class MonAnDeXuatAdapter extends RecyclerView.Adapter<MonAnDeXuatAdapter.
                 hanhDongMonListener.khiChonMon(monAn);
             }
         };
-        holder.cardRecommendedDish.setOnClickListener(suKienClickMon);
+        holder.binding.cardRecommendedDish.setOnClickListener(suKienClickMon);
         holder.itemView.setOnClickListener(suKienClickMon);
 
-        holder.btnAddDish.setOnClickListener(v -> {
+        holder.binding.btnAddDish.setOnClickListener(v -> {
             if (conPhucVu && hanhDongMonListener != null) {
                 hanhDongMonListener.khiThemMon(monAn);
             }
@@ -88,21 +84,11 @@ public class MonAnDeXuatAdapter extends RecyclerView.Adapter<MonAnDeXuatAdapter.
     }
 
     static class RecommendedDishViewHolder extends RecyclerView.ViewHolder {
-        private final MaterialCardView cardRecommendedDish;
-        private final ImageView ivDishImage;
-        private final TextView tvDishName;
-        private final TextView tvDishPrice;
-        private final TextView tvDishStatus;
-        private final ImageButton btnAddDish;
+        private final ItemMonAnDeXuatBinding binding;
 
-        RecommendedDishViewHolder(@NonNull View itemView) {
-            super(itemView);
-            cardRecommendedDish = itemView.findViewById(R.id.cardRecommendedDish);
-            ivDishImage = itemView.findViewById(R.id.ivDishImage);
-            tvDishName = itemView.findViewById(R.id.tvDishName);
-            tvDishPrice = itemView.findViewById(R.id.tvDishPrice);
-            tvDishStatus = itemView.findViewById(R.id.tvDishStatus);
-            btnAddDish = itemView.findViewById(R.id.btnAddDish);
+        RecommendedDishViewHolder(@NonNull ItemMonAnDeXuatBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

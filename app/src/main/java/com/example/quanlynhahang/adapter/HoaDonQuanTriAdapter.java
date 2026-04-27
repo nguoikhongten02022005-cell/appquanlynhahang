@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -13,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemAdminInvoiceBinding;
 import com.example.quanlynhahang.model.DonHang;
 
 import java.util.ArrayList;
@@ -40,8 +40,8 @@ public class HoaDonQuanTriAdapter extends RecyclerView.Adapter<HoaDonQuanTriAdap
     @NonNull
     @Override
     public ViewHolderHoaDonQuanTri onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_admin_invoice, parent, false);
-        return new ViewHolderHoaDonQuanTri(view);
+        ItemAdminInvoiceBinding binding = ItemAdminInvoiceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolderHoaDonQuanTri(binding);
     }
 
     @Override
@@ -55,49 +55,43 @@ public class HoaDonQuanTriAdapter extends RecyclerView.Adapter<HoaDonQuanTriAdap
     }
 
     class ViewHolderHoaDonQuanTri extends RecyclerView.ViewHolder {
-        private final TextView tvMaHoaDon;
-        private final TextView tvMeta;
-        private final TextView tvTongTien;
-        private final TextView tvTrangThai;
+        private final ItemAdminInvoiceBinding binding;
 
-        ViewHolderHoaDonQuanTri(@NonNull View itemView) {
-            super(itemView);
-            tvMaHoaDon = itemView.findViewById(R.id.tvAdminInvoiceCode);
-            tvMeta = itemView.findViewById(R.id.tvAdminInvoiceMeta);
-            tvTongTien = itemView.findViewById(R.id.tvAdminInvoiceAmount);
-            tvTrangThai = itemView.findViewById(R.id.tvAdminInvoiceStatus);
+        ViewHolderHoaDonQuanTri(@NonNull ItemAdminInvoiceBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void ganDuLieu(DonHang donHang) {
             Context context = itemView.getContext();
-            tvMaHoaDon.setText(donHang.layMaDon());
-            tvMeta.setText((donHang.coBanAn() ? chuanHoaNhanBan(donHang.laySoBan()) : context.getString(R.string.admin_takeaway_label))
+            binding.tvAdminInvoiceCode.setText(donHang.layMaDon());
+            binding.tvAdminInvoiceMeta.setText((donHang.coBanAn() ? chuanHoaNhanBan(context, donHang.laySoBan()) : context.getString(R.string.admin_takeaway_label))
                     + " · " + donHang.layThoiGian());
-            tvTongTien.setText(donHang.layTongTien());
+            binding.tvAdminInvoiceAmount.setText(donHang.layTongTien());
 
             boolean daThanhToan = donHang.layTrangThaiThanhToan() == DonHang.TrangThaiThanhToan.DA_THANH_TOAN;
             boolean coTheXacNhan = !daThanhToan && donHang.layTrangThai() != DonHang.TrangThai.DA_HUY;
             int mauNen = ContextCompat.getColor(context, daThanhToan ? R.color.admin_metric_green_bg : R.color.admin_metric_yellow_bg);
             int mauChu = ContextCompat.getColor(context, daThanhToan ? R.color.success : R.color.admin_warning);
-            ViewCompat.setBackgroundTintList(tvTrangThai, ColorStateList.valueOf(mauNen));
-            tvTrangThai.setTextColor(mauChu);
-            tvTrangThai.setText(layTextTrangThaiHoaDon(context, donHang));
+            ViewCompat.setBackgroundTintList(binding.tvAdminInvoiceStatus, ColorStateList.valueOf(mauNen));
+            binding.tvAdminInvoiceStatus.setTextColor(mauChu);
+            binding.tvAdminInvoiceStatus.setText(layTextTrangThaiHoaDon(context, donHang));
             itemView.setAlpha(donHang.layTrangThai() == DonHang.TrangThai.DA_HUY ? 0.65f : 1f);
 
             View.OnClickListener onClickListener = coTheXacNhan ? v -> hanhDongListener.khiXacNhanDaThanhToan(donHang) : null;
             itemView.setOnClickListener(onClickListener);
-            tvTrangThai.setOnClickListener(onClickListener);
+            binding.tvAdminInvoiceStatus.setOnClickListener(onClickListener);
         }
 
-        private String chuanHoaNhanBan(String soBanRaw) {
+        private String chuanHoaNhanBan(Context context, String soBanRaw) {
             if (soBanRaw == null || soBanRaw.trim().isEmpty()) {
-                return "Tại bàn";
+                return context.getString(R.string.admin_invoice_table_default);
             }
             String soBan = soBanRaw.trim();
             if (soBan.toLowerCase(new java.util.Locale("vi", "VN")).startsWith("bàn")) {
                 return soBan;
             }
-            return "Bàn " + soBan;
+            return context.getString(R.string.admin_invoice_table_prefix, soBan);
         }
 
         private String layTextTrangThaiHoaDon(Context context, DonHang donHang) {

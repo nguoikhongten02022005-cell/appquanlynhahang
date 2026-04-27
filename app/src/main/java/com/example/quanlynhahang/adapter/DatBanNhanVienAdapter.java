@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemDatBanNhanVienBinding;
 import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
 import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.DatBan;
@@ -49,8 +50,8 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
     @NonNull
     @Override
     public EmployeeReservationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dat_ban_nhan_vien, parent, false);
-        return new EmployeeReservationViewHolder(view);
+        ItemDatBanNhanVienBinding binding = ItemDatBanNhanVienBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new EmployeeReservationViewHolder(binding);
     }
 
     @Override
@@ -64,48 +65,32 @@ public class DatBanNhanVienAdapter extends RecyclerView.Adapter<DatBanNhanVienAd
     }
 
     class EmployeeReservationViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvTime;
-        private final TextView tvTable;
-        private final TextView tvGuestCount;
-        private final TextView tvNote;
-        private final TextView tvStatus;
-        private final TextView btnConfirm;
-        private final TextView btnComplete;
-        private final TextView btnCancel;
-        private final TextView btnChangeTable;
+        private final ItemDatBanNhanVienBinding binding;
 
-        EmployeeReservationViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvTime = itemView.findViewById(R.id.tvEmployeeReservationTime);
-            tvTable = itemView.findViewById(R.id.tvEmployeeReservationTable);
-            tvGuestCount = itemView.findViewById(R.id.tvEmployeeReservationGuestCount);
-            tvNote = itemView.findViewById(R.id.tvEmployeeReservationNote);
-            tvStatus = itemView.findViewById(R.id.tvEmployeeReservationStatus);
-            btnConfirm = itemView.findViewById(R.id.btnEmployeeReservationConfirm);
-            btnComplete = itemView.findViewById(R.id.btnEmployeeReservationComplete);
-            btnCancel = itemView.findViewById(R.id.btnEmployeeReservationCancel);
-            btnChangeTable = itemView.findViewById(R.id.btnEmployeeReservationChangeTable);
+        EmployeeReservationViewHolder(@NonNull ItemDatBanNhanVienBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void ganDuLieu(DatBan datBan) {
             Context context = itemView.getContext();
-            tvTime.setText(datBan.layThoiGian());
-            tvTable.setText(context.getString(R.string.reservation_table_format_display, datBan.laySoBan()));
-            tvGuestCount.setText(context.getString(R.string.reservation_guest_count_format, datBan.laySoKhach()));
+            binding.tvEmployeeReservationTime.setText(datBan.layThoiGian());
+            binding.tvEmployeeReservationTable.setText(context.getString(R.string.reservation_table_format_display, datBan.laySoBan()));
+            binding.tvEmployeeReservationGuestCount.setText(context.getString(R.string.reservation_guest_count_format, datBan.laySoKhach()));
             String ghiChu = datBan.layGhiChu();
-            tvNote.setText(TextUtils.isEmpty(ghiChu)
+            binding.tvEmployeeReservationNote.setText(TextUtils.isEmpty(ghiChu)
                     ? context.getString(R.string.reservation_note_empty)
                     : context.getString(R.string.reservation_note_format, ghiChu));
-            tvStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiDatBan(datBan.layTrangThai()));
-            ViewCompat.setBackgroundTintList(tvStatus, ColorStateList.valueOf(ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiDatBan(datBan.layTrangThai()))));
+            binding.tvEmployeeReservationStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiDatBan(datBan.layTrangThai()));
+            ViewCompat.setBackgroundTintList(binding.tvEmployeeReservationStatus, ColorStateList.valueOf(ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiDatBan(datBan.layTrangThai()))));
 
-            btnConfirm.setText(R.string.employee_reservation_action_confirm);
-            btnComplete.setText(R.string.employee_reservation_action_complete);
-            btnChangeTable.setText(R.string.employee_reservation_action_change_table);
-            ganHanhDong(btnConfirm, HanhDongNghiepVuHelper.nhanVienCoTheXacNhanDatBan(datBan), v -> hanhDongListener.khiXacNhan(datBan));
-            ganHanhDong(btnComplete, HanhDongNghiepVuHelper.nhanVienCoTheHoanTatDatBan(datBan) && datBan.layIdDonHangLienKet() > 0, v -> hanhDongListener.khiHoanTat(datBan));
-            ganHanhDong(btnChangeTable, HanhDongNghiepVuHelper.nhanVienCoTheDoiBan(datBan), v -> hanhDongListener.khiDoiBan(datBan));
-            ganHanhDong(btnCancel,
+            binding.btnEmployeeReservationConfirm.setText(R.string.employee_reservation_action_confirm);
+            binding.btnEmployeeReservationComplete.setText(R.string.employee_reservation_action_complete);
+            binding.btnEmployeeReservationChangeTable.setText(R.string.employee_reservation_action_change_table);
+            ganHanhDong(binding.btnEmployeeReservationConfirm, HanhDongNghiepVuHelper.nhanVienCoTheXacNhanDatBan(datBan), v -> hanhDongListener.khiXacNhan(datBan));
+            ganHanhDong(binding.btnEmployeeReservationComplete, HanhDongNghiepVuHelper.nhanVienCoTheHoanTatDatBan(datBan) && datBan.layIdDonHangLienKet() > 0, v -> hanhDongListener.khiHoanTat(datBan));
+            ganHanhDong(binding.btnEmployeeReservationChangeTable, HanhDongNghiepVuHelper.nhanVienCoTheDoiBan(datBan), v -> hanhDongListener.khiDoiBan(datBan));
+            ganHanhDong(binding.btnEmployeeReservationCancel,
                     HanhDongNghiepVuHelper.nhanVienCoTheHuyDatBan(datBan),
                     v -> hanhDongListener.khiHuy(datBan));
         }

@@ -2,17 +2,14 @@ package com.example.quanlynhahang.adapter;
 
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemDanhMucMonBinding;
 import com.example.quanlynhahang.model.DanhMucMon;
 
 import java.util.List;
@@ -44,9 +41,8 @@ public class DanhMucMonAdapter extends RecyclerView.Adapter<DanhMucMonAdapter.Ca
     @NonNull
     @Override
     public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_danh_muc_mon, parent, false);
-        return new CategoryViewHolder(view);
+        ItemDanhMucMonBinding binding = ItemDanhMucMonBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new CategoryViewHolder(binding);
     }
 
     @Override
@@ -54,11 +50,11 @@ public class DanhMucMonAdapter extends RecyclerView.Adapter<DanhMucMonAdapter.Ca
         DanhMucMon danhMuc = danhSachDanhMuc.get(position);
         boolean dangChon = position == viTriDangChon;
 
-        holder.ivCategoryIcon.setImageResource(danhMuc.layIdIconTaiNguyen());
-        holder.tvCategoryName.setText(danhMuc.layTenHienThi());
+        holder.binding.ivCategoryIcon.setImageResource(danhMuc.layIdIconTaiNguyen());
+        holder.binding.tvCategoryName.setText(danhMuc.layTenHienThi());
 
         holder.itemView.setSelected(dangChon);
-        holder.iconContainer.setSelected(dangChon);
+        holder.binding.categoryIconContainer.setSelected(dangChon);
 
         int mauIcon = ContextCompat.getColor(
                 holder.itemView.getContext(),
@@ -69,8 +65,8 @@ public class DanhMucMonAdapter extends RecyclerView.Adapter<DanhMucMonAdapter.Ca
                 dangChon ? R.color.on_surface : R.color.on_surface_variant
         );
 
-        holder.ivCategoryIcon.setImageTintList(ColorStateList.valueOf(mauIcon));
-        holder.tvCategoryName.setTextColor(mauText);
+        holder.binding.ivCategoryIcon.setImageTintList(ColorStateList.valueOf(mauIcon));
+        holder.binding.tvCategoryName.setTextColor(mauText);
 
         holder.itemView.setOnClickListener(v -> {
             int viTriAdapter = holder.getBindingAdapterPosition();
@@ -111,15 +107,11 @@ public class DanhMucMonAdapter extends RecyclerView.Adapter<DanhMucMonAdapter.Ca
     }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
-        private final FrameLayout iconContainer;
-        private final ImageView ivCategoryIcon;
-        private final TextView tvCategoryName;
+        private final ItemDanhMucMonBinding binding;
 
-        CategoryViewHolder(@NonNull View itemView) {
-            super(itemView);
-            iconContainer = itemView.findViewById(R.id.categoryIconContainer);
-            ivCategoryIcon = itemView.findViewById(R.id.ivCategoryIcon);
-            tvCategoryName = itemView.findViewById(R.id.tvCategoryName);
+        CategoryViewHolder(@NonNull ItemDanhMucMonBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

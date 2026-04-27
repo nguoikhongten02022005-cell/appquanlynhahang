@@ -6,8 +6,6 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -16,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.ChiTietDonHangActivity;
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemTomTatDonHangBinding;
 import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
@@ -47,9 +46,8 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
     @NonNull
     @Override
     public DonHangViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_tom_tat_don_hang, parent, false);
-        return new DonHangViewHolder(view);
+        ItemTomTatDonHangBinding binding = ItemTomTatDonHangBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new DonHangViewHolder(binding);
     }
 
     @Override
@@ -63,46 +61,36 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
     }
 
     class DonHangViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvDonHangCode;
-        private final TextView tvDonHangTime;
-        private final TextView tvDonHangStatus;
-        private final TextView tvDonHangType;
-        private final Button btnDonHangDetail;
-        private final Button btnDonHangCancel;
+        private final ItemTomTatDonHangBinding binding;
 
-        DonHangViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvDonHangCode = itemView.findViewById(R.id.tvDonHangCode);
-            tvDonHangTime = itemView.findViewById(R.id.tvDonHangTime);
-            tvDonHangStatus = itemView.findViewById(R.id.tvDonHangStatus);
-            tvDonHangType = itemView.findViewById(R.id.tvDonHangType);
-            btnDonHangDetail = itemView.findViewById(R.id.btnDonHangDetail);
-            btnDonHangCancel = itemView.findViewById(R.id.btnDonHangCancel);
+        DonHangViewHolder(@NonNull ItemTomTatDonHangBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void ganDuLieu(DonHang donHang) {
             Context context = itemView.getContext();
 
-            tvDonHangCode.setText(donHang.layMaDon());
-            tvDonHangTime.setText(donHang.layThoiGian());
+            binding.tvDonHangCode.setText(donHang.layMaDon());
+            binding.tvDonHangTime.setText(donHang.layThoiGian());
             int trangThaiRes = TrangThaiHienThiHelper.layTextTrangThaiDon(donHang);
-            tvDonHangStatus.setText(trangThaiRes);
-            tvDonHangType.setText(context.getString(
+            binding.tvDonHangStatus.setText(trangThaiRes);
+            binding.tvDonHangType.setText(context.getString(
                     R.string.order_card_summary_format,
                     layTextHinhThuc(context, donHang),
                     donHang.layDanhSachMon().size(),
-                    dinhDangGia(donHang.layTongTien())
+                    dinhDangGia(context, donHang.layTongTien())
             ));
 
             int mauTrangThai = ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiDon(donHang.layTrangThai()));
-            ViewCompat.setBackgroundTintList(tvDonHangStatus, ColorStateList.valueOf(mauTrangThai));
+            ViewCompat.setBackgroundTintList(binding.tvDonHangStatus, ColorStateList.valueOf(mauTrangThai));
 
-            btnDonHangDetail.setText(R.string.order_view_details);
-            btnDonHangDetail.setOnClickListener(v -> moChiTietDonHang(context, donHang));
+            binding.btnDonHangDetail.setText(R.string.order_view_details);
+            binding.btnDonHangDetail.setOnClickListener(v -> moChiTietDonHang(context, donHang));
 
             boolean coTheHuy = HanhDongNghiepVuHelper.khachCoTheHuyDon(donHang);
-            btnDonHangCancel.setVisibility(coTheHuy ? View.VISIBLE : View.GONE);
-            btnDonHangCancel.setOnClickListener(v -> {
+            binding.btnDonHangCancel.setVisibility(coTheHuy ? View.VISIBLE : View.GONE);
+            binding.btnDonHangCancel.setOnClickListener(v -> {
                 int viTriAdapter = getBindingAdapterPosition();
                 if (viTriAdapter == RecyclerView.NO_POSITION || !coTheHuy) {
                     return;
@@ -119,9 +107,9 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.DonHangV
 
     }
 
-    private String dinhDangGia(String chuoiGiaGoc) {
+    private String dinhDangGia(Context context, String chuoiGiaGoc) {
         long soTien = chuoiGiaGoc == null ? 0L : MoneyUtils.tachGiaTienTuChuoi(chuoiGiaGoc);
-        return soTien <= 0L ? "0đ" : MoneyUtils.dinhDangTienViet(soTien);
+        return soTien <= 0L ? context.getString(R.string.currency_zero) : MoneyUtils.dinhDangTienViet(soTien);
     }
 
     private String layTextHinhThuc(Context context, DonHang donHang) {

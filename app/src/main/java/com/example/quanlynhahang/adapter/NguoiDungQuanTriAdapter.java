@@ -6,9 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -16,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemAdminUserBinding;
 import com.example.quanlynhahang.model.NguoiDung;
 
 import java.util.ArrayList;
@@ -45,8 +44,8 @@ public class NguoiDungQuanTriAdapter extends RecyclerView.Adapter<NguoiDungQuanT
     @NonNull
     @Override
     public ViewHolderNguoiDungQuanTri onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_admin_user, parent, false);
-        return new ViewHolderNguoiDungQuanTri(view);
+        ItemAdminUserBinding binding = ItemAdminUserBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolderNguoiDungQuanTri(binding);
     }
 
     @Override
@@ -59,26 +58,44 @@ public class NguoiDungQuanTriAdapter extends RecyclerView.Adapter<NguoiDungQuanT
         return danhSachNguoiDung.size();
     }
 
-    public static String taoMoTaHienThi(NguoiDung nguoiDung) {
-        return nguoiDung.layHoTen() + " · " + taoNhanVaiTro(nguoiDung) + " · " + taoTrangThaiHienThi(nguoiDung);
+    public static String taoMoTaHienThi(Context context, NguoiDung nguoiDung) {
+        return nguoiDung.layHoTen() + " · " + taoNhanVaiTro(context, nguoiDung) + " · " + taoTrangThaiHienThi(context, nguoiDung);
     }
 
-    public static String taoNhanVaiTro(NguoiDung nguoiDung) {
+    public static String taoMoTaHienThi(NguoiDung nguoiDung) {
+        return nguoiDung.layHoTen();
+    }
+
+    public static String taoNhanVaiTro(Context context, NguoiDung nguoiDung) {
         if (nguoiDung.laAdmin()) {
-            return "Admin";
+            return context.getString(R.string.admin_user_role_admin_short);
         }
         if (nguoiDung.laNhanVien()) {
-            return "Nhân viên";
+            return context.getString(R.string.admin_user_role_employee_short);
         }
-        return "Quản lý";
+        return context.getString(R.string.admin_role_customer);
+    }
+
+    public static int taoNhanVaiTro(NguoiDung nguoiDung) {
+        if (nguoiDung.laAdmin()) {
+            return R.string.admin_user_role_admin_short;
+        }
+        if (nguoiDung.laNhanVien()) {
+            return R.string.admin_user_role_employee_short;
+        }
+        return R.string.admin_role_customer;
     }
 
     public static String taoChuCaiDaiDien(NguoiDung nguoiDung) {
         return taoChuCaiDaiDienTuTen(nguoiDung.layHoTen());
     }
 
-    public static String taoTrangThaiHienThi(NguoiDung nguoiDung) {
-        return nguoiDung.dangHoatDong() ? "Đang hoạt động" : "Đã khóa";
+    public static String taoTrangThaiHienThi(Context context, NguoiDung nguoiDung) {
+        return context.getString(nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked);
+    }
+
+    public static int taoTrangThaiHienThi(NguoiDung nguoiDung) {
+        return nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked;
     }
 
     private static String taoChuCaiDaiDienTuTen(String hoTen) {
@@ -96,45 +113,31 @@ public class NguoiDungQuanTriAdapter extends RecyclerView.Adapter<NguoiDungQuanT
     }
 
     class ViewHolderNguoiDungQuanTri extends RecyclerView.ViewHolder {
-        private final TextView tvTen;
-        private final TextView tvEmail;
-        private final TextView tvSoDienThoai;
-        private final TextView tvVaiTro;
-        private final TextView tvTrangThai;
-        private final TextView tvAvatar;
-        private final View viewTrangThai;
-        private final TextView btnHanhDong;
+        private final ItemAdminUserBinding binding;
 
-        ViewHolderNguoiDungQuanTri(@NonNull View itemView) {
-            super(itemView);
-            tvTen = itemView.findViewById(R.id.tvAdminUserName);
-            tvEmail = itemView.findViewById(R.id.tvAdminUserEmail);
-            tvSoDienThoai = itemView.findViewById(R.id.tvAdminUserPhone);
-            tvVaiTro = itemView.findViewById(R.id.tvAdminVaiTro);
-            tvTrangThai = itemView.findViewById(R.id.tvAdminUserStatus);
-            tvAvatar = itemView.findViewById(R.id.tvAdminUserAvatar);
-            viewTrangThai = itemView.findViewById(R.id.viewAdminUserStatusDot);
-            btnHanhDong = itemView.findViewById(R.id.btnAdminUserActions);
+        ViewHolderNguoiDungQuanTri(@NonNull ItemAdminUserBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void ganDuLieu(NguoiDung nguoiDung) {
             Context context = itemView.getContext();
             int mauTrangThai = ContextCompat.getColor(context, nguoiDung.dangHoatDong() ? R.color.success : R.color.error);
 
-            tvTen.setText(nguoiDung.layHoTen());
-            tvEmail.setText(nguoiDung.layEmail());
-            tvSoDienThoai.setText(context.getString(R.string.admin_user_phone_format, nguoiDung.laySoDienThoai()));
-            tvVaiTro.setText(layNhanVaiTroHienThi(context, nguoiDung));
-            tvTrangThai.setText(nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked);
-            tvAvatar.setText(layChuCaiDaiDien(nguoiDung.layHoTen()));
+            binding.tvAdminUserName.setText(nguoiDung.layHoTen());
+            binding.tvAdminUserEmail.setText(nguoiDung.layEmail());
+            binding.tvAdminUserPhone.setText(context.getString(R.string.admin_user_phone_format, nguoiDung.laySoDienThoai()));
+            binding.tvAdminVaiTro.setText(layNhanVaiTroHienThi(context, nguoiDung));
+            binding.tvAdminUserStatus.setText(nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked);
+            binding.tvAdminUserAvatar.setText(layChuCaiDaiDien(nguoiDung.layHoTen()));
 
             GradientDrawable nenAvatar = (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.bg_admin_user_avatar).mutate();
             nenAvatar.setColor(Color.parseColor(taoMauNenAvatar(nguoiDung)));
-            tvAvatar.setBackground(nenAvatar);
-            tvAvatar.setTextColor(Color.parseColor(taoMauChuAvatar(nguoiDung)));
+            binding.tvAdminUserAvatar.setBackground(nenAvatar);
+            binding.tvAdminUserAvatar.setTextColor(Color.parseColor(taoMauChuAvatar(nguoiDung)));
 
-            ViewCompat.setBackgroundTintList(viewTrangThai, ColorStateList.valueOf(mauTrangThai));
-            btnHanhDong.setOnClickListener(v -> hanhDongListener.khiSua(nguoiDung));
+            ViewCompat.setBackgroundTintList(binding.viewAdminUserStatusDot, ColorStateList.valueOf(mauTrangThai));
+            binding.btnAdminUserActions.setOnClickListener(v -> hanhDongListener.khiSua(nguoiDung));
             itemView.setOnLongClickListener(v -> {
                 hanhDongListener.khiSua(nguoiDung);
                 return true;

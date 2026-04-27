@@ -3,11 +3,8 @@ package com.example.quanlynhahang.adapter;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
@@ -15,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemThucDonBinding;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 
 import java.util.ArrayList;
@@ -64,31 +62,30 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
     @NonNull
     @Override
     public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_thuc_don, parent, false);
-        return new MenuViewHolder(view);
+        ItemThucDonBinding binding = ItemThucDonBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new MenuViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MenuViewHolder holder, int position) {
         MonAnDeXuat monAn = danhSachMon.get(position);
 
-        hienAnhMon(holder.ivMenuDishImage, monAn, position);
-        holder.tvMenuDishName.setText(monAn.layTenMon());
-        holder.tvMenuDishDescription.setText(danhSachMoTa.get(position));
-        holder.tvMenuDishPrice.setText(monAn.layGiaBan());
-        holder.tvMenuDishMeta.setText(monAn.layTenDanhMuc());
-        holder.tvMenuDishAvailability.setText(monAn.laConPhucVu()
+        hienAnhMon(holder.binding.ivMenuDishImage, monAn, position);
+        holder.binding.tvMenuDishName.setText(monAn.layTenMon());
+        holder.binding.tvMenuDishDescription.setText(danhSachMoTa.get(position));
+        holder.binding.tvMenuDishPrice.setText(monAn.layGiaBan());
+        holder.binding.tvMenuDishMeta.setText(monAn.layTenDanhMuc());
+        holder.binding.tvMenuDishAvailability.setText(monAn.laConPhucVu()
                 ? R.string.dish_status_available
                 : R.string.dish_status_unavailable);
-        holder.tvMenuDishAvailability.setTextColor(ContextCompat.getColor(
+        holder.binding.tvMenuDishAvailability.setTextColor(ContextCompat.getColor(
                 holder.itemView.getContext(),
                 monAn.laConPhucVu() ? R.color.success : R.color.error
         ));
 
-        holder.btnMenuAddDish.setEnabled(monAn.laConPhucVu());
-        holder.btnMenuAddDish.setAlpha(monAn.laConPhucVu() ? 1f : 0.5f);
-        holder.btnMenuAddDish.setOnClickListener(v -> {
+        holder.binding.btnMenuAddDish.setEnabled(monAn.laConPhucVu());
+        holder.binding.btnMenuAddDish.setAlpha(monAn.laConPhucVu() ? 1f : 0.5f);
+        holder.binding.btnMenuAddDish.setOnClickListener(v -> {
             if (monAn.laConPhucVu()) {
                 onThemMonClickListener.onThemMonClick(monAn);
             }
@@ -116,23 +113,11 @@ public class ThucDonAdapter extends RecyclerView.Adapter<ThucDonAdapter.MenuView
     }
 
     static class MenuViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView ivMenuDishImage;
-        private final TextView tvMenuDishName;
-        private final TextView tvMenuDishDescription;
-        private final TextView tvMenuDishPrice;
-        private final TextView tvMenuDishMeta;
-        private final TextView tvMenuDishAvailability;
-        private final ImageButton btnMenuAddDish;
+        private final ItemThucDonBinding binding;
 
-        MenuViewHolder(@NonNull View itemView) {
-            super(itemView);
-            ivMenuDishImage = itemView.findViewById(R.id.ivMenuDishImage);
-            tvMenuDishName = itemView.findViewById(R.id.tvMenuDishName);
-            tvMenuDishDescription = itemView.findViewById(R.id.tvMenuDishDescription);
-            tvMenuDishPrice = itemView.findViewById(R.id.tvMenuDishPrice);
-            tvMenuDishMeta = itemView.findViewById(R.id.tvMenuDishMeta);
-            tvMenuDishAvailability = itemView.findViewById(R.id.tvMenuDishAvailability);
-            btnMenuAddDish = itemView.findViewById(R.id.btnMenuAddDish);
+        MenuViewHolder(@NonNull ItemThucDonBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

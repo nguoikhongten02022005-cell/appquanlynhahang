@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.databinding.FragmentBaoCaoQuanTriBinding;
 import com.example.quanlynhahang.helper.DateTimeUtils;
 import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
 import com.example.quanlynhahang.helper.MoneyUtils;
@@ -34,31 +34,15 @@ import java.util.Locale;
 public class BaoCaoQuanTriFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
-    private TextView tvTongNguoiDung;
-    private TextView tvTongDonHang;
-    private TextView tvDonHangChoXacNhan;
-    private TextView tvDatBanChoDuyet;
-    private TextView tvYeuCauDangXuLy;
-    private TextView tvNgayTongQuan;
-    private TextView tvDoanhThuHomNay;
-    private TextView tvBanDangDung;
-    private TextView tvCanhBaoTieuDe;
-    private TextView tvCanhBaoPhuDe;
-    private TextView tvTongTrangThaiDon;
-    private TextView tvDonDangCho;
-    private TextView tvDonDangPhucVu;
-    private TextView tvDonHoanThanh;
-    private TextView tvTomTatDoanhThu;
-    private ProgressBar progressTrangThaiDon;
-    private LinearLayout layoutDoanhThuTheoNgay;
-    private LinearLayout layoutDonGanDay;
+    private FragmentBaoCaoQuanTriBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_bao_cao_quan_tri, container, false);
+        binding = FragmentBaoCaoQuanTriBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -68,35 +52,10 @@ public class BaoCaoQuanTriFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
 
-        tvTongNguoiDung = view.findViewById(R.id.tvBaoCaoTongNguoiDung);
-        tvTongDonHang = view.findViewById(R.id.tvBaoCaoTongDonHang);
-        tvDonHangChoXacNhan = view.findViewById(R.id.tvBaoCaoDonHangChoXacNhan);
-        tvDatBanChoDuyet = view.findViewById(R.id.tvBaoCaoDatBanChoDuyet);
-        tvYeuCauDangXuLy = view.findViewById(R.id.tvBaoCaoYeuCauDangXuLy);
-        tvNgayTongQuan = view.findViewById(R.id.tvBaoCaoQuanTriDate);
-        tvDoanhThuHomNay = view.findViewById(R.id.tvAdminRevenueToday);
-        tvBanDangDung = view.findViewById(R.id.tvAdminOccupiedTables);
-        tvCanhBaoTieuDe = view.findViewById(R.id.tvAdminAlertTitle);
-        tvCanhBaoPhuDe = view.findViewById(R.id.tvAdminAlertSubtitle);
-        tvTongTrangThaiDon = view.findViewById(R.id.tvAdminOrderStatusTotal);
-        tvDonDangCho = view.findViewById(R.id.tvAdminOrderPendingCount);
-        tvDonDangPhucVu = view.findViewById(R.id.tvAdminOrderServingCount);
-        tvDonHoanThanh = view.findViewById(R.id.tvAdminOrderCompletedCount);
-        tvTomTatDoanhThu = view.findViewById(R.id.tvAdminRevenueSummary);
-        progressTrangThaiDon = view.findViewById(R.id.progressAdminOrderStatus);
-        layoutDoanhThuTheoNgay = view.findViewById(R.id.layoutAdminRevenueBars);
-        layoutDonGanDay = view.findViewById(R.id.layoutAdminRecentOrdersList);
-
-        View btnMoQuanLyBan = view.findViewById(R.id.navAdminTables);
-        View btnAlertAction = view.findViewById(R.id.btnAdminAlertAction);
-        View btnRecentOrdersMore = view.findViewById(R.id.btnAdminRecentOrdersMore);
-        View btnRevenueDetails = view.findViewById(R.id.btnAdminRevenueDetails);
-        View btnHeroQuickAction = view.findViewById(R.id.btnAdminHeroQuickAction);
-
-        ganDieuHuong(btnMoQuanLyBan, DieuHuongNoiBoHelper.SECTION_BAN);
-        ganDieuHuong(btnAlertAction, DieuHuongNoiBoHelper.SECTION_DON_HANG);
-        ganDieuHuong(btnRevenueDetails, DieuHuongNoiBoHelper.SECTION_HOA_DON);
-        ganDieuHuong(btnHeroQuickAction, DieuHuongNoiBoHelper.SECTION_DON_HANG);
+        ganDieuHuong(binding.navAdminTables, DieuHuongNoiBoHelper.SECTION_BAN);
+        ganDieuHuong(binding.btnAdminAlertAction, DieuHuongNoiBoHelper.SECTION_DON_HANG);
+        ganDieuHuong(binding.btnAdminRevenueDetails, DieuHuongNoiBoHelper.SECTION_HOA_DON);
+        ganDieuHuong(binding.btnAdminHeroQuickAction, DieuHuongNoiBoHelper.SECTION_DON_HANG);
 
         capNhatNgayTongQuan();
         capNhatDashboard();
@@ -121,18 +80,24 @@ public class BaoCaoQuanTriFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void capNhatNgayTongQuan() {
-        if (tvNgayTongQuan == null) {
+        if (binding == null) {
             return;
         }
         String ngayHienTai = new SimpleDateFormat("EEEE, dd/MM/yyyy", new Locale("vi", "VN"))
                 .format(new Date());
         String vietHoa = ngayHienTai.substring(0, 1).toUpperCase(new Locale("vi", "VN")) + ngayHienTai.substring(1);
-        tvNgayTongQuan.setText(vietHoa);
+        binding.tvBaoCaoQuanTriDate.setText(vietHoa);
     }
 
     private void capNhatDashboard() {
-        if (databaseHelper == null || tvTongNguoiDung == null) {
+        if (databaseHelper == null || binding == null) {
             return;
         }
 
@@ -141,16 +106,16 @@ public class BaoCaoQuanTriFragment extends Fragment {
         List<BanAn> tatCaBan = new ArrayList<>(databaseHelper.layTatCaBanAn());
         List<YeuCauPhucVu> tatCaYeuCau = new ArrayList<>(databaseHelper.layTatCaYeuCauPhucVu());
 
-        tvTongNguoiDung.setText(String.valueOf(thongKe.layTongNguoiDung()));
-        tvTongDonHang.setText(String.valueOf(demDonHangHomNay(tatCaDonHang)));
-        tvDonHangChoXacNhan.setText(String.valueOf(thongKe.laySoDonHangChoXacNhan()));
-        tvDatBanChoDuyet.setText(String.valueOf(thongKe.laySoDatBanChoDuyet()));
-        tvYeuCauDangXuLy.setText(String.valueOf(thongKe.laySoYeuCauDangXuLy()));
+        binding.tvBaoCaoTongNguoiDung.setText(String.valueOf(thongKe.layTongNguoiDung()));
+        binding.tvBaoCaoTongDonHang.setText(String.valueOf(demDonHangHomNay(tatCaDonHang)));
+        binding.tvBaoCaoDonHangChoXacNhan.setText(String.valueOf(thongKe.laySoDonHangChoXacNhan()));
+        binding.tvBaoCaoDatBanChoDuyet.setText(String.valueOf(thongKe.laySoDatBanChoDuyet()));
+        binding.tvBaoCaoYeuCauDangXuLy.setText(String.valueOf(thongKe.laySoYeuCauDangXuLy()));
 
         long doanhThuHomNay = tinhDoanhThuHomNay(tatCaDonHang);
         String doanhThuText = MoneyUtils.dinhDangTienViet(doanhThuHomNay);
-        tvDoanhThuHomNay.setText(doanhThuText);
-        tvTomTatDoanhThu.setText("Đơn vị: nghìn đồng");
+        binding.tvAdminRevenueToday.setText(doanhThuText);
+        binding.tvAdminRevenueSummary.setText("Đơn vị: nghìn đồng");
         capNhatBieuDoDoanhThu(tatCaDonHang);
 
         int soBanDangDung = 0;
@@ -159,7 +124,7 @@ public class BaoCaoQuanTriFragment extends Fragment {
                 soBanDangDung++;
             }
         }
-        tvBanDangDung.setText(soBanDangDung + "/" + tatCaBan.size());
+        binding.tvAdminOccupiedTables.setText(soBanDangDung + "/" + tatCaBan.size());
 
         capNhatCanhBao(tatCaDonHang, tatCaYeuCau);
         capNhatTinhTrangDon(tatCaDonHang);
@@ -191,11 +156,11 @@ public class BaoCaoQuanTriFragment extends Fragment {
     }
 
     private void capNhatBieuDoDoanhThu(List<DonHang> donHangs) {
-        if (layoutDoanhThuTheoNgay == null) {
+        if (binding == null) {
             return;
         }
 
-        layoutDoanhThuTheoNgay.removeAllViews();
+        binding.layoutAdminRevenueBars.removeAllViews();
         List<DoanhThuNgay> doanhThuTheoNgay = taoDoanhThuBayNgayGanNhat(donHangs);
         long doanhThuCaoNhat = 0L;
         for (DoanhThuNgay item : doanhThuTheoNgay) {
@@ -203,7 +168,7 @@ public class BaoCaoQuanTriFragment extends Fragment {
         }
 
         for (DoanhThuNgay item : doanhThuTheoNgay) {
-            layoutDoanhThuTheoNgay.addView(taoCotDoanhThu(item, doanhThuCaoNhat));
+            binding.layoutAdminRevenueBars.addView(taoCotDoanhThu(item, doanhThuCaoNhat));
         }
     }
 
@@ -309,23 +274,23 @@ public class BaoCaoQuanTriFragment extends Fragment {
             }
         }
         if (donCho != null) {
-            tvCanhBaoTieuDe.setText("1 đơn chờ xác nhận");
-            String soBan = donCho.coBanAn() ? "Bàn " + donCho.laySoBan() : donCho.layMaDon();
-            tvCanhBaoPhuDe.setText(soBan + " · " + formatKhoangThoiGian(donCho.layThoiGian()));
+            binding.tvAdminAlertTitle.setText(R.string.admin_alert_pending_order);
+            String soBan = donCho.coBanAn() ? chuanHoaNhanBan(donCho.laySoBan()) : donCho.layMaDon();
+            binding.tvAdminAlertSubtitle.setText(soBan + " · " + formatKhoangThoiGian(donCho.layThoiGian()));
             return;
         }
 
         for (YeuCauPhucVu yeuCau : yeuCaus) {
             if (yeuCau.dangHoatDong()) {
-                tvCanhBaoTieuDe.setText("1 yêu cầu cần xử lý");
-                String soBan = yeuCau.coBanLienQuan() ? "Bàn " + yeuCau.laySoBan() : "Khu nội bộ";
-                tvCanhBaoPhuDe.setText(soBan + " · " + formatKhoangThoiGian(yeuCau.layThoiGianGui()));
+                binding.tvAdminAlertTitle.setText(R.string.admin_alert_pending_request);
+                String soBan = yeuCau.coBanLienQuan() ? chuanHoaNhanBan(yeuCau.laySoBan()) : getString(R.string.admin_internal_area_label);
+                binding.tvAdminAlertSubtitle.setText(soBan + " · " + formatKhoangThoiGian(yeuCau.layThoiGianGui()));
                 return;
             }
         }
 
-        tvCanhBaoTieuDe.setText("Không có cảnh báo mới");
-        tvCanhBaoPhuDe.setText("Hệ thống đang ổn định");
+        binding.tvAdminAlertTitle.setText(R.string.admin_alert_no_new_title);
+        binding.tvAdminAlertSubtitle.setText(R.string.admin_alert_no_new_subtitle);
     }
 
     private void capNhatTinhTrangDon(List<DonHang> donHangs) {
@@ -343,32 +308,30 @@ public class BaoCaoQuanTriFragment extends Fragment {
             }
         }
         int tong = pending + serving + completed;
-        tvTongTrangThaiDon.setText(String.valueOf(tong));
-        tvDonDangCho.setText(String.valueOf(pending));
-        tvDonDangPhucVu.setText(String.valueOf(serving));
-        tvDonHoanThanh.setText(String.valueOf(completed));
-        if (progressTrangThaiDon != null) {
-            progressTrangThaiDon.setProgress(tong == 0 ? 0 : Math.min(100, Math.round((pending * 100f) / tong)));
-        }
+        binding.tvAdminOrderStatusTotal.setText(String.valueOf(tong));
+        binding.tvAdminOrderPendingCount.setText(String.valueOf(pending));
+        binding.tvAdminOrderServingCount.setText(String.valueOf(serving));
+        binding.tvAdminOrderCompletedCount.setText(String.valueOf(completed));
+        binding.progressAdminOrderStatus.setProgress(tong == 0 ? 0 : Math.min(100, Math.round((pending * 100f) / tong)));
     }
 
     private void capNhatDonGanDay(List<DonHang> donHangs) {
-        if (layoutDonGanDay == null) {
+        if (binding == null) {
             return;
         }
-        layoutDonGanDay.removeAllViews();
+        binding.layoutAdminRecentOrdersList.removeAllViews();
         if (donHangs.isEmpty()) {
             TextView empty = new TextView(requireContext());
             empty.setText(R.string.admin_recent_orders_empty);
             empty.setPadding(dp(16), dp(16), dp(16), dp(16));
-            layoutDonGanDay.addView(empty);
+            binding.layoutAdminRecentOrdersList.addView(empty);
             return;
         }
 
         Collections.sort(donHangs, Comparator.comparingLong((DonHang item) -> DateTimeUtils.parseDonHangTimeToMillis(item.layThoiGian())).reversed());
         int soLuong = Math.min(3, donHangs.size());
         for (int i = 0; i < soLuong; i++) {
-            layoutDonGanDay.addView(taoDongDonGanDay(donHangs.get(i), i < soLuong - 1));
+            binding.layoutAdminRecentOrdersList.addView(taoDongDonGanDay(donHangs.get(i), i < soLuong - 1));
         }
     }
 
@@ -397,8 +360,8 @@ public class BaoCaoQuanTriFragment extends Fragment {
         info.setLayoutParams(infoParams);
 
         TextView title = new TextView(requireContext());
-        String moTaBan = donHang.coBanAn() ? chuanHoaNhanBan(donHang.laySoBan()) : "Mang đi";
-        title.setText(moTaBan + " · " + donHang.layDanhSachMon().size() + " món");
+        String moTaBan = donHang.coBanAn() ? chuanHoaNhanBan(donHang.laySoBan()) : getString(R.string.admin_takeaway_label);
+        title.setText(getString(R.string.admin_recent_order_title, moTaBan, donHang.layDanhSachMon().size()));
         title.setSingleLine(true);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         title.setTextSize(16);
@@ -441,40 +404,44 @@ public class BaoCaoQuanTriFragment extends Fragment {
         return root;
     }
 
-    private void ganMauTrangThai(TextView view, DonHang.TrangThai trangThai) {
+    private String layNhanTrangThai(DonHang donHang) {
+        DonHang.TrangThai trangThai = donHang.layTrangThai();
         if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
-            view.setBackgroundResource(R.drawable.bg_admin_alert);
-            view.setTextColor(ContextCompat.getColor(requireContext(), R.color.brand_tertiary));
-            return;
+            return getString(R.string.admin_filter_pending);
         }
         if (trangThai == DonHang.TrangThai.HOAN_THANH) {
-            view.setBackgroundResource(R.drawable.bg_admin_bottom_nav_active);
-            view.setTextColor(ContextCompat.getColor(requireContext(), R.color.on_surface_variant));
-            return;
+            return getString(R.string.admin_filter_completed);
         }
-        view.setBackgroundResource(R.drawable.bg_button_green);
-        view.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+        return getString(R.string.admin_filter_serving);
     }
 
-    private String layNhanTrangThai(DonHang donHang) {
-        if (donHang.layTrangThai() == DonHang.TrangThai.CHO_XAC_NHAN) {
-            return "Chờ duyệt";
+    private void ganMauTrangThai(TextView view, DonHang.TrangThai trangThai) {
+        int mauNen;
+        int mauChu;
+        if (trangThai == DonHang.TrangThai.CHO_XAC_NHAN) {
+            mauNen = ContextCompat.getColor(requireContext(), R.color.admin_metric_yellow_bg);
+            mauChu = ContextCompat.getColor(requireContext(), R.color.admin_warning);
+        } else if (trangThai == DonHang.TrangThai.HOAN_THANH) {
+            mauNen = ContextCompat.getColor(requireContext(), R.color.admin_metric_green_bg);
+            mauChu = ContextCompat.getColor(requireContext(), R.color.success);
+        } else {
+            mauNen = ContextCompat.getColor(requireContext(), R.color.admin_metric_blue_bg);
+            mauChu = ContextCompat.getColor(requireContext(), R.color.brand_primary);
         }
-        if (donHang.layTrangThai() == DonHang.TrangThai.HOAN_THANH) {
-            return "Hoàn thành";
-        }
-        return "Đang phục vụ";
+        androidx.core.view.ViewCompat.setBackgroundTintList(view, android.content.res.ColorStateList.valueOf(mauNen));
+        view.setBackgroundResource(R.drawable.bg_admin_status_pill);
+        view.setTextColor(mauChu);
     }
 
     private String chuanHoaNhanBan(String soBanRaw) {
         if (soBanRaw == null || soBanRaw.trim().isEmpty()) {
-            return "Tại bàn";
+            return getString(R.string.admin_invoice_table_default);
         }
         String soBan = soBanRaw.trim();
         if (soBan.toLowerCase(new Locale("vi", "VN")).startsWith("bàn")) {
             return soBan;
         }
-        return "Bàn " + soBan;
+        return getString(R.string.admin_invoice_table_prefix, soBan);
     }
 
     private String rutGonTien(long soTien) {
@@ -490,22 +457,22 @@ public class BaoCaoQuanTriFragment extends Fragment {
     private String formatKhoangThoiGian(String thoiGianRaw) {
         long moc = DateTimeUtils.parseDonHangTimeToMillis(thoiGianRaw);
         if (moc <= 0L) {
-            return "vừa xong";
+            return getString(R.string.admin_time_just_now);
         }
         long phut = Math.max(1L, (System.currentTimeMillis() - moc) / 60000L);
         if (phut < 60L) {
-            return phut + " phút trước";
+            return getString(R.string.admin_time_minutes_ago, phut);
         }
         long gio = phut / 60L;
         if (gio < 24L) {
-            return gio + " giờ trước";
+            return getString(R.string.admin_time_hours_ago, gio);
         }
         long ngay = gio / 24L;
         if (ngay == 1L) {
-            return "Hôm qua";
+            return getString(R.string.admin_time_yesterday);
         }
         if (ngay < 7L) {
-            return ngay + " ngày trước";
+            return getString(R.string.admin_time_days_ago, ngay);
         }
         return new SimpleDateFormat("dd/MM", Locale.getDefault()).format(new Date(moc));
     }

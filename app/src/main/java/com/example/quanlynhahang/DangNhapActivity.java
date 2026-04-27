@@ -4,20 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.ActivityDangNhapBinding;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
 import java.util.Arrays;
 import java.util.List;
-import com.google.android.material.button.MaterialButton;
 
 public class DangNhapActivity extends AppCompatActivity {
 
@@ -26,28 +25,23 @@ public class DangNhapActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
-
-    private EditText oNhapEmailDangNhap;
-    private EditText oNhapMatKhauDangNhap;
+    private ActivityDangNhapBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dang_nhap);
+        binding = ActivityDangNhapBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(this);
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
 
-        oNhapEmailDangNhap = findViewById(R.id.etLoginEmail);
-        oNhapMatKhauDangNhap = findViewById(R.id.etLoginPassword);
         boolean chiChoPhepPhienKhachHang = getIntent().getBooleanExtra(EXTRA_ONLY_CUSTOMER_SESSION, false);
-        MaterialButton btnLogin = findViewById(R.id.btnLogin);
-        TextView tvGoToRegister = findViewById(R.id.tvGoToRegister);
 
-        btnLogin.setOnClickListener(v -> xuLyDangNhap(chiChoPhepPhienKhachHang));
-        tvGoToRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
+        binding.btnLogin.setOnClickListener(v -> xuLyDangNhap(chiChoPhepPhienKhachHang));
+        binding.tvGoToRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
         napGoiYDangNhapNhanh(chiChoPhepPhienKhachHang);
     }
 
@@ -59,16 +53,16 @@ public class DangNhapActivity extends AppCompatActivity {
         for (VaiTroNguoiDung vaiTro : thuTuVaiTro) {
             DatabaseHelper.GoiYDangNhapNhanh goiY = databaseHelper.layGoiYDangNhapNhanhTheoVaiTro(vaiTro);
             if (goiY != null) {
-                oNhapEmailDangNhap.setText(goiY.email);
-                oNhapMatKhauDangNhap.setText(goiY.matKhau);
+                binding.etLoginEmail.setText(goiY.email);
+                binding.etLoginPassword.setText(goiY.matKhau);
                 return;
             }
         }
     }
 
     private void xuLyDangNhap(boolean chiChoPhepPhienKhachHang) {
-        String emailHoacSoDienThoai = layTextDaCatKhoangTrang(oNhapEmailDangNhap);
-        String matKhau = layTextDaCatKhoangTrang(oNhapMatKhauDangNhap);
+        String emailHoacSoDienThoai = layTextDaCatKhoangTrang(binding.etLoginEmail);
+        String matKhau = layTextDaCatKhoangTrang(binding.etLoginPassword);
 
         if (TextUtils.isEmpty(emailHoacSoDienThoai) || TextUtils.isEmpty(matKhau)) {
             Toast.makeText(this, getString(R.string.login_validation_required), Toast.LENGTH_SHORT).show();

@@ -13,10 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.DonHangNhanVienAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.databinding.FragmentDonHangNoiBoBinding;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.model.DonHang;
 
@@ -25,18 +25,10 @@ import java.util.List;
 
 public class DonHangNoiBoFragment extends Fragment {
 
+    private FragmentDonHangNoiBoBinding binding;
     private DatabaseHelper databaseHelper;
     private DonHangNhanVienAdapter donHangAdapter;
     private final List<DonHang> danhSachTatCaDon = new ArrayList<>();
-    private TextView tvEmptyState;
-    private TextView tvTongDon;
-    private TextView tvDonChoDuyet;
-    private TextView tvDonDangPhucVu;
-    private TextView tvDoanhThu;
-    private TextView chipTatCa;
-    private TextView chipChoDuyet;
-    private TextView chipDangPhucVu;
-    private TextView chipHoanThanh;
     private String boLocTrangThai = "tat_ca";
 
     @Nullable
@@ -44,7 +36,8 @@ public class DonHangNoiBoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_don_hang_noi_bo, container, false);
+        binding = FragmentDonHangNoiBoBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -54,19 +47,8 @@ public class DonHangNoiBoFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
 
-        tvEmptyState = view.findViewById(R.id.tvDonHangNoiBoEmptyState);
-        tvTongDon = view.findViewById(R.id.tvAdminOrderSummaryTotal);
-        tvDonChoDuyet = view.findViewById(R.id.tvAdminOrderSummaryPending);
-        tvDonDangPhucVu = view.findViewById(R.id.tvAdminOrderSummaryServing);
-        tvDoanhThu = view.findViewById(R.id.tvAdminOrderSummaryRevenue);
-        chipTatCa = view.findViewById(R.id.chipAdminOrderFilterAll);
-        chipChoDuyet = view.findViewById(R.id.chipAdminOrderFilterPending);
-        chipDangPhucVu = view.findViewById(R.id.chipAdminOrderFilterServing);
-        chipHoanThanh = view.findViewById(R.id.chipAdminOrderFilterCompleted);
-
-        RecyclerView rvDonHang = view.findViewById(R.id.rvDonHangNoiBo);
-        rvDonHang.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvDonHang.setNestedScrollingEnabled(false);
+        binding.rvDonHangNoiBo.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvDonHangNoiBo.setNestedScrollingEnabled(false);
 
         donHangAdapter = new DonHangNhanVienAdapter(new DonHangNhanVienAdapter.HanhDongListener() {
             @Override
@@ -88,7 +70,7 @@ public class DonHangNoiBoFragment extends Fragment {
                 xacNhanHuyDonHang(order);
             }
         });
-        rvDonHang.setAdapter(donHangAdapter);
+        binding.rvDonHangNoiBo.setAdapter(donHangAdapter);
 
         caiDatBoLoc();
         taiDanhSachDonHang();
@@ -100,11 +82,17 @@ public class DonHangNoiBoFragment extends Fragment {
         taiDanhSachDonHang();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void caiDatBoLoc() {
-        chipTatCa.setOnClickListener(v -> doiBoLoc("tat_ca"));
-        chipChoDuyet.setOnClickListener(v -> doiBoLoc("cho_duyet"));
-        chipDangPhucVu.setOnClickListener(v -> doiBoLoc("dang_phuc_vu"));
-        chipHoanThanh.setOnClickListener(v -> doiBoLoc("hoan_thanh"));
+        binding.chipAdminOrderFilterAll.setOnClickListener(v -> doiBoLoc("tat_ca"));
+        binding.chipAdminOrderFilterPending.setOnClickListener(v -> doiBoLoc("cho_duyet"));
+        binding.chipAdminOrderFilterServing.setOnClickListener(v -> doiBoLoc("dang_phuc_vu"));
+        binding.chipAdminOrderFilterCompleted.setOnClickListener(v -> doiBoLoc("hoan_thanh"));
         capNhatTrangThaiChip();
     }
 
@@ -115,10 +103,13 @@ public class DonHangNoiBoFragment extends Fragment {
     }
 
     private void capNhatTrangThaiChip() {
-        capNhatChip(chipTatCa, "tat_ca".equals(boLocTrangThai));
-        capNhatChip(chipChoDuyet, "cho_duyet".equals(boLocTrangThai));
-        capNhatChip(chipDangPhucVu, "dang_phuc_vu".equals(boLocTrangThai));
-        capNhatChip(chipHoanThanh, "hoan_thanh".equals(boLocTrangThai));
+        if (binding == null) {
+            return;
+        }
+        capNhatChip(binding.chipAdminOrderFilterAll, "tat_ca".equals(boLocTrangThai));
+        capNhatChip(binding.chipAdminOrderFilterPending, "cho_duyet".equals(boLocTrangThai));
+        capNhatChip(binding.chipAdminOrderFilterServing, "dang_phuc_vu".equals(boLocTrangThai));
+        capNhatChip(binding.chipAdminOrderFilterCompleted, "hoan_thanh".equals(boLocTrangThai));
     }
 
     private void capNhatChip(TextView chip, boolean duocChon) {
@@ -127,6 +118,9 @@ public class DonHangNoiBoFragment extends Fragment {
     }
 
     private void taiDanhSachDonHang() {
+        if (!isAdded() || binding == null || databaseHelper == null || donHangAdapter == null) {
+            return;
+        }
         danhSachTatCaDon.clear();
         danhSachTatCaDon.addAll(databaseHelper.layTatCaDonHang());
         capNhatTongQuanDonHang(danhSachTatCaDon);
@@ -149,13 +143,19 @@ public class DonHangNoiBoFragment extends Fragment {
                 tongDoanhThu += MoneyUtils.tachGiaTienTuChuoi(donHang.layTongTien());
             }
         }
-        tvTongDon.setText(String.valueOf(danhSachDon.size()));
-        tvDonChoDuyet.setText(String.valueOf(choDuyet));
-        tvDonDangPhucVu.setText(String.valueOf(dangPhucVu));
-        tvDoanhThu.setText(MoneyUtils.dinhDangTienViet(tongDoanhThu));
+        if (binding == null) {
+            return;
+        }
+        binding.tvAdminOrderSummaryTotal.setText(String.valueOf(danhSachDon.size()));
+        binding.tvAdminOrderSummaryPending.setText(String.valueOf(choDuyet));
+        binding.tvAdminOrderSummaryServing.setText(String.valueOf(dangPhucVu));
+        binding.tvAdminOrderSummaryRevenue.setText(MoneyUtils.dinhDangTienViet(tongDoanhThu));
     }
 
     private void apDungBoLocDonHang() {
+        if (binding == null || donHangAdapter == null) {
+            return;
+        }
         List<DonHang> ketQua = new ArrayList<>();
         for (DonHang donHang : danhSachTatCaDon) {
             if (!khopBoLoc(donHang)) {
@@ -164,7 +164,7 @@ public class DonHangNoiBoFragment extends Fragment {
             ketQua.add(donHang);
         }
         donHangAdapter.capNhatDanhSach(ketQua);
-        tvEmptyState.setVisibility(ketQua.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tvDonHangNoiBoEmptyState.setVisibility(ketQua.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private boolean khopBoLoc(DonHang donHang) {

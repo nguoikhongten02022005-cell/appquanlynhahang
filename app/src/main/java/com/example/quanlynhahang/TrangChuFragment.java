@@ -11,13 +11,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.DanhMucMonAdapter;
 import com.example.quanlynhahang.adapter.MonAnDeXuatAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.FragmentTrangChuBinding;
 import com.example.quanlynhahang.model.DanhMucMon;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 
@@ -35,13 +35,15 @@ public class TrangChuFragment extends Fragment {
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
     private DanhMucMonAdapter categoryAdapter;
+    private FragmentTrangChuBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_trang_chu, container, false);
+        binding = FragmentTrangChuBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -53,39 +55,40 @@ public class TrangChuFragment extends Fragment {
 
         thietLapDuLieuDanhMuc();
         thietLapDuLieuMonDeXuat();
-        thietLapHanhDongHero(view);
-        thietLapDanhSachDanhMuc(view);
-        thietLapLuoiMonDeXuat(view);
+        thietLapHanhDongHero();
+        thietLapDanhSachDanhMuc();
+        thietLapLuoiMonDeXuat();
     }
 
-    private void thietLapHanhDongHero(View view) {
-        View hanhDongNhanhDonHang = view.findViewById(R.id.hanhDongNhanhDonHang);
-        View hanhDongNhanhDatBan = view.findViewById(R.id.actionQuickBook);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 
-        hanhDongNhanhDonHang.setOnClickListener(v -> {
+    private void thietLapHanhDongHero() {
+        binding.hanhDongNhanhDonHang.setOnClickListener(v -> {
             datLaiDanhMucDangChon();
             dieuHuongDenMenu(null, true, null);
         });
-        hanhDongNhanhDatBan.setOnClickListener(v -> dieuHuongDenYeuCau());
+        binding.actionQuickBook.setOnClickListener(v -> dieuHuongDenYeuCau());
     }
 
-    private void thietLapDanhSachDanhMuc(View view) {
-        RecyclerView rvCategory = view.findViewById(R.id.rvCategory);
-        rvCategory.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+    private void thietLapDanhSachDanhMuc() {
+        binding.rvCategory.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         categoryAdapter = new DanhMucMonAdapter(danhSachDanhMuc, (item, position) -> {
             if (categoryAdapter != null) {
                 categoryAdapter.capNhatViTriDangChon(position);
             }
             dieuHuongDenMenu(item.layTenDanhMuc(), false, null);
         }, KHONG_CO_DANH_MUC_DANG_CHON);
-        rvCategory.setAdapter(categoryAdapter);
+        binding.rvCategory.setAdapter(categoryAdapter);
     }
 
-    private void thietLapLuoiMonDeXuat(View view) {
-        RecyclerView rvRecommended = view.findViewById(R.id.rvRecommended);
-        rvRecommended.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-        rvRecommended.setNestedScrollingEnabled(false);
-        rvRecommended.setAdapter(new MonAnDeXuatAdapter(danhSachMonDeXuat, new MonAnDeXuatAdapter.HanhDongMonListener() {
+    private void thietLapLuoiMonDeXuat() {
+        binding.rvRecommended.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        binding.rvRecommended.setNestedScrollingEnabled(false);
+        binding.rvRecommended.setAdapter(new MonAnDeXuatAdapter(danhSachMonDeXuat, new MonAnDeXuatAdapter.HanhDongMonListener() {
             @Override
             public void khiChonMon(MonAnDeXuat item) {
                 datLaiDanhMucDangChon();

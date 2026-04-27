@@ -3,9 +3,7 @@ package com.example.quanlynhahang.adapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -13,6 +11,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemBanAnQuanLyBinding;
 import com.example.quanlynhahang.model.BanAn;
 
 import java.util.ArrayList;
@@ -44,8 +43,8 @@ public class BanAnQuanTriAdapter extends RecyclerView.Adapter<BanAnQuanTriAdapte
     @NonNull
     @Override
     public ViewHolderBanAn onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ban_an_quan_ly, parent, false);
-        return new ViewHolderBanAn(view);
+        ItemBanAnQuanLyBinding binding = ItemBanAnQuanLyBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolderBanAn(binding);
     }
 
     @Override
@@ -59,32 +58,22 @@ public class BanAnQuanTriAdapter extends RecyclerView.Adapter<BanAnQuanTriAdapte
     }
 
     class ViewHolderBanAn extends RecyclerView.ViewHolder {
-        private final TextView tvTenBan;
-        private final TextView tvTrangThaiBan;
-        private final TextView tvThongTinBan;
-        private final TextView btnXemChiTietBan;
-        private final TextView btnSuaBan;
-        private final TextView btnXoaBan;
+        private final ItemBanAnQuanLyBinding binding;
 
-        ViewHolderBanAn(@NonNull View itemView) {
-            super(itemView);
-            tvTenBan = itemView.findViewById(R.id.tvTenBan);
-            tvTrangThaiBan = itemView.findViewById(R.id.tvTrangThaiBan);
-            tvThongTinBan = itemView.findViewById(R.id.tvThongTinBan);
-            btnXemChiTietBan = itemView.findViewById(R.id.btnXemChiTietBan);
-            btnSuaBan = itemView.findViewById(R.id.btnSuaBan);
-            btnXoaBan = itemView.findViewById(R.id.btnXoaBan);
+        ViewHolderBanAn(@NonNull ItemBanAnQuanLyBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void ganDuLieu(BanAn banAn) {
             Context context = itemView.getContext();
-            tvTenBan.setText(context.getString(R.string.quan_ly_ban_ten_va_ma_ban, banAn.layTenBan(), banAn.layMaBan()));
-            tvThongTinBan.setText(context.getString(R.string.quan_ly_ban_thong_tin_ban, banAn.laySoCho(), banAn.layKhuVuc()));
-            tvTrangThaiBan.setText(layTextTrangThai(banAn.layTrangThai()));
-            ViewCompat.setBackgroundTintList(tvTrangThaiBan, ColorStateList.valueOf(ContextCompat.getColor(context, layMauTrangThai(banAn.layTrangThai()))));
-            btnXemChiTietBan.setOnClickListener(v -> hanhDongListener.khiXemChiTiet(banAn));
-            btnSuaBan.setOnClickListener(v -> hanhDongListener.khiSua(banAn));
-            btnXoaBan.setOnClickListener(v -> hanhDongListener.khiXoa(banAn));
+            binding.tvTenBan.setText(context.getString(R.string.quan_ly_ban_ten_va_ma_ban, banAn.layTenBan(), banAn.layMaBan()));
+            binding.tvThongTinBan.setText(context.getString(R.string.quan_ly_ban_thong_tin_ban, banAn.laySoCho(), banAn.layKhuVuc()));
+            binding.tvTrangThaiBan.setText(layTextTrangThai(banAn.layTrangThai()));
+            ViewCompat.setBackgroundTintList(binding.tvTrangThaiBan, ColorStateList.valueOf(ContextCompat.getColor(context, layMauTrangThai(banAn.layTrangThai()))));
+            binding.btnXemChiTietBan.setOnClickListener(v -> hanhDongListener.khiXemChiTiet(banAn));
+            binding.btnSuaBan.setOnClickListener(v -> hanhDongListener.khiSua(banAn));
+            binding.btnXoaBan.setOnClickListener(v -> hanhDongListener.khiXoa(banAn));
         }
 
         private int layTextTrangThai(BanAn.TrangThai trangThai) {

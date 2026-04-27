@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,10 +20,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.quanlynhahang.adapter.BanAnQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.databinding.FragmentQuanLyBanQuanTriBinding;
 import com.example.quanlynhahang.model.BanAn;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
@@ -33,14 +31,10 @@ import java.util.List;
 
 public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
 
+    private FragmentQuanLyBanQuanTriBinding binding;
     private DatabaseHelper databaseHelper;
     private BanAnQuanTriAdapter banAnQuanTriAdapter;
     private final List<BanAn> danhSachTatCaBan = new ArrayList<>();
-    private TextView tvEmptyState;
-    private TextView tvQuanLyBanOccupancyRate;
-    private ProgressBar progressQuanLyBanOccupancy;
-    private EditText etQuanLyBanSearch;
-    private MaterialAutoCompleteTextView autoCompleteQuanLyBanStatusFilter;
     private String trangThaiDangChon;
 
     @Nullable
@@ -48,7 +42,8 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_quan_ly_ban_quan_tri, container, false);
+        binding = FragmentQuanLyBanQuanTriBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -58,15 +53,8 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
 
-        etQuanLyBanSearch = view.findViewById(R.id.etQuanLyBanSearch);
-        autoCompleteQuanLyBanStatusFilter = view.findViewById(R.id.autoCompleteQuanLyBanStatusFilter);
-        TextView btnThemBan = view.findViewById(R.id.btnThemBan);
-        tvEmptyState = view.findViewById(R.id.tvQuanLyBanEmpty);
-        tvQuanLyBanOccupancyRate = view.findViewById(R.id.tvQuanLyBanOccupancyRate);
-        progressQuanLyBanOccupancy = view.findViewById(R.id.progressQuanLyBanOccupancy);
-        RecyclerView rvDanhSachBan = view.findViewById(R.id.rvDanhSachBan);
         TextViewCompat.setCompoundDrawableTintList(
-                etQuanLyBanSearch,
+                binding.etQuanLyBanSearch,
                 android.content.res.ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.on_surface))
         );
 
@@ -87,12 +75,12 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
             }
         });
 
-        rvDanhSachBan.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvDanhSachBan.setNestedScrollingEnabled(false);
-        rvDanhSachBan.setAdapter(banAnQuanTriAdapter);
+        binding.rvDanhSachBan.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvDanhSachBan.setNestedScrollingEnabled(false);
+        binding.rvDanhSachBan.setAdapter(banAnQuanTriAdapter);
 
         caiDatBoLocTrangThai();
-        etQuanLyBanSearch.addTextChangedListener(new TextWatcher() {
+        binding.etQuanLyBanSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -106,7 +94,7 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
                 apDungBoLoc();
             }
         });
-        btnThemBan.setOnClickListener(v -> hienDialogChinhSuaBan(null));
+        binding.btnThemBan.setOnClickListener(v -> hienDialogChinhSuaBan(null));
 
         taiDanhSachBan();
     }
@@ -131,11 +119,14 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
                 android.R.layout.simple_list_item_1,
                 luaChonTrangThai
         );
-        autoCompleteQuanLyBanStatusFilter.setAdapter(adapter);
+        if (binding == null) {
+            return;
+        }
+        binding.autoCompleteQuanLyBanStatusFilter.setAdapter(adapter);
         trangThaiDangChon = getString(R.string.quan_ly_ban_trang_thai_tat_ca);
-        autoCompleteQuanLyBanStatusFilter.setText(trangThaiDangChon, false);
-        autoCompleteQuanLyBanStatusFilter.setOnClickListener(v -> autoCompleteQuanLyBanStatusFilter.showDropDown());
-        autoCompleteQuanLyBanStatusFilter.setOnItemClickListener((parent, view, position, id) -> {
+        binding.autoCompleteQuanLyBanStatusFilter.setText(trangThaiDangChon, false);
+        binding.autoCompleteQuanLyBanStatusFilter.setOnClickListener(v -> binding.autoCompleteQuanLyBanStatusFilter.showDropDown());
+        binding.autoCompleteQuanLyBanStatusFilter.setOnItemClickListener((parent, view, position, id) -> {
             trangThaiDangChon = (String) parent.getItemAtPosition(position);
             apDungBoLoc();
         });
@@ -148,7 +139,10 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
     }
 
     private void apDungBoLoc() {
-        String tuKhoa = etQuanLyBanSearch == null ? "" : etQuanLyBanSearch.getText().toString().trim().toLowerCase();
+        if (binding == null) {
+            return;
+        }
+        String tuKhoa = binding.etQuanLyBanSearch.getText() == null ? "" : binding.etQuanLyBanSearch.getText().toString().trim().toLowerCase();
         List<BanAn> danhSachLoc = new ArrayList<>();
         for (BanAn banAn : danhSachTatCaBan) {
             if (!khopTuKhoa(banAn, tuKhoa) || !khopTrangThai(banAn)) {
@@ -157,12 +151,12 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
             danhSachLoc.add(banAn);
         }
         banAnQuanTriAdapter.capNhatDanhSach(danhSachLoc);
-        tvEmptyState.setVisibility(danhSachLoc.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tvQuanLyBanEmpty.setVisibility(danhSachLoc.isEmpty() ? View.VISIBLE : View.GONE);
         capNhatTongQuanBan(danhSachLoc);
     }
 
     private void capNhatTongQuanBan(List<BanAn> danhSachLoc) {
-        if (tvQuanLyBanOccupancyRate == null || progressQuanLyBanOccupancy == null) {
+        if (binding == null) {
             return;
         }
         int tongSoBan = danhSachLoc == null ? 0 : danhSachLoc.size();
@@ -175,8 +169,8 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
             }
         }
         int tiLe = tongSoBan == 0 ? 0 : Math.round(soBanDangDung * 100f / tongSoBan);
-        tvQuanLyBanOccupancyRate.setText(tiLe + "%");
-        progressQuanLyBanOccupancy.setProgress(tiLe);
+        binding.tvQuanLyBanOccupancyRate.setText(tiLe + "%");
+        binding.progressQuanLyBanOccupancy.setProgress(tiLe);
     }
 
     private boolean khopTuKhoa(BanAn banAn, String tuKhoa) {
@@ -315,6 +309,12 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
         editText.setPadding(24, 24, 24, 24);
         editText.setBackgroundResource(R.drawable.bg_search_rounded);
         return editText;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     private String layTenTrangThai(BanAn.TrangThai trangThai) {

@@ -4,15 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.ActivityDangKyBinding;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
-import com.google.android.material.button.MaterialButton;
 
 public class DangKyActivity extends AppCompatActivity {
 
@@ -20,42 +19,29 @@ public class DangKyActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
-
-    private EditText etRegisterFullName;
-    private EditText etRegisterEmail;
-    private EditText etRegisterPhone;
-    private EditText etRegisterPassword;
-    private EditText etRegisterConfirmPassword;
+    private ActivityDangKyBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dang_ky);
+        binding = ActivityDangKyBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(this);
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
 
-        etRegisterFullName = findViewById(R.id.etRegisterFullName);
-        etRegisterEmail = findViewById(R.id.etRegisterEmail);
-        etRegisterPhone = findViewById(R.id.etRegisterPhone);
-        etRegisterPassword = findViewById(R.id.etRegisterPassword);
-        etRegisterConfirmPassword = findViewById(R.id.etRegisterConfirmPassword);
-
-        MaterialButton btnRegister = findViewById(R.id.btnRegister);
-        TextView tvGoToLogin = findViewById(R.id.tvGoToLogin);
-
-        btnRegister.setOnClickListener(v -> xuLyDangKy());
-        tvGoToLogin.setOnClickListener(v -> dieuHuongDenDangNhap());
+        binding.btnRegister.setOnClickListener(v -> xuLyDangKy());
+        binding.tvGoToLogin.setOnClickListener(v -> dieuHuongDenDangNhap());
     }
 
     private void xuLyDangKy() {
-        String hoTen = layTextDaCatKhoangTrang(etRegisterFullName);
-        String email = layTextDaCatKhoangTrang(etRegisterEmail);
-        String soDienThoai = layTextDaCatKhoangTrang(etRegisterPhone);
-        String matKhau = layTextDaCatKhoangTrang(etRegisterPassword);
-        String xacNhanMatKhau = layTextDaCatKhoangTrang(etRegisterConfirmPassword);
+        String hoTen = layTextDaCatKhoangTrang(binding.etRegisterFullName);
+        String email = layTextDaCatKhoangTrang(binding.etRegisterEmail);
+        String soDienThoai = layTextDaCatKhoangTrang(binding.etRegisterPhone);
+        String matKhau = layTextDaCatKhoangTrang(binding.etRegisterPassword);
+        String xacNhanMatKhau = layTextDaCatKhoangTrang(binding.etRegisterConfirmPassword);
 
         if (TextUtils.isEmpty(hoTen)
                 || TextUtils.isEmpty(email)

@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,10 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.DatBanNhanVienAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.databinding.FragmentDatBanNoiBoBinding;
 import com.example.quanlynhahang.model.BanAn;
 import com.example.quanlynhahang.model.DatBan;
 
@@ -28,14 +27,15 @@ public class DatBanNoiBoFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
     private DatBanNhanVienAdapter datBanAdapter;
-    private TextView tvEmptyState;
+    private FragmentDatBanNoiBoBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_dat_ban_noi_bo, container, false);
+        binding = FragmentDatBanNoiBoBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -45,13 +45,10 @@ public class DatBanNoiBoFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
 
-        TextView tvTitle = view.findViewById(R.id.tvDatBanNoiBoTitle);
-        tvTitle.setText(R.string.employee_reservations_title);
-        tvEmptyState = view.findViewById(R.id.tvDatBanNoiBoEmptyState);
+        binding.tvDatBanNoiBoTitle.setText(R.string.employee_reservations_title);
 
-        RecyclerView rvDatBan = view.findViewById(R.id.rvDatBanNoiBo);
-        rvDatBan.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvDatBan.setNestedScrollingEnabled(false);
+        binding.rvDatBanNoiBo.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvDatBanNoiBo.setNestedScrollingEnabled(false);
 
         datBanAdapter = new DatBanNhanVienAdapter(new DatBanNhanVienAdapter.HanhDongListener() {
             @Override
@@ -74,7 +71,7 @@ public class DatBanNoiBoFragment extends Fragment {
                 hienDialogDoiBan(reservation);
             }
         });
-        rvDatBan.setAdapter(datBanAdapter);
+        binding.rvDatBanNoiBo.setAdapter(datBanAdapter);
 
         taiDanhSachDatBan();
     }
@@ -85,10 +82,19 @@ public class DatBanNoiBoFragment extends Fragment {
         taiDanhSachDatBan();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void taiDanhSachDatBan() {
+        if (!isAdded() || binding == null || databaseHelper == null || datBanAdapter == null) {
+            return;
+        }
         List<DatBan> danhSachDatBan = databaseHelper.layTatCaDatBan();
         datBanAdapter.capNhatDanhSach(danhSachDatBan);
-        tvEmptyState.setVisibility(danhSachDatBan.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tvDatBanNoiBoEmptyState.setVisibility(danhSachDatBan.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void capNhatTrangThaiDatBan(DatBan datBan, DatBan.TrangThai trangThai) {

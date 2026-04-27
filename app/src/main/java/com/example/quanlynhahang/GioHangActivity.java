@@ -4,14 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.material.button.MaterialButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -26,6 +20,7 @@ import com.example.quanlynhahang.adapter.MonTrongGioAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.ActivityGioHangBinding;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.model.BanAn;
@@ -48,19 +43,7 @@ import java.util.List;
 
 public class GioHangActivity extends AppCompatActivity {
 
-    private RecyclerView rvCartItems;
-    private TextView tvCartTotal;
-    private TextView tvCartSubtotal;
-    private View layoutTableNumber;
-    private RadioGroup rgCartOrderType;
-    private RadioButton rbCartDineIn;
-    private RadioButton rbCartTakeAway;
-    private MaterialButton btnCartSelectTable;
-    private EditText etCartNote;
-    private Button btnCheckout;
-    private Button btnClearCart;
-    private Button btnContinueShopping;
-
+    private ActivityGioHangBinding binding;
     private MonTrongGioAdapter boDieuHopGioHang;
     private QuanLyGioHang quanLyGioHang;
     private SessionManager sessionManager;
@@ -85,7 +68,8 @@ public class GioHangActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gio_hang);
+        binding = ActivityGioHangBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         sessionManager = new SessionManager(this);
         quanLyGioHang = layGioKhachHang();
@@ -93,7 +77,6 @@ public class GioHangActivity extends AppCompatActivity {
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
 
-        khoiTaoView();
         thietLapRecyclerView();
         thietLapNguCanhDonHang();
         thietLapNutDatHang();
@@ -113,23 +96,8 @@ public class GioHangActivity extends AppCompatActivity {
         return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
     }
 
-    private void khoiTaoView() {
-        rvCartItems = findViewById(R.id.rvCartItems);
-        tvCartTotal = findViewById(R.id.tvCartTotal);
-        tvCartSubtotal = findViewById(R.id.tvCartSubtotal);
-        layoutTableNumber = findViewById(R.id.layoutTableNumber);
-        rgCartOrderType = findViewById(R.id.rgCartOrderType);
-        rbCartDineIn = findViewById(R.id.rbCartDineIn);
-        rbCartTakeAway = findViewById(R.id.rbCartTakeAway);
-        btnCartSelectTable = findViewById(R.id.btnCartSelectTable);
-        etCartNote = findViewById(R.id.etCartNote);
-        btnCheckout = findViewById(R.id.btnCheckout);
-        btnClearCart = findViewById(R.id.btnClearCart);
-        btnContinueShopping = findViewById(R.id.btnContinueShopping);
-    }
-
     private void thietLapRecyclerView() {
-        rvCartItems.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvCartItems.setLayoutManager(new LinearLayoutManager(this));
 
         boDieuHopGioHang = new MonTrongGioAdapter(
                 quanLyGioHang.layDanhSachMon(),
@@ -153,44 +121,44 @@ public class GioHangActivity extends AppCompatActivity {
                 }
         );
 
-        rvCartItems.setAdapter(boDieuHopGioHang);
+        binding.rvCartItems.setAdapter(boDieuHopGioHang);
     }
 
     private void thietLapNguCanhDonHang() {
-        rgCartOrderType.setOnCheckedChangeListener((group, checkedId) -> {
+        binding.rgCartOrderType.setOnCheckedChangeListener((group, checkedId) -> {
             boolean dangAnTaiQuan = checkedId == R.id.rbCartDineIn;
             capNhatHienThiTheoHinhThucDon(dangAnTaiQuan, true);
         });
-        btnCartSelectTable.setOnClickListener(v -> moDialogChonBan());
+        binding.btnCartSelectTable.setOnClickListener(v -> moDialogChonBan());
     }
 
     private void thietLapNutDatHang() {
-        btnCheckout.setOnClickListener(v -> moManXacNhanDonHang());
+        binding.btnCheckout.setOnClickListener(v -> moManXacNhanDonHang());
     }
 
     private void thietLapNutHanhDong() {
-        btnClearCart.setOnClickListener(v -> xoaToanBoGioHang());
-        btnContinueShopping.setOnClickListener(v -> finish());
+        binding.btnClearCart.setOnClickListener(v -> xoaToanBoGioHang());
+        binding.btnContinueShopping.setOnClickListener(v -> finish());
     }
 
     private void dongBoNguCanhLenForm() {
         QuanLyGioHang.NguCanhDonHang nguCanhDonHang = quanLyGioHang.layNguCanhDonHang();
         if (nguCanhDonHang.layHinhThucDon() == DonHang.HinhThucDon.AN_TAI_QUAN) {
-            rbCartDineIn.setChecked(true);
+            binding.rbCartDineIn.setChecked(true);
         } else {
-            rbCartTakeAway.setChecked(true);
+            binding.rbCartTakeAway.setChecked(true);
         }
         String soBanUuTien = !TextUtils.isEmpty(nguCanhDonHang.laySoBan())
                 ? nguCanhDonHang.laySoBan()
                 : sessionManager.layBanHienTai();
         capNhatNhanBan(soBanUuTien);
-        etCartNote.setText(nguCanhDonHang.layGhiChu());
+        binding.etCartNote.setText(nguCanhDonHang.layGhiChu());
         capNhatHienThiTheoHinhThucDon(nguCanhDonHang.laAnTaiQuan(), false);
     }
 
     private void capNhatHienThiTheoHinhThucDon(boolean dangAnTaiQuan, boolean xoaSoBanNeuKhongCan) {
-        layoutTableNumber.setVisibility(dangAnTaiQuan ? View.VISIBLE : View.GONE);
-        btnCheckout.setText(getString(
+        binding.layoutTableNumber.setVisibility(dangAnTaiQuan ? View.VISIBLE : View.GONE);
+        binding.btnCheckout.setText(getString(
                 dangAnTaiQuan ? R.string.cart_checkout_dine_in : R.string.cart_checkout_takeaway
         ));
 
@@ -205,15 +173,15 @@ public class GioHangActivity extends AppCompatActivity {
 
         long tongTien = tinhTongTien(danhSachMon);
         String tongTienDaDinhDang = dinhDangGia(tongTien);
-        tvCartSubtotal.setText(getString(R.string.cart_subtotal_label, tongTienDaDinhDang));
-        tvCartTotal.setText(getString(R.string.cart_total_label, tongTienDaDinhDang));
+        binding.tvCartSubtotal.setText(getString(R.string.cart_subtotal_label, tongTienDaDinhDang));
+        binding.tvCartTotal.setText(getString(R.string.cart_total_label, tongTienDaDinhDang));
 
         boolean gioHangRong = danhSachMon.isEmpty();
-        rvCartItems.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
-        btnContinueShopping.setVisibility(gioHangRong ? View.VISIBLE : View.GONE);
-        btnClearCart.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
-        btnCheckout.setEnabled(!gioHangRong);
-        btnCheckout.setAlpha(gioHangRong ? 0.5f : 1f);
+        binding.rvCartItems.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
+        binding.btnContinueShopping.setVisibility(gioHangRong ? View.VISIBLE : View.GONE);
+        binding.btnClearCart.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
+        binding.btnCheckout.setEnabled(!gioHangRong);
+        binding.btnCheckout.setAlpha(gioHangRong ? 0.5f : 1f);
     }
 
     private long tinhTongTien(List<QuanLyGioHang.MonTrongGio> danhSachMon) {
@@ -294,16 +262,16 @@ public class GioHangActivity extends AppCompatActivity {
     }
 
     private boolean luuNguCanhDonHangTuForm(boolean kiemTraBatBuoc) {
-        DonHang.HinhThucDon hinhThucDon = rbCartDineIn.isChecked()
+        DonHang.HinhThucDon hinhThucDon = binding.rbCartDineIn.isChecked()
                 ? DonHang.HinhThucDon.AN_TAI_QUAN
                 : DonHang.HinhThucDon.MANG_DI;
-        String soBan = btnCartSelectTable.getText() == null
+        String soBan = binding.btnCartSelectTable.getText() == null
                 ? ""
-                : btnCartSelectTable.getText().toString().trim();
+                : binding.btnCartSelectTable.getText().toString().trim();
         if (TextUtils.equals(soBan, getString(R.string.cart_table_unselected))) {
             soBan = "";
         }
-        String ghiChu = layTextDaCatKhoangTrang(etCartNote);
+        String ghiChu = layTextDaCatKhoangTrang(binding.etCartNote);
 
         if (hinhThucDon == DonHang.HinhThucDon.AN_TAI_QUAN && TextUtils.isEmpty(soBan)) {
             if (kiemTraBatBuoc) {
@@ -455,7 +423,7 @@ public class GioHangActivity extends AppCompatActivity {
 
     private void capNhatNhanBan(@Nullable String soBan) {
         String soBanDaCatKhoangTrang = soBan == null ? "" : soBan.trim();
-        btnCartSelectTable.setText(TextUtils.isEmpty(soBanDaCatKhoangTrang)
+        binding.btnCartSelectTable.setText(TextUtils.isEmpty(soBanDaCatKhoangTrang)
                 ? getString(R.string.cart_table_unselected)
                 : soBanDaCatKhoangTrang);
     }

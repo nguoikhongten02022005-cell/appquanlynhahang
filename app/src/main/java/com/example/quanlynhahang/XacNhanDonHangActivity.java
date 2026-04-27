@@ -19,18 +19,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.quanlynhahang.adapter.MonTrongDonAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.ActivityXacNhanDonHangBinding;
 import com.example.quanlynhahang.helper.DateTimeUtils;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.MonAnDeXuat;
-import com.example.quanlynhahang.model.YeuCauPhucVu;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -38,16 +35,7 @@ import java.util.List;
 
 public class XacNhanDonHangActivity extends AppCompatActivity {
 
-    private RecyclerView rvConfirmOrderItems;
-    private TextView tvConfirmOrderType;
-    private TextView tvConfirmTableNumber;
-    private TextView tvConfirmNote;
-    private TextView tvConfirmSubtotal;
-    private TextView tvConfirmTotal;
-    private TextView tvConfirmPaymentHint;
-    private MaterialButton btnSendOrder;
-    private MaterialButton btnSecondaryAction;
-
+    private ActivityXacNhanDonHangBinding binding;
     private MonTrongDonAdapter monTrongDonAdapter;
     private QuanLyGioHang quanLyGioHang;
     private SessionManager sessionManager;
@@ -57,14 +45,14 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_xac_nhan_don_hang);
+        binding = ActivityXacNhanDonHangBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         sessionManager = new SessionManager(this);
         quanLyGioHang = layGioKhachHang();
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.chuanBiCoSoDuLieu();
 
-        khoiTaoView();
         if (!kiemTraDuLieuDauVao()) {
             return;
         }
@@ -75,18 +63,6 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
 
     private QuanLyGioHang layGioKhachHang() {
         return QuanLyGioHang.layInstance(sessionManager.layKhoaPhienKhachHang());
-    }
-
-    private void khoiTaoView() {
-        rvConfirmOrderItems = findViewById(R.id.rvConfirmOrderItems);
-        tvConfirmOrderType = findViewById(R.id.tvConfirmOrderType);
-        tvConfirmTableNumber = findViewById(R.id.tvConfirmTableNumber);
-        tvConfirmNote = findViewById(R.id.tvConfirmNote);
-        tvConfirmSubtotal = findViewById(R.id.tvConfirmSubtotal);
-        tvConfirmTotal = findViewById(R.id.tvConfirmTotal);
-        tvConfirmPaymentHint = findViewById(R.id.tvConfirmPaymentHint);
-        btnSendOrder = findViewById(R.id.btnSendOrder);
-        btnSecondaryAction = findViewById(R.id.btnSecondaryAction);
     }
 
     private boolean kiemTraDuLieuDauVao() {
@@ -112,9 +88,9 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     }
 
     private void thietLapDanhSachMon() {
-        rvConfirmOrderItems.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvConfirmOrderItems.setLayoutManager(new LinearLayoutManager(this));
         monTrongDonAdapter = new MonTrongDonAdapter(xayDanhSachMonTrongDon());
-        rvConfirmOrderItems.setAdapter(monTrongDonAdapter);
+        binding.rvConfirmOrderItems.setAdapter(monTrongDonAdapter);
     }
 
     private void ganTomTatDonHang() {
@@ -122,28 +98,28 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
         long tongTien = tinhTongTien(quanLyGioHang.layDanhSachMon());
         String tongTienDaDinhDang = dinhDangGia(tongTien);
 
-        tvConfirmOrderType.setText(getString(
+        binding.tvConfirmOrderType.setText(getString(
                 nguCanhDonHang.laAnTaiQuan() ? R.string.order_type_dine_in : R.string.order_type_take_away
         ));
-        tvConfirmTableNumber.setText(nguCanhDonHang.laAnTaiQuan()
+        binding.tvConfirmTableNumber.setText(nguCanhDonHang.laAnTaiQuan()
                 ? getString(R.string.order_table_format, nguCanhDonHang.laySoBan())
                 : getString(R.string.order_table_not_required));
-        tvConfirmNote.setText(TextUtils.isEmpty(nguCanhDonHang.layGhiChu())
+        binding.tvConfirmNote.setText(TextUtils.isEmpty(nguCanhDonHang.layGhiChu())
                 ? getString(R.string.order_note_empty)
                 : getString(R.string.order_note_format, nguCanhDonHang.layGhiChu()));
-        tvConfirmSubtotal.setText(getString(R.string.cart_subtotal_label, tongTienDaDinhDang));
-        tvConfirmTotal.setText(getString(R.string.cart_total_label, tongTienDaDinhDang));
+        binding.tvConfirmSubtotal.setText(getString(R.string.cart_subtotal_label, tongTienDaDinhDang));
+        binding.tvConfirmTotal.setText(getString(R.string.cart_total_label, tongTienDaDinhDang));
         boolean laAnTaiQuan = nguCanhDonHang.laAnTaiQuan();
-        tvConfirmPaymentHint.setText(laAnTaiQuan
+        binding.tvConfirmPaymentHint.setText(laAnTaiQuan
                 ? getString(R.string.order_confirmation_payment_hint_dine_in)
                 : getString(R.string.order_confirmation_payment_hint_takeaway));
-        btnSendOrder.setText(getString(laAnTaiQuan ? R.string.order_send : R.string.cart_checkout_takeaway));
-        btnSecondaryAction.setText(getString(laAnTaiQuan ? R.string.order_back_to_edit : R.string.order_back_to_edit));
+        binding.btnSendOrder.setText(getString(laAnTaiQuan ? R.string.order_send : R.string.cart_checkout_takeaway));
+        binding.btnSecondaryAction.setText(getString(laAnTaiQuan ? R.string.order_back_to_edit : R.string.order_back_to_edit));
     }
 
     private void thietLapNutHanhDong() {
-        btnSendOrder.setOnClickListener(v -> xuLyTheoNguCanh());
-        btnSecondaryAction.setOnClickListener(v -> finish());
+        binding.btnSendOrder.setOnClickListener(v -> xuLyTheoNguCanh());
+        binding.btnSecondaryAction.setOnClickListener(v -> finish());
     }
 
     private void xuLyTheoNguCanh() {
@@ -237,11 +213,11 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     }
 
     private void datTrangThaiDangGui(boolean dangGui, CheDoGuiDon cheDoGuiDon) {
-        btnSendOrder.setEnabled(!dangGui);
-        btnSecondaryAction.setEnabled(!dangGui);
+        binding.btnSendOrder.setEnabled(!dangGui);
+        binding.btnSecondaryAction.setEnabled(!dangGui);
 
-        btnSendOrder.setText(dangGui ? getString(R.string.order_submitting) : getString(layNhanNutTheoCheDo(cheDoGuiDon)));
-        btnSecondaryAction.setText(R.string.order_back_to_edit);
+        binding.btnSendOrder.setText(dangGui ? getString(R.string.order_submitting) : getString(layNhanNutTheoCheDo(cheDoGuiDon)));
+        binding.btnSecondaryAction.setText(R.string.order_back_to_edit);
     }
 
     private int layNhanNutTheoCheDo(CheDoGuiDon cheDoGuiDon) {
@@ -285,12 +261,7 @@ public class XacNhanDonHangActivity extends AppCompatActivity {
     }
 
     private void hienThiPhanHoiNgan(String message) {
-        View root = findViewById(android.R.id.content);
-        if (root != null) {
-            Snackbar.make(root, message, Snackbar.LENGTH_SHORT).show();
-            return;
-        }
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_SHORT).show();
     }
 
     private long timReservationIdApDung(QuanLyGioHang.NguCanhDonHang nguCanhDonHang, String thoiGianDat) {

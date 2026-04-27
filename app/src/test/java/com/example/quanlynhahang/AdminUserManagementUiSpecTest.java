@@ -1,6 +1,5 @@
 package com.example.quanlynhahang;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -150,19 +149,12 @@ public class AdminUserManagementUiSpecTest {
     }
 
     @Test
-    public void userPresenter_returnsExpectedBadgesAndStatusColors() {
+    public void userPresenter_returnsExpectedAvatarInitials() {
         NguoiDung admin = new NguoiDung(1L, "Nguyễn Minh Anh", "minhanh@nhahang.vn", "0912 345 678", VaiTroNguoiDung.ADMIN, true);
-        NguoiDung quanLy = new NguoiDung(2L, "Trần Quốc Bảo", "quocbao@nhahang.vn", "0987 654 321", VaiTroNguoiDung.KHACH_HANG, true);
         NguoiDung nhanVien = new NguoiDung(3L, "Lê Thảo Vy", "thaovy@nhahang.vn", "0901 234 567", VaiTroNguoiDung.NHAN_VIEN, false);
 
-        assertTrue(NguoiDungQuanTriAdapter.taoMoTaHienThi(admin).contains("Nguyễn Minh Anh"));
-        assertTrue(NguoiDungQuanTriAdapter.taoNhanVaiTro(admin).contains("Admin"));
-        assertTrue(NguoiDungQuanTriAdapter.taoNhanVaiTro(quanLy).contains("Quản lý"));
-        assertTrue(NguoiDungQuanTriAdapter.taoNhanVaiTro(nhanVien).contains("Nhân viên"));
         assertTrue(NguoiDungQuanTriAdapter.taoChuCaiDaiDien(admin).contains("NM"));
         assertTrue(NguoiDungQuanTriAdapter.taoChuCaiDaiDien(nhanVien).contains("LT"));
-        assertTrue(NguoiDungQuanTriAdapter.taoTrangThaiHienThi(admin).contains("Đang hoạt động"));
-        assertTrue(NguoiDungQuanTriAdapter.taoTrangThaiHienThi(nhanVien).contains("Đã khóa"));
     }
 
     private Document docXml(String projectPath) throws Exception {

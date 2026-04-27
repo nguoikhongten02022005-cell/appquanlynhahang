@@ -9,9 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,11 +18,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.NguoiDungQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.DialogAddEditUserBinding;
+import com.example.quanlynhahang.databinding.DialogAdminUserActionsBinding;
+import com.example.quanlynhahang.databinding.FragmentNguoiDungQuanTriBinding;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
@@ -34,27 +34,16 @@ import java.util.Locale;
 
 public class NguoiDungQuanTriFragment extends Fragment {
 
+    private FragmentNguoiDungQuanTriBinding binding;
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
     private NguoiDungQuanTriAdapter nguoiDungQuanTriAdapter;
     private final List<NguoiDung> danhSachTatCaNguoiDung = new ArrayList<>();
-    private TextView tvEmptyState;
-    private TextView tvTongQuan;
-    private TextView tvSoTatCa;
-    private TextView tvSoAdmin;
-    private TextView tvSoNhanVien;
-    private EditText etTimKiem;
 
     private static final int VI_TRI_LOC_TAT_CA = 0;
     private static final int VI_TRI_LOC_NHAN_VIEN = 1;
     private static final int VI_TRI_LOC_ADMIN = 2;
 
-    private View layoutNoiDungQuanTri;
-    private TextView tvKhongCoQuyen;
-    private TextView tvLoadingState;
-    private TextView tvErrorState;
-    private Spinner spinnerLocVaiTro;
-    private Button btnThemTaiKhoan;
     private ArrayAdapter<String> adapterLocVaiTro;
     private int viTriLocVaiTro = VI_TRI_LOC_TAT_CA;
 
@@ -63,7 +52,8 @@ public class NguoiDungQuanTriFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_nguoi_dung_quan_tri, container, false);
+        binding = FragmentNguoiDungQuanTriBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -73,20 +63,6 @@ public class NguoiDungQuanTriFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
         sessionManager = new SessionManager(requireContext());
-
-        layoutNoiDungQuanTri = view.findViewById(R.id.layoutNguoiDungQuanTriContent);
-        tvKhongCoQuyen = view.findViewById(R.id.tvNguoiDungQuanTriUnauthorized);
-        RecyclerView recyclerView = view.findViewById(R.id.rvNguoiDungQuanTri);
-        tvLoadingState = view.findViewById(R.id.tvNguoiDungQuanTriLoading);
-        tvErrorState = view.findViewById(R.id.tvNguoiDungQuanTriError);
-        tvEmptyState = view.findViewById(R.id.tvNguoiDungQuanTriEmpty);
-        tvTongQuan = view.findViewById(R.id.tvAdminUserSummary);
-        tvSoTatCa = view.findViewById(R.id.tvAdminUserStatAllCount);
-        tvSoAdmin = view.findViewById(R.id.tvAdminUserStatAdminCount);
-        tvSoNhanVien = view.findViewById(R.id.tvAdminUserStatEmployeeCount);
-        etTimKiem = view.findViewById(R.id.etAdminUserSearch);
-        spinnerLocVaiTro = view.findViewById(R.id.spinnerAdminUserRoleFilter);
-        btnThemTaiKhoan = view.findViewById(R.id.btnAdminAddUser);
 
         if (!kiemTraQuyenAdmin()) {
             return;
@@ -104,11 +80,11 @@ public class NguoiDungQuanTriFragment extends Fragment {
             }
         });
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(nguoiDungQuanTriAdapter);
+        binding.rvNguoiDungQuanTri.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvNguoiDungQuanTri.setAdapter(nguoiDungQuanTriAdapter);
         thietLapBoLocVaiTro();
-        btnThemTaiKhoan.setOnClickListener(v -> hienDialogThemTaiKhoan());
-        etTimKiem.addTextChangedListener(new TextWatcher() {
+        binding.btnAdminAddUser.setOnClickListener(v -> hienDialogThemTaiKhoan());
+        binding.etAdminUserSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -130,11 +106,9 @@ public class NguoiDungQuanTriFragment extends Fragment {
         boolean coQuyenAdmin = sessionManager != null
                 && sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)
                 && sessionManager.layVaiTroSessionHopLe() == VaiTroNguoiDung.ADMIN;
-        if (layoutNoiDungQuanTri != null) {
-            layoutNoiDungQuanTri.setVisibility(coQuyenAdmin ? View.VISIBLE : View.GONE);
-        }
-        if (tvKhongCoQuyen != null) {
-            tvKhongCoQuyen.setVisibility(coQuyenAdmin ? View.GONE : View.VISIBLE);
+        if (binding != null) {
+            binding.layoutNguoiDungQuanTriContent.setVisibility(coQuyenAdmin ? View.VISIBLE : View.GONE);
+            binding.tvNguoiDungQuanTriUnauthorized.setVisibility(coQuyenAdmin ? View.GONE : View.VISIBLE);
         }
         return coQuyenAdmin;
     }
@@ -147,8 +121,11 @@ public class NguoiDungQuanTriFragment extends Fragment {
         };
         adapterLocVaiTro = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, luaChonLoc);
         adapterLocVaiTro.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerLocVaiTro.setAdapter(adapterLocVaiTro);
-        spinnerLocVaiTro.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        if (binding == null) {
+            return;
+        }
+        binding.spinnerAdminUserRoleFilter.setAdapter(adapterLocVaiTro);
+        binding.spinnerAdminUserRoleFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 viTriLocVaiTro = position;
@@ -181,10 +158,10 @@ public class NguoiDungQuanTriFragment extends Fragment {
     }
 
     private void apDungBoLocNguoiDung() {
-        if (nguoiDungQuanTriAdapter == null || etTimKiem == null) {
+        if (nguoiDungQuanTriAdapter == null || binding == null) {
             return;
         }
-        String tuKhoa = etTimKiem.getText() == null ? "" : chuanHoaTuKhoa(etTimKiem.getText().toString());
+        String tuKhoa = binding.etAdminUserSearch.getText() == null ? "" : chuanHoaTuKhoa(binding.etAdminUserSearch.getText().toString());
         List<NguoiDung> ketQua = new ArrayList<>();
         for (NguoiDung nguoiDung : danhSachTatCaNguoiDung) {
             if (!khopVaiTroDangLoc(nguoiDung) || !khopTuKhoa(nguoiDung, tuKhoa)) {
@@ -221,15 +198,12 @@ public class NguoiDungQuanTriFragment extends Fragment {
     }
 
     private void capNhatTrangThaiDanhSach(boolean dangTai, boolean loi, boolean rong) {
-        if (tvLoadingState != null) {
-            tvLoadingState.setVisibility(dangTai ? View.VISIBLE : View.GONE);
+        if (binding == null) {
+            return;
         }
-        if (tvErrorState != null) {
-            tvErrorState.setVisibility(loi ? View.VISIBLE : View.GONE);
-        }
-        if (tvEmptyState != null) {
-            tvEmptyState.setVisibility(!dangTai && !loi && rong ? View.VISIBLE : View.GONE);
-        }
+        binding.tvNguoiDungQuanTriLoading.setVisibility(dangTai ? View.VISIBLE : View.GONE);
+        binding.tvNguoiDungQuanTriError.setVisibility(loi ? View.VISIBLE : View.GONE);
+        binding.tvNguoiDungQuanTriEmpty.setVisibility(!dangTai && !loi && rong ? View.VISIBLE : View.GONE);
     }
 
     private String layNhanVaiTroHienThi(NguoiDung nguoiDung) {
@@ -243,34 +217,27 @@ public class NguoiDungQuanTriFragment extends Fragment {
     }
 
     private void hienMenuHanhDongNguoiDung(NguoiDung nguoiDung) {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_admin_user_actions, null, false);
-        TextView tvTen = dialogView.findViewById(R.id.tvAdminActionUserName);
-        TextView tvEmail = dialogView.findViewById(R.id.tvAdminActionUserEmail);
-        TextView tvSoDienThoai = dialogView.findViewById(R.id.tvAdminActionUserPhone);
-        TextView tvTrangThai = dialogView.findViewById(R.id.tvAdminActionUserStatus);
-        TextView btnChinhSua = dialogView.findViewById(R.id.btnAdminUserEditAccount);
-        TextView btnBatTat = dialogView.findViewById(R.id.btnAdminUserToggleStatus);
-        TextView btnXoaTaiKhoan = dialogView.findViewById(R.id.btnAdminUserDeleteAccount);
+        DialogAdminUserActionsBinding dialogBinding = DialogAdminUserActionsBinding.inflate(LayoutInflater.from(requireContext()));
 
-        tvTen.setText(nguoiDung.layHoTen());
-        tvEmail.setText(nguoiDung.layEmail());
-        tvSoDienThoai.setText(getString(R.string.admin_user_phone_format, nguoiDung.laySoDienThoai()));
-        tvTrangThai.setText(getString(
+        dialogBinding.tvAdminActionUserName.setText(nguoiDung.layHoTen());
+        dialogBinding.tvAdminActionUserEmail.setText(nguoiDung.layEmail());
+        dialogBinding.tvAdminActionUserPhone.setText(getString(R.string.admin_user_phone_format, nguoiDung.laySoDienThoai()));
+        dialogBinding.tvAdminActionUserStatus.setText(getString(
                 nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked));
-        btnBatTat.setText(nguoiDung.dangHoatDong() ? R.string.admin_user_lock_account : R.string.admin_user_unlock_account);
+        dialogBinding.btnAdminUserToggleStatus.setText(nguoiDung.dangHoatDong() ? R.string.admin_user_lock_account : R.string.admin_user_unlock_account);
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
-                .setView(dialogView)
+                .setView(dialogBinding.getRoot())
                 .create();
-        btnChinhSua.setOnClickListener(v -> {
+        dialogBinding.btnAdminUserEditAccount.setOnClickListener(v -> {
             dialog.dismiss();
             Toast.makeText(requireContext(), R.string.admin_user_edit_unavailable, Toast.LENGTH_SHORT).show();
         });
-        btnBatTat.setOnClickListener(v -> {
+        dialogBinding.btnAdminUserToggleStatus.setOnClickListener(v -> {
             dialog.dismiss();
             xuLyBatTatTrangThai(nguoiDung);
         });
-        btnXoaTaiKhoan.setOnClickListener(v -> {
+        dialogBinding.btnAdminUserDeleteAccount.setOnClickListener(v -> {
             dialog.dismiss();
             xuLyXoaTaiKhoan(nguoiDung);
         });
@@ -317,36 +284,37 @@ public class NguoiDungQuanTriFragment extends Fragment {
     }
 
     private void hienDialogThemTaiKhoan() {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_edit_user, null, false);
-        EditText etTen = dialogView.findViewById(R.id.etAdminUserName);
-        EditText etEmail = dialogView.findViewById(R.id.etAdminUserEmail);
-        EditText etSoDienThoai = dialogView.findViewById(R.id.etAdminUserPhone);
-        EditText etMatKhau = dialogView.findViewById(R.id.etAdminUserPassword);
-        Spinner spinnerVaiTro = dialogView.findViewById(R.id.spinnerAdminUserRole);
-        Spinner spinnerTrangThai = dialogView.findViewById(R.id.spinnerAdminUserStatus);
+        DialogAddEditUserBinding dialogBinding = DialogAddEditUserBinding.inflate(LayoutInflater.from(requireContext()));
         String[] tenVaiTro = new String[]{
                 getString(R.string.admin_role_employee),
                 getString(R.string.admin_role_admin)
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, tenVaiTro);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerVaiTro.setAdapter(adapter);
+        dialogBinding.spinnerAdminUserRole.setAdapter(adapter);
         String[] tenTrangThai = new String[]{
                 getString(R.string.admin_user_status_active),
                 getString(R.string.admin_user_status_locked)
         };
         ArrayAdapter<String> adapterTrangThai = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, tenTrangThai);
         adapterTrangThai.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerTrangThai.setAdapter(adapterTrangThai);
+        dialogBinding.spinnerAdminUserStatus.setAdapter(adapterTrangThai);
 
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.admin_dialog_add_user_title)
-                .setView(dialogView)
+                .setView(dialogBinding.getRoot())
                 .setNegativeButton(R.string.account_cancel_action, null)
                 .setPositiveButton(R.string.admin_save, (dialog, which) -> {
-                    VaiTroNguoiDung vaiTro = layVaiTroTuViTri(spinnerVaiTro.getSelectedItemPosition());
-                    boolean hoatDong = spinnerTrangThai.getSelectedItemPosition() == 0;
-                    themTaiKhoan(etTen.getText(), etEmail.getText(), etSoDienThoai.getText(), etMatKhau.getText(), vaiTro, hoatDong);
+                    VaiTroNguoiDung vaiTro = layVaiTroTuViTri(dialogBinding.spinnerAdminUserRole.getSelectedItemPosition());
+                    boolean hoatDong = dialogBinding.spinnerAdminUserStatus.getSelectedItemPosition() == 0;
+                    themTaiKhoan(
+                            dialogBinding.etAdminUserName.getText(),
+                            dialogBinding.etAdminUserEmail.getText(),
+                            dialogBinding.etAdminUserPhone.getText(),
+                            dialogBinding.etAdminUserPassword.getText(),
+                            vaiTro,
+                            hoatDong
+                    );
                 })
                 .show();
     }
@@ -388,10 +356,13 @@ public class NguoiDungQuanTriFragment extends Fragment {
                 soNhanVienHienTai++;
             }
         }
-        tvTongQuan.setText(getString(R.string.admin_user_summary_format, danhSachNguoiDung.size(), soDangHoatDong));
-        tvSoTatCa.setText(String.valueOf(danhSachNguoiDung.size()));
-        tvSoAdmin.setText(String.valueOf(soAdminHienTai));
-        tvSoNhanVien.setText(String.valueOf(soNhanVienHienTai));
+        if (binding == null) {
+            return;
+        }
+        binding.tvAdminUserSummary.setText(getString(R.string.admin_user_summary_format, danhSachNguoiDung.size(), soDangHoatDong));
+        binding.tvAdminUserStatAllCount.setText(String.valueOf(danhSachNguoiDung.size()));
+        binding.tvAdminUserStatAdminCount.setText(String.valueOf(soAdminHienTai));
+        binding.tvAdminUserStatEmployeeCount.setText(String.valueOf(soNhanVienHienTai));
         capNhatNhanBoLocVaiTro(danhSachNguoiDung);
     }
 
@@ -413,8 +384,8 @@ public class NguoiDungQuanTriFragment extends Fragment {
         adapterLocVaiTro.add(getString(R.string.admin_filter_employees_format, soNhanVienHienTai));
         adapterLocVaiTro.add(getString(R.string.admin_filter_admins_format, soAdminHienTai));
         adapterLocVaiTro.notifyDataSetChanged();
-        if (spinnerLocVaiTro != null && spinnerLocVaiTro.getSelectedItemPosition() != viTriLocVaiTro) {
-            spinnerLocVaiTro.setSelection(viTriLocVaiTro, false);
+        if (binding != null && binding.spinnerAdminUserRoleFilter.getSelectedItemPosition() != viTriLocVaiTro) {
+            binding.spinnerAdminUserRoleFilter.setSelection(viTriLocVaiTro, false);
         }
     }
 
@@ -442,6 +413,12 @@ public class NguoiDungQuanTriFragment extends Fragment {
                 .setNegativeButton(R.string.account_cancel_action, null)
                 .setPositiveButton(R.string.admin_change_role, (dialog, which) -> capNhatVaiTro(nguoiDung, luaChonVaiTro[viTriDangChon[0]]))
                 .show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     private void capNhatVaiTro(NguoiDung nguoiDung, VaiTroNguoiDung vaiTroMoi) {

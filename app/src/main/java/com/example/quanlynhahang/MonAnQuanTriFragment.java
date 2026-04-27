@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,6 +28,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.MonAnQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.databinding.DialogAddEditDishBinding;
+import com.example.quanlynhahang.databinding.FragmentMonAnQuanTriBinding;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
@@ -40,13 +41,10 @@ import java.util.Set;
 
 public class MonAnQuanTriFragment extends Fragment {
 
+    private FragmentMonAnQuanTriBinding binding;
     private DatabaseHelper databaseHelper;
     private MonAnQuanTriAdapter monAnQuanTriAdapter;
     private final List<DatabaseHelper.DishRecord> danhSachTatCaMon = new ArrayList<>();
-    private TextView tvEmptyState;
-    private TextView tvTongQuan;
-    private EditText etTimKiem;
-    private LinearLayout layoutDanhMucChips;
     private ActivityResultLauncher<String[]> chonAnhMonLauncher;
     private ImageView ivAnhDialogDangMo;
     private EditText etTenAnhDialogDangMo;
@@ -73,7 +71,8 @@ public class MonAnQuanTriFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_mon_an_quan_tri, container, false);
+        binding = FragmentMonAnQuanTriBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -82,13 +81,6 @@ public class MonAnQuanTriFragment extends Fragment {
 
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
-
-        RecyclerView recyclerView = view.findViewById(R.id.rvMonAnQuanTri);
-        tvEmptyState = view.findViewById(R.id.tvMonAnQuanTriEmpty);
-        tvTongQuan = view.findViewById(R.id.tvAdminDishSummary);
-        etTimKiem = view.findViewById(R.id.etAdminDishSearch);
-        layoutDanhMucChips = view.findViewById(R.id.layoutAdminDishCategoryChips);
-        View btnThemMon = view.findViewById(R.id.btnAdminDishAdd);
 
         monAnQuanTriAdapter = new MonAnQuanTriAdapter(new MonAnQuanTriAdapter.HanhDongListener() {
             @Override
@@ -112,10 +104,10 @@ public class MonAnQuanTriFragment extends Fragment {
             }
         });
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(monAnQuanTriAdapter);
-        btnThemMon.setOnClickListener(v -> hienDialogThemHoacSuaMon(null));
-        etTimKiem.addTextChangedListener(new TextWatcher() {
+        binding.rvMonAnQuanTri.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvMonAnQuanTri.setAdapter(monAnQuanTriAdapter);
+        binding.btnAdminDishAdd.setOnClickListener(v -> hienDialogThemHoacSuaMon(null));
+        binding.etAdminDishSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -171,11 +163,17 @@ public class MonAnQuanTriFragment extends Fragment {
                 soMonDangPhucVu++;
             }
         }
-        tvTongQuan.setText(getString(R.string.admin_dish_summary_format, danhSachTatCaMon.size(), soMonDangPhucVu));
+        if (binding == null) {
+            return;
+        }
+        binding.tvAdminDishSummary.setText(getString(R.string.admin_dish_summary_format, danhSachTatCaMon.size(), soMonDangPhucVu));
     }
 
     private void capNhatChipDanhMuc() {
-        layoutDanhMucChips.removeAllViews();
+        if (binding == null) {
+            return;
+        }
+        binding.layoutAdminDishCategoryChips.removeAllViews();
         themChipDanhMuc(getString(R.string.admin_filter_all), "");
         Set<String> danhMuc = new LinkedHashSet<>();
         for (DatabaseHelper.DishRecord banGhiMon : danhSachTatCaMon) {
@@ -195,7 +193,7 @@ public class MonAnQuanTriFragment extends Fragment {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        if (layoutDanhMucChips.getChildCount() > 0) {
+        if (binding != null && binding.layoutAdminDishCategoryChips.getChildCount() > 0) {
             params.setMarginStart(dp(8));
         }
         chip.setLayoutParams(params);
@@ -210,11 +208,16 @@ public class MonAnQuanTriFragment extends Fragment {
             capNhatChipDanhMuc();
             apDungBoLocMon();
         });
-        layoutDanhMucChips.addView(chip);
+        if (binding != null) {
+            binding.layoutAdminDishCategoryChips.addView(chip);
+        }
     }
 
     private void apDungBoLocMon() {
-        String tuKhoa = etTimKiem.getText() == null ? "" : etTimKiem.getText().toString().trim().toLowerCase(Locale.ROOT);
+        if (binding == null) {
+            return;
+        }
+        String tuKhoa = binding.etAdminDishSearch.getText() == null ? "" : binding.etAdminDishSearch.getText().toString().trim().toLowerCase(Locale.ROOT);
         List<DatabaseHelper.DishRecord> ketQua = new ArrayList<>();
         for (DatabaseHelper.DishRecord banGhiMon : danhSachTatCaMon) {
             if (!khopDanhMuc(banGhiMon) || !khopTuKhoa(banGhiMon, tuKhoa)) {
@@ -223,7 +226,7 @@ public class MonAnQuanTriFragment extends Fragment {
             ketQua.add(banGhiMon);
         }
         monAnQuanTriAdapter.capNhatDanhSach(ketQua);
-        tvEmptyState.setVisibility(ketQua.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tvMonAnQuanTriEmpty.setVisibility(ketQua.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private boolean khopDanhMuc(DatabaseHelper.DishRecord banGhiMon) {
@@ -245,38 +248,30 @@ public class MonAnQuanTriFragment extends Fragment {
             return;
         }
 
-        View noiDungDialog = getLayoutInflater().inflate(R.layout.dialog_add_edit_dish, null);
-        EditText etTenMon = noiDungDialog.findViewById(R.id.etAdminDishName);
-        EditText etGiaMon = noiDungDialog.findViewById(R.id.etAdminDishPrice);
-        MaterialAutoCompleteTextView etDanhMuc = noiDungDialog.findViewById(R.id.autoCompleteAdminDishCategory);
-        EditText etMoTa = noiDungDialog.findViewById(R.id.etAdminDishDescription);
-        EditText etTenAnh = noiDungDialog.findViewById(R.id.etAdminDishImage);
-        CheckBox cbDangPhucVu = noiDungDialog.findViewById(R.id.cbAdminDishAvailable);
-        ImageView ivAnhPreview = noiDungDialog.findViewById(R.id.ivAdminDishPreview);
-        TextView btnChonAnh = noiDungDialog.findViewById(R.id.btnAdminDishPickImage);
-        caiDatLuaChonDanhMuc(etDanhMuc);
+        DialogAddEditDishBinding dialogBinding = DialogAddEditDishBinding.inflate(getLayoutInflater());
+        caiDatLuaChonDanhMuc(dialogBinding.autoCompleteAdminDishCategory);
 
         if (banGhiMon != null) {
-            etTenMon.setText(banGhiMon.layMonAn().layTenMon());
-            etGiaMon.setText(String.valueOf(MoneyUtils.tachGiaTienTuChuoi(banGhiMon.layMonAn().layGiaBan())));
-            etDanhMuc.setText(banGhiMon.layMonAn().layTenDanhMuc());
-            etMoTa.setText(banGhiMon.layMoTa());
-            etTenAnh.setText(banGhiMon.layTenAnhTaiNguyen());
-            cbDangPhucVu.setChecked(banGhiMon.layMonAn().laConPhucVu());
-            hienAnhTrongDialog(ivAnhPreview, banGhiMon.layTenAnhTaiNguyen(), banGhiMon.layMonAn().layIdAnhTaiNguyen());
+            dialogBinding.etAdminDishName.setText(banGhiMon.layMonAn().layTenMon());
+            dialogBinding.etAdminDishPrice.setText(String.valueOf(MoneyUtils.tachGiaTienTuChuoi(banGhiMon.layMonAn().layGiaBan())));
+            dialogBinding.autoCompleteAdminDishCategory.setText(banGhiMon.layMonAn().layTenDanhMuc());
+            dialogBinding.etAdminDishDescription.setText(banGhiMon.layMoTa());
+            dialogBinding.etAdminDishImage.setText(banGhiMon.layTenAnhTaiNguyen());
+            dialogBinding.cbAdminDishAvailable.setChecked(banGhiMon.layMonAn().laConPhucVu());
+            hienAnhTrongDialog(dialogBinding.ivAdminDishPreview, banGhiMon.layTenAnhTaiNguyen(), banGhiMon.layMonAn().layIdAnhTaiNguyen());
         } else {
-            cbDangPhucVu.setChecked(true);
-            ivAnhPreview.setImageDrawable(null);
-            ivAnhPreview.setBackgroundResource(R.drawable.bg_dish_image_placeholder);
+            dialogBinding.cbAdminDishAvailable.setChecked(true);
+            dialogBinding.ivAdminDishPreview.setImageDrawable(null);
+            dialogBinding.ivAdminDishPreview.setBackgroundResource(R.drawable.bg_dish_image_placeholder);
         }
 
-        ivAnhDialogDangMo = ivAnhPreview;
-        etTenAnhDialogDangMo = etTenAnh;
-        btnChonAnh.setOnClickListener(v -> chonAnhMonLauncher.launch(new String[]{"image/*"}));
+        ivAnhDialogDangMo = dialogBinding.ivAdminDishPreview;
+        etTenAnhDialogDangMo = dialogBinding.etAdminDishImage;
+        dialogBinding.btnAdminDishPickImage.setOnClickListener(v -> chonAnhMonLauncher.launch(new String[]{"image/*"}));
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setTitle(banGhiMon == null ? R.string.admin_dialog_add_dish_title : R.string.admin_dialog_edit_dish_title)
-                .setView(noiDungDialog)
+                .setView(dialogBinding.getRoot())
                 .setNegativeButton(R.string.account_cancel_action, null)
                 .setPositiveButton(R.string.admin_save, null)
                 .create();
@@ -286,11 +281,11 @@ public class MonAnQuanTriFragment extends Fragment {
             etTenAnhDialogDangMo = null;
         });
         dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            String tenMon = layChuoiDaCatKhoangTrang(etTenMon);
-            String giaNhap = layChuoiDaCatKhoangTrang(etGiaMon);
-            String danhMuc = layChuoiDaCatKhoangTrang(etDanhMuc);
-            String moTa = layChuoiDaCatKhoangTrang(etMoTa);
-            String tenAnh = layChuoiDaCatKhoangTrang(etTenAnh);
+            String tenMon = layChuoiDaCatKhoangTrang(dialogBinding.etAdminDishName);
+            String giaNhap = layChuoiDaCatKhoangTrang(dialogBinding.etAdminDishPrice);
+            String danhMuc = layChuoiDaCatKhoangTrang(dialogBinding.autoCompleteAdminDishCategory);
+            String moTa = layChuoiDaCatKhoangTrang(dialogBinding.etAdminDishDescription);
+            String tenAnh = layChuoiDaCatKhoangTrang(dialogBinding.etAdminDishImage);
 
             if (TextUtils.isEmpty(tenMon)
                     || TextUtils.isEmpty(giaNhap)
@@ -321,7 +316,7 @@ public class MonAnQuanTriFragment extends Fragment {
 
             String giaBan = MoneyUtils.dinhDangTienViet(giaTien);
             String tenAnhTaiNguyen = TextUtils.isEmpty(tenAnh) ? null : tenAnh;
-            boolean dangPhucVu = cbDangPhucVu.isChecked();
+            boolean dangPhucVu = dialogBinding.cbAdminDishAvailable.isChecked();
 
             boolean daLuu;
             if (banGhiMon == null) {
@@ -395,6 +390,12 @@ public class MonAnQuanTriFragment extends Fragment {
                     }
                 })
                 .show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     private String layChuoiDaCatKhoangTrang(EditText editText) {

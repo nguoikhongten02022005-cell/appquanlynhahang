@@ -5,8 +5,6 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -14,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemTrangThaiDatBanBinding;
 import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.DatBan;
 
@@ -49,9 +48,8 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolderDatBan onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_trang_thai_dat_ban, parent, false);
-        return new ViewHolderDatBan(view);
+        ItemTrangThaiDatBanBinding binding = ItemTrangThaiDatBanBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolderDatBan(binding);
     }
 
     @Override
@@ -65,51 +63,39 @@ public class DatBanAdapter extends RecyclerView.Adapter<DatBanAdapter.ViewHolder
     }
 
     class ViewHolderDatBan extends RecyclerView.ViewHolder {
-        private final TextView tvReservationTime;
-        private final TextView tvReservationCode;
-        private final TextView tvReservationTable;
-        private final TextView tvReservationGuestCount;
-        private final TextView tvReservationNote;
-        private final TextView tvReservationStatus;
-        private final Button btnCancelReservation;
+        private final ItemTrangThaiDatBanBinding binding;
 
-        ViewHolderDatBan(@NonNull View itemView) {
-            super(itemView);
-            tvReservationTime = itemView.findViewById(R.id.tvReservationTime);
-            tvReservationCode = itemView.findViewById(R.id.tvReservationCode);
-            tvReservationTable = itemView.findViewById(R.id.tvReservationTable);
-            tvReservationGuestCount = itemView.findViewById(R.id.tvReservationGuestCount);
-            tvReservationNote = itemView.findViewById(R.id.tvReservationNote);
-            tvReservationStatus = itemView.findViewById(R.id.tvReservationStatus);
-            btnCancelReservation = itemView.findViewById(R.id.btnCancelReservation);
+        ViewHolderDatBan(@NonNull ItemTrangThaiDatBanBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void ganDuLieu(DatBan datBan) {
             Context context = itemView.getContext();
-            tvReservationTime.setText(datBan.layThoiGian());
-            tvReservationCode.setText(datBan.coMaDatBan()
+            binding.tvReservationTime.setText(datBan.layThoiGian());
+            binding.tvReservationCode.setText(datBan.coMaDatBan()
                     ? context.getString(R.string.reservation_code_format, datBan.layMaDatBan())
                     : "");
-            tvReservationCode.setVisibility(datBan.coMaDatBan() ? View.VISIBLE : View.GONE);
-            tvReservationTable.setText(
+            binding.tvReservationCode.setVisibility(datBan.coMaDatBan() ? View.VISIBLE : View.GONE);
+            binding.tvReservationTable.setText(
                     context.getString(R.string.reservation_table_format_display, datBan.laySoBan())
             );
-            tvReservationGuestCount.setText(
+            binding.tvReservationGuestCount.setText(
                     context.getString(R.string.reservation_guest_count_format, datBan.laySoKhach())
             );
 
             if (datBan.coGhiChu()) {
-                tvReservationNote.setText(context.getString(R.string.reservation_note_format, datBan.layGhiChu()));
+                binding.tvReservationNote.setText(context.getString(R.string.reservation_note_format, datBan.layGhiChu()));
             } else {
-                tvReservationNote.setText(context.getString(R.string.reservation_note_empty));
+                binding.tvReservationNote.setText(context.getString(R.string.reservation_note_empty));
             }
 
-            tvReservationStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiDatBan(datBan.layTrangThai()));
+            binding.tvReservationStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiDatBan(datBan.layTrangThai()));
             int mauTrangThai = ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiDatBan(datBan.layTrangThai()));
-            ViewCompat.setBackgroundTintList(tvReservationStatus, ColorStateList.valueOf(mauTrangThai));
+            ViewCompat.setBackgroundTintList(binding.tvReservationStatus, ColorStateList.valueOf(mauTrangThai));
 
-            btnCancelReservation.setVisibility(datBan.coTheHuy() ? View.VISIBLE : View.GONE);
-            btnCancelReservation.setOnClickListener(v -> {
+            binding.btnCancelReservation.setVisibility(datBan.coTheHuy() ? View.VISIBLE : View.GONE);
+            binding.btnCancelReservation.setOnClickListener(v -> {
                 int viTriAdapter = getBindingAdapterPosition();
                 if (viTriAdapter == RecyclerView.NO_POSITION || !datBan.coTheHuy()) {
                     return;

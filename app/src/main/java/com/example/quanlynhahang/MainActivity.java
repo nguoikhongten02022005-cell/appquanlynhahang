@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.button.MaterialButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.ActivityMainBinding;
 import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
 import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
@@ -41,9 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_TAB_HOAT_DONG_CHO = "pending_activity_tab";
     private static final String KEY_CO_DIEU_HUONG_MENU_CHO = "has_pending_menu_navigation";
 
-    private TextView tvCartBadge;
-    private TextView tvGreeting;
-    private MaterialButton btnExitCustomerPreview;
+    private ActivityMainBinding binding;
     private BottomNavigationView bottomNavigationView;
 
     private SessionManager sessionManager;
@@ -66,8 +63,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
@@ -81,10 +79,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.i(TAG, "Hoàn tất chuẩn bị cơ sở dữ liệu và migration phiên đăng nhập.");
 
-        tvCartBadge = findViewById(R.id.tvCartBadge);
-        tvGreeting = findViewById(R.id.tvGreeting);
-        btnExitCustomerPreview = findViewById(R.id.btnExitCustomerPreview);
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView = binding.bottomNavigationView;
         capNhatNutThoatPreviewKhach();
 
         khoiPhucTrangThaiDieuHuong(savedInstanceState);
@@ -137,25 +132,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void thietLapHanhDongHeader() {
-        findViewById(R.id.layoutCartIcon).setOnClickListener(v -> moGioHang());
-        if (btnExitCustomerPreview != null) {
-            btnExitCustomerPreview.setOnClickListener(v -> thoatPreviewKhachHang());
-        }
-        View nutTimKiem = findViewById(R.id.layoutSearchAction);
-        if (nutTimKiem != null) {
-            nutTimKiem.setOnClickListener(v -> dieuHuongDenMenu(null, true, null));
-        }
-
-        View avatar = findViewById(R.id.layoutAvatarAction);
-        if (avatar != null) {
-            avatar.setOnClickListener(v -> {
-                if (bottomNavigationView.getSelectedItemId() == R.id.nav_account) {
-                    hienTaiKhoan();
-                    return;
-                }
-                bottomNavigationView.setSelectedItemId(R.id.nav_account);
-            });
-        }
+        binding.layoutCartIcon.setOnClickListener(v -> moGioHang());
+        binding.btnExitCustomerPreview.setOnClickListener(v -> thoatPreviewKhachHang());
+        binding.layoutSearchAction.setOnClickListener(v -> dieuHuongDenMenu(null, true, null));
+        binding.layoutAvatarAction.setOnClickListener(v -> {
+            if (bottomNavigationView.getSelectedItemId() == R.id.nav_account) {
+                hienTaiKhoan();
+                return;
+            }
+            bottomNavigationView.setSelectedItemId(R.id.nav_account);
+        });
     }
 
     private void hienTrangChu() {
@@ -291,18 +277,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void capNhatLoiChao() {
-        if (tvGreeting == null) {
-            return;
-        }
-
-        tvGreeting.setText(R.string.home_greeting);
+        binding.tvGreeting.setText(R.string.home_greeting);
     }
 
     private void capNhatNutThoatPreviewKhach() {
-        if (btnExitCustomerPreview == null) {
-            return;
-        }
-        btnExitCustomerPreview.setVisibility(cheDoPreviewKhach ? View.VISIBLE : View.GONE);
+        binding.btnExitCustomerPreview.setVisibility(cheDoPreviewKhach ? View.VISIBLE : View.GONE);
     }
 
     private void thoatPreviewKhachHang() {
@@ -317,11 +296,9 @@ public class MainActivity extends AppCompatActivity {
         String chuoiBadge = dinhDangSoLuongBadge(tongSoLuong);
         boolean hienBadge = chuoiBadge != null;
 
-        if (tvCartBadge != null) {
-            tvCartBadge.setVisibility(hienBadge ? View.VISIBLE : View.GONE);
-            if (hienBadge) {
-                tvCartBadge.setText(chuoiBadge);
-            }
+        binding.tvCartBadge.setVisibility(hienBadge ? View.VISIBLE : View.GONE);
+        if (hienBadge) {
+            binding.tvCartBadge.setText(chuoiBadge);
         }
 
         if (bottomNavigationView == null) {

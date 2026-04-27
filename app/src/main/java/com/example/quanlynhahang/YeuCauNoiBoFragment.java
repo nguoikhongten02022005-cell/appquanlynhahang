@@ -13,10 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.YeuCauPhucVuNhanVienAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.databinding.FragmentYeuCauNoiBoBinding;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 
 import java.util.ArrayList;
@@ -24,18 +24,10 @@ import java.util.List;
 
 public class YeuCauNoiBoFragment extends Fragment {
 
+    private FragmentYeuCauNoiBoBinding binding;
     private DatabaseHelper databaseHelper;
     private YeuCauPhucVuNhanVienAdapter yeuCauAdapter;
     private final List<YeuCauPhucVu> danhSachTatCaYeuCau = new ArrayList<>();
-    private TextView tvEmptyState;
-    private TextView tvSoKhongCapBach;
-    private TextView tvSoDangCho;
-    private TextView tvSoDangXuLy;
-    private TextView tvSoDaXong;
-    private TextView chipTatCa;
-    private TextView chipDangCho;
-    private TextView chipDangXuLy;
-    private TextView chipDaXong;
     private String boLocTrangThai = "tat_ca";
 
     @Nullable
@@ -43,7 +35,8 @@ public class YeuCauNoiBoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_yeu_cau_noi_bo, container, false);
+        binding = FragmentYeuCauNoiBoBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -53,19 +46,8 @@ public class YeuCauNoiBoFragment extends Fragment {
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
 
-        tvEmptyState = view.findViewById(R.id.tvYeuCauNoiBoEmptyState);
-        tvSoKhongCapBach = view.findViewById(R.id.tvAdminRequestSummaryUrgent);
-        tvSoDangCho = view.findViewById(R.id.tvAdminRequestSummaryWaiting);
-        tvSoDangXuLy = view.findViewById(R.id.tvAdminRequestSummaryProcessing);
-        tvSoDaXong = view.findViewById(R.id.tvAdminRequestSummaryDone);
-        chipTatCa = view.findViewById(R.id.chipAdminRequestFilterAll);
-        chipDangCho = view.findViewById(R.id.chipAdminRequestFilterWaiting);
-        chipDangXuLy = view.findViewById(R.id.chipAdminRequestFilterProcessing);
-        chipDaXong = view.findViewById(R.id.chipAdminRequestFilterDone);
-
-        RecyclerView rvYeuCau = view.findViewById(R.id.rvYeuCauNoiBo);
-        rvYeuCau.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvYeuCau.setNestedScrollingEnabled(false);
+        binding.rvYeuCauNoiBo.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvYeuCauNoiBo.setNestedScrollingEnabled(false);
 
         yeuCauAdapter = new YeuCauPhucVuNhanVienAdapter(new YeuCauPhucVuNhanVienAdapter.HanhDongListener() {
             @Override
@@ -83,7 +65,7 @@ public class YeuCauNoiBoFragment extends Fragment {
                 xacNhanHuyYeuCau(yeuCau);
             }
         });
-        rvYeuCau.setAdapter(yeuCauAdapter);
+        binding.rvYeuCauNoiBo.setAdapter(yeuCauAdapter);
 
         caiDatBoLoc();
         taiDanhSachYeuCau();
@@ -95,11 +77,17 @@ public class YeuCauNoiBoFragment extends Fragment {
         taiDanhSachYeuCau();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void caiDatBoLoc() {
-        chipTatCa.setOnClickListener(v -> doiBoLoc("tat_ca"));
-        chipDangCho.setOnClickListener(v -> doiBoLoc("dang_cho"));
-        chipDangXuLy.setOnClickListener(v -> doiBoLoc("dang_xu_ly"));
-        chipDaXong.setOnClickListener(v -> doiBoLoc("da_xong"));
+        binding.chipAdminRequestFilterAll.setOnClickListener(v -> doiBoLoc("tat_ca"));
+        binding.chipAdminRequestFilterWaiting.setOnClickListener(v -> doiBoLoc("dang_cho"));
+        binding.chipAdminRequestFilterProcessing.setOnClickListener(v -> doiBoLoc("dang_xu_ly"));
+        binding.chipAdminRequestFilterDone.setOnClickListener(v -> doiBoLoc("da_xong"));
         capNhatTrangThaiChip();
     }
 
@@ -110,10 +98,13 @@ public class YeuCauNoiBoFragment extends Fragment {
     }
 
     private void capNhatTrangThaiChip() {
-        capNhatChip(chipTatCa, "tat_ca".equals(boLocTrangThai));
-        capNhatChip(chipDangCho, "dang_cho".equals(boLocTrangThai));
-        capNhatChip(chipDangXuLy, "dang_xu_ly".equals(boLocTrangThai));
-        capNhatChip(chipDaXong, "da_xong".equals(boLocTrangThai));
+        if (binding == null) {
+            return;
+        }
+        capNhatChip(binding.chipAdminRequestFilterAll, "tat_ca".equals(boLocTrangThai));
+        capNhatChip(binding.chipAdminRequestFilterWaiting, "dang_cho".equals(boLocTrangThai));
+        capNhatChip(binding.chipAdminRequestFilterProcessing, "dang_xu_ly".equals(boLocTrangThai));
+        capNhatChip(binding.chipAdminRequestFilterDone, "da_xong".equals(boLocTrangThai));
     }
 
     private void capNhatChip(TextView chip, boolean duocChon) {
@@ -122,6 +113,9 @@ public class YeuCauNoiBoFragment extends Fragment {
     }
 
     private void taiDanhSachYeuCau() {
+        if (!isAdded() || binding == null || databaseHelper == null || yeuCauAdapter == null) {
+            return;
+        }
         danhSachTatCaYeuCau.clear();
         danhSachTatCaYeuCau.addAll(databaseHelper.layTatCaYeuCauPhucVu());
         capNhatTongQuanYeuCau(danhSachTatCaYeuCau);
@@ -145,13 +139,19 @@ public class YeuCauNoiBoFragment extends Fragment {
                 soDaXong++;
             }
         }
-        tvSoKhongCapBach.setText(String.valueOf(soThanhToan));
-        tvSoDangCho.setText(String.valueOf(soDangCho));
-        tvSoDangXuLy.setText(String.valueOf(soDangXuLy));
-        tvSoDaXong.setText(String.valueOf(soDaXong));
+        if (binding == null) {
+            return;
+        }
+        binding.tvAdminRequestSummaryUrgent.setText(String.valueOf(soThanhToan));
+        binding.tvAdminRequestSummaryWaiting.setText(String.valueOf(soDangCho));
+        binding.tvAdminRequestSummaryProcessing.setText(String.valueOf(soDangXuLy));
+        binding.tvAdminRequestSummaryDone.setText(String.valueOf(soDaXong));
     }
 
     private void apDungBoLocYeuCau() {
+        if (binding == null || yeuCauAdapter == null) {
+            return;
+        }
         List<YeuCauPhucVu> ketQua = new ArrayList<>();
         for (YeuCauPhucVu yeuCau : danhSachTatCaYeuCau) {
             if (!khopBoLoc(yeuCau)) {
@@ -160,7 +160,7 @@ public class YeuCauNoiBoFragment extends Fragment {
             ketQua.add(yeuCau);
         }
         yeuCauAdapter.capNhatDanhSach(ketQua);
-        tvEmptyState.setVisibility(ketQua.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tvYeuCauNoiBoEmptyState.setVisibility(ketQua.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private boolean khopBoLoc(YeuCauPhucVu yeuCau) {

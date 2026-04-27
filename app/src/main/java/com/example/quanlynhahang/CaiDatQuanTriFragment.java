@@ -12,28 +12,34 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.FragmentCaiDatQuanTriBinding;
 import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
-import com.google.android.material.button.MaterialButton;
 
 public class CaiDatQuanTriFragment extends Fragment {
+
+    private FragmentCaiDatQuanTriBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_cai_dat_quan_tri, container, false);
+        binding = FragmentCaiDatQuanTriBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MaterialButton btnCustomerPreview = view.findViewById(R.id.btnQuanTriXemGiaoDienKhach);
-        MaterialButton btnLogout = view.findViewById(R.id.btnQuanTriDangXuat);
+        binding.btnQuanTriXemGiaoDienKhach.setOnClickListener(v -> moGiaoDienKhachHang());
+        binding.btnQuanTriDangXuat.setOnClickListener(v -> dangXuat());
+    }
 
-        btnCustomerPreview.setOnClickListener(v -> moGiaoDienKhachHang());
-        btnLogout.setOnClickListener(v -> dangXuat());
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     private void moGiaoDienKhachHang() {

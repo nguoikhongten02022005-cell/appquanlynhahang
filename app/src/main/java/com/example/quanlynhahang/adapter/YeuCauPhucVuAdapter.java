@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -13,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemYeuCauPhucVuBinding;
 import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
 
@@ -48,9 +48,8 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
     @NonNull
     @Override
     public ViewHolderYeuCauPhucVu onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_yeu_cau_phuc_vu, parent, false);
-        return new ViewHolderYeuCauPhucVu(view);
+        ItemYeuCauPhucVuBinding binding = ItemYeuCauPhucVuBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolderYeuCauPhucVu(binding);
     }
 
     @Override
@@ -64,40 +63,30 @@ public class YeuCauPhucVuAdapter extends RecyclerView.Adapter<YeuCauPhucVuAdapte
     }
 
     class ViewHolderYeuCauPhucVu extends RecyclerView.ViewHolder {
-        private final TextView tvServiceRequestContent;
-        private final TextView tvServiceRequestType;
-        private final TextView tvServiceRequestTime;
-        private final TextView tvServiceRequestTable;
-        private final TextView tvServiceRequestStatus;
-        private final com.google.android.material.button.MaterialButton btnCancelServiceRequest;
+        private final ItemYeuCauPhucVuBinding binding;
 
-        ViewHolderYeuCauPhucVu(@NonNull View itemView) {
-            super(itemView);
-            tvServiceRequestContent = itemView.findViewById(R.id.tvServiceRequestContent);
-            tvServiceRequestType = itemView.findViewById(R.id.tvServiceRequestType);
-            tvServiceRequestTime = itemView.findViewById(R.id.tvServiceRequestTime);
-            tvServiceRequestTable = itemView.findViewById(R.id.tvServiceRequestTable);
-            tvServiceRequestStatus = itemView.findViewById(R.id.tvServiceRequestStatus);
-            btnCancelServiceRequest = itemView.findViewById(R.id.btnCancelServiceRequest);
+        ViewHolderYeuCauPhucVu(@NonNull ItemYeuCauPhucVuBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void ganDuLieu(YeuCauPhucVu yeuCau) {
             Context context = itemView.getContext();
-            tvServiceRequestContent.setText(yeuCau.layNoiDung());
-            tvServiceRequestType.setText(TrangThaiHienThiHelper.layTextLoaiYeuCau(yeuCau.layLoaiYeuCau()));
-            tvServiceRequestTime.setText(yeuCau.layThoiGianGui());
-            tvServiceRequestTable.setVisibility(yeuCau.coBanLienQuan() ? View.VISIBLE : View.GONE);
+            binding.tvServiceRequestContent.setText(yeuCau.layNoiDung());
+            binding.tvServiceRequestType.setText(TrangThaiHienThiHelper.layTextLoaiYeuCau(yeuCau.layLoaiYeuCau()));
+            binding.tvServiceRequestTime.setText(yeuCau.layThoiGianGui());
+            binding.tvServiceRequestTable.setVisibility(yeuCau.coBanLienQuan() ? View.VISIBLE : View.GONE);
             if (yeuCau.coBanLienQuan()) {
-                tvServiceRequestTable.setText(context.getString(R.string.order_table_format, yeuCau.laySoBan()));
+                binding.tvServiceRequestTable.setText(context.getString(R.string.order_table_format, yeuCau.laySoBan()));
             }
 
-            tvServiceRequestStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiYeuCau(yeuCau.layTrangThai()));
+            binding.tvServiceRequestStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiYeuCau(yeuCau.layTrangThai()));
             int mauTrangThai = ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiYeuCau(yeuCau.layTrangThai()));
-            ViewCompat.setBackgroundTintList(tvServiceRequestStatus, ColorStateList.valueOf(mauTrangThai));
+            ViewCompat.setBackgroundTintList(binding.tvServiceRequestStatus, ColorStateList.valueOf(mauTrangThai));
 
             boolean coTheHuy = yeuCau.coTheHuy() && onHuyYeuCauClickListener != null;
-            btnCancelServiceRequest.setVisibility(coTheHuy ? View.VISIBLE : View.GONE);
-            btnCancelServiceRequest.setOnClickListener(coTheHuy ? v -> {
+            binding.btnCancelServiceRequest.setVisibility(coTheHuy ? View.VISIBLE : View.GONE);
+            binding.btnCancelServiceRequest.setOnClickListener(coTheHuy ? v -> {
                 int viTri = getBindingAdapterPosition();
                 if (viTri == RecyclerView.NO_POSITION) {
                     return;

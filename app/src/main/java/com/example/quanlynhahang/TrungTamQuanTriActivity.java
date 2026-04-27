@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,6 +15,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.ActivityTrungTamQuanTriBinding;
 import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
@@ -32,6 +32,7 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
 
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
+    private ActivityTrungTamQuanTriBinding binding;
 
     public static Intent taoIntent(Context context, String section) {
         Intent intent = new Intent(context, TrungTamQuanTriActivity.class);
@@ -63,7 +64,8 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trung_tam_quan_tri);
+        binding = ActivityTrungTamQuanTriBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         sessionManager = new SessionManager(this);
         databaseHelper = new DatabaseHelper(this);
@@ -100,60 +102,51 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
     }
 
     private void thietLapMenuQuanTri() {
-        ganDieuHuongMenu(R.id.navAdminOverview, DieuHuongNoiBoHelper.SECTION_BAO_CAO);
-        ganDieuHuongMenu(R.id.navAdminOrders, DieuHuongNoiBoHelper.SECTION_DON_HANG);
-        ganDieuHuongMenu(R.id.navAdminTables, DieuHuongNoiBoHelper.SECTION_BAN);
-        ganDieuHuongMenu(R.id.navAdminDishes, DieuHuongNoiBoHelper.SECTION_MON);
-        ganDieuHuongMenu(R.id.navAdminAccounts, DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG);
+        ganDieuHuongMenu(binding.navAdminOverview, DieuHuongNoiBoHelper.SECTION_BAO_CAO);
+        ganDieuHuongMenu(binding.navAdminOrders, DieuHuongNoiBoHelper.SECTION_DON_HANG);
+        ganDieuHuongMenu(binding.navAdminTables, DieuHuongNoiBoHelper.SECTION_BAN);
+        ganDieuHuongMenu(binding.navAdminDishes, DieuHuongNoiBoHelper.SECTION_MON);
+        ganDieuHuongMenu(binding.navAdminAccounts, DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG);
     }
 
-    private void ganDieuHuongMenu(int viewId, String section) {
-        View view = findViewById(viewId);
-        if (view != null) {
-            view.setOnClickListener(v -> moSection(section));
-        }
+    private void ganDieuHuongMenu(LinearLayout item, String section) {
+        item.setOnClickListener(v -> moSection(section));
     }
 
     private void capNhatTrangThaiMenu(String section) {
         capNhatTrangThaiBottomNav(
-                R.id.navAdminOverview,
-                R.id.iconAdminOverview,
-                R.id.tvAdminOverviewLabel,
+                binding.navAdminOverview,
+                binding.iconAdminOverview,
+                binding.tvAdminOverviewLabel,
                 DieuHuongNoiBoHelper.SECTION_BAO_CAO.equals(section)
         );
         capNhatTrangThaiBottomNav(
-                R.id.navAdminOrders,
-                R.id.iconAdminOrders,
-                R.id.tvAdminOrdersLabel,
+                binding.navAdminOrders,
+                binding.iconAdminOrders,
+                binding.tvAdminOrdersLabel,
                 DieuHuongNoiBoHelper.SECTION_DON_HANG.equals(section)
         );
         capNhatTrangThaiBottomNav(
-                R.id.navAdminTables,
-                R.id.iconAdminTables,
-                R.id.tvAdminTablesLabel,
+                binding.navAdminTables,
+                binding.iconAdminTables,
+                binding.tvAdminTablesLabel,
                 DieuHuongNoiBoHelper.SECTION_BAN.equals(section)
         );
         capNhatTrangThaiBottomNav(
-                R.id.navAdminDishes,
-                R.id.iconAdminDishes,
-                R.id.tvAdminDishesLabel,
+                binding.navAdminDishes,
+                binding.iconAdminDishes,
+                binding.tvAdminDishesLabel,
                 DieuHuongNoiBoHelper.SECTION_MON.equals(section)
         );
         capNhatTrangThaiBottomNav(
-                R.id.navAdminAccounts,
-                R.id.iconAdminAccounts,
-                R.id.tvAdminAccountsLabel,
+                binding.navAdminAccounts,
+                binding.iconAdminAccounts,
+                binding.tvAdminAccountsLabel,
                 DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG.equals(section)
         );
     }
 
-    private void capNhatTrangThaiBottomNav(int itemId, int iconId, int labelId, boolean dangDuocChon) {
-        LinearLayout item = findViewById(itemId);
-        ImageView icon = findViewById(iconId);
-        TextView label = findViewById(labelId);
-        if (item == null || icon == null || label == null) {
-            return;
-        }
+    private void capNhatTrangThaiBottomNav(LinearLayout item, ImageView icon, TextView label, boolean dangDuocChon) {
         int mau = ContextCompat.getColor(this, dangDuocChon ? R.color.brand_primary : R.color.nav_unselected);
         item.setBackgroundResource(dangDuocChon ? R.drawable.bg_admin_bottom_nav_active : android.R.color.transparent);
         icon.setImageTintList(ColorStateList.valueOf(mau));

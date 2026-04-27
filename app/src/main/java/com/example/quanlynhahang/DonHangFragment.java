@@ -15,11 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.quanlynhahang.adapter.DonHangAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.FragmentDonHangBinding;
 import com.example.quanlynhahang.model.DonHang;
 
 import java.util.ArrayList;
@@ -33,15 +32,8 @@ public class DonHangFragment extends Fragment {
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
 
-    private RecyclerView rvDonHangs;
-    private TextView tvDonHangEmpty;
-    private TextView tvDonHangCaption;
-    private TextView tvDonHangEmptyTitle;
-    private View btnCheckout;
+    private FragmentDonHangBinding binding;
     private DonHangAdapter orderAdapter;
-    private View layoutOrderEmptyState;
-    private View layoutCartFooter;
-    private View titleView;
 
     private boolean daGoiMoDangNhap;
     private boolean embedded;
@@ -59,7 +51,8 @@ public class DonHangFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_don_hang, container, false);
+        binding = FragmentDonHangBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -70,24 +63,10 @@ public class DonHangFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
-        rvDonHangs = view.findViewById(R.id.rvDonHangs);
-        tvDonHangEmpty = view.findViewById(R.id.tvCartEmpty);
-        tvDonHangCaption = view.findViewById(R.id.tvDonHangCaption);
-        tvDonHangEmptyTitle = view.findViewById(R.id.tvDonHangEmptyTitle);
-        btnCheckout = view.findViewById(R.id.btnCheckout);
-        layoutOrderEmptyState = view.findViewById(R.id.layoutOrderEmptyState);
-        titleView = view.findViewById(R.id.tvDonHangTitle);
-        layoutCartFooter = view.findViewById(R.id.layoutCartFooter);
+        apDungCheDoNhung();
 
-        apDungCheDoNhung(view);
-
-        if (layoutCartFooter != null) {
-            layoutCartFooter.setVisibility(embedded ? View.GONE : View.VISIBLE);
-        }
-
-        if (btnCheckout != null) {
-            btnCheckout.setOnClickListener(v -> moThucDon());
-        }
+        binding.btnCheckout.setVisibility(embedded ? View.GONE : View.VISIBLE);
+        binding.btnCheckout.setOnClickListener(v -> moThucDon());
 
         thietLapRecyclerView();
         capNhatGiaoDienDonHang(true);
@@ -99,31 +78,27 @@ public class DonHangFragment extends Fragment {
         capNhatGiaoDienDonHang(false);
     }
 
-    private void apDungCheDoNhung(@NonNull View view) {
-        if (!embedded) {
+    private void apDungCheDoNhung() {
+        if (!embedded || binding == null) {
             return;
         }
 
-        if (titleView != null) {
-            titleView.setVisibility(View.GONE);
-        }
-        if (tvDonHangCaption != null) {
-            tvDonHangCaption.setVisibility(View.GONE);
-        }
+        binding.tvDonHangTitle.setVisibility(View.GONE);
+        binding.tvDonHangCaption.setVisibility(View.GONE);
 
         int paddingNgang = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_horizontal);
         int paddingDoc = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_vertical);
-        view.setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
+        binding.getRoot().setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
     }
 
     private void thietLapRecyclerView() {
-        rvDonHangs.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvDonHangs.setLayoutManager(new LinearLayoutManager(requireContext()));
         orderAdapter = new DonHangAdapter(new ArrayList<>(), (donHang, viTri) -> huyDonHang(donHang));
-        rvDonHangs.setAdapter(orderAdapter);
+        binding.rvDonHangs.setAdapter(orderAdapter);
     }
 
     private void capNhatGiaoDienDonHang(boolean tuDongMoDangNhap) {
-        if (!isAdded()) {
+        if (!isAdded() || binding == null || sessionManager == null || databaseHelper == null || orderAdapter == null) {
             return;
         }
 
@@ -191,36 +166,34 @@ public class DonHangFragment extends Fragment {
     }
 
     private void hienTrangThaiRong(String thongBao) {
-        tvDonHangEmpty.setText(thongBao);
-        if (tvDonHangEmptyTitle != null) {
-            tvDonHangEmptyTitle.setText(R.string.order_empty_title);
+        if (binding == null) {
+            return;
         }
-        if (layoutOrderEmptyState != null) {
-            layoutOrderEmptyState.setVisibility(View.VISIBLE);
-        }
-        tvDonHangEmpty.setVisibility(View.VISIBLE);
-        rvDonHangs.setVisibility(View.GONE);
-        if (btnCheckout != null) {
-            btnCheckout.setVisibility(View.VISIBLE);
-        }
-        if (tvDonHangCaption != null) {
-            tvDonHangCaption.setVisibility(View.GONE);
-        }
+        binding.tvCartEmpty.setText(thongBao);
+        binding.tvDonHangEmptyTitle.setText(R.string.order_empty_title);
+        binding.layoutOrderEmptyState.setVisibility(View.VISIBLE);
+        binding.tvCartEmpty.setVisibility(View.VISIBLE);
+        binding.rvDonHangs.setVisibility(View.GONE);
+        binding.btnCheckout.setVisibility(View.VISIBLE);
+        binding.tvDonHangCaption.setVisibility(View.GONE);
     }
 
     private void hienTrangThaiDanhSach() {
-        if (layoutOrderEmptyState != null) {
-            layoutOrderEmptyState.setVisibility(View.GONE);
+        if (binding == null) {
+            return;
         }
-        tvDonHangEmpty.setVisibility(View.GONE);
-        rvDonHangs.setVisibility(View.VISIBLE);
-        if (btnCheckout != null) {
-            btnCheckout.setVisibility(View.GONE);
-        }
-        if (tvDonHangCaption != null) {
-            tvDonHangCaption.setVisibility(embedded ? View.GONE : View.VISIBLE);
-            tvDonHangCaption.setText(getString(R.string.order_screen_caption));
-        }
+        binding.layoutOrderEmptyState.setVisibility(View.GONE);
+        binding.tvCartEmpty.setVisibility(View.GONE);
+        binding.rvDonHangs.setVisibility(View.VISIBLE);
+        binding.btnCheckout.setVisibility(View.GONE);
+        binding.tvDonHangCaption.setVisibility(embedded ? View.GONE : View.VISIBLE);
+        binding.tvDonHangCaption.setText(getString(R.string.order_screen_caption));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     private void moThucDon() {

@@ -95,7 +95,7 @@
                             android:id="@+id/tvAdminRevenueToday"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0đ"
+                            android:text="@string/currency_zero"
                             android:textColor="@color/on_surface"
                             android:textSize="19sp"
                             android:textStyle="bold" />
@@ -104,7 +104,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Doanh thu"
+                            android:text="@string/admin_revenue_today_label"
                             android:textColor="@color/on_surface_variant"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -130,12 +130,13 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Đơn hàng"
+                            android:text="@string/admin_orders_label"
                             android:textColor="@color/on_surface_variant"
                             android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/navAdminTables"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -155,7 +156,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Bàn dùng"
+                            android:text="@string/admin_tables_in_use_label"
                             android:textColor="@color/on_surface_variant"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -197,7 +198,7 @@
                         android:id="@+id/tvAdminAlertTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1 đơn chờ xác nhận"
+                        android:text="@string/admin_alert_sample_title"
                         android:textColor="@color/on_surface"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -207,7 +208,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
-                        android:text="Bàn 4 · 3 phút trước"
+                        android:text="@string/admin_alert_sample_subtitle"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -216,7 +217,7 @@
                     android:id="@+id/btnAdminAlertAction"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Xem →"
+                    android:text="@string/admin_view_action"
                     android:textColor="@color/brand_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -227,7 +228,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Chỉ số hôm nay"
+            android:text="@string/admin_today_metrics_title"
             android:textColor="@color/on_surface"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -285,7 +286,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Chờ xác nhận"
+android:text="@string/reservation_status_pending"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="15sp" />
                 </LinearLayout>
@@ -336,7 +337,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Tổng người dùng"
+                        android:text="@string/admin_total_users_label"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="16sp" />
 
@@ -345,7 +346,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="↑ 2 so với hôm qua"
+                        android:text="@string/admin_users_delta_sample"
                         android:textColor="@color/success"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -397,7 +398,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Yêu cầu xử lý"
+                        android:text="@string/admin_processing_requests_label"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="16sp" />
 
@@ -406,7 +407,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="• Khẩn cấp"
+                        android:text="@string/admin_urgent_label"
                         android:textColor="@color/error"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -458,7 +459,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Đặt bàn chờ"
+                        android:text="@string/admin_pending_reservation_short_label"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="16sp" />
 
@@ -467,7 +468,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="Không có"
+                        android:text="@string/admin_none_label"
                         android:textColor="#B89E77"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -485,7 +486,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Doanh thu 7 ngày"
+                android:text="@string/admin_revenue_7_days_title"
                 android:textColor="@color/on_surface"
                 android:textSize="17sp"
                 android:textStyle="bold" />
@@ -494,7 +495,7 @@
                 android:id="@+id/btnAdminRevenueDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chi tiết"
+                android:text="@string/admin_detail_action"
                 android:textColor="@color/brand_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -520,7 +521,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Doanh thu theo ngày"
+                    android:text="@string/admin_revenue_by_day_title"
                     android:textColor="@color/on_surface"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -530,7 +531,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Đơn vị: nghìn đồng · Cam = hôm nay"
+                    android:text="@string/admin_revenue_chart_unit_hint"
                     android:textColor="@color/on_surface_variant"
                     android:textSize="13sp" />
 
@@ -549,7 +550,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            android:text="Tình trạng đơn"
+            android:text="@string/admin_order_status_title"
             android:textColor="@color/on_surface"
             android:textSize="17sp"
             android:textStyle="bold" />
@@ -606,7 +607,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="đơn"
+                            android:text="@string/admin_order_unit_short"
                             android:textColor="@color/on_surface_variant"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -626,7 +627,7 @@
                         android:orientation="horizontal">
 
                         <View android:layout_width="12dp" android:layout_height="12dp" android:background="#D79A16" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:text="Chờ xác nhận" android:textColor="@color/on_surface" android:textSize="16sp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:text="@string/reservation_status_pending" android:textColor="@color/on_surface" android:textSize="16sp" />
                         <TextView android:id="@+id/tvAdminOrderPendingCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_surface" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
 
@@ -638,7 +639,7 @@
                         android:orientation="horizontal">
 
                         <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/success" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:text="Đang phục vụ" android:textColor="@color/on_surface" android:textSize="16sp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:text="@string/admin_filter_serving" android:textColor="@color/on_surface" android:textSize="16sp" />
                         <TextView android:id="@+id/tvAdminOrderServingCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_surface" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
 
@@ -650,7 +651,7 @@
                         android:orientation="horizontal">
 
                         <View android:layout_width="12dp" android:layout_height="12dp" android:background="#D6D2CD" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:text="Hoàn thành" android:textColor="@color/on_surface" android:textSize="16sp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:text="@string/admin_filter_completed" android:textColor="@color/on_surface" android:textSize="16sp" />
                         <TextView android:id="@+id/tvAdminOrderCompletedCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/on_surface" android:textSize="18sp" android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
@@ -668,7 +669,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Đơn gần đây"
+                android:text="@string/admin_recent_orders_short_title"
                 android:textColor="@color/on_surface"
                 android:textSize="17sp"
                 android:textStyle="bold" />
@@ -677,7 +678,7 @@
                 android:id="@+id/btnAdminRecentOrdersMore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Xem tất cả"
+                android:text="@string/admin_view_all_action"
                 android:textColor="@color/brand_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />

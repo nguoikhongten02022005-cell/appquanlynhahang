@@ -17,12 +17,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.quanlynhahang.adapter.ThucDonAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.FragmentThucDonBinding;
 import com.example.quanlynhahang.model.MonAnDeXuat;
 
 import java.util.ArrayList;
@@ -45,10 +44,7 @@ public class ThucDonFragment extends Fragment {
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
     private ThucDonAdapter boDieuHopThucDon;
-    private EditText etMenuSearch;
-    private TextView tvMenuFilterHint;
-    private View layoutMenuEmptyState;
-    private TextView tvMenuEmptyMessage;
+    private FragmentThucDonBinding binding;
 
     private String tenDanhMucDangChon;
     private boolean moTimKiemKhiMoMan;
@@ -76,15 +72,15 @@ public class ThucDonFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_thuc_don, container, false);
+        binding = FragmentThucDonBinding.inflate(inflater, container, false);
 
         databaseHelper = new DatabaseHelper(requireContext());
         sessionManager = new SessionManager(requireContext());
         docTrangThaiDieuHuong(savedInstanceState);
-        thietLapRecyclerView(view);
-        thietLapTimKiem(view);
+        thietLapRecyclerView();
+        thietLapTimKiem();
         taiDuLieuMonAn();
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -98,10 +94,16 @@ public class ThucDonFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (moTimKiemKhiMoMan && etMenuSearch != null) {
+        if (moTimKiemKhiMoMan && binding != null) {
             moBanPhimTimKiem();
             moTimKiemKhiMoMan = false;
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     public void apDungTrangThaiDieuHuongTuTrangChu(@Nullable String tenDanhMuc, boolean moTimKiem) {
@@ -117,7 +119,7 @@ public class ThucDonFragment extends Fragment {
         if (isAdded()) {
             apDungTuKhoaTimKiemNeuCan();
             taiDuLieuMonAn();
-            if (moTimKiemKhiMoMan && etMenuSearch != null) {
+            if (moTimKiemKhiMoMan && binding != null) {
                 moBanPhimTimKiem();
                 moTimKiemKhiMoMan = false;
             }
@@ -137,9 +139,8 @@ public class ThucDonFragment extends Fragment {
         tuKhoaTimKiemBanDau = source.getString(ARG_TU_KHOA_TIM_KIEM);
     }
 
-    private void thietLapRecyclerView(View view) {
-        RecyclerView rvMenu = view.findViewById(R.id.rvMenu);
-        rvMenu.setLayoutManager(new LinearLayoutManager(requireContext()));
+    private void thietLapRecyclerView() {
+        binding.rvMenu.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         boDieuHopThucDon = new ThucDonAdapter(
                 danhSachMonDaLoc,
@@ -163,16 +164,12 @@ public class ThucDonFragment extends Fragment {
                 }
         );
 
-        rvMenu.setAdapter(boDieuHopThucDon);
-        tvMenuFilterHint = view.findViewById(R.id.tvMenuFilterHint);
-        layoutMenuEmptyState = view.findViewById(R.id.layoutMenuEmptyState);
-        tvMenuEmptyMessage = view.findViewById(R.id.tvMenuEmptyMessage);
+        binding.rvMenu.setAdapter(boDieuHopThucDon);
     }
 
-    private void thietLapTimKiem(View view) {
-        etMenuSearch = view.findViewById(R.id.etMenuSearch);
+    private void thietLapTimKiem() {
         apDungTuKhoaTimKiemNeuCan();
-        etMenuSearch.addTextChangedListener(new TextWatcher() {
+        binding.etMenuSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -242,7 +239,7 @@ public class ThucDonFragment extends Fragment {
     }
 
     private void capNhatHintBoLoc() {
-        if (tvMenuFilterHint == null) {
+        if (binding == null) {
             return;
         }
 
@@ -251,32 +248,32 @@ public class ThucDonFragment extends Fragment {
         boolean coTuKhoa = !TextUtils.isEmpty(tuKhoa);
 
         if (!coDanhMuc && !coTuKhoa) {
-            tvMenuFilterHint.setVisibility(View.GONE);
+            binding.tvMenuFilterHint.setVisibility(View.GONE);
             return;
         }
 
-        tvMenuFilterHint.setVisibility(View.VISIBLE);
+        binding.tvMenuFilterHint.setVisibility(View.VISIBLE);
         if (coDanhMuc && coTuKhoa) {
-            tvMenuFilterHint.setText(getString(R.string.menu_filter_hint_with_query_format, tenDanhMucDangChon, tuKhoa));
+            binding.tvMenuFilterHint.setText(getString(R.string.menu_filter_hint_with_query_format, tenDanhMucDangChon, tuKhoa));
             return;
         }
         if (coDanhMuc) {
-            tvMenuFilterHint.setText(getString(R.string.menu_filter_hint_format, tenDanhMucDangChon));
+            binding.tvMenuFilterHint.setText(getString(R.string.menu_filter_hint_format, tenDanhMucDangChon));
             return;
         }
-        tvMenuFilterHint.setText(getString(R.string.menu_filter_query_hint_format, tuKhoa));
+        binding.tvMenuFilterHint.setText(getString(R.string.menu_filter_query_hint_format, tuKhoa));
     }
 
     private void capNhatEmptyState() {
-        if (layoutMenuEmptyState == null || tvMenuEmptyMessage == null) {
+        if (binding == null) {
             return;
         }
 
         boolean coKetQua = !danhSachMonDaLoc.isEmpty();
-        layoutMenuEmptyState.setVisibility(coKetQua ? View.GONE : View.VISIBLE);
+        binding.layoutMenuEmptyState.setVisibility(coKetQua ? View.GONE : View.VISIBLE);
 
         boolean coBoLoc = !TextUtils.isEmpty(tenDanhMucDangChon) || !TextUtils.isEmpty(layTuKhoaHienTai());
-        tvMenuEmptyMessage.setText(coBoLoc
+        binding.tvMenuEmptyMessage.setText(coBoLoc
                 ? R.string.menu_empty_with_filters
                 : R.string.menu_empty_default);
     }
@@ -286,7 +283,7 @@ public class ThucDonFragment extends Fragment {
     }
 
     private void apDungTuKhoaTimKiemNeuCan() {
-        if (etMenuSearch == null || tuKhoaTimKiemBanDau == null) {
+        if (binding == null || tuKhoaTimKiemBanDau == null) {
             return;
         }
 
@@ -298,17 +295,17 @@ public class ThucDonFragment extends Fragment {
         }
 
         dangCapNhatTimKiemNoiBo = true;
-        etMenuSearch.setText(tuKhoaMucTieu);
-        etMenuSearch.setSelection(etMenuSearch.length());
+        binding.etMenuSearch.setText(tuKhoaMucTieu);
+        binding.etMenuSearch.setSelection(binding.etMenuSearch.length());
         dangCapNhatTimKiemNoiBo = false;
         tuKhoaTimKiemBanDau = null;
     }
 
     private String layTuKhoaHienTai() {
-        if (etMenuSearch == null || etMenuSearch.getText() == null) {
+        if (binding == null || binding.etMenuSearch.getText() == null) {
             return "";
         }
-        return etMenuSearch.getText().toString().trim();
+        return binding.etMenuSearch.getText().toString().trim();
     }
 
     private QuanLyGioHang layGioKhachHang() {
@@ -316,12 +313,18 @@ public class ThucDonFragment extends Fragment {
     }
 
     private void moBanPhimTimKiem() {
-        etMenuSearch.requestFocus();
-        etMenuSearch.post(() -> {
-            etMenuSearch.setSelection(etMenuSearch.getText() == null ? 0 : etMenuSearch.getText().length());
+        if (binding == null) {
+            return;
+        }
+        binding.etMenuSearch.requestFocus();
+        binding.etMenuSearch.post(() -> {
+            if (binding == null) {
+                return;
+            }
+            binding.etMenuSearch.setSelection(binding.etMenuSearch.getText() == null ? 0 : binding.etMenuSearch.getText().length());
             InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             if (inputMethodManager != null) {
-                inputMethodManager.showSoftInput(etMenuSearch, InputMethodManager.SHOW_IMPLICIT);
+                inputMethodManager.showSoftInput(binding.etMenuSearch, InputMethodManager.SHOW_IMPLICIT);
             }
         });
     }

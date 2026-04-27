@@ -13,10 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.HoaDonQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.databinding.FragmentHoaDonQuanTriBinding;
 import com.example.quanlynhahang.helper.DatabaseTaskRunner;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.model.DonHang;
@@ -25,28 +25,18 @@ import java.util.List;
 
 public class HoaDonQuanTriFragment extends Fragment {
 
+    private FragmentHoaDonQuanTriBinding binding;
     private DatabaseHelper databaseHelper;
     private final DatabaseTaskRunner databaseTaskRunner = new DatabaseTaskRunner();
     private HoaDonQuanTriAdapter hoaDonQuanTriAdapter;
-    private TextView tvEmptyState;
-    private TextView tvTongDoanhThu;
-    private TextView tvSoHoaDonDaThanhToan;
-    private TextView tvSoHoaDonChuaThanhToan;
-    private TextView tvGiaTriTrungBinh;
-    private TextView tvTomTatTienMat;
-    private TextView tvTomTatChuyenKhoan;
-    private TextView tvTomTatViDienTu;
-    private TextView tvPhuDePhuongThuc;
-    private ProgressBar progressTienMat;
-    private ProgressBar progressChuyenKhoan;
-    private ProgressBar progressViDienTu;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_hoa_don_quan_tri, container, false);
+        binding = FragmentHoaDonQuanTriBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -55,23 +45,9 @@ public class HoaDonQuanTriFragment extends Fragment {
 
         databaseHelper = new DatabaseHelper(requireContext());
         databaseHelper.chuanBiCoSoDuLieu();
-        tvEmptyState = view.findViewById(R.id.tvHoaDonQuanTriEmpty);
-        tvTongDoanhThu = view.findViewById(R.id.tvAdminInvoiceRevenueTotal);
-        tvSoHoaDonDaThanhToan = view.findViewById(R.id.tvAdminInvoicePaidCount);
-        tvSoHoaDonChuaThanhToan = view.findViewById(R.id.tvAdminInvoiceUnpaidCount);
-        tvGiaTriTrungBinh = view.findViewById(R.id.tvAdminInvoiceAverageAmount);
-        tvTomTatTienMat = view.findViewById(R.id.tvAdminInvoiceCashSummary);
-        tvTomTatChuyenKhoan = view.findViewById(R.id.tvAdminInvoiceBankSummary);
-        tvTomTatViDienTu = view.findViewById(R.id.tvAdminInvoiceDigitalSummary);
-        tvPhuDePhuongThuc = view.findViewById(R.id.tvAdminInvoicePaymentBreakdownSubtitle);
-        progressTienMat = view.findViewById(R.id.progressAdminInvoiceCash);
-        progressChuyenKhoan = view.findViewById(R.id.progressAdminInvoiceBank);
-        progressViDienTu = view.findViewById(R.id.progressAdminInvoiceDigital);
-
-        RecyclerView recyclerView = view.findViewById(R.id.rvHoaDonQuanTri);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvHoaDonQuanTri.setLayoutManager(new LinearLayoutManager(requireContext()));
         hoaDonQuanTriAdapter = new HoaDonQuanTriAdapter(this::xacNhanDaThanhToan);
-        recyclerView.setAdapter(hoaDonQuanTriAdapter);
+        binding.rvHoaDonQuanTri.setAdapter(hoaDonQuanTriAdapter);
 
         taiDanhSachHoaDon();
     }
@@ -79,20 +55,29 @@ public class HoaDonQuanTriFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (databaseHelper != null && hoaDonQuanTriAdapter != null) {
+        if (binding != null && databaseHelper != null && hoaDonQuanTriAdapter != null) {
             taiDanhSachHoaDon();
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void taiDanhSachHoaDon() {
+        if (!isAdded() || binding == null || databaseHelper == null || hoaDonQuanTriAdapter == null) {
+            return;
+        }
         databaseTaskRunner.execute(
                 () -> databaseHelper.layTatCaDonHang(),
                 danhSachHoaDon -> {
-                    if (!isAdded() || hoaDonQuanTriAdapter == null) {
+                    if (!isAdded() || binding == null || hoaDonQuanTriAdapter == null) {
                         return;
                     }
                     hoaDonQuanTriAdapter.capNhatDanhSach(danhSachHoaDon);
-                    tvEmptyState.setVisibility(danhSachHoaDon.isEmpty() ? View.VISIBLE : View.GONE);
+                    binding.tvHoaDonQuanTriEmpty.setVisibility(danhSachHoaDon.isEmpty() ? View.VISIBLE : View.GONE);
                     capNhatTongQuanHoaDon(danhSachHoaDon);
                 }
         );
@@ -128,16 +113,19 @@ public class HoaDonQuanTriFragment extends Fragment {
             }
         }
 
-        tvTongDoanhThu.setText(MoneyUtils.dinhDangTienViet(tongDoanhThu));
-        tvSoHoaDonDaThanhToan.setText(String.valueOf(soDaThanhToan));
-        tvSoHoaDonChuaThanhToan.setText(String.valueOf(soChuaThanhToan));
-        tvGiaTriTrungBinh.setText(MoneyUtils.dinhDangTienViet(soHoaDonHopLe == 0 ? 0 : tongDoanhThu / soHoaDonHopLe));
-        tvPhuDePhuongThuc.setText(getString(R.string.admin_invoice_payment_breakdown_subtitle_format, soDaThanhToan));
+        if (binding == null) {
+            return;
+        }
+        binding.tvAdminInvoiceRevenueTotal.setText(MoneyUtils.dinhDangTienViet(tongDoanhThu));
+        binding.tvAdminInvoicePaidCount.setText(String.valueOf(soDaThanhToan));
+        binding.tvAdminInvoiceUnpaidCount.setText(String.valueOf(soChuaThanhToan));
+        binding.tvAdminInvoiceAverageAmount.setText(MoneyUtils.dinhDangTienViet(soHoaDonHopLe == 0 ? 0 : tongDoanhThu / soHoaDonHopLe));
+        binding.tvAdminInvoicePaymentBreakdownSubtitle.setText(getString(R.string.admin_invoice_payment_breakdown_subtitle_format, soDaThanhToan));
 
         long tongDaThanhToan = tongTienMat + tongChuyenKhoan + tongViDienTu;
-        capNhatDongPhuongThuc(tvTomTatTienMat, progressTienMat, getString(R.string.admin_invoice_method_cash), tongTienMat, tongDaThanhToan);
-        capNhatDongPhuongThuc(tvTomTatChuyenKhoan, progressChuyenKhoan, getString(R.string.admin_invoice_method_bank), tongChuyenKhoan, tongDaThanhToan);
-        capNhatDongPhuongThuc(tvTomTatViDienTu, progressViDienTu, getString(R.string.admin_invoice_method_digital), tongViDienTu, tongDaThanhToan);
+        capNhatDongPhuongThuc(binding.tvAdminInvoiceCashSummary, binding.progressAdminInvoiceCash, getString(R.string.admin_invoice_method_cash), tongTienMat, tongDaThanhToan);
+        capNhatDongPhuongThuc(binding.tvAdminInvoiceBankSummary, binding.progressAdminInvoiceBank, getString(R.string.admin_invoice_method_bank), tongChuyenKhoan, tongDaThanhToan);
+        capNhatDongPhuongThuc(binding.tvAdminInvoiceDigitalSummary, binding.progressAdminInvoiceDigital, getString(R.string.admin_invoice_method_digital), tongViDienTu, tongDaThanhToan);
     }
 
     private void capNhatDongPhuongThuc(TextView textView, ProgressBar progressBar, String nhan, long giaTri, long tong) {

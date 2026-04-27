@@ -5,19 +5,18 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.YeuCauPhucVuAdapter;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.FragmentYeuCauBinding;
 import com.example.quanlynhahang.helper.DateTimeUtils;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
 import com.example.quanlynhahang.model.DonHang;
@@ -34,15 +33,7 @@ public class YeuCauFragment extends Fragment {
 
     private final List<YeuCauPhucVu> danhSachYeuCauPhucVu = new ArrayList<>();
 
-    private TextView tvServiceRequestEmptyState;
-    private TextView tvServiceRequestCaption;
-    private TextView tvPendingServiceRequestTitle;
-    private TextView tvPendingServiceRequestSubtitle;
-    private View cardPendingServiceRequest;
-    private RecyclerView rvServiceRequests;
-    private MaterialButton btnRequestCallStaff;
-    private MaterialButton btnRequestMoreWater;
-    private MaterialButton btnRequestPayment;
+    private FragmentYeuCauBinding binding;
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
@@ -55,7 +46,8 @@ public class YeuCauFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_yeu_cau, container, false);
+        binding = FragmentYeuCauBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -66,11 +58,10 @@ public class YeuCauFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         cheDoNhung = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
-        khoiTaoView(view);
-        apDungCheDoNhung(view);
-        thietLapDanhSachYeuCau(view);
+        apDungCheDoNhung();
+        thietLapDanhSachYeuCau();
         taiDanhSachYeuCau();
-        thietLapHanhDong(view);
+        thietLapHanhDong();
         capNhatTrangThaiRong();
     }
 
@@ -84,66 +75,38 @@ public class YeuCauFragment extends Fragment {
         capNhatTrangThaiRong();
     }
 
-    private void apDungCheDoNhung(@NonNull View view) {
-        if (!cheDoNhung) {
+    private void apDungCheDoNhung() {
+        if (!cheDoNhung || binding == null) {
             return;
         }
 
-        View titleView = view.findViewById(R.id.tvRequestsTitle);
-        if (titleView != null) {
-            titleView.setVisibility(View.GONE);
-        }
+        binding.tvRequestsTitle.setVisibility(View.GONE);
+        binding.tvServiceRequestSectionTitle.setVisibility(View.GONE);
+        binding.tvServiceRequestCaption.setVisibility(View.GONE);
 
-        View sectionTitle = view.findViewById(R.id.tvServiceRequestSectionTitle);
-        if (sectionTitle != null) {
-            sectionTitle.setVisibility(View.GONE);
-        }
-
-        View captionView = view.findViewById(R.id.tvServiceRequestCaption);
-        if (captionView != null) {
-            captionView.setVisibility(View.GONE);
-        }
-
-        View rootContent = view.findViewById(R.id.layoutServiceRequestRootContent);
-        if (rootContent != null) {
-            int paddingNgang = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_horizontal);
-            int paddingDoc = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_vertical);
-            rootContent.setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
-        }
+        int paddingNgang = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_horizontal);
+        int paddingDoc = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_vertical);
+        binding.layoutServiceRequestRootContent.setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
     }
 
-    private void khoiTaoView(View view) {
-        tvServiceRequestEmptyState = view.findViewById(R.id.tvServiceRequestEmptyState);
-        tvServiceRequestCaption = view.findViewById(R.id.tvServiceRequestCaption);
-        tvPendingServiceRequestTitle = view.findViewById(R.id.tvPendingServiceRequestTitle);
-        tvPendingServiceRequestSubtitle = view.findViewById(R.id.tvPendingServiceRequestSubtitle);
-        cardPendingServiceRequest = view.findViewById(R.id.cardPendingServiceRequest);
-        rvServiceRequests = view.findViewById(R.id.rvServiceRequests);
-        btnRequestCallStaff = view.findViewById(R.id.btnRequestCallStaff);
-        btnRequestMoreWater = view.findViewById(R.id.btnRequestMoreWater);
-        btnRequestPayment = view.findViewById(R.id.btnRequestPayment);
-    }
-
-    private void thietLapDanhSachYeuCau(View view) {
-        rvServiceRequests.setLayoutManager(new LinearLayoutManager(requireContext()));
+    private void thietLapDanhSachYeuCau() {
+        binding.rvServiceRequests.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         boDieuHopYeuCauPhucVu = new YeuCauPhucVuAdapter(danhSachYeuCauPhucVu, this::xacNhanHuyYeuCau);
-        rvServiceRequests.setAdapter(boDieuHopYeuCauPhucVu);
+        binding.rvServiceRequests.setAdapter(boDieuHopYeuCauPhucVu);
     }
 
-    private void thietLapHanhDong(View view) {
-        if (cardPendingServiceRequest != null) {
-            cardPendingServiceRequest.setOnClickListener(v -> rvServiceRequests.smoothScrollToPosition(0));
-        }
-        btnRequestCallStaff.setOnClickListener(v -> guiYeuCauPhucVuNhanh(
+    private void thietLapHanhDong() {
+        binding.cardPendingServiceRequest.setOnClickListener(v -> binding.rvServiceRequests.smoothScrollToPosition(0));
+        binding.btnRequestCallStaff.setOnClickListener(v -> guiYeuCauPhucVuNhanh(
                 YeuCauPhucVu.LoaiYeuCau.GOI_NHAN_VIEN,
                 getString(R.string.service_request_quick_call_staff)
         ));
-        btnRequestMoreWater.setOnClickListener(v -> guiYeuCauPhucVuNhanh(
+        binding.btnRequestMoreWater.setOnClickListener(v -> guiYeuCauPhucVuNhanh(
                 YeuCauPhucVu.LoaiYeuCau.THEM_NUOC,
                 getString(R.string.service_request_quick_more_water)
         ));
-        btnRequestPayment.setOnClickListener(v -> guiYeuCauPhucVuNhanh(
+        binding.btnRequestPayment.setOnClickListener(v -> guiYeuCauPhucVuNhanh(
                 YeuCauPhucVu.LoaiYeuCau.THANH_TOAN,
                 getString(R.string.service_request_quick_request_payment)
         ));
@@ -231,7 +194,7 @@ public class YeuCauFragment extends Fragment {
     }
 
     private void capNhatTrangThaiRong() {
-        if (tvServiceRequestEmptyState == null || rvServiceRequests == null) {
+        if (binding == null || sessionManager == null) {
             return;
         }
 
@@ -239,38 +202,32 @@ public class YeuCauFragment extends Fragment {
         boolean daDangNhap = sessionManager.daDangNhap() && idNguoiDung > 0;
         boolean coNgucCanhHoTro = daDangNhap && coTheDungHoTro(idNguoiDung);
 
-        if (tvServiceRequestCaption != null) {
-            String soBanHienTai = daDangNhap ? timBanHienTai(idNguoiDung) : null;
-            if (!coNgucCanhHoTro) {
-                tvServiceRequestCaption.setText(getString(R.string.service_request_unavailable));
-            } else if (!TextUtils.isEmpty(soBanHienTai)) {
-                tvServiceRequestCaption.setText(getString(R.string.service_request_caption_with_table, soBanHienTai));
-            } else {
-                tvServiceRequestCaption.setText(getString(R.string.service_request_section_caption));
-            }
+        String soBanHienTai = daDangNhap ? timBanHienTai(idNguoiDung) : null;
+        if (!coNgucCanhHoTro) {
+            binding.tvServiceRequestCaption.setText(getString(R.string.service_request_unavailable));
+        } else if (!TextUtils.isEmpty(soBanHienTai)) {
+            binding.tvServiceRequestCaption.setText(getString(R.string.service_request_caption_with_table, soBanHienTai));
+        } else {
+            binding.tvServiceRequestCaption.setText(getString(R.string.service_request_section_caption));
         }
 
         YeuCauPhucVu yeuCauDangCho = DichVuKhachHangHelper.timYeuCauHoTroDangXuLy(danhSachYeuCauPhucVu);
-        if (cardPendingServiceRequest != null) {
-            cardPendingServiceRequest.setVisibility(coNgucCanhHoTro && yeuCauDangCho != null ? View.VISIBLE : View.GONE);
-        }
-        if (tvPendingServiceRequestTitle != null && yeuCauDangCho != null) {
-            tvPendingServiceRequestTitle.setText(getString(R.string.activity_hub_summary_support_waiting));
-        }
-        if (tvPendingServiceRequestSubtitle != null && yeuCauDangCho != null) {
-            tvPendingServiceRequestSubtitle.setText(yeuCauDangCho.layNoiDung());
+        binding.cardPendingServiceRequest.setVisibility(coNgucCanhHoTro && yeuCauDangCho != null ? View.VISIBLE : View.GONE);
+        if (yeuCauDangCho != null) {
+            binding.tvPendingServiceRequestTitle.setText(getString(R.string.activity_hub_summary_support_waiting));
+            binding.tvPendingServiceRequestSubtitle.setText(yeuCauDangCho.layNoiDung());
         }
 
-        tvServiceRequestEmptyState.setVisibility(coNgucCanhHoTro && danhSachYeuCauPhucVu.isEmpty() ? View.VISIBLE : View.GONE);
-        rvServiceRequests.setVisibility(coNgucCanhHoTro && !danhSachYeuCauPhucVu.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tvServiceRequestEmptyState.setVisibility(coNgucCanhHoTro && danhSachYeuCauPhucVu.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.rvServiceRequests.setVisibility(coNgucCanhHoTro && !danhSachYeuCauPhucVu.isEmpty() ? View.VISIBLE : View.GONE);
 
-        btnRequestCallStaff.setEnabled(coNgucCanhHoTro);
-        btnRequestMoreWater.setEnabled(coNgucCanhHoTro);
-        btnRequestPayment.setEnabled(coNgucCanhHoTro);
+        binding.btnRequestCallStaff.setEnabled(coNgucCanhHoTro);
+        binding.btnRequestMoreWater.setEnabled(coNgucCanhHoTro);
+        binding.btnRequestPayment.setEnabled(coNgucCanhHoTro);
         float alpha = coNgucCanhHoTro ? 1f : 0.5f;
-        btnRequestCallStaff.setAlpha(alpha);
-        btnRequestMoreWater.setAlpha(alpha);
-        btnRequestPayment.setAlpha(alpha);
+        binding.btnRequestCallStaff.setAlpha(alpha);
+        binding.btnRequestMoreWater.setAlpha(alpha);
+        binding.btnRequestPayment.setAlpha(alpha);
     }
 
     private boolean coTheDungHoTro(long idNguoiDung) {
@@ -292,9 +249,12 @@ public class YeuCauFragment extends Fragment {
     }
 
     private void datTrangThaiDangGui(boolean dangGui, @Nullable YeuCauPhucVu.LoaiYeuCau loaiYeuCau) {
-        capNhatNutYeuCau(btnRequestCallStaff, dangGui, loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.GOI_NHAN_VIEN, R.string.service_request_quick_call_staff);
-        capNhatNutYeuCau(btnRequestMoreWater, dangGui, loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THEM_NUOC, R.string.service_request_quick_more_water);
-        capNhatNutYeuCau(btnRequestPayment, dangGui, loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THANH_TOAN, R.string.service_request_quick_payment);
+        if (binding == null) {
+            return;
+        }
+        capNhatNutYeuCau(binding.btnRequestCallStaff, dangGui, loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.GOI_NHAN_VIEN, R.string.service_request_quick_call_staff);
+        capNhatNutYeuCau(binding.btnRequestMoreWater, dangGui, loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THEM_NUOC, R.string.service_request_quick_more_water);
+        capNhatNutYeuCau(binding.btnRequestPayment, dangGui, loaiYeuCau == YeuCauPhucVu.LoaiYeuCau.THANH_TOAN, R.string.service_request_quick_payment);
     }
 
     private void capNhatNutYeuCau(MaterialButton button, boolean dangGui, boolean laNutDangGui, int textRes) {
@@ -330,6 +290,12 @@ public class YeuCauFragment extends Fragment {
         }
         capNhatTrangThaiRong();
         hienThiPhanHoiNgan(R.string.service_request_cancel_success);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     private QuanLyGioHang layGioKhachHang() {

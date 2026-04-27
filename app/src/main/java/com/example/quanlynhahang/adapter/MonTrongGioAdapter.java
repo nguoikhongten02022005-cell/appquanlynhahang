@@ -3,16 +3,13 @@ package com.example.quanlynhahang.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
 import com.example.quanlynhahang.data.QuanLyGioHang;
+import com.example.quanlynhahang.databinding.ItemMonTrongDonBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,36 +47,35 @@ public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.
     @NonNull
     @Override
     public ViewHolderMonTrongGio onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_mon_trong_don, parent, false);
-        return new ViewHolderMonTrongGio(view);
+        ItemMonTrongDonBinding binding = ItemMonTrongDonBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolderMonTrongGio(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderMonTrongGio holder, int position) {
         QuanLyGioHang.MonTrongGio monTrongGio = danhSachMon.get(position);
 
-        holder.ivDishImage.setImageResource(monTrongGio.layMonAn().layIdAnhTaiNguyen());
-        holder.tvDishName.setText(monTrongGio.layMonAn().layTenMon());
-        holder.tvDishQuantity.setText(
+        holder.binding.ivMonTrongDonImage.setImageResource(monTrongGio.layMonAn().layIdAnhTaiNguyen());
+        holder.binding.tvMonTrongDonName.setText(monTrongGio.layMonAn().layTenMon());
+        holder.binding.tvMonTrongDonQuantity.setText(
                 holder.itemView.getContext().getString(R.string.order_quantity_format, monTrongGio.laySoLuong())
         );
-        holder.tvDishPrice.setText(
+        holder.binding.tvMonTrongDonPrice.setText(
                 holder.itemView.getContext().getString(R.string.order_price_format, monTrongGio.layMonAn().layGiaBan())
         );
 
-        holder.layoutActions.setVisibility(View.VISIBLE);
-        holder.btnIncrease.setOnClickListener(v -> {
+        holder.binding.layoutMonTrongDonActions.setVisibility(View.VISIBLE);
+        holder.binding.btnMonTrongDonIncrease.setOnClickListener(v -> {
             if (onHanhDongSoLuongListener != null) {
                 onHanhDongSoLuongListener.khiTangSoLuong(monTrongGio);
             }
         });
-        holder.btnDecrease.setOnClickListener(v -> {
+        holder.binding.btnMonTrongDonDecrease.setOnClickListener(v -> {
             if (onHanhDongSoLuongListener != null) {
                 onHanhDongSoLuongListener.khiGiamSoLuong(monTrongGio);
             }
         });
-        holder.btnRemove.setOnClickListener(v -> {
+        holder.binding.btnMonTrongDonRemove.setOnClickListener(v -> {
             if (onHanhDongSoLuongListener != null) {
                 onHanhDongSoLuongListener.khiXoaMon(monTrongGio);
             }
@@ -92,25 +88,11 @@ public class MonTrongGioAdapter extends RecyclerView.Adapter<MonTrongGioAdapter.
     }
 
     static class ViewHolderMonTrongGio extends RecyclerView.ViewHolder {
-        private final ImageView ivDishImage;
-        private final TextView tvDishName;
-        private final TextView tvDishQuantity;
-        private final TextView tvDishPrice;
-        private final LinearLayout layoutActions;
-        private final ImageButton btnIncrease;
-        private final ImageButton btnDecrease;
-        private final ImageButton btnRemove;
+        private final ItemMonTrongDonBinding binding;
 
-        ViewHolderMonTrongGio(@NonNull View itemView) {
-            super(itemView);
-            ivDishImage = itemView.findViewById(R.id.ivMonTrongDonImage);
-            tvDishName = itemView.findViewById(R.id.tvMonTrongDonName);
-            tvDishQuantity = itemView.findViewById(R.id.tvMonTrongDonQuantity);
-            tvDishPrice = itemView.findViewById(R.id.tvMonTrongDonPrice);
-            layoutActions = itemView.findViewById(R.id.layoutMonTrongDonActions);
-            btnIncrease = itemView.findViewById(R.id.btnMonTrongDonIncrease);
-            btnDecrease = itemView.findViewById(R.id.btnMonTrongDonDecrease);
-            btnRemove = itemView.findViewById(R.id.btnMonTrongDonRemove);
+        ViewHolderMonTrongGio(@NonNull ItemMonTrongDonBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

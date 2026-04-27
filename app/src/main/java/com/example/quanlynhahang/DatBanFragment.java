@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,17 +15,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.quanlynhahang.adapter.DatBanAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.FragmentDatBanBinding;
 import com.example.quanlynhahang.helper.DateTimeUtils;
 import com.example.quanlynhahang.model.BanAn;
 import com.example.quanlynhahang.model.DatBan;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,14 +43,7 @@ public class DatBanFragment extends Fragment {
     private final List<String> occupiedTables = new ArrayList<>();
 
     private Calendar selectedDateTime;
-    private TextView tvReservationDate;
-    private TextView tvReservationTime;
-    private MaterialAutoCompleteTextView autoCompleteReservationTable;
-    private EditText etGuestCount;
-    private EditText etReservationNote;
-    private TextView tvReservationAvailableTables;
-    private TextView tvReservationOccupiedTables;
-    private MaterialButton btnSubmitReservation;
+    private FragmentDatBanBinding binding;
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
@@ -67,7 +55,8 @@ public class DatBanFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_dat_ban, container, false);
+        binding = FragmentDatBanBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -78,11 +67,11 @@ public class DatBanFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
         embedded = getArguments() != null && getArguments().getBoolean(ARG_EMBEDDED, false);
 
-        khoiTaoView(view);
-        apDungCheDoNhung(view);
+        khoiTaoView();
+        apDungCheDoNhung();
         thietLapBoChonNgayGio();
-        thietLapDanhSachDatBan(view);
-        thietLapHanhDong(view);
+        thietLapDanhSachDatBan();
+        thietLapHanhDong();
         taiDanhSachDatBan();
     }
 
@@ -96,44 +85,27 @@ public class DatBanFragment extends Fragment {
         capNhatDanhSachBanTheoKhungGio();
     }
 
-    private void apDungCheDoNhung(@NonNull View view) {
-        if (!embedded) {
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    private void apDungCheDoNhung() {
+        if (!embedded || binding == null) {
             return;
         }
 
-        View titleView = view.findViewById(R.id.tvReservationsTitle);
-        if (titleView != null) {
-            titleView.setVisibility(View.GONE);
-        }
+        binding.tvReservationsTitle.setVisibility(View.GONE);
+        binding.tvReservationSectionTitle.setVisibility(View.GONE);
+        binding.tvReservationSectionSubtitle.setVisibility(View.GONE);
 
-        View sectionTitle = view.findViewById(R.id.tvReservationSectionTitle);
-        if (sectionTitle != null) {
-            sectionTitle.setVisibility(View.GONE);
-        }
-
-        View sectionSubtitle = view.findViewById(R.id.tvReservationSectionSubtitle);
-        if (sectionSubtitle != null) {
-            sectionSubtitle.setVisibility(View.GONE);
-        }
-
-        View rootContent = view.findViewById(R.id.layoutReservationRootContent);
-        if (rootContent != null) {
-            int paddingNgang = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_horizontal);
-            int paddingDoc = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_vertical);
-            rootContent.setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
-        }
+        int paddingNgang = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_horizontal);
+        int paddingDoc = getResources().getDimensionPixelSize(R.dimen.hub_embedded_content_padding_vertical);
+        binding.layoutReservationRootContent.setPadding(paddingNgang, paddingDoc, paddingNgang, paddingDoc);
     }
 
-    private void khoiTaoView(View view) {
-        tvReservationDate = view.findViewById(R.id.tvReservationDate);
-        tvReservationTime = view.findViewById(R.id.tvReservationTime);
-        autoCompleteReservationTable = view.findViewById(R.id.autoCompleteReservationTable);
-        etGuestCount = view.findViewById(R.id.etGuestCount);
-        etReservationNote = view.findViewById(R.id.etReservationNote);
-        tvReservationAvailableTables = view.findViewById(R.id.tvReservationAvailableTables);
-        tvReservationOccupiedTables = view.findViewById(R.id.tvReservationOccupiedTables);
-        btnSubmitReservation = view.findViewById(R.id.btnSubmitReservation);
-
+    private void khoiTaoView() {
         thietLapLuaChonSoBan();
 
         selectedDateTime = Calendar.getInstance();
@@ -149,8 +121,8 @@ public class DatBanFragment extends Fragment {
     }
 
     private void thietLapBoChonNgayGio() {
-        tvReservationDate.setOnClickListener(v -> moBoChonNgay());
-        tvReservationTime.setOnClickListener(v -> moBoChonGio());
+        binding.layoutReservationForm.tvReservationDate.setOnClickListener(v -> moBoChonNgay());
+        binding.layoutReservationForm.tvReservationTime.setOnClickListener(v -> moBoChonGio());
     }
 
     private void moBoChonNgay() {
@@ -212,7 +184,7 @@ public class DatBanFragment extends Fragment {
                 selectedDateTime.get(Calendar.MONTH) + 1,
                 selectedDateTime.get(Calendar.YEAR)
         );
-        tvReservationDate.setText(dateText);
+        binding.layoutReservationForm.tvReservationDate.setText(dateText);
     }
 
     private void capNhatNhanGio() {
@@ -222,7 +194,7 @@ public class DatBanFragment extends Fragment {
                 selectedDateTime.get(Calendar.HOUR_OF_DAY),
                 selectedDateTime.get(Calendar.MINUTE)
         );
-        tvReservationTime.setText(timeText);
+        binding.layoutReservationForm.tvReservationTime.setText(timeText);
     }
 
     private void thietLapLuaChonSoBan() {
@@ -231,23 +203,23 @@ public class DatBanFragment extends Fragment {
                 android.R.layout.simple_dropdown_item_1line,
                 tableOptions
         );
-        autoCompleteReservationTable.setAdapter(tableAdapter);
-        autoCompleteReservationTable.setOnClickListener(v -> autoCompleteReservationTable.showDropDown());
-        autoCompleteReservationTable.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                autoCompleteReservationTable.showDropDown();
+        binding.layoutReservationForm.autoCompleteReservationTable.setAdapter(tableAdapter);
+        binding.layoutReservationForm.autoCompleteReservationTable.setOnClickListener(v -> binding.layoutReservationForm.autoCompleteReservationTable.showDropDown());
+        binding.layoutReservationForm.autoCompleteReservationTable.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && binding != null) {
+                binding.layoutReservationForm.autoCompleteReservationTable.showDropDown();
             }
         });
     }
 
     private void capNhatDanhSachBanTheoKhungGio() {
-        if (selectedDateTime == null || autoCompleteReservationTable == null) {
+        if (selectedDateTime == null || binding == null || databaseHelper == null) {
             return;
         }
 
-        String banDangChon = autoCompleteReservationTable.getText() == null
+        String banDangChon = binding.layoutReservationForm.autoCompleteReservationTable.getText() == null
                 ? ""
-                : autoCompleteReservationTable.getText().toString().trim();
+                : binding.layoutReservationForm.autoCompleteReservationTable.getText().toString().trim();
 
         if (!isAdded()) {
             return;
@@ -267,34 +239,34 @@ public class DatBanFragment extends Fragment {
 
         Collections.sort(tableOptions);
         @SuppressWarnings("unchecked")
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) autoCompleteReservationTable.getAdapter();
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.layoutReservationForm.autoCompleteReservationTable.getAdapter();
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
 
         if (!TextUtils.isEmpty(banDangChon) && tableOptions.contains(banDangChon)) {
-            autoCompleteReservationTable.setText(banDangChon, false);
+            binding.layoutReservationForm.autoCompleteReservationTable.setText(banDangChon, false);
         } else if (!tableOptions.isEmpty()) {
-            autoCompleteReservationTable.setText(tableOptions.get(0), false);
+            binding.layoutReservationForm.autoCompleteReservationTable.setText(tableOptions.get(0), false);
         } else {
-            autoCompleteReservationTable.setText("", false);
+            binding.layoutReservationForm.autoCompleteReservationTable.setText("", false);
         }
 
         capNhatTrangThaiBan();
     }
 
     private void capNhatTrangThaiBan() {
-        if (tvReservationAvailableTables == null || tvReservationOccupiedTables == null) {
+        if (binding == null || databaseHelper == null) {
             return;
         }
 
         int tongSoBan = databaseHelper.layTatCaBanAn().size();
         if (tableOptions.isEmpty()) {
-            tvReservationAvailableTables.setText(getString(R.string.reservation_no_tables_available));
+            binding.layoutReservationForm.tvReservationAvailableTables.setText(getString(R.string.reservation_no_tables_available));
         } else if (tongSoBan > 0 && tableOptions.size() == tongSoBan) {
-            tvReservationAvailableTables.setText(getString(R.string.reservation_all_tables_available));
+            binding.layoutReservationForm.tvReservationAvailableTables.setText(getString(R.string.reservation_all_tables_available));
         } else {
-            tvReservationAvailableTables.setText(getString(
+            binding.layoutReservationForm.tvReservationAvailableTables.setText(getString(
                     R.string.reservation_available_tables_format,
                     tableOptions.size(),
                     TextUtils.join(", ", tableOptions)
@@ -302,9 +274,9 @@ public class DatBanFragment extends Fragment {
         }
 
         if (occupiedTables.isEmpty()) {
-            tvReservationOccupiedTables.setText(getString(R.string.reservation_no_tables_occupied));
+            binding.layoutReservationForm.tvReservationOccupiedTables.setText(getString(R.string.reservation_no_tables_occupied));
         } else {
-            tvReservationOccupiedTables.setText(getString(
+            binding.layoutReservationForm.tvReservationOccupiedTables.setText(getString(
                     R.string.reservation_occupied_tables_format,
                     occupiedTables.size(),
                     TextUtils.join(", ", occupiedTables)
@@ -312,12 +284,11 @@ public class DatBanFragment extends Fragment {
         }
     }
 
-    private void thietLapDanhSachDatBan(View view) {
-        RecyclerView rvReservations = view.findViewById(R.id.rvReservations);
-        rvReservations.setLayoutManager(new LinearLayoutManager(requireContext()));
+    private void thietLapDanhSachDatBan() {
+        binding.rvReservations.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         reservationAdapter = new DatBanAdapter(reservations, this::xacNhanHuyDatBan);
-        rvReservations.setAdapter(reservationAdapter);
+        binding.rvReservations.setAdapter(reservationAdapter);
     }
 
     private void xacNhanHuyDatBan(DatBan datBan, int position) {
@@ -342,11 +313,14 @@ public class DatBanFragment extends Fragment {
         hienThiPhanHoiNgan(R.string.reservation_cancel_success);
     }
 
-    private void thietLapHanhDong(View view) {
-        btnSubmitReservation.setOnClickListener(v -> guiYeuCauDatBan());
+    private void thietLapHanhDong() {
+        binding.layoutReservationForm.btnSubmitReservation.setOnClickListener(v -> guiYeuCauDatBan());
     }
 
     private void guiYeuCauDatBan() {
+        if (binding == null) {
+            return;
+        }
         datTrangThaiDangGui(true);
         long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
         if (!sessionManager.daDangNhap() || idNguoiDungHienTai <= 0) {
@@ -355,7 +329,7 @@ public class DatBanFragment extends Fragment {
             return;
         }
 
-        String chuoiSoKhach = etGuestCount.getText() == null ? "" : etGuestCount.getText().toString().trim();
+        String chuoiSoKhach = binding.layoutReservationForm.etGuestCount.getText() == null ? "" : binding.layoutReservationForm.etGuestCount.getText().toString().trim();
         if (TextUtils.isEmpty(chuoiSoKhach)) {
             datTrangThaiDangGui(false);
             hienThiPhanHoiNgan(R.string.reservation_validation_guest_count);
@@ -383,9 +357,9 @@ public class DatBanFragment extends Fragment {
             return;
         }
 
-        String banDaChon = autoCompleteReservationTable.getText() == null
+        String banDaChon = binding.layoutReservationForm.autoCompleteReservationTable.getText() == null
                 ? ""
-                : autoCompleteReservationTable.getText().toString().trim();
+                : binding.layoutReservationForm.autoCompleteReservationTable.getText().toString().trim();
         if (TextUtils.isEmpty(banDaChon)) {
             datTrangThaiDangGui(false);
             hienThiPhanHoiNgan(R.string.reservation_validation_area_required);
@@ -399,7 +373,7 @@ public class DatBanFragment extends Fragment {
             return;
         }
 
-        String ghiChu = etReservationNote.getText() == null ? "" : etReservationNote.getText().toString().trim();
+        String ghiChu = binding.layoutReservationForm.etReservationNote.getText() == null ? "" : binding.layoutReservationForm.etReservationNote.getText().toString().trim();
         String thoiGianDatBan = layChuoiThoiGian(selectedDateTime);
 
         long idDatBanMoi = databaseHelper.themDatBan(
@@ -422,8 +396,8 @@ public class DatBanFragment extends Fragment {
             reservationAdapter.capNhatDanhSachDatBan(reservations);
         }
 
-        etGuestCount.setText("");
-        etReservationNote.setText("");
+        binding.layoutReservationForm.etGuestCount.setText("");
+        binding.layoutReservationForm.etReservationNote.setText("");
         capNhatDanhSachBanTheoKhungGio();
 
         datTrangThaiDangGui(false);
@@ -500,11 +474,11 @@ public class DatBanFragment extends Fragment {
     }
 
     private void datTrangThaiDangGui(boolean dangGui) {
-        if (btnSubmitReservation == null) {
+        if (binding == null) {
             return;
         }
-        btnSubmitReservation.setEnabled(!dangGui);
-        btnSubmitReservation.setText(dangGui ? getString(R.string.order_submitting) : getString(R.string.reservation_submit));
+        binding.layoutReservationForm.btnSubmitReservation.setEnabled(!dangGui);
+        binding.layoutReservationForm.btnSubmitReservation.setText(dangGui ? getString(R.string.order_submitting) : getString(R.string.reservation_submit));
     }
 
     private void hienThiPhanHoiNgan(int messageRes) {

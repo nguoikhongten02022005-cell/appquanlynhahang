@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.ActivityTrungTamNoiBoBinding;
 import com.example.quanlynhahang.helper.DieuHuongNoiBoHelper;
 
 public class TrungTamNoiBoActivity extends AppCompatActivity {
@@ -20,6 +21,7 @@ public class TrungTamNoiBoActivity extends AppCompatActivity {
 
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
+    private ActivityTrungTamNoiBoBinding binding;
 
     public static Intent taoIntent(Context context, String tab) {
         Intent intent = new Intent(context, TrungTamNoiBoActivity.class);
@@ -30,7 +32,8 @@ public class TrungTamNoiBoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trung_tam_noi_bo);
+        binding = ActivityTrungTamNoiBoBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         setTitle(R.string.internal_shell_title);
 
         sessionManager = new SessionManager(this);

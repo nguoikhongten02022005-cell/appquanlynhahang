@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.R;
+import com.example.quanlynhahang.databinding.ItemDonHangNhanVienBinding;
 import com.example.quanlynhahang.helper.HanhDongNghiepVuHelper;
 import com.example.quanlynhahang.helper.TrangThaiHienThiHelper;
 import com.example.quanlynhahang.model.DonHang;
@@ -48,8 +48,8 @@ public class DonHangNhanVienAdapter extends RecyclerView.Adapter<DonHangNhanVien
     @NonNull
     @Override
     public DonHangNhanVienViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_don_hang_nhan_vien, parent, false);
-        return new DonHangNhanVienViewHolder(view);
+        ItemDonHangNhanVienBinding binding = ItemDonHangNhanVienBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new DonHangNhanVienViewHolder(binding);
     }
 
     @Override
@@ -63,82 +63,54 @@ public class DonHangNhanVienAdapter extends RecyclerView.Adapter<DonHangNhanVien
     }
 
     class DonHangNhanVienViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvDonHangCode;
-        private final TextView tvDonHangTime;
-        private final TextView tvDonHangTotal;
-        private final TextView tvDonHangStatus;
-        private final TextView tvDonHangType;
-        private final TextView tvDonHangTable;
-        private final TextView tvDonHangPayment;
-        private final TextView tvDonHangNote;
-        private final TextView tvToggleDetails;
-        private final LinearLayout layoutDonHangDetails;
-        private final TextView tvEmptyDishes;
-        private final TextView btnConfirm;
-        private final TextView btnComplete;
-        private final TextView btnCancel;
+        private final ItemDonHangNhanVienBinding binding;
         private final MonTrongDonAdapter orderDishAdapter;
 
-        DonHangNhanVienViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvDonHangCode = itemView.findViewById(R.id.tvEmployeeDonHangCode);
-            tvDonHangTime = itemView.findViewById(R.id.tvEmployeeDonHangTime);
-            tvDonHangTotal = itemView.findViewById(R.id.tvEmployeeDonHangTotal);
-            tvDonHangStatus = itemView.findViewById(R.id.tvEmployeeDonHangStatus);
-            tvDonHangType = itemView.findViewById(R.id.tvEmployeeDonHangType);
-            tvDonHangTable = itemView.findViewById(R.id.tvEmployeeDonHangTable);
-            tvDonHangPayment = itemView.findViewById(R.id.tvEmployeeDonHangPayment);
-            tvDonHangNote = itemView.findViewById(R.id.tvEmployeeDonHangNote);
-            tvToggleDetails = itemView.findViewById(R.id.tvEmployeeDonHangToggleDetails);
-            layoutDonHangDetails = itemView.findViewById(R.id.layoutEmployeeDonHangDetails);
-            tvEmptyDishes = itemView.findViewById(R.id.tvEmployeeDonHangEmptyDishes);
-            btnConfirm = itemView.findViewById(R.id.btnEmployeeDonHangConfirm);
-            btnComplete = itemView.findViewById(R.id.btnEmployeeDonHangComplete);
-            btnCancel = itemView.findViewById(R.id.btnEmployeeDonHangCancel);
-
-            RecyclerView rvMonTrongDon = itemView.findViewById(R.id.rvEmployeeMonTrongDon);
-            rvMonTrongDon.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
-            rvMonTrongDon.setNestedScrollingEnabled(false);
+        DonHangNhanVienViewHolder(@NonNull ItemDonHangNhanVienBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.rvEmployeeMonTrongDon.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
+            binding.rvEmployeeMonTrongDon.setNestedScrollingEnabled(false);
             orderDishAdapter = new MonTrongDonAdapter(new ArrayList<>());
-            rvMonTrongDon.setAdapter(orderDishAdapter);
+            binding.rvEmployeeMonTrongDon.setAdapter(orderDishAdapter);
         }
 
         void ganDuLieu(DonHang donHang) {
             Context context = itemView.getContext();
-            tvDonHangCode.setText(donHang.layMaDon());
-            tvDonHangTime.setText(donHang.layThoiGian());
-            tvDonHangTotal.setText(donHang.layTongTien());
-            tvDonHangStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiDon(donHang));
-            tvDonHangType.setText(donHang.laAnTaiQuan()
+            binding.tvEmployeeDonHangCode.setText(donHang.layMaDon());
+            binding.tvEmployeeDonHangTime.setText(donHang.layThoiGian());
+            binding.tvEmployeeDonHangTotal.setText(donHang.layTongTien());
+            binding.tvEmployeeDonHangStatus.setText(TrangThaiHienThiHelper.layTextTrangThaiDon(donHang));
+            binding.tvEmployeeDonHangType.setText(donHang.laAnTaiQuan()
                     ? context.getString(R.string.order_type_dine_in)
                     : context.getString(R.string.order_type_take_away));
-            tvDonHangTable.setText(donHang.coBanAn()
+            binding.tvEmployeeDonHangTable.setText(donHang.coBanAn()
                     ? context.getString(R.string.order_table_format, donHang.laySoBan())
                     : context.getString(R.string.order_table_not_required));
-            tvDonHangPayment.setText(layTextThanhToan(context, donHang));
-            tvDonHangNote.setText(donHang.coGhiChu()
+            binding.tvEmployeeDonHangPayment.setText(layTextThanhToan(context, donHang));
+            binding.tvEmployeeDonHangNote.setText(donHang.coGhiChu()
                     ? context.getString(R.string.order_note_format, donHang.layGhiChu())
                     : context.getString(R.string.order_note_empty));
-            ViewCompat.setBackgroundTintList(tvDonHangStatus, ColorStateList.valueOf(ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiDon(donHang.layTrangThai()))));
+            ViewCompat.setBackgroundTintList(binding.tvEmployeeDonHangStatus, ColorStateList.valueOf(ContextCompat.getColor(context, TrangThaiHienThiHelper.layMauTrangThaiDon(donHang.layTrangThai()))));
 
             orderDishAdapter.capNhatDuLieu(donHang.layDanhSachMon());
             boolean coMon = !donHang.layDanhSachMon().isEmpty();
-            tvEmptyDishes.setVisibility(coMon ? View.GONE : View.VISIBLE);
-            layoutDonHangDetails.setVisibility(donHang.dangMoRong() ? View.VISIBLE : View.GONE);
-            tvToggleDetails.setText(donHang.dangMoRong() ? R.string.employee_order_toggle_hide : R.string.employee_order_toggle_view);
-            tvToggleDetails.setOnClickListener(v -> chuyenTrangThaiChiTiet(donHang));
+            binding.tvEmployeeDonHangEmptyDishes.setVisibility(coMon ? View.GONE : View.VISIBLE);
+            binding.layoutEmployeeDonHangDetails.setVisibility(donHang.dangMoRong() ? View.VISIBLE : View.GONE);
+            binding.tvEmployeeDonHangToggleDetails.setText(donHang.dangMoRong() ? R.string.employee_order_toggle_hide : R.string.employee_order_toggle_view);
+            binding.tvEmployeeDonHangToggleDetails.setOnClickListener(v -> chuyenTrangThaiChiTiet(donHang));
 
-            btnConfirm.setText(R.string.employee_order_action_accept);
+            binding.btnEmployeeDonHangConfirm.setText(R.string.employee_order_action_accept);
             boolean hienThiXacNhan = HanhDongNghiepVuHelper.nhanVienCoTheNhanDon(donHang);
             boolean hienThiHoanTat = HanhDongNghiepVuHelper.nhanVienCoTheChuyenSangPhucVu(donHang)
                     || HanhDongNghiepVuHelper.nhanVienCoTheHoanTatDon(donHang);
             boolean hienThiHuy = HanhDongNghiepVuHelper.nhanVienCoTheHuyDon(donHang);
 
-            ganHanhDong(btnConfirm, hienThiXacNhan, v -> hanhDongListener.khiXacNhan(donHang));
+            ganHanhDong(binding.btnEmployeeDonHangConfirm, hienThiXacNhan, v -> hanhDongListener.khiXacNhan(donHang));
 
-            btnComplete.setText(HanhDongNghiepVuHelper.layTextHanhDongChinhDon(donHang));
-            ganHanhDong(btnComplete, hienThiHoanTat, v -> hanhDongListener.khiHoanTat(donHang));
-            ganHanhDong(btnCancel, hienThiHuy, v -> hanhDongListener.khiHuy(donHang));
+            binding.btnEmployeeDonHangComplete.setText(HanhDongNghiepVuHelper.layTextHanhDongChinhDon(donHang));
+            ganHanhDong(binding.btnEmployeeDonHangComplete, hienThiHoanTat, v -> hanhDongListener.khiHoanTat(donHang));
+            ganHanhDong(binding.btnEmployeeDonHangCancel, hienThiHuy, v -> hanhDongListener.khiHuy(donHang));
             capNhatKhoangCachNutHanhDong();
         }
 
@@ -157,11 +129,11 @@ public class DonHangNhanVienAdapter extends RecyclerView.Adapter<DonHangNhanVien
         }
 
         private void capNhatKhoangCachNutHanhDong() {
-            datKhoangCachTrai(btnConfirm, false);
-            datKhoangCachTrai(btnComplete, btnConfirm.getVisibility() == View.VISIBLE);
+            datKhoangCachTrai(binding.btnEmployeeDonHangConfirm, false);
+            datKhoangCachTrai(binding.btnEmployeeDonHangComplete, binding.btnEmployeeDonHangConfirm.getVisibility() == View.VISIBLE);
             datKhoangCachTrai(
-                    btnCancel,
-                    btnConfirm.getVisibility() == View.VISIBLE || btnComplete.getVisibility() == View.VISIBLE
+                    binding.btnEmployeeDonHangCancel,
+                    binding.btnEmployeeDonHangConfirm.getVisibility() == View.VISIBLE || binding.btnEmployeeDonHangComplete.getVisibility() == View.VISIBLE
             );
         }
 

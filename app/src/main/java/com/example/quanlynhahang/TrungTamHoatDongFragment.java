@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.example.quanlynhahang.data.QuanLyGioHang;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
+import com.example.quanlynhahang.databinding.FragmentTrungTamHoatDongBinding;
 import com.example.quanlynhahang.helper.DichVuKhachHangHelper;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
@@ -33,17 +34,7 @@ public class TrungTamHoatDongFragment extends Fragment {
     private static final String TAG_DAT_BAN = "reservations";
     private static final String TAG_YEU_CAU = "service_requests";
 
-    private MaterialButton btnTabDonHangs;
-    private MaterialButton btnTabRequests;
-    private MaterialButton btnTabServiceRequests;
-    private View layoutActivityHubRoot;
-    private TextView tvActivityHubTitle;
-    private View layoutServiceHubSummaryContent;
-    private TextView tvServiceHubSummaryTable;
-    private TextView tvServiceHubSummaryOrder;
-    private TextView tvServiceHubSummarySupport;
-    private TextView tvServiceHubSummaryChevron;
-    private View cardServiceHubSummary;
+    private FragmentTrungTamHoatDongBinding binding;
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
     private int tabDangChon = TAB_ORDERS;
@@ -61,24 +52,14 @@ public class TrungTamHoatDongFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_trung_tam_hoat_dong, container, false);
+        binding = FragmentTrungTamHoatDongBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        layoutActivityHubRoot = view.findViewById(R.id.layoutActivityHubRoot);
-        btnTabDonHangs = view.findViewById(R.id.btnTabDonHangs);
-        btnTabRequests = view.findViewById(R.id.btnTabRequests);
-        btnTabServiceRequests = view.findViewById(R.id.btnTabServiceRequests);
-        tvActivityHubTitle = view.findViewById(R.id.tvActivityHubTitle);
-        layoutServiceHubSummaryContent = view.findViewById(R.id.layoutServiceHubSummaryContent);
-        tvServiceHubSummaryTable = view.findViewById(R.id.tvServiceHubSummaryTable);
-        tvServiceHubSummaryOrder = view.findViewById(R.id.tvServiceHubSummaryOrder);
-        tvServiceHubSummarySupport = view.findViewById(R.id.tvServiceHubSummarySupport);
-        tvServiceHubSummaryChevron = view.findViewById(R.id.tvServiceHubSummaryChevron);
-        cardServiceHubSummary = view.findViewById(R.id.cardServiceHubSummary);
         sessionManager = new SessionManager(requireContext());
         databaseHelper = new DatabaseHelper(requireContext());
 
@@ -88,16 +69,14 @@ public class TrungTamHoatDongFragment extends Fragment {
             tabDangChon = getArguments().getInt(ARG_TAB_BAN_DAU, TAB_ORDERS);
         }
 
-        btnTabDonHangs.setOnClickListener(v -> chonTab(TAB_ORDERS));
-        btnTabRequests.setOnClickListener(v -> chonTab(TAB_RESERVATIONS));
-        btnTabServiceRequests.setOnClickListener(v -> chonTab(TAB_SERVICE_REQUESTS));
-        if (cardServiceHubSummary != null) {
-            cardServiceHubSummary.setOnClickListener(v -> {
-                if (tvServiceHubSummarySupport != null && tvServiceHubSummarySupport.getVisibility() == View.VISIBLE) {
-                    chonTab(TAB_SERVICE_REQUESTS);
-                }
-            });
-        }
+        binding.btnTabDonHangs.setOnClickListener(v -> chonTab(TAB_ORDERS));
+        binding.btnTabRequests.setOnClickListener(v -> chonTab(TAB_RESERVATIONS));
+        binding.btnTabServiceRequests.setOnClickListener(v -> chonTab(TAB_SERVICE_REQUESTS));
+        binding.cardServiceHubSummary.setOnClickListener(v -> {
+            if (binding != null && binding.tvServiceHubSummarySupport.getVisibility() == View.VISIBLE) {
+                chonTab(TAB_SERVICE_REQUESTS);
+            }
+        });
 
         chonTab(tabDangChon);
         capNhatTomTatDichVu();
@@ -107,6 +86,12 @@ public class TrungTamHoatDongFragment extends Fragment {
     public void onResume() {
         super.onResume();
         capNhatTomTatDichVu();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override
@@ -129,7 +114,7 @@ public class TrungTamHoatDongFragment extends Fragment {
     }
 
     private void capNhatTrangThaiNutChuyen() {
-        if (btnTabDonHangs == null || btnTabRequests == null || btnTabServiceRequests == null) {
+        if (binding == null) {
             return;
         }
 
@@ -138,9 +123,9 @@ public class TrungTamHoatDongFragment extends Fragment {
         int chuDangChon = ContextCompat.getColor(requireContext(), R.color.on_surface);
         int chuKhongChon = ContextCompat.getColor(requireContext(), R.color.on_surface_variant);
 
-        capNhatNutTab(btnTabDonHangs, tabDangChon == TAB_ORDERS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
-        capNhatNutTab(btnTabRequests, tabDangChon == TAB_RESERVATIONS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
-        capNhatNutTab(btnTabServiceRequests, tabDangChon == TAB_SERVICE_REQUESTS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
+        capNhatNutTab(binding.btnTabDonHangs, tabDangChon == TAB_ORDERS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
+        capNhatNutTab(binding.btnTabRequests, tabDangChon == TAB_RESERVATIONS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
+        capNhatNutTab(binding.btnTabServiceRequests, tabDangChon == TAB_SERVICE_REQUESTS, nenDangChon, nenKhongChon, chuDangChon, chuKhongChon);
     }
 
     private void capNhatNutTab(MaterialButton button,
@@ -155,7 +140,7 @@ public class TrungTamHoatDongFragment extends Fragment {
     }
 
     private void hienNoiDungDangChon() {
-        if (!isAdded()) {
+        if (!isAdded() || binding == null) {
             return;
         }
 
@@ -196,7 +181,7 @@ public class TrungTamHoatDongFragment extends Fragment {
     }
 
     private void capNhatTomTatDichVu() {
-        if (!isAdded()) {
+        if (!isAdded() || binding == null || sessionManager == null || databaseHelper == null) {
             return;
         }
         long idNguoiDung = sessionManager.layIdNguoiDungHienTai();
@@ -217,7 +202,7 @@ public class TrungTamHoatDongFragment extends Fragment {
 
         capNhatTieuDeVaMoTa(coPhienHoatDong);
 
-        capNhatDongTomTat(tvServiceHubSummaryTable,
+        capNhatDongTomTat(binding.tvServiceHubSummaryTable,
                 banHienTai != null,
                 banHienTai == null ? null : getString(R.string.activity_hub_summary_table, banHienTai));
 
@@ -225,47 +210,42 @@ public class TrungTamHoatDongFragment extends Fragment {
             int textRes = donDangHoatDong.laAnTaiQuan()
                     ? R.string.activity_hub_summary_dine_in_order
                     : R.string.activity_hub_summary_takeaway_order;
-            capNhatDongTomTat(tvServiceHubSummaryOrder, true, getString(textRes));
+            capNhatDongTomTat(binding.tvServiceHubSummaryOrder, true, getString(textRes));
         } else {
-            capNhatDongTomTat(tvServiceHubSummaryOrder, false, null);
+            capNhatDongTomTat(binding.tvServiceHubSummaryOrder, false, null);
         }
 
-        capNhatDongTomTat(tvServiceHubSummarySupport,
+        capNhatDongTomTat(binding.tvServiceHubSummarySupport,
                 yeuCauDangCho != null,
                 yeuCauDangCho == null ? null : getString(R.string.activity_hub_summary_support_waiting));
 
         boolean khongCoGiHoatDong = banHienTai == null && donDangHoatDong == null && yeuCauDangCho == null;
-        if (tvServiceHubSummaryChevron != null) {
-            tvServiceHubSummaryChevron.setVisibility(yeuCauDangCho != null ? View.VISIBLE : View.GONE);
-        }
-        if (cardServiceHubSummary != null) {
-            cardServiceHubSummary.setVisibility(khongCoGiHoatDong ? View.GONE : View.VISIBLE);
-        }
+        binding.tvServiceHubSummaryChevron.setVisibility(yeuCauDangCho != null ? View.VISIBLE : View.GONE);
+        binding.cardServiceHubSummary.setVisibility(khongCoGiHoatDong ? View.GONE : View.VISIBLE);
     }
 
     private void capNhatTieuDeVaMoTa(boolean coPhienHoatDong) {
-        if (tvActivityHubTitle != null) {
-            tvActivityHubTitle.setText(R.string.activity_hub_title);
-            tvActivityHubTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 28);
+        if (binding == null) {
+            return;
         }
-        if (layoutActivityHubRoot != null) {
-            int paddingTop = dpSangPx(24);
-            layoutActivityHubRoot.setPadding(
-                    layoutActivityHubRoot.getPaddingLeft(),
-                    paddingTop,
-                    layoutActivityHubRoot.getPaddingRight(),
-                    layoutActivityHubRoot.getPaddingBottom()
-            );
-        }
-        if (layoutServiceHubSummaryContent != null) {
-            int summaryPadding = dpSangPx(coPhienHoatDong ? 8 : 16);
-            layoutServiceHubSummaryContent.setPadding(
-                    summaryPadding,
-                    summaryPadding,
-                    summaryPadding,
-                    summaryPadding
-            );
-        }
+        binding.tvActivityHubTitle.setText(R.string.activity_hub_title);
+        binding.tvActivityHubTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 28);
+
+        int paddingTop = dpSangPx(24);
+        binding.layoutActivityHubRoot.setPadding(
+                binding.layoutActivityHubRoot.getPaddingLeft(),
+                paddingTop,
+                binding.layoutActivityHubRoot.getPaddingRight(),
+                binding.layoutActivityHubRoot.getPaddingBottom()
+        );
+
+        int summaryPadding = dpSangPx(coPhienHoatDong ? 8 : 16);
+        binding.layoutServiceHubSummaryContent.setPadding(
+                summaryPadding,
+                summaryPadding,
+                summaryPadding,
+                summaryPadding
+        );
     }
 
     private int dpSangPx(int dp) {

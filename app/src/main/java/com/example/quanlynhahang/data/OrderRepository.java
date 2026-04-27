@@ -1,6 +1,7 @@
 package com.example.quanlynhahang.data;
 
 import android.content.ContentValues;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -375,7 +376,11 @@ final class OrderRepository {
         if (imageResId == 0) {
             return TEN_ANH_MAC_DINH;
         }
-        return TEN_ANH_MAC_DINH;
+        try {
+            return databaseHelper.layAppContext().getResources().getResourceEntryName(imageResId);
+        } catch (Resources.NotFoundException ex) {
+            return TEN_ANH_MAC_DINH;
+        }
     }
 
     private DonHang.TrangThai parseDonHangStatus(String statusRaw) {

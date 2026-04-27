@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quanlynhahang.adapter.HoaDonQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
+import com.example.quanlynhahang.helper.DatabaseTaskRunner;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.model.DonHang;
 
@@ -25,6 +26,7 @@ import java.util.List;
 public class HoaDonQuanTriFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
+    private final DatabaseTaskRunner databaseTaskRunner = new DatabaseTaskRunner();
     private HoaDonQuanTriAdapter hoaDonQuanTriAdapter;
     private TextView tvEmptyState;
     private TextView tvTongDoanhThu;
@@ -83,10 +85,17 @@ public class HoaDonQuanTriFragment extends Fragment {
     }
 
     private void taiDanhSachHoaDon() {
-        List<DonHang> danhSachHoaDon = databaseHelper.layTatCaDonHang();
-        hoaDonQuanTriAdapter.capNhatDanhSach(danhSachHoaDon);
-        tvEmptyState.setVisibility(danhSachHoaDon.isEmpty() ? View.VISIBLE : View.GONE);
-        capNhatTongQuanHoaDon(danhSachHoaDon);
+        databaseTaskRunner.execute(
+                () -> databaseHelper.layTatCaDonHang(),
+                danhSachHoaDon -> {
+                    if (!isAdded() || hoaDonQuanTriAdapter == null) {
+                        return;
+                    }
+                    hoaDonQuanTriAdapter.capNhatDanhSach(danhSachHoaDon);
+                    tvEmptyState.setVisibility(danhSachHoaDon.isEmpty() ? View.VISIBLE : View.GONE);
+                    capNhatTongQuanHoaDon(danhSachHoaDon);
+                }
+        );
     }
 
     private void capNhatTongQuanHoaDon(List<DonHang> danhSachHoaDon) {

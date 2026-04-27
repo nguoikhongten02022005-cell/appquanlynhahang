@@ -1,5 +1,6 @@
 package com.example.quanlynhahang;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -79,5 +80,23 @@ public class ModelBusinessRuleTest {
         assertTrue(pendingRequest.dangHoatDong());
         assertFalse(processingRequest.coTheHuy());
         assertTrue(processingRequest.dangHoatDong());
+    }
+
+    @Test
+    public void serviceRequestTimeFields_keepOriginalTextValues() {
+        YeuCauPhucVu request = new YeuCauPhucVu(
+                3,
+                YeuCauPhucVu.LoaiYeuCau.THANH_TOAN,
+                "Thanh toán",
+                "17/04/2026 18:46",
+                "17/04/2026 18:55",
+                "Bàn 02",
+                9,
+                YeuCauPhucVu.TrangThai.DA_XU_LY
+        );
+
+        assertEquals("17/04/2026 18:46", request.guiLuc);
+        assertEquals("17/04/2026 18:55", request.xuLyLuc);
+        assertEquals("17/04/2026 18:46", request.layThoiGianGui());
     }
 }

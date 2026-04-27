@@ -5,12 +5,12 @@ public class YeuCauPhucVu {
     
     public long nguoiDungId;
     public String noiDung;
-    public long guiLuc;
+    public String guiLuc;
     public String trangThai;
     public String loaiYeuCau;
     public String soBan;
     public long donHangId;
-    public long xuLyLuc;
+    public String xuLyLuc;
     
     public YeuCauPhucVu() {}
     
@@ -20,20 +20,11 @@ public class YeuCauPhucVu {
         this.id = id;
         this.loaiYeuCau = loaiYeuCau != null ? loaiYeuCau.name() : LoaiYeuCau.GOI_PHUC_VU.name();
         this.noiDung = noiDung;
-        this.guiLuc = parseTimeToLong(guiLuc);
-        this.xuLyLuc = parseTimeToLong(xuLyLuc);
+        this.guiLuc = guiLuc == null ? "" : guiLuc.trim();
+        this.xuLyLuc = xuLyLuc == null ? "" : xuLyLuc.trim();
         this.soBan = soBan;
         this.donHangId = donHangId;
         this.trangThai = trangThai != null ? trangThai.name() : TrangThai.CHO_XU_LY.name();
-    }
-    
-    private long parseTimeToLong(String time) {
-        if (time == null || time.isEmpty()) return System.currentTimeMillis();
-        try {
-            return Long.parseLong(time);
-        } catch (NumberFormatException e) {
-            return System.currentTimeMillis();
-        }
     }
     
     public enum TrangThai {
@@ -87,7 +78,11 @@ public class YeuCauPhucVu {
     }
 
     public String layThoiGianGui() {
-        return String.valueOf(guiLuc);
+        return guiLuc != null ? guiLuc : "";
+    }
+
+    public String layThoiGianXuLy() {
+        return xuLyLuc != null ? xuLyLuc : "";
     }
     
     public long layIdDonHang() {
@@ -110,6 +105,6 @@ public class YeuCauPhucVu {
 
     public void danhDauDaHuy() {
         this.trangThai = TrangThai.DA_HUY.name();
-        this.xuLyLuc = System.currentTimeMillis();
+        this.xuLyLuc = "";
     }
 }

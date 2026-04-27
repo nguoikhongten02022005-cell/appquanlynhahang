@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.example.quanlynhahang.adapter.BoDieuHopNguoiDungQuanTri;
+import com.example.quanlynhahang.adapter.NguoiDungQuanTriAdapter;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
@@ -155,14 +155,14 @@ public class AdminUserManagementUiSpecTest {
         NguoiDung quanLy = new NguoiDung(2L, "Trần Quốc Bảo", "quocbao@nhahang.vn", "0987 654 321", VaiTroNguoiDung.KHACH_HANG, true);
         NguoiDung nhanVien = new NguoiDung(3L, "Lê Thảo Vy", "thaovy@nhahang.vn", "0901 234 567", VaiTroNguoiDung.NHAN_VIEN, false);
 
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoMoTaHienThi(admin).contains("Nguyễn Minh Anh"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoNhanVaiTro(admin).contains("Admin"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoNhanVaiTro(quanLy).contains("Quản lý"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoNhanVaiTro(nhanVien).contains("Nhân viên"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoChuCaiDaiDien(admin).contains("NM"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoChuCaiDaiDien(nhanVien).contains("LT"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoTrangThaiHienThi(admin).contains("Đang hoạt động"));
-        assertTrue(BoDieuHopNguoiDungQuanTri.taoTrangThaiHienThi(nhanVien).contains("Đã khóa"));
+        assertTrue(NguoiDungQuanTriAdapter.taoMoTaHienThi(admin).contains("Nguyễn Minh Anh"));
+        assertTrue(NguoiDungQuanTriAdapter.taoNhanVaiTro(admin).contains("Admin"));
+        assertTrue(NguoiDungQuanTriAdapter.taoNhanVaiTro(quanLy).contains("Quản lý"));
+        assertTrue(NguoiDungQuanTriAdapter.taoNhanVaiTro(nhanVien).contains("Nhân viên"));
+        assertTrue(NguoiDungQuanTriAdapter.taoChuCaiDaiDien(admin).contains("NM"));
+        assertTrue(NguoiDungQuanTriAdapter.taoChuCaiDaiDien(nhanVien).contains("LT"));
+        assertTrue(NguoiDungQuanTriAdapter.taoTrangThaiHienThi(admin).contains("Đang hoạt động"));
+        assertTrue(NguoiDungQuanTriAdapter.taoTrangThaiHienThi(nhanVien).contains("Đã khóa"));
     }
 
     private Document docXml(String projectPath) throws Exception {
@@ -172,7 +172,7 @@ public class AdminUserManagementUiSpecTest {
     }
 
     private String readText(String projectPath) throws Exception {
-        return Files.readString(resolveProjectFile(projectPath).toPath(), StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(resolveProjectFile(projectPath).toPath()), StandardCharsets.UTF_8);
     }
 
     private File resolveProjectFile(String projectPath) {

@@ -1,12 +1,6 @@
 package com.example.quanlynhahang.model;
 
-import androidx.room.Entity;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
-
-@Entity(tableName = "bang_yeu_cau_phuc_vu")
 public class YeuCauPhucVu {
-    @PrimaryKey(autoGenerate = true)
     public long id;
     
     public long nguoiDungId;
@@ -20,7 +14,6 @@ public class YeuCauPhucVu {
     
     public YeuCauPhucVu() {}
     
-    @Ignore
     public YeuCauPhucVu(long id, LoaiYeuCau loaiYeuCau, String noiDung,
                         String guiLuc, String xuLyLuc, String soBan,
                         long donHangId, TrangThai trangThai) {
@@ -111,7 +104,8 @@ public class YeuCauPhucVu {
     }
 
     public boolean coTheHuy() {
-        return dangHoatDong();
+        TrangThai tt = layTrangThai();
+        return tt == TrangThai.DANG_CHO || tt == TrangThai.CHO_XU_LY;
     }
 
     public void danhDauDaHuy() {

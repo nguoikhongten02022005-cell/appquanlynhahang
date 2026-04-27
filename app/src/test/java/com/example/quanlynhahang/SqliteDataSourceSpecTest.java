@@ -85,6 +85,6 @@ public class SqliteDataSourceSpecTest {
     }
 
     private static String read(String relativePath) throws IOException {
-        return Files.readString(ROOT.resolve(relativePath), StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(ROOT.resolve(relativePath)), StandardCharsets.UTF_8);
     }
 }

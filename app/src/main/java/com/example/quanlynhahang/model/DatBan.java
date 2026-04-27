@@ -1,12 +1,6 @@
 package com.example.quanlynhahang.model;
 
-import androidx.room.Entity;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
-
-@Entity(tableName = "bang_dat_ban")
 public class DatBan {
-    @PrimaryKey(autoGenerate = true)
     public long id;
     
     public long nguoiDungId;
@@ -20,7 +14,6 @@ public class DatBan {
     
     public DatBan() {}
     
-    @Ignore
     public DatBan(long id, String maDatBan, String thoiGian, String soBan,
                   int soKhach, String ghiChu, TrangThai trangThai, long donHangLienKetId) {
         this.id = id;
@@ -115,6 +108,11 @@ public class DatBan {
                tt == TrangThai.CANCELLED || tt == TrangThai.EXPIRED;
     }
 
+    public boolean daHoanTatGuiMon() {
+        TrangThai tt = layTrangThai();
+        return tt == TrangThai.HOAN_THANH || tt == TrangThai.COMPLETED;
+    }
+
     public boolean coTheXacNhan() {
         TrangThai tt = layTrangThai();
         return tt == TrangThai.PENDING || tt == TrangThai.CHO_XAC_NHAN;
@@ -127,6 +125,6 @@ public class DatBan {
 
     public boolean coTheHuy() {
         TrangThai tt = layTrangThai();
-        return tt == TrangThai.PENDING || tt == TrangThai.ACTIVE || tt == TrangThai.CHO_XAC_NHAN || tt == TrangThai.DA_XAC_NHAN;
+        return tt == TrangThai.PENDING || tt == TrangThai.CHO_XAC_NHAN || tt == TrangThai.DA_XAC_NHAN;
     }
 }

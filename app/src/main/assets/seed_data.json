@@ -10,10 +10,9 @@
     {"name":"Nước cam ép","price":"39.000 đ","description":"Nước cam tươi nguyên chất, không dùng syrup.","image":"menu_1","available":true,"category_res":"category_drink","score":76}
   ],
   "users": [
-    {"name":"Nguyễn Minh Anh","email":"minhanh@nhahang.vn","phone":"0912 345 678","password":"1","role":"ADMIN","active":true,"quick_login_key":"admin"},
-    {"name":"Trần Quốc Bảo","email":"quocbao@nhahang.vn","phone":"0987 654 321","password":"1","role":"KHACH_HANG","active":true,"quick_login_key":"customer"},
-    {"name":"Lê Thảo Vy","email":"thaovy@nhahang.vn","phone":"0901 234 567","password":"1","role":"NHAN_VIEN","active":true,"quick_login_key":"employee"},
-    {"name":"Phạm Hoàng Nam","email":"hoangnam@nhahang.vn","phone":"0934 567 890","password":"1","role":"NHAN_VIEN","active":true},
+    {"name":"Nguyễn Minh Anh","email":"minhanh@nhahang.vn","phone":"0912 345 678","password":"1","role":"ADMIN","active":true},
+    {"name":"Trần Quốc Bảo","email":"quocbao@nhahang.vn","phone":"0987 654 321","password":"1","role":"KHACH_HANG","active":true},
+    {"name":"Lê Thảo Vy","email":"thaovy@nhahang.vn","phone":"0912 345 679","password":"1","role":"NHAN_VIEN","active":true},
     {"name":"Đặng Thu Hà","email":"thuha@nhahang.vn","phone":"0978 123 456","password":"1","role":"NHAN_VIEN","active":true},
     {"name":"Võ Gia Huy","email":"giahuy@nhahang.vn","phone":"0909 876 543","password":"1","role":"NHAN_VIEN","active":true},
     {"name":"Bùi Ngọc Linh","email":"ngoclinh@nhahang.vn","phone":"0966 234 789","password":"1","role":"NHAN_VIEN","active":false},

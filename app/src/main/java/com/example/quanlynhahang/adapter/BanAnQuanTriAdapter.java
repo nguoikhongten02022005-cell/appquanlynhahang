@@ -18,7 +18,7 @@ import com.example.quanlynhahang.model.BanAn;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoDieuHopBanAnQuanTri extends RecyclerView.Adapter<BoDieuHopBanAnQuanTri.ViewHolderBanAnQuanTri> {
+public class BanAnQuanTriAdapter extends RecyclerView.Adapter<BanAnQuanTriAdapter.ViewHolderBanAn> {
 
     public interface HanhDongListener {
         void khiXemChiTiet(BanAn banAn);
@@ -31,7 +31,7 @@ public class BoDieuHopBanAnQuanTri extends RecyclerView.Adapter<BoDieuHopBanAnQu
     private final List<BanAn> danhSachBan = new ArrayList<>();
     private final HanhDongListener hanhDongListener;
 
-    public BoDieuHopBanAnQuanTri(HanhDongListener hanhDongListener) {
+    public BanAnQuanTriAdapter(HanhDongListener hanhDongListener) {
         this.hanhDongListener = hanhDongListener;
     }
 
@@ -43,13 +43,13 @@ public class BoDieuHopBanAnQuanTri extends RecyclerView.Adapter<BoDieuHopBanAnQu
 
     @NonNull
     @Override
-    public ViewHolderBanAnQuanTri onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolderBanAn onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_ban_an_quan_ly, parent, false);
-        return new ViewHolderBanAnQuanTri(view);
+        return new ViewHolderBanAn(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolderBanAnQuanTri holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolderBanAn holder, int position) {
         holder.ganDuLieu(danhSachBan.get(position));
     }
 
@@ -58,7 +58,7 @@ public class BoDieuHopBanAnQuanTri extends RecyclerView.Adapter<BoDieuHopBanAnQu
         return danhSachBan.size();
     }
 
-    class ViewHolderBanAnQuanTri extends RecyclerView.ViewHolder {
+    class ViewHolderBanAn extends RecyclerView.ViewHolder {
         private final TextView tvTenBan;
         private final TextView tvTrangThaiBan;
         private final TextView tvThongTinBan;
@@ -66,7 +66,7 @@ public class BoDieuHopBanAnQuanTri extends RecyclerView.Adapter<BoDieuHopBanAnQu
         private final TextView btnSuaBan;
         private final TextView btnXoaBan;
 
-        ViewHolderBanAnQuanTri(@NonNull View itemView) {
+        ViewHolderBanAn(@NonNull View itemView) {
             super(itemView);
             tvTenBan = itemView.findViewById(R.id.tvTenBan);
             tvTrangThaiBan = itemView.findViewById(R.id.tvTrangThaiBan);

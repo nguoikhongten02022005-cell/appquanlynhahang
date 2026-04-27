@@ -3,8 +3,6 @@ package com.example.quanlynhahang.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.lifecycle.LiveData;
-
 import com.example.quanlynhahang.model.NguoiDung;
 
 public class QuanLyPhien {
@@ -15,11 +13,11 @@ public class QuanLyPhien {
     private static final String KEY_VAI_TRO = "vai_tro";
     
     private final SharedPreferences boNho;
-    private final AppDatabase database;
+    private final DatabaseHelper databaseHelper;
     
     public QuanLyPhien(Context context) {
         boNho = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        database = AppDatabase.layInstance(context);
+        databaseHelper = new DatabaseHelper(context);
     }
     
     public boolean daDangNhap() {
@@ -46,7 +44,7 @@ public class QuanLyPhien {
         boNho.edit().clear().apply();
     }
     
-    public LiveData<NguoiDung> layNguoiDungHienTai() {
-        return database.nguoiDungDao().layTheoId(layIdNguoiDung());
+    public NguoiDung layNguoiDungHienTai() {
+        return databaseHelper.layNguoiDungTheoId(layIdNguoiDung());
     }
 }

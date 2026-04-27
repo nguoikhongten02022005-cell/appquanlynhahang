@@ -21,7 +21,7 @@ import com.example.quanlynhahang.data.DatabaseHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoDieuHopMonQuanTri extends RecyclerView.Adapter<BoDieuHopMonQuanTri.ViewHolderMonQuanTri> {
+public class MonAnQuanTriAdapter extends RecyclerView.Adapter<MonAnQuanTriAdapter.ViewHolderMonQuanTri> {
 
     public interface HanhDongListener {
         void khiSua(DatabaseHelper.DishRecord banGhiMon);
@@ -34,7 +34,7 @@ public class BoDieuHopMonQuanTri extends RecyclerView.Adapter<BoDieuHopMonQuanTr
     private final List<DatabaseHelper.DishRecord> danhSachMon = new ArrayList<>();
     private final HanhDongListener hanhDongListener;
 
-    public BoDieuHopMonQuanTri(HanhDongListener hanhDongListener) {
+    public MonAnQuanTriAdapter(HanhDongListener hanhDongListener) {
         this.hanhDongListener = hanhDongListener;
     }
 

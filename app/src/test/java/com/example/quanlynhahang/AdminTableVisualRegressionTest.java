@@ -50,7 +50,7 @@ public class AdminTableVisualRegressionTest {
     }
 
     private String readText(String modulePath, String projectPath) throws Exception {
-        return Files.readString(timFile(modulePath, projectPath).toPath(), StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(timFile(modulePath, projectPath).toPath()), StandardCharsets.UTF_8);
     }
 
     private Node timNodeTheoId(Document document, String viewId) {

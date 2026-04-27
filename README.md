@@ -54,7 +54,13 @@ app/src/main/java/com/example/quanlynhahang/
 - Logic seed hiện nằm ở `app/src/main/java/com/example/quanlynhahang/data/SeedDataHelper.java`.
 - `DatabaseHelper` tập trung vào schema, migration và CRUD/query/update.
 
-Các nút đăng nhập nhanh nằm ngay trên màn hình `DangNhapActivity`, lấy dữ liệu từ database theo vai trò.
+## Tài khoản demo
+
+- Khách hàng: quocbao@nhahang.vn / 1
+- Nhân viên: thaovy@nhahang.vn / 1
+- Quản trị: minhanh@nhahang.vn / 1
+
+Dữ liệu tài khoản demo được seed từ database khi app khởi tạo.
 
 ## Cách chạy dự án
 

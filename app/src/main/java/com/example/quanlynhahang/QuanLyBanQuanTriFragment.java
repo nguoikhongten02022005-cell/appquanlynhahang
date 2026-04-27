@@ -23,7 +23,7 @@ import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quanlynhahang.adapter.BoDieuHopBanAnQuanTri;
+import com.example.quanlynhahang.adapter.BanAnQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.model.BanAn;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -34,7 +34,7 @@ import java.util.List;
 public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
 
     private DatabaseHelper databaseHelper;
-    private BoDieuHopBanAnQuanTri boDieuHopBan;
+    private BanAnQuanTriAdapter banAnQuanTriAdapter;
     private final List<BanAn> danhSachTatCaBan = new ArrayList<>();
     private TextView tvEmptyState;
     private TextView tvQuanLyBanOccupancyRate;
@@ -70,7 +70,7 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
                 android.content.res.ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.on_surface))
         );
 
-        boDieuHopBan = new BoDieuHopBanAnQuanTri(new BoDieuHopBanAnQuanTri.HanhDongListener() {
+        banAnQuanTriAdapter = new BanAnQuanTriAdapter(new BanAnQuanTriAdapter.HanhDongListener() {
             @Override
             public void khiXemChiTiet(BanAn banAn) {
                 hienChiTietBan(banAn);
@@ -89,7 +89,7 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
 
         rvDanhSachBan.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvDanhSachBan.setNestedScrollingEnabled(false);
-        rvDanhSachBan.setAdapter(boDieuHopBan);
+        rvDanhSachBan.setAdapter(banAnQuanTriAdapter);
 
         caiDatBoLocTrangThai();
         etQuanLyBanSearch.addTextChangedListener(new TextWatcher() {
@@ -156,7 +156,7 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
             }
             danhSachLoc.add(banAn);
         }
-        boDieuHopBan.capNhatDanhSach(danhSachLoc);
+        banAnQuanTriAdapter.capNhatDanhSach(danhSachLoc);
         tvEmptyState.setVisibility(danhSachLoc.isEmpty() ? View.VISIBLE : View.GONE);
         capNhatTongQuanBan(danhSachLoc);
     }

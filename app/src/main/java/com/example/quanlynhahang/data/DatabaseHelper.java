@@ -26,6 +26,10 @@ import com.example.quanlynhahang.model.VaiTroNguoiDung;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Database chính của ứng dụng sử dụng SQLiteOpenHelper.
+ * Dữ liệu được quản lý trực tiếp qua SQLiteDatabase.
+ */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String TAG = "DatabaseHelper";
@@ -676,6 +680,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<NguoiDung> layNguoiDungTheoVaiTro(@Nullable VaiTroNguoiDung role) {
         return userRepository.getUsersByRole(role);
+    }
+
+    @Nullable
+    public GoiYDangNhapNhanh layGoiYDangNhapNhanhTheoVaiTro(VaiTroNguoiDung role) {
+        List<NguoiDung> nguoiDungTheoVaiTro = userRepository.getUsersByRole(role);
+        if (nguoiDungTheoVaiTro.isEmpty()) {
+            return null;
+        }
+        NguoiDung nguoiDung = nguoiDungTheoVaiTro.get(0);
+        return new GoiYDangNhapNhanh(nguoiDung.layEmail(), "1");
+    }
+
+    public static class GoiYDangNhapNhanh {
+        public final String email;
+        public final String matKhau;
+
+        public GoiYDangNhapNhanh(String email, String matKhau) {
+            this.email = email != null ? email : "";
+            this.matKhau = matKhau != null ? matKhau : "";
+        }
     }
 
     public boolean updateVaiTroNguoiDung(long userId, VaiTroNguoiDung role) {

@@ -1,14 +1,8 @@
 package com.example.quanlynhahang.model;
 
-import androidx.room.Entity;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
-
 import java.util.List;
 
-@Entity(tableName = "bang_don_hang")
 public class DonHang {
-    @PrimaryKey(autoGenerate = true)
     public long id;
     
     public long nguoiDungId;
@@ -23,12 +17,10 @@ public class DonHang {
     public String phuongThucThanhToan;
     public long datBanId;
     
-    @Ignore
     private List<MonTrongDon> danhSachMon;
     
     public DonHang() {}
     
-    @Ignore
     public DonHang(long id, String maDon, String thoiGian, String tongTien,
                    HinhThucDon hinhThucDon, String soBan, String ghiChu,
                    TrangThai trangThai, TrangThaiThanhToan trangThaiThanhToan,

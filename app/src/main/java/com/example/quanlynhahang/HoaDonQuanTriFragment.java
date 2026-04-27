@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quanlynhahang.adapter.BoDieuHopHoaDonQuanTri;
+import com.example.quanlynhahang.adapter.HoaDonQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.example.quanlynhahang.model.DonHang;
@@ -25,7 +25,7 @@ import java.util.List;
 public class HoaDonQuanTriFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
-    private BoDieuHopHoaDonQuanTri boDieuHopHoaDon;
+    private HoaDonQuanTriAdapter hoaDonQuanTriAdapter;
     private TextView tvEmptyState;
     private TextView tvTongDoanhThu;
     private TextView tvSoHoaDonDaThanhToan;
@@ -68,8 +68,8 @@ public class HoaDonQuanTriFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.rvHoaDonQuanTri);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        boDieuHopHoaDon = new BoDieuHopHoaDonQuanTri(this::xacNhanDaThanhToan);
-        recyclerView.setAdapter(boDieuHopHoaDon);
+        hoaDonQuanTriAdapter = new HoaDonQuanTriAdapter(this::xacNhanDaThanhToan);
+        recyclerView.setAdapter(hoaDonQuanTriAdapter);
 
         taiDanhSachHoaDon();
     }
@@ -77,14 +77,14 @@ public class HoaDonQuanTriFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (databaseHelper != null && boDieuHopHoaDon != null) {
+        if (databaseHelper != null && hoaDonQuanTriAdapter != null) {
             taiDanhSachHoaDon();
         }
     }
 
     private void taiDanhSachHoaDon() {
         List<DonHang> danhSachHoaDon = databaseHelper.layTatCaDonHang();
-        boDieuHopHoaDon.capNhatDanhSach(danhSachHoaDon);
+        hoaDonQuanTriAdapter.capNhatDanhSach(danhSachHoaDon);
         tvEmptyState.setVisibility(danhSachHoaDon.isEmpty() ? View.VISIBLE : View.GONE);
         capNhatTongQuanHoaDon(danhSachHoaDon);
     }

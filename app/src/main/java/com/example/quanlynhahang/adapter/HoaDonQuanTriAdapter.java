@@ -18,7 +18,7 @@ import com.example.quanlynhahang.model.DonHang;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoDieuHopHoaDonQuanTri extends RecyclerView.Adapter<BoDieuHopHoaDonQuanTri.ViewHolderHoaDonQuanTri> {
+public class HoaDonQuanTriAdapter extends RecyclerView.Adapter<HoaDonQuanTriAdapter.ViewHolderHoaDonQuanTri> {
 
     public interface HanhDongListener {
         void khiXacNhanDaThanhToan(DonHang donHang);
@@ -27,7 +27,7 @@ public class BoDieuHopHoaDonQuanTri extends RecyclerView.Adapter<BoDieuHopHoaDon
     private final List<DonHang> danhSachHoaDon = new ArrayList<>();
     private final HanhDongListener hanhDongListener;
 
-    public BoDieuHopHoaDonQuanTri(HanhDongListener hanhDongListener) {
+    public HoaDonQuanTriAdapter(HanhDongListener hanhDongListener) {
         this.hanhDongListener = hanhDongListener;
     }
 

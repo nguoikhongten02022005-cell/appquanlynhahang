@@ -1,11 +1,6 @@
 package com.example.quanlynhahang.model;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-@Entity(tableName = "bang_mon_an")
 public class MonAn {
-    @PrimaryKey(autoGenerate = true)
     public long id;
     
     public String ten;

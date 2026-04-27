@@ -37,7 +37,7 @@ public class AccountFragmentCleanupTest {
     }
 
     private String readText(String modulePath, String projectPath) throws Exception {
-        return Files.readString(timFile(modulePath, projectPath).toPath(), StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(timFile(modulePath, projectPath).toPath()), StandardCharsets.UTF_8);
     }
 
     private File timFile(String modulePath, String projectPath) {

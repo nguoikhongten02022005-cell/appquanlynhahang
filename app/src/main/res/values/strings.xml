@@ -458,7 +458,7 @@
     <string name="admin_user_active_update_success">Đã cập nhật trạng thái tài khoản</string>
     <string name="admin_action_failed">Không thể thực hiện thao tác, vui lòng thử lại</string>
     <string name="admin_self_lock_blocked">Bạn không thể tự khoá chính mình</string>
-    <string name="admin_self_demote_blocked">Bạn không thể tự hạ quyền của chính mình</string>
+    <string name="admin_self_role_downgrade_blocked">Bạn không thể tự hạ quyền của chính mình</string>
     <string name="admin_role_customer">Quản lý</string>
     <string name="admin_role_employee">Nhân viên</string>
     <string name="admin_role_admin">Admin</string>

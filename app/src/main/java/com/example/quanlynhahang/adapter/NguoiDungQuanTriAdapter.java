@@ -21,7 +21,7 @@ import com.example.quanlynhahang.model.NguoiDung;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoDieuHopNguoiDungQuanTri extends RecyclerView.Adapter<BoDieuHopNguoiDungQuanTri.ViewHolderNguoiDungQuanTri> {
+public class NguoiDungQuanTriAdapter extends RecyclerView.Adapter<NguoiDungQuanTriAdapter.ViewHolderNguoiDungQuanTri> {
 
     public interface HanhDongListener {
         void khiSua(NguoiDung nguoiDung);
@@ -32,7 +32,7 @@ public class BoDieuHopNguoiDungQuanTri extends RecyclerView.Adapter<BoDieuHopNgu
     private final List<NguoiDung> danhSachNguoiDung = new ArrayList<>();
     private final HanhDongListener hanhDongListener;
 
-    public BoDieuHopNguoiDungQuanTri(HanhDongListener hanhDongListener) {
+    public NguoiDungQuanTriAdapter(HanhDongListener hanhDongListener) {
         this.hanhDongListener = hanhDongListener;
     }
 

@@ -27,7 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quanlynhahang.adapter.BoDieuHopMonQuanTri;
+import com.example.quanlynhahang.adapter.MonAnQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.helper.MoneyUtils;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -41,7 +41,7 @@ import java.util.Set;
 public class MonAnQuanTriFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
-    private BoDieuHopMonQuanTri boDieuHopMon;
+    private MonAnQuanTriAdapter monAnQuanTriAdapter;
     private final List<DatabaseHelper.DishRecord> danhSachTatCaMon = new ArrayList<>();
     private TextView tvEmptyState;
     private TextView tvTongQuan;
@@ -90,7 +90,7 @@ public class MonAnQuanTriFragment extends Fragment {
         layoutDanhMucChips = view.findViewById(R.id.layoutAdminDishCategoryChips);
         View btnThemMon = view.findViewById(R.id.btnAdminDishAdd);
 
-        boDieuHopMon = new BoDieuHopMonQuanTri(new BoDieuHopMonQuanTri.HanhDongListener() {
+        monAnQuanTriAdapter = new MonAnQuanTriAdapter(new MonAnQuanTriAdapter.HanhDongListener() {
             @Override
             public void khiSua(DatabaseHelper.DishRecord banGhiMon) {
                 hienDialogThemHoacSuaMon(banGhiMon);
@@ -113,7 +113,7 @@ public class MonAnQuanTriFragment extends Fragment {
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(boDieuHopMon);
+        recyclerView.setAdapter(monAnQuanTriAdapter);
         btnThemMon.setOnClickListener(v -> hienDialogThemHoacSuaMon(null));
         etTimKiem.addTextChangedListener(new TextWatcher() {
             @Override
@@ -136,7 +136,7 @@ public class MonAnQuanTriFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (databaseHelper != null && boDieuHopMon != null) {
+        if (databaseHelper != null && monAnQuanTriAdapter != null) {
             taiDanhSachMon();
         }
     }
@@ -222,7 +222,7 @@ public class MonAnQuanTriFragment extends Fragment {
             }
             ketQua.add(banGhiMon);
         }
-        boDieuHopMon.capNhatDanhSach(ketQua);
+        monAnQuanTriAdapter.capNhatDanhSach(ketQua);
         tvEmptyState.setVisibility(ketQua.isEmpty() ? View.VISIBLE : View.GONE);
     }
 

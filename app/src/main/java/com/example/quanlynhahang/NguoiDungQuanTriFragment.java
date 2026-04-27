@@ -22,7 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.quanlynhahang.adapter.BoDieuHopNguoiDungQuanTri;
+import com.example.quanlynhahang.adapter.NguoiDungQuanTriAdapter;
 import com.example.quanlynhahang.data.DatabaseHelper;
 import com.example.quanlynhahang.data.SessionManager;
 import com.example.quanlynhahang.model.NguoiDung;
@@ -36,7 +36,7 @@ public class NguoiDungQuanTriFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
     private SessionManager sessionManager;
-    private BoDieuHopNguoiDungQuanTri boDieuHopNguoiDung;
+    private NguoiDungQuanTriAdapter nguoiDungQuanTriAdapter;
     private final List<NguoiDung> danhSachTatCaNguoiDung = new ArrayList<>();
     private TextView tvEmptyState;
     private TextView tvTongQuan;
@@ -92,7 +92,7 @@ public class NguoiDungQuanTriFragment extends Fragment {
             return;
         }
 
-        boDieuHopNguoiDung = new BoDieuHopNguoiDungQuanTri(new BoDieuHopNguoiDungQuanTri.HanhDongListener() {
+        nguoiDungQuanTriAdapter = new NguoiDungQuanTriAdapter(new NguoiDungQuanTriAdapter.HanhDongListener() {
             @Override
             public void khiSua(NguoiDung nguoiDung) {
                 hienMenuHanhDongNguoiDung(nguoiDung);
@@ -105,7 +105,7 @@ public class NguoiDungQuanTriFragment extends Fragment {
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(boDieuHopNguoiDung);
+        recyclerView.setAdapter(nguoiDungQuanTriAdapter);
         thietLapBoLocVaiTro();
         btnThemTaiKhoan.setOnClickListener(v -> hienDialogThemTaiKhoan());
         etTimKiem.addTextChangedListener(new TextWatcher() {
@@ -176,12 +176,12 @@ public class NguoiDungQuanTriFragment extends Fragment {
             apDungBoLocNguoiDung();
         } catch (RuntimeException ex) {
             capNhatTrangThaiDanhSach(false, true, false);
-            boDieuHopNguoiDung.capNhatDanhSach(new ArrayList<>());
+            nguoiDungQuanTriAdapter.capNhatDanhSach(new ArrayList<>());
         }
     }
 
     private void apDungBoLocNguoiDung() {
-        if (boDieuHopNguoiDung == null || etTimKiem == null) {
+        if (nguoiDungQuanTriAdapter == null || etTimKiem == null) {
             return;
         }
         String tuKhoa = etTimKiem.getText() == null ? "" : chuanHoaTuKhoa(etTimKiem.getText().toString());
@@ -192,7 +192,7 @@ public class NguoiDungQuanTriFragment extends Fragment {
             }
             ketQua.add(nguoiDung);
         }
-        boDieuHopNguoiDung.capNhatDanhSach(ketQua);
+        nguoiDungQuanTriAdapter.capNhatDanhSach(ketQua);
         capNhatTrangThaiDanhSach(false, false, ketQua.isEmpty());
     }
 
@@ -447,7 +447,7 @@ public class NguoiDungQuanTriFragment extends Fragment {
     private void capNhatVaiTro(NguoiDung nguoiDung, VaiTroNguoiDung vaiTroMoi) {
         long idNguoiDungHienTai = sessionManager.layIdNguoiDungHienTai();
         if (nguoiDung.layId() == idNguoiDungHienTai && vaiTroMoi != VaiTroNguoiDung.ADMIN) {
-            Toast.makeText(requireContext(), R.string.admin_self_demote_blocked, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.admin_self_role_downgrade_blocked, Toast.LENGTH_SHORT).show();
             return;
         }
         boolean daCapNhat = databaseHelper.capNhatVaiTroNguoiDung(nguoiDung.layId(), vaiTroMoi);

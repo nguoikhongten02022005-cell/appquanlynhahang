@@ -30,13 +30,13 @@ public class ManifestActivityRegistryTest {
         assertNotNull(timActivity(document, ".ChiTietDonHangActivity"));
         assertNotNull(timActivity(document, ".XacNhanDonHangActivity"));
         assertNotNull(timActivity(document, ".TrungTamQuanTriActivity"));
-        assertNotNull(timActivity(document, ".TrungTamNoiBoActivity"));
         assertNotNull(timActivity(document, ".MainActivity"));
 
         assertNull(timActivity(document, ".NhanVienActivity"));
         assertNull(timActivity(document, ".QuanTriActivity"));
+        assertNull(timActivity(document, ".TrungTamNoiBoActivity"));
 
-        assertEquals(10, demSoActivity(document));
+        assertEquals(9, demSoActivity(document));
         assertLauncher(document, ".CustomerLauncherActivity");
     }
 

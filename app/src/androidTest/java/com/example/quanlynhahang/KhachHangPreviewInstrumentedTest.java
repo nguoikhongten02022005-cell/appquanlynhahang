@@ -43,7 +43,7 @@ public class KhachHangPreviewInstrumentedTest {
     private static final String SO_DIEN_THOAI_ADMIN_KIEM_THU = "0900000309";
     private static final String DUONG_DAN_NOI_BO_XEM_TRUOC = "internal:orders";
     private static final String DUONG_DAN_QUAN_TRI_XEM_TRUOC = DieuHuongNoiBoHelper.taoRouteQuanTri(
-            DieuHuongNoiBoHelper.SECTION_CAI_DAT
+            DieuHuongNoiBoHelper.SECTION_BAO_CAO
     );
 
     private Context appContext;
@@ -96,14 +96,14 @@ public class KhachHangPreviewInstrumentedTest {
     }
 
     @Test
-    public void thoatPreview_quayVeTrungTamNoiBoVaGiuTabDonHang() {
+    public void thoatPreview_quayVeTrungTamQuanTriVaGiuSectionDonHang() {
         Intents.init();
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(taoIntentPreviewMainActivity())) {
             onView(withId(R.id.btnExitCustomerPreview)).perform(click());
 
             intended(allOf(
-                    hasComponent(TrungTamNoiBoActivity.class.getName()),
-                    hasExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO, DieuHuongNoiBoHelper.TAB_DON_HANG)
+                    hasComponent(TrungTamQuanTriActivity.class.getName()),
+                    hasExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI, DieuHuongNoiBoHelper.SECTION_DON_HANG)
             ));
             scenario.onActivity(activity -> {
                 assertTrue(sessionManager.daDangNhapNoiBo());
@@ -134,7 +134,7 @@ public class KhachHangPreviewInstrumentedTest {
     }
 
     @Test
-    public void previewMode_noiBoAdminSettings_quayVeTrungTamQuanTriVoiSectionCaiDat() {
+    public void previewMode_noiBoAdminReports_quayVeTrungTamQuanTriVoiSectionBaoCao() {
         Intents.init();
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(
                 taoIntentPreviewAdminSettings()
@@ -143,7 +143,7 @@ public class KhachHangPreviewInstrumentedTest {
 
             intended(allOf(
                     hasComponent(TrungTamQuanTriActivity.class.getName()),
-                    hasExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI, DieuHuongNoiBoHelper.SECTION_CAI_DAT)
+                    hasExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI, DieuHuongNoiBoHelper.SECTION_BAO_CAO)
             ));
             scenario.onActivity(activity -> {
                 assertTrue(sessionManager.daDangNhapNoiBo());
@@ -207,7 +207,7 @@ public class KhachHangPreviewInstrumentedTest {
         }
 
         sessionManager.luuPhienNoiBo(idNguoiDungAdmin, VaiTroNguoiDung.ADMIN);
-        sessionManager.luuDuongDanNoiBoCuoi(DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_CAI_DAT));
+        sessionManager.luuDuongDanNoiBoCuoi(DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_BAO_CAO));
         sessionManager.damBaoVaiTroSession(databaseHelper);
     }
 

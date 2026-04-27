@@ -43,10 +43,6 @@
             android:exported="false" />
 
         <activity
-            android:name=".TrungTamNoiBoActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".MainActivity"
             android:exported="false" />
 

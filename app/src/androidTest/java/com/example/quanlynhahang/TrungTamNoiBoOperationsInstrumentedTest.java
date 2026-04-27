@@ -52,11 +52,11 @@ public class TrungTamNoiBoOperationsInstrumentedTest {
 
     @Test
     public void moKhuNoiBo_voiTabDonHang_hienThiTieuDeDonHang() {
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario =
-                     ActivityScenario.launch(TrungTamNoiBoActivity.taoIntent(appContext, DieuHuongNoiBoHelper.TAB_DON_HANG))) {
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario =
+                     ActivityScenario.launch(DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(appContext, DieuHuongNoiBoHelper.TAB_DON_HANG))) {
             onView(withText(R.string.employee_orders_title)).check(matches(isDisplayed()));
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.taoRouteNoiBo(DieuHuongNoiBoHelper.TAB_DON_HANG),
+                    DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_DON_HANG),
                     sessionManager.layDuongDanNoiBoCuoi()
             ));
         }
@@ -64,11 +64,11 @@ public class TrungTamNoiBoOperationsInstrumentedTest {
 
     @Test
     public void moKhuNoiBo_voiTabDatBan_hienThiTieuDeDatBan() {
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario =
-                     ActivityScenario.launch(TrungTamNoiBoActivity.taoIntent(appContext, DieuHuongNoiBoHelper.TAB_DAT_BAN))) {
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario =
+                     ActivityScenario.launch(DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(appContext, DieuHuongNoiBoHelper.TAB_DAT_BAN))) {
             onView(withText(R.string.employee_reservations_title)).check(matches(isDisplayed()));
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.taoRouteNoiBo(DieuHuongNoiBoHelper.TAB_DAT_BAN),
+                    DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_BAN),
                     sessionManager.layDuongDanNoiBoCuoi()
             ));
         }
@@ -76,11 +76,11 @@ public class TrungTamNoiBoOperationsInstrumentedTest {
 
     @Test
     public void moKhuNoiBo_voiTabYeuCau_hienThiTieuDeYeuCau() {
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario =
-                     ActivityScenario.launch(TrungTamNoiBoActivity.taoIntent(appContext, DieuHuongNoiBoHelper.TAB_YEU_CAU))) {
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario =
+                     ActivityScenario.launch(DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(appContext, DieuHuongNoiBoHelper.TAB_YEU_CAU))) {
             onView(withText(R.string.employee_service_requests_title)).check(matches(isDisplayed()));
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.taoRouteNoiBo(DieuHuongNoiBoHelper.TAB_YEU_CAU),
+                    DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_YEU_CAU),
                     sessionManager.layDuongDanNoiBoCuoi()
             ));
         }
@@ -88,35 +88,34 @@ public class TrungTamNoiBoOperationsInstrumentedTest {
 
     @Test
     public void moKhuNoiBo_voiTabKhongHopLe_macDinhVeTongQuanVaLuuRouteTongQuan() {
-        Intent intent = new Intent(appContext, TrungTamNoiBoActivity.class);
-        intent.putExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO, "khong_hop_le");
+        Intent intent = DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(appContext, "khong_hop_le");
 
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario = ActivityScenario.launch(intent)) {
-            onView(withText(R.string.internal_shell_overview_title)).check(matches(isDisplayed()));
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withText(R.string.admin_reports_title)).check(matches(isDisplayed()));
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.taoRouteNoiBo(DieuHuongNoiBoHelper.TAB_TONG_QUAN),
+                    DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_BAO_CAO),
                     sessionManager.layDuongDanNoiBoCuoi()
             ));
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.TAB_TONG_QUAN,
-                    activity.getIntent().getStringExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO)
+                    DieuHuongNoiBoHelper.SECTION_BAO_CAO,
+                    activity.getIntent().getStringExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI)
             ));
         }
     }
 
     @Test
     public void moKhuNoiBo_khongCoTab_macDinhVeTongQuanVaLuuRouteTongQuan() {
-        Intent intent = new Intent(appContext, TrungTamNoiBoActivity.class);
+        Intent intent = TrungTamQuanTriActivity.taoIntent(appContext, null);
 
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario = ActivityScenario.launch(intent)) {
-            onView(withText(R.string.internal_shell_overview_title)).check(matches(isDisplayed()));
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withText(R.string.admin_reports_title)).check(matches(isDisplayed()));
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.taoRouteNoiBo(DieuHuongNoiBoHelper.TAB_TONG_QUAN),
+                    DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_BAO_CAO),
                     sessionManager.layDuongDanNoiBoCuoi()
             ));
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.TAB_TONG_QUAN,
-                    activity.getIntent().getStringExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO)
+                    DieuHuongNoiBoHelper.SECTION_BAO_CAO,
+                    activity.getIntent().getStringExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI)
             ));
         }
     }

@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -28,7 +30,6 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
     private static final String TAG_YEU_CAU = "yeu_cau_quan_tri";
     private static final String TAG_NGUOI_DUNG = "nguoi_dung_quan_tri";
     private static final String TAG_BAO_CAO = "bao_cao_quan_tri";
-    private static final String TAG_CAI_DAT = "cai_dat_quan_tri";
 
     private SessionManager sessionManager;
     private DatabaseHelper databaseHelper;
@@ -54,8 +55,7 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
                 || DieuHuongNoiBoHelper.SECTION_HOA_DON.equals(sectionDaRutGon)
                 || DieuHuongNoiBoHelper.SECTION_YEU_CAU.equals(sectionDaRutGon)
                 || DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG.equals(sectionDaRutGon)
-                || DieuHuongNoiBoHelper.SECTION_BAO_CAO.equals(sectionDaRutGon)
-                || DieuHuongNoiBoHelper.SECTION_CAI_DAT.equals(sectionDaRutGon)) {
+                || DieuHuongNoiBoHelper.SECTION_BAO_CAO.equals(sectionDaRutGon)) {
             return sectionDaRutGon;
         }
         return DieuHuongNoiBoHelper.SECTION_BAO_CAO;
@@ -102,11 +102,31 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
     }
 
     private void thietLapMenuQuanTri() {
+        boolean laAdmin = sessionManager.laAdmin();
+        
         ganDieuHuongMenu(binding.navAdminOverview, DieuHuongNoiBoHelper.SECTION_BAO_CAO);
         ganDieuHuongMenu(binding.navAdminOrders, DieuHuongNoiBoHelper.SECTION_DON_HANG);
         ganDieuHuongMenu(binding.navAdminTables, DieuHuongNoiBoHelper.SECTION_BAN);
-        ganDieuHuongMenu(binding.navAdminDishes, DieuHuongNoiBoHelper.SECTION_MON);
-        ganDieuHuongMenu(binding.navAdminAccounts, DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG);
+        
+        // Yêu cầu - chỉ hiển thị cho Nhân viên
+        binding.navAdminServiceRequest.setVisibility(laAdmin ? android.view.View.GONE : android.view.View.VISIBLE);
+        if (!laAdmin) {
+            ganDieuHuongMenu(binding.navAdminServiceRequest, DieuHuongNoiBoHelper.SECTION_YEU_CAU);
+        }
+        
+        // Thực đơn - chỉ hiển thị cho Admin
+        binding.navAdminDishes.setVisibility(laAdmin ? android.view.View.VISIBLE : android.view.View.GONE);
+        if (laAdmin) {
+            ganDieuHuongMenu(binding.navAdminDishes, DieuHuongNoiBoHelper.SECTION_MON);
+        }
+        
+        // Tài khoản - chỉ hiển thị cho Admin  
+        binding.navAdminAccounts.setVisibility(laAdmin ? android.view.View.VISIBLE : android.view.View.GONE);
+        if (laAdmin) {
+            ganDieuHuongMenu(binding.navAdminAccounts, DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG);
+        }
+        
+        binding.btnAdminLogout.setOnClickListener(v -> hienThiDialogDangXuat());
     }
 
     private void ganDieuHuongMenu(LinearLayout item, String section) {
@@ -114,6 +134,8 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
     }
 
     private void capNhatTrangThaiMenu(String section) {
+        boolean laAdmin = sessionManager.laAdmin();
+        
         capNhatTrangThaiBottomNav(
                 binding.navAdminOverview,
                 binding.iconAdminOverview,
@@ -132,18 +154,32 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
                 binding.tvAdminTablesLabel,
                 DieuHuongNoiBoHelper.SECTION_BAN.equals(section)
         );
-        capNhatTrangThaiBottomNav(
-                binding.navAdminDishes,
-                binding.iconAdminDishes,
-                binding.tvAdminDishesLabel,
-                DieuHuongNoiBoHelper.SECTION_MON.equals(section)
-        );
-        capNhatTrangThaiBottomNav(
-                binding.navAdminAccounts,
-                binding.iconAdminAccounts,
-                binding.tvAdminAccountsLabel,
-                DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG.equals(section)
-        );
+        
+        // Yêu cầu - active cho Nhân viên
+        if (!laAdmin) {
+            capNhatTrangThaiBottomNav(
+                    binding.navAdminServiceRequest,
+                    binding.iconAdminServiceRequest,
+                    binding.tvAdminServiceRequestLabel,
+                    DieuHuongNoiBoHelper.SECTION_YEU_CAU.equals(section)
+            );
+        }
+        
+        // Thực đơn - active cho Admin
+        if (laAdmin) {
+            capNhatTrangThaiBottomNav(
+                    binding.navAdminDishes,
+                    binding.iconAdminDishes,
+                    binding.tvAdminDishesLabel,
+                    DieuHuongNoiBoHelper.SECTION_MON.equals(section)
+            );
+            capNhatTrangThaiBottomNav(
+                    binding.navAdminAccounts,
+                    binding.iconAdminAccounts,
+                    binding.tvAdminAccountsLabel,
+                    DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG.equals(section)
+            );
+        }
     }
 
     private void capNhatTrangThaiBottomNav(LinearLayout item, ImageView icon, TextView label, boolean dangDuocChon) {
@@ -196,12 +232,32 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
         finish();
     }
 
+    private void hienThiDialogDangXuat() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle(R.string.account_logout_confirm_title)
+                .setMessage(R.string.account_logout_confirm_message)
+                .setPositiveButton(R.string.account_logout, (dialog, which) -> dangXuat())
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
     public void dieuHuongDenSection(String section) {
         moSection(section);
     }
 
     private void moSection(String section) {
         String sectionHopLe = DieuHuongNoiBoHelper.chuanHoaSection(section);
+        boolean laAdmin = sessionManager.laAdmin();
+        
+        // Chặn truy cập section không được phép theo role
+        if (!laAdmin && (DieuHuongNoiBoHelper.SECTION_MON.equals(sectionHopLe) 
+                || DieuHuongNoiBoHelper.SECTION_NGUOI_DUNG.equals(sectionHopLe))) {
+            sectionHopLe = DieuHuongNoiBoHelper.SECTION_BAO_CAO;
+        }
+        if (laAdmin && DieuHuongNoiBoHelper.SECTION_YEU_CAU.equals(sectionHopLe)) {
+            sectionHopLe = DieuHuongNoiBoHelper.SECTION_BAO_CAO;
+        }
+        
         getIntent().putExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI, sectionHopLe);
         sessionManager.luuDuongDanNoiBoCuoi(DieuHuongNoiBoHelper.taoRouteQuanTri(sectionHopLe));
         capNhatTieuDe(sectionHopLe);
@@ -251,14 +307,6 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.quanTriFragmentContainer, new NguoiDungQuanTriFragment(), TAG_NGUOI_DUNG)
-                    .commitNow();
-            return;
-        }
-
-        if (DieuHuongNoiBoHelper.SECTION_CAI_DAT.equals(sectionHopLe)) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.quanTriFragmentContainer, new CaiDatQuanTriFragment(), TAG_CAI_DAT)
                     .commitNow();
             return;
         }

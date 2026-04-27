@@ -55,12 +55,10 @@ public class SqliteDataSourceSpecTest {
     @Test
     public void tableSelectors_doNotGenerateOneToTwentyTables() throws Exception {
         String reservation = read("src/main/java/com/example/quanlynhahang/DatBanFragment.java");
-        String internalReservation = read("src/main/java/com/example/quanlynhahang/DatBanNoiBoFragment.java");
         String cart = read("src/main/java/com/example/quanlynhahang/GioHangActivity.java");
 
         assertFalse(reservation.contains("SO_BAN_TOI_DA"));
         assertFalse(reservation.contains("for (int soBan = 1"));
-        assertFalse(internalReservation.contains("for (int soBan = 1; soBan <= 20"));
         assertFalse(cart.contains("SO_BAN_TOI_DA"));
         assertFalse(cart.contains("for (int index = 0; index <"));
     }

@@ -51,14 +51,14 @@ public class DieuHuongVaiTroNoiBoInstrumentedTest {
     }
 
     @Test
-    public void taoIntentTheoVaiTro_khiBatCoNoiBoShellMoi_voiNhanVien_danVeTrungTamNoiBoTongQuan() {
+    public void taoIntentTheoVaiTro_khiBatCoNoiBoShellMoi_voiNhanVien_danVeTrungTamQuanTriTongQuan() {
         Intent intent = DieuHuongVaiTroHelper.taoIntentTheoVaiTro(appContext, VaiTroNguoiDung.NHAN_VIEN);
 
         assertNotNull(intent);
-        assertEquals(TrungTamNoiBoActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals(TrungTamQuanTriActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(
-                DieuHuongNoiBoHelper.TAB_TONG_QUAN,
-                intent.getStringExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO)
+                DieuHuongNoiBoHelper.SECTION_BAO_CAO,
+                intent.getStringExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI)
         );
     }
 
@@ -71,13 +71,13 @@ public class DieuHuongVaiTroNoiBoInstrumentedTest {
     }
 
     @Test
-    public void taoIntentTrungTamNoiBo_voiTabDatBan_giuDungExtraTabNoiBo() {
+    public void taoIntentTrungTamNoiBo_voiTabDatBan_mapSangTrungTamQuanTriBan() {
         Intent intent = DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(appContext, DieuHuongNoiBoHelper.TAB_DAT_BAN);
 
-        assertEquals(TrungTamNoiBoActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals(TrungTamQuanTriActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(
-                DieuHuongNoiBoHelper.TAB_DAT_BAN,
-                intent.getStringExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO)
+                DieuHuongNoiBoHelper.SECTION_BAN,
+                intent.getStringExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI)
         );
     }
 

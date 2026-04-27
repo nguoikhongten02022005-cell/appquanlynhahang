@@ -26,19 +26,13 @@ public class EmployeeFlowCleanupTest {
     }
 
     @Test
-    public void employeeInternalShell_keepsTableAndOrderFragmentsRefreshingThroughHelpers() throws Exception {
+    public void employeeInternalShell_keepsOrdersRefreshingThroughHelpers() throws Exception {
         String donHangNoiBoSource = readText(
                 "src/main/java/com/example/quanlynhahang/DonHangNoiBoFragment.java",
                 "app/src/main/java/com/example/quanlynhahang/DonHangNoiBoFragment.java"
         );
-        String datBanNoiBoSource = readText(
-                "src/main/java/com/example/quanlynhahang/DatBanNoiBoFragment.java",
-                "app/src/main/java/com/example/quanlynhahang/DatBanNoiBoFragment.java"
-        );
 
         assertTrue(donHangNoiBoSource.contains("taiDanhSachDonHang()"));
-        assertTrue(datBanNoiBoSource.contains("taiDanhSachDatBan()"));
-        assertTrue(datBanNoiBoSource.contains("hienDialogDoiBan("));
     }
 
     private String readText(String modulePath, String projectPath) throws Exception {

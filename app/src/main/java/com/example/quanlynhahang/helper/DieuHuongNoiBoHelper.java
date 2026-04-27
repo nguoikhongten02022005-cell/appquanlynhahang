@@ -6,7 +6,6 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 
 import com.example.quanlynhahang.CustomerLauncherActivity;
-import com.example.quanlynhahang.TrungTamNoiBoActivity;
 import com.example.quanlynhahang.TrungTamQuanTriActivity;
 
 import java.util.Locale;
@@ -25,7 +24,6 @@ public final class DieuHuongNoiBoHelper {
     public static final String SECTION_YEU_CAU = "service_requests";
     public static final String SECTION_NGUOI_DUNG = "users";
     public static final String SECTION_BAO_CAO = "reports";
-    public static final String SECTION_CAI_DAT = "settings";
 
     public static final String EXTRA_TAB_NOI_BO = "extra_internal_tab";
     public static final String EXTRA_SECTION_QUAN_TRI = "extra_admin_section";
@@ -57,15 +55,14 @@ public final class DieuHuongNoiBoHelper {
                 || SECTION_HOA_DON.equals(giaTri)
                 || SECTION_YEU_CAU.equals(giaTri)
                 || SECTION_NGUOI_DUNG.equals(giaTri)
-                || SECTION_BAO_CAO.equals(giaTri)
-                || SECTION_CAI_DAT.equals(giaTri)) {
+                || SECTION_BAO_CAO.equals(giaTri)) {
             return giaTri;
         }
         return SECTION_BAO_CAO;
     }
 
     public static Intent taoIntentTrungTamNoiBo(Context context, @Nullable String tab) {
-        return TrungTamNoiBoActivity.taoIntent(context, chuanHoaTab(tab));
+        return TrungTamQuanTriActivity.taoIntent(context, mapTabThanhSectionQuanTri(tab));
     }
 
     public static Intent taoIntentPreviewKhachHang(Context context, @Nullable String returnRoute) {
@@ -78,19 +75,11 @@ public final class DieuHuongNoiBoHelper {
 
     public static Intent taoIntentTraVeNoiBoTuRoute(Context context, @Nullable String route) {
         String duongDanNoiBo = chuanHoaDuongDanNoiBo(route);
-        if (duongDanNoiBo.startsWith(ROUTE_ADMIN_PREFIX)) {
-            return TrungTamQuanTriActivity.taoIntent(
-                    context,
-                    layGiaTriCuoiCung(duongDanNoiBo, ROUTE_ADMIN_PREFIX, SECTION_BAO_CAO)
-            );
-        }
-        if (duongDanNoiBo.startsWith(ROUTE_INTERNAL_PREFIX)) {
-            return TrungTamNoiBoActivity.taoIntent(
-                    context,
-                    layGiaTriCuoiCung(duongDanNoiBo, ROUTE_INTERNAL_PREFIX, TAB_TONG_QUAN)
-            );
-        }
-        return TrungTamNoiBoActivity.taoIntent(context, TAB_TONG_QUAN);
+        // Unified shell: tất cả đều vào TrungTamQuanTriActivity
+        return TrungTamQuanTriActivity.taoIntent(
+                context,
+                layGiaTriCuoiCung(duongDanNoiBo, ROUTE_ADMIN_PREFIX, SECTION_BAO_CAO)
+        );
     }
 
     public static String mapTabNhanVienCu(@Nullable String tab) {
@@ -105,6 +94,20 @@ public final class DieuHuongNoiBoHelper {
 
     public static String taoRouteNoiBo(@Nullable String tab) {
         return ROUTE_INTERNAL_PREFIX + chuanHoaTab(tab);
+    }
+
+    private static String mapTabThanhSectionQuanTri(@Nullable String tab) {
+        String tabHopLe = chuanHoaTab(tab);
+        if (TAB_DON_HANG.equals(tabHopLe)) {
+            return SECTION_DON_HANG;
+        }
+        if (TAB_DAT_BAN.equals(tabHopLe)) {
+            return SECTION_BAN;
+        }
+        if (TAB_YEU_CAU.equals(tabHopLe)) {
+            return SECTION_YEU_CAU;
+        }
+        return SECTION_BAO_CAO;
     }
 
     public static String taoRouteQuanTri(@Nullable String section) {

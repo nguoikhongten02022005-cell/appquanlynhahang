@@ -5,7 +5,6 @@ import android.content.Intent;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -24,13 +23,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -158,56 +154,6 @@ public class TrungTamQuanTriInstrumentedTest {
             scenario.onActivity(activity -> {
                 assertTrue(sessionManager.daDangNhapNoiBo());
                 assertEquals(VaiTroNguoiDung.NHAN_VIEN, sessionManager.layVaiTroSessionHopLe());
-            });
-        } finally {
-            Intents.release();
-        }
-    }
-
-    @Test
-    public void moTrungTamQuanTri_voiSectionCaiDat_hienThiTieuDeCaiDat() {
-        try (ActivityScenario<TrungTamQuanTriActivity> scenario = ActivityScenario.launch(
-                TrungTamQuanTriActivity.taoIntent(appContext, DieuHuongNoiBoHelper.SECTION_CAI_DAT)
-        )) {
-            onView(withId(R.id.tvQuanTriCaiDatTitle)).check(matches(isDisplayed()));
-            scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_CAI_DAT),
-                    sessionManager.layDuongDanNoiBoCuoi()
-            ));
-        }
-    }
-
-    @Test
-    public void moTrungTamQuanTri_voiSectionCaiDat_xemTruocKhachHangMoMainActivity() {
-        Intents.init();
-        try (ActivityScenario<TrungTamQuanTriActivity> scenario = ActivityScenario.launch(
-                TrungTamQuanTriActivity.taoIntent(appContext, DieuHuongNoiBoHelper.SECTION_CAI_DAT)
-        )) {
-            onView(withId(R.id.btnQuanTriXemGiaoDienKhach)).perform(ViewActions.click());
-            intended(allOf(
-                    hasComponent(MainActivity.class.getName()),
-                    hasExtra(MainActivity.EXTRA_CHO_PHEP_XEM_GIAO_DIEN_KHACH, true)
-            ));
-            scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_CAI_DAT),
-                    sessionManager.layDuongDanNoiBoCuoi()
-            ));
-        } finally {
-            Intents.release();
-        }
-    }
-
-    @Test
-    public void dangXuatTuCaiDat_xoaPhienNoiBoVaChuyenVeStaffLauncher() {
-        Intents.init();
-        try (ActivityScenario<TrungTamQuanTriActivity> scenario = ActivityScenario.launch(
-                TrungTamQuanTriActivity.taoIntent(appContext, DieuHuongNoiBoHelper.SECTION_CAI_DAT)
-        )) {
-            onView(withId(R.id.btnQuanTriDangXuat)).perform(ViewActions.click());
-            intended(hasComponent(StaffLauncherActivity.class.getName()));
-            scenario.onActivity(activity -> {
-                assertFalse(sessionManager.daDangNhapNoiBo());
-                assertEquals("", sessionManager.layDuongDanNoiBoCuoi());
             });
         } finally {
             Intents.release();

@@ -85,38 +85,38 @@ public class TrungTamNoiBoOverviewInstrumentedTest {
 
     @Test
     public void moKhuNoiBo_voiTabTongQuan_hienThiTieuDeTongQuan() {
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario =
-                     ActivityScenario.launch(TrungTamNoiBoActivity.taoIntent(
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario =
+                     ActivityScenario.launch(TrungTamQuanTriActivity.taoIntent(
                              appContext,
-                             DieuHuongNoiBoHelper.TAB_TONG_QUAN
+                             DieuHuongNoiBoHelper.SECTION_BAO_CAO
                      ))) {
-            onView(withText(R.string.internal_shell_overview_title)).check(matches(isDisplayed()));
+            onView(withText(R.string.admin_reports_title)).check(matches(isDisplayed()));
         }
     }
 
     @Test
-    public void moKhuNoiBo_voiTabKhongPhaiTongQuan_vanGiuExtraTabDaChuanHoa() {
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario =
-                     ActivityScenario.launch(TrungTamNoiBoActivity.taoIntent(
+    public void moKhuNoiBo_voiTabKhongPhaiTongQuan_mapSangSectionQuanTri() {
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario =
+                     ActivityScenario.launch(DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(
                              appContext,
                              DieuHuongNoiBoHelper.TAB_DON_HANG
                      ))) {
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.TAB_DON_HANG,
-                    activity.getIntent().getStringExtra(DieuHuongNoiBoHelper.EXTRA_TAB_NOI_BO)
+                    DieuHuongNoiBoHelper.SECTION_DON_HANG,
+                    activity.getIntent().getStringExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI)
             ));
         }
     }
 
     @Test
-    public void moKhuNoiBo_luuRouteNoiBoDangHienThiLaOverview() {
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario =
-                     ActivityScenario.launch(TrungTamNoiBoActivity.taoIntent(
+    public void moKhuNoiBo_luuRouteQuanTriDangHienThiLaDonHang() {
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario =
+                     ActivityScenario.launch(DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(
                              appContext,
                              DieuHuongNoiBoHelper.TAB_DON_HANG
                      ))) {
             scenario.onActivity(activity -> assertEquals(
-                    DieuHuongNoiBoHelper.taoRouteNoiBo(DieuHuongNoiBoHelper.TAB_TONG_QUAN),
+                    DieuHuongNoiBoHelper.taoRouteQuanTri(DieuHuongNoiBoHelper.SECTION_DON_HANG),
                     sessionManager.layDuongDanNoiBoCuoi()
             ));
         }
@@ -127,10 +127,10 @@ public class TrungTamNoiBoOverviewInstrumentedTest {
         sessionManager.xoaPhienDangNhap();
         Intents.init();
 
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario =
-                     ActivityScenario.launch(TrungTamNoiBoActivity.taoIntent(
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario =
+                     ActivityScenario.launch(TrungTamQuanTriActivity.taoIntent(
                              appContext,
-                             DieuHuongNoiBoHelper.TAB_TONG_QUAN
+                             DieuHuongNoiBoHelper.SECTION_BAO_CAO
                      ))) {
             intended(hasComponent(DangNhapActivity.class.getName()));
         } finally {
@@ -140,20 +140,20 @@ public class TrungTamNoiBoOverviewInstrumentedTest {
 
     @Test
     public void moKhuNoiBo_hienThiDungBaChiSoTongQuanTheoDuLieuDaChuanBi() {
-        try (ActivityScenario<TrungTamNoiBoActivity> scenario =
-                     ActivityScenario.launch(TrungTamNoiBoActivity.taoIntent(
+        try (ActivityScenario<TrungTamQuanTriActivity> scenario =
+                     ActivityScenario.launch(TrungTamQuanTriActivity.taoIntent(
                              appContext,
-                             DieuHuongNoiBoHelper.TAB_TONG_QUAN
+                             DieuHuongNoiBoHelper.SECTION_BAO_CAO
                      ))) {
-            onView(withId(R.id.tvNoiBoPendingOrdersCount)).check(matches(allOf(
+            onView(withId(R.id.tvBaoCaoDonHangChoXacNhan)).check(matches(allOf(
                     isDisplayed(),
                     withText(soDonChoXacNhanKyVong)
             )));
-            onView(withId(R.id.tvNoiBoPendingReservationsCount)).check(matches(allOf(
+            onView(withId(R.id.tvBaoCaoDatBanChoDuyet)).check(matches(allOf(
                     isDisplayed(),
                     withText(soDatBanChoDuyetKyVong)
             )));
-            onView(withId(R.id.tvNoiBoProcessingRequestsCount)).check(matches(allOf(
+            onView(withId(R.id.tvBaoCaoYeuCauDangXuLy)).check(matches(allOf(
                     isDisplayed(),
                     withText(soYeuCauCanXuLyKyVong)
             )));

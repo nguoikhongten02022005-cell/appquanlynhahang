@@ -55,14 +55,14 @@ public class LegacyBridgeRegressionInstrumentedTest {
     }
 
     @Test
-    public void taoIntentQuanTri_tuTrungTamNoiBo_chuyenThangDenTrungTamQuanTri() {
+    public void taoIntentTrungTamNoiBo_chuyenThangDenTrungTamQuanTri() {
         Context appContext = ApplicationProvider.getApplicationContext();
 
-        Intent intent = TrungTamNoiBoActivity.taoIntentQuanTri(appContext, DieuHuongNoiBoHelper.SECTION_CAI_DAT);
+        Intent intent = DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(appContext, DieuHuongNoiBoHelper.TAB_DON_HANG);
 
         assertEquals(TrungTamQuanTriActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(
-                DieuHuongNoiBoHelper.SECTION_CAI_DAT,
+                DieuHuongNoiBoHelper.SECTION_DON_HANG,
                 intent.getStringExtra(DieuHuongNoiBoHelper.EXTRA_SECTION_QUAN_TRI)
         );
     }

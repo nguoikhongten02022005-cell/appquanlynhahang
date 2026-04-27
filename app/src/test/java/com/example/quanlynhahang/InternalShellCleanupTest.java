@@ -20,28 +20,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class InternalShellCleanupTest {
 
     @Test
-    public void internalShellLayout_usesSimpleLinearRootInsteadOfUnusedDrawerLayout() throws Exception {
-        Document document = docXml(
-                "src/main/res/layout/activity_trung_tam_noi_bo.xml",
-                "app/src/main/res/layout/activity_trung_tam_noi_bo.xml"
-        );
-
-        Node root = document.getDocumentElement();
-        assertNotNull(root);
-        assertTrue("Root phải là LinearLayout", "LinearLayout".equals(root.getNodeName()));
-        assertNotNull("Thiếu container nội bộ", timNodeTheoId(document, "@+id/noiBoFragmentContainer"));
-        assertFalse("Không nên còn DrawerLayout thừa", coNodeTheoTen(document, "androidx.drawerlayout.widget.DrawerLayout"));
-    }
-
-    @Test
-    public void internalShellActivity_removesUnusedAdminIntentWrapper() throws Exception {
-        String source = readText(
-                "src/main/java/com/example/quanlynhahang/TrungTamNoiBoActivity.java",
-                "app/src/main/java/com/example/quanlynhahang/TrungTamNoiBoActivity.java"
-        );
-
-        assertTrue(source.contains("public static Intent taoIntent(Context context, String tab)"));
-        assertFalse(source.contains("taoIntentQuanTri(Context context, String section)"));
+    public void legacyInternalShellFiles_removedAfterUnifiedAdminShell() {
+        assertFalse(new File("src/main/res/layout/activity_trung_tam_noi_bo.xml").exists());
+        assertFalse(new File("app/src/main/res/layout/activity_trung_tam_noi_bo.xml").exists());
+        assertFalse(new File("src/main/java/com/example/quanlynhahang/TrungTamNoiBoActivity.java").exists());
+        assertFalse(new File("app/src/main/java/com/example/quanlynhahang/TrungTamNoiBoActivity.java").exists());
     }
 
     @Test

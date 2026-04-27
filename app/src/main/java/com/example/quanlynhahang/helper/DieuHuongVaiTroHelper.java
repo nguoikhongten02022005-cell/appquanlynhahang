@@ -20,11 +20,14 @@ public final class DieuHuongVaiTroHelper {
 
     public static Intent taoIntentTheoVaiTro(Context context, @Nullable VaiTroNguoiDung vaiTro) {
         VaiTroNguoiDung vaiTroHienTai = vaiTro != null ? vaiTro : VaiTroNguoiDung.KHACH_HANG;
+        
+        // Unified shell: cả Admin và Nhân viên đều vào TrungTamQuanTriActivity
         if (vaiTroHienTai == VaiTroNguoiDung.ADMIN && CauHinhTinhNangHelper.coNoiBoShellMoi()) {
             return TrungTamQuanTriActivity.taoIntent(context, DieuHuongNoiBoHelper.SECTION_BAO_CAO);
         }
         if (vaiTroHienTai == VaiTroNguoiDung.NHAN_VIEN && CauHinhTinhNangHelper.coNoiBoShellMoi()) {
-            return DieuHuongNoiBoHelper.taoIntentTrungTamNoiBo(context, DieuHuongNoiBoHelper.TAB_TONG_QUAN);
+            // Nhân viên cũng vào unified shell
+            return TrungTamQuanTriActivity.taoIntent(context, DieuHuongNoiBoHelper.SECTION_BAO_CAO);
         }
         if (laVaiTroNoiBo(vaiTroHienTai)) {
             return new Intent(context, StaffLauncherActivity.class);

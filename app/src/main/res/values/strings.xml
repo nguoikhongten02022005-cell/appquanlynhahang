@@ -639,6 +639,7 @@ Trạng thái: %5$s</string>
     <string name="admin_detail_action">Chi tiết</string>
     <string name="admin_revenue_by_day_title">Doanh thu theo ngày</string>
     <string name="admin_revenue_chart_unit_hint">Đơn vị: nghìn đồng · Cam = hôm nay</string>
+    <string name="admin_revenue_unit">Đơn vị: nghìn đồng</string>
     <string name="admin_order_status_title">Tình trạng đơn</string>
     <string name="admin_order_unit_short">đơn</string>
     <string name="admin_recent_orders_short_title">Đơn gần đây</string>

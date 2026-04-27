@@ -21,6 +21,7 @@ import com.example.quanlynhahang.model.BanAn;
 import com.example.quanlynhahang.model.DonHang;
 import com.example.quanlynhahang.model.ThongKeTongQuanQuanTri;
 import com.example.quanlynhahang.model.YeuCauPhucVu;
+import com.example.quanlynhahang.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class BaoCaoQuanTriFragment extends Fragment {
         long doanhThuHomNay = tinhDoanhThuHomNay(tatCaDonHang);
         String doanhThuText = MoneyUtils.dinhDangTienViet(doanhThuHomNay);
         binding.tvAdminRevenueToday.setText(doanhThuText);
-        binding.tvAdminRevenueSummary.setText("Đơn vị: nghìn đồng");
+        binding.tvAdminRevenueSummary.setText(R.string.admin_revenue_unit);
         capNhatBieuDoDoanhThu(tatCaDonHang);
 
         int soBanDangDung = 0;

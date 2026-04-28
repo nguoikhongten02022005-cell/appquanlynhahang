@@ -55,7 +55,7 @@ public class TrangChuFragment extends Fragment {
 
         thietLapDuLieuDanhMuc();
         thietLapDuLieuMonDeXuat();
-        thietLapHanhDongHero();
+        thietLapHanhDongNhanh();
         thietLapDanhSachDanhMuc();
         thietLapLuoiMonDeXuat();
     }
@@ -66,7 +66,7 @@ public class TrangChuFragment extends Fragment {
         binding = null;
     }
 
-    private void thietLapHanhDongHero() {
+    private void thietLapHanhDongNhanh() {
         binding.hanhDongNhanhDonHang.setOnClickListener(v -> {
             datLaiDanhMucDangChon();
             dieuHuongDenMenu(null, true, null);

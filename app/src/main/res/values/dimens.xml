@@ -28,9 +28,9 @@
     <dimen name="search_height">48dp</dimen>
     <dimen name="cart_badge_size">18dp</dimen>
     <dimen name="cart_badge_text_size">10sp</dimen>
+    <dimen name="cart_footer_elevation">8dp</dimen>
 
     <dimen name="button_height">52dp</dimen>
-    <dimen name="hero_height">236dp</dimen>
     <dimen name="quick_action_height">112dp</dimen>
     <dimen name="quick_action_icon_box">44dp</dimen>
 

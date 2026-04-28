@@ -1,15 +1,22 @@
 {
   "dishes": [
-    {"name_res":"dish_bo_luc_lac","price_res":"price_145k","description_res":"menu_desc_bo_luc_lac","image":"menu_1","available":true,"category_res":"category_main_course","score":96},
-    {"name_res":"dish_lau_thai","price_res":"price_259k","description_res":"menu_desc_lau_thai","image":"menu_1","available":true,"category_res":"category_hotpot","score":93},
-    {"name_res":"dish_salad_ca_hoi","price_res":"price_129k","description_res":"menu_desc_salad_ca_hoi","image":"menu_1","available":true,"category_res":"category_salad","score":89},
-    {"name_res":"dish_tra_dao","price_res":"price_45k","description_res":"menu_desc_tra_dao","image":"menu_1","available":true,"category_res":"category_drink","score":82},
-    {"name":"Cơm chiên hải sản","price":"98.000 đ","description":"Cơm chiên tơi hạt cùng tôm, mực và rau củ.","image":"menu_1","available":true,"category_res":"category_main_course","score":88},
-    {"name":"Mì Ý bò bằm","price":"115.000 đ","description":"Mì Ý sốt bò bằm đậm vị, dùng kèm phô mai bào.","image":"menu_1","available":true,"category_res":"category_main_course","score":84},
-    {"name":"Gỏi tôm xoài xanh","price":"92.000 đ","description":"Tôm tươi, xoài xanh bào sợi, rau thơm và nước mắm chua ngọt.","image":"menu_1","available":true,"category_res":"category_salad","score":80},
-    {"name":"Nước cam ép","price":"39.000 đ","description":"Nước cam tươi nguyên chất, không dùng syrup.","image":"menu_1","available":true,"category_res":"category_drink","score":76}
+    {"name_res":"dish_bo_luc_lac","price_res":"price_145k","description_res":"menu_desc_bo_luc_lac","image":"bo_luc_lac","available":true,"category_res":"category_main_course","score":96},
+    {"name":"Cơm chiên hải sản","price":"98.000 đ","description":"Cơm chiên tơi hạt cùng tôm, mực và rau củ.","image":"com_chien_hai_san","available":true,"category_res":"category_main_course","score":88},
+    {"name":"Gà nướng mật ong","price":"115.000 đ","description":"Gà nướng vàng thơm, phủ sốt mật ong dịu ngọt.","image":"ga_nuong_mat_ong","available":true,"category_res":"category_main_course","score":84},
+    {"name_res":"dish_lau_thai","price_res":"price_259k","description_res":"menu_desc_lau_thai","image":"lau_thai_hai_san","available":true,"category_res":"category_hotpot","score":93},
+    {"name":"Lẩu bò nhúng giấm","price":"239.000 đ","description":"Bò mềm nhúng nước giấm thanh nhẹ, dùng kèm rau xanh và bún tươi.","image":"lau_bo_nhung_giam","available":true,"category_res":"category_hotpot","score":87},
+    {"name":"Lẩu gà lá é","price":"219.000 đ","description":"Gà ta nấu lá é thơm nồng, vị cay nhẹ và nước dùng ngọt thanh.","image":"lau_ga_la_e","available":true,"category_res":"category_hotpot","score":85},
+    {"name_res":"dish_salad_ca_hoi","price_res":"price_129k","description_res":"menu_desc_salad_ca_hoi","image":"salad_ca_hoi","available":true,"category_res":"category_salad","score":89},
+    {"name":"Salad bò Úc","price":"92.000 đ","description":"Bò Úc áp chảo dùng kèm rau xanh và sốt mè rang.","image":"salad_bo_uc","available":true,"category_res":"category_salad","score":80},
+    {"name":"Salad gà nướng","price":"86.000 đ","description":"Gà nướng xé lát, rau giòn và sốt chanh dây nhẹ vị.","image":"salad_ga_nuong","available":true,"category_res":"category_salad","score":78},
+    {"name_res":"dish_tra_dao","price_res":"price_45k","description_res":"menu_desc_tra_dao","image":"tra_dao_cam_sa","available":true,"category_res":"category_drink","score":82},
+    {"name":"Trà vải","price":"39.000 đ","description":"Trà vải thanh mát, vị ngọt nhẹ và hương trái cây.","image":"tra_vai","available":true,"category_res":"category_drink","score":76},
+    {"name":"Trà chanh","price":"35.000 đ","description":"Trà chanh tươi mát, chua nhẹ và dễ uống.","image":"tra_chanh","available":true,"category_res":"category_drink","score":74}
   ],
   "users": [
+    {"name":"Nguyễn Văn A","email":"a@nhahang.vn","phone":"0900 111 111","password":"1","role":"ADMIN","active":true},
+    {"name":"Nguyễn Văn B","email":"b@nhahang.vn","phone":"0900 222 222","password":"1","role":"NHAN_VIEN","active":true},
+    {"name":"Nguyễn Văn C","email":"c@nhahang.vn","phone":"0900 333 333","password":"1","role":"KHACH_HANG","active":true},
     {"name":"Nguyễn Minh Anh","email":"minhanh@nhahang.vn","phone":"0912 345 678","password":"1","role":"ADMIN","active":true},
     {"name":"Trần Quốc Bảo","email":"quocbao@nhahang.vn","phone":"0987 654 321","password":"1","role":"KHACH_HANG","active":true},
     {"name":"Lê Thảo Vy","email":"thaovy@nhahang.vn","phone":"0912 345 679","password":"1","role":"NHAN_VIEN","active":true},

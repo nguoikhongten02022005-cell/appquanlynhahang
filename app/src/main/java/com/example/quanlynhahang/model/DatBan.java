@@ -16,7 +16,7 @@ public class DatBan {
         this.thoiGian = "";
         this.soBan = "";
         this.ghiChu = "";
-        this.trangThai = TrangThai.CHO_XAC_NHAN.name();
+        this.trangThai = TrangThai.PENDING.name();
         this.maDatBan = "";
     }
 
@@ -36,7 +36,7 @@ public class DatBan {
         this.ghiChu = ghiChu == null ? "" : ghiChu.trim();
         this.trangThai = trangThai != null
                 ? trangThai.name()
-                : TrangThai.CHO_XAC_NHAN.name();
+                : TrangThai.PENDING.name();
         this.donHangLienKetId = donHangLienKetId;
     }
 
@@ -89,13 +89,13 @@ public class DatBan {
 
     public TrangThai layTrangThai() {
         if (trangThai == null || trangThai.trim().isEmpty()) {
-            return TrangThai.CHO_XAC_NHAN;
+            return TrangThai.PENDING;
         }
 
         try {
             return TrangThai.valueOf(trangThai);
         } catch (Exception e) {
-            return TrangThai.CHO_XAC_NHAN;
+            return TrangThai.PENDING;
         }
     }
 

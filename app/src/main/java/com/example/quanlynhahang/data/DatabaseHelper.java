@@ -1835,7 +1835,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String rawStatus = cursor.getString(cursor.getColumnIndexOrThrow(statusColumn));
             return parser.parse(rawStatus);
         } catch (IllegalArgumentException ex) {
-            Log.w(TAG, "getEnumStatusById: trạng thái không hợp lệ cho bảng " + table + ", id=" + id, ex);
+            Log.w(TAG, "getEnumStatusById: trạng thái không hợp lệ.", ex);
             return null;
         } finally {
             if (cursor != null) {

@@ -178,6 +178,7 @@ public class GioHangActivity extends AppCompatActivity {
 
         boolean gioHangRong = danhSachMon.isEmpty();
         binding.rvCartItems.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
+        binding.layoutCartEmpty.setVisibility(gioHangRong ? View.VISIBLE : View.GONE);
         binding.btnContinueShopping.setVisibility(gioHangRong ? View.VISIBLE : View.GONE);
         binding.btnClearCart.setVisibility(gioHangRong ? View.GONE : View.VISIBLE);
         binding.btnCheckout.setEnabled(!gioHangRong);

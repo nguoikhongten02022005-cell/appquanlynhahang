@@ -17,98 +17,9 @@
         android:paddingEnd="@dimen/screen_padding_horizontal"
         android:paddingBottom="@dimen/space_3xl">
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/hero_height"
-            app:cardBackgroundColor="@android:color/transparent"
-            app:cardCornerRadius="@dimen/radius_card_large"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:contentDescription="@null"
-                    android:scaleType="centerCrop"
-                    android:scaleX="1.12"
-                    android:scaleY="1.12"
-                    android:src="@drawable/welcome" />
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_hero_overlay" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="bottom"
-                    android:orientation="vertical"
-                    android:padding="@dimen/space_2xl">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_status_available"
-                        android:paddingStart="@dimen/space_md"
-                        android:paddingTop="@dimen/space_xs"
-                        android:paddingEnd="@dimen/space_md"
-                        android:paddingBottom="@dimen/space_xs"
-                        android:text="@string/home_hero_eyebrow"
-                        android:textColor="@color/status_available_text"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/space_md"
-                        android:ellipsize="end"
-                        android:maxLines="3"
-                        android:shadowColor="#66000000"
-                        android:shadowDx="0"
-                        android:shadowDy="2"
-                        android:shadowRadius="6"
-                        android:text="@string/home_hero_title"
-                        android:textColor="@color/white"
-                        android:textSize="26sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/space_sm"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:shadowColor="#66000000"
-                        android:shadowDx="0"
-                        android:shadowDy="1"
-                        android:shadowRadius="4"
-                        android:text="@string/home_hero_subtitle"
-                        android:textColor="@color/white"
-                        android:textSize="14sp" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/space_lg"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:shadowColor="#66000000"
-                        android:shadowDx="0"
-                        android:shadowDy="1"
-                        android:shadowRadius="4"
-                        android:text="@string/home_hero_meta"
-                        android:textColor="@color/white"
-                        android:textSize="12sp" />                </LinearLayout>
-            </FrameLayout>
-        </com.google.android.material.card.MaterialCardView>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xl"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -162,7 +73,7 @@
                 android:layout_height="@dimen/quick_action_height"
                 android:layout_marginStart="@dimen/space_sm"
                 android:layout_weight="1"
-                android:background="@drawable/bg_quick_action_secondary"
+                android:background="@drawable/bg_quick_action_primary"
                 android:gravity="center_vertical"
                 android:minWidth="0dp"
                 android:orientation="vertical"

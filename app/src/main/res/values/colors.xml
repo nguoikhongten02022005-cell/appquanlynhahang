@@ -46,7 +46,6 @@
     <color name="ripple_accent">#1FD78440</color>
     <color name="ripple_neutral">#141B1F1A</color>
 
-    <color name="hero_overlay">#14000000</color>
     <color name="hero_decor_light">#29FFFFFF</color>
 
     <color name="category_selected_bg">#F7E2D5</color>
@@ -117,11 +116,4 @@
     <color name="admin_ring_completed">#D7D3CF</color>
     <color name="admin_badge_red">#D94C3D</color>
 
-    <color name="admin_account_background">#FAF6EF</color>
-    <color name="admin_account_primary">#DD873C</color>
-    <color name="admin_account_primary_dark">#CC6F34</color>
-    <color name="admin_account_text_primary">#2B2B2B</color>
-    <color name="admin_account_text_secondary">#77736C</color>
-    <color name="admin_account_card">#FFFFFF</color>
-    <color name="admin_account_border">#E6D8CA</color>
 </resources>

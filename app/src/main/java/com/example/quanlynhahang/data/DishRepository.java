@@ -67,7 +67,7 @@ final class DishRepository {
         ContentValues values = taoGiaTriMonAn(name, price, description, imageResName, isAvailable, category, recommendScore);
         long idMon = databaseHelper.getWritableDatabase().insert(DatabaseHelper.TABLE_DISH, null, values);
         if (idMon > 0) {
-            Log.i(TAG, "Thêm món ăn id=" + idMon + ", tên=" + chuanHoaChuoi(name));
+            Log.i(TAG, "Thêm món ăn thành công.");
         }
         return idMon;
     }
@@ -92,7 +92,7 @@ final class DishRepository {
                 new String[]{String.valueOf(dishId)}
         );
         if (rows > 0) {
-            Log.i(TAG, "Cập nhật món ăn id=" + dishId + ", tên=" + chuanHoaChuoi(name));
+            Log.i(TAG, "Cập nhật món ăn thành công.");
         }
         return rows > 0;
     }
@@ -118,7 +118,7 @@ final class DishRepository {
                     new String[]{String.valueOf(dishId)}
             );
             if (rows > 0) {
-                Log.i(TAG, "Lưu trữ món ăn id=" + dishId + ", tên=" + tenMon);
+                Log.i(TAG, "Lưu trữ món ăn thành công.");
             }
             return rows > 0;
         }
@@ -128,7 +128,7 @@ final class DishRepository {
                 new String[]{String.valueOf(dishId)}
         );
         if (rows > 0) {
-            Log.i(TAG, "Xóa vĩnh viễn món ăn id=" + dishId + ", tên=" + tenMon);
+            Log.i(TAG, "Xóa vĩnh viễn món ăn thành công.");
         }
         return rows > 0;
     }

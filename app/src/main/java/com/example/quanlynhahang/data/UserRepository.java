@@ -64,10 +64,10 @@ final class UserRepository {
         try {
             return db.insertOrThrow(DatabaseHelper.TABLE_USER, null, values);
         } catch (SQLiteConstraintException ex) {
-            Log.w(TAG, "insertUser: email đã tồn tại hoặc vi phạm ràng buộc. email=" + email, ex);
+            Log.w(TAG, "insertUser: thông tin định danh đã tồn tại hoặc vi phạm ràng buộc.", ex);
             return -1;
         } catch (SQLiteException ex) {
-            Log.e(TAG, "insertUser: lỗi khi thêm người dùng. email=" + email, ex);
+            Log.e(TAG, "insertUser: lỗi khi thêm người dùng.", ex);
             throw ex;
         }
     }

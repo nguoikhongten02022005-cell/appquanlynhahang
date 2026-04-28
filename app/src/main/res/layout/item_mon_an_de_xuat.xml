@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/cd_dish_image"
-                android:scaleType="fitCenter"
+                android:scaleType="centerCrop"
                 android:src="@drawable/menu_1" />
 
             <TextView

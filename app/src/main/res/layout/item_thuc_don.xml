@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/bg_dish_image_placeholder"
             android:contentDescription="@string/cd_dish_image"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             android:src="@drawable/menu_1" />
     </com.google.android.material.card.MaterialCardView>
 

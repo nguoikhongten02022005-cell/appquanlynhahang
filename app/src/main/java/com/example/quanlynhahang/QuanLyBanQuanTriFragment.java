@@ -152,25 +152,6 @@ public class QuanLyBanQuanTriFragment extends androidx.fragment.app.Fragment {
         }
         banAnQuanTriAdapter.capNhatDanhSach(danhSachLoc);
         binding.tvQuanLyBanEmpty.setVisibility(danhSachLoc.isEmpty() ? View.VISIBLE : View.GONE);
-        capNhatTongQuanBan(danhSachLoc);
-    }
-
-    private void capNhatTongQuanBan(List<BanAn> danhSachLoc) {
-        if (binding == null) {
-            return;
-        }
-        int tongSoBan = danhSachLoc == null ? 0 : danhSachLoc.size();
-        int soBanDangDung = 0;
-        if (danhSachLoc != null) {
-            for (BanAn banAn : danhSachLoc) {
-                if (banAn.layTrangThai() == BanAn.TrangThai.DANG_PHUC_VU) {
-                    soBanDangDung++;
-                }
-            }
-        }
-        int tiLe = tongSoBan == 0 ? 0 : Math.round(soBanDangDung * 100f / tongSoBan);
-        binding.tvQuanLyBanOccupancyRate.setText(tiLe + "%");
-        binding.progressQuanLyBanOccupancy.setProgress(tiLe);
     }
 
     private boolean khopTuKhoa(BanAn banAn, String tuKhoa) {

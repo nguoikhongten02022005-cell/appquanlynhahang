@@ -18,13 +18,13 @@ public class YeuCauPhucVu {
                         String guiLuc, String xuLyLuc, String soBan,
                         long donHangId, TrangThai trangThai) {
         this.id = id;
-        this.loaiYeuCau = loaiYeuCau != null ? loaiYeuCau.name() : LoaiYeuCau.GOI_PHUC_VU.name();
+        this.loaiYeuCau = loaiYeuCau != null ? loaiYeuCau.name() : LoaiYeuCau.GOI_NHAN_VIEN.name();
         this.noiDung = noiDung;
         this.guiLuc = guiLuc == null ? "" : guiLuc.trim();
         this.xuLyLuc = xuLyLuc == null ? "" : xuLyLuc.trim();
         this.soBan = soBan;
         this.donHangId = donHangId;
-        this.trangThai = trangThai != null ? trangThai.name() : TrangThai.CHO_XU_LY.name();
+        this.trangThai = trangThai != null ? trangThai.name() : TrangThai.DANG_CHO.name();
     }
     
     public enum TrangThai {
@@ -49,7 +49,7 @@ public class YeuCauPhucVu {
         try {
             return TrangThai.valueOf(trangThai);
         } catch (Exception e) {
-            return TrangThai.CHO_XU_LY;
+            return TrangThai.DANG_CHO;
         }
     }
     
@@ -57,7 +57,7 @@ public class YeuCauPhucVu {
         try {
             return LoaiYeuCau.valueOf(loaiYeuCau);
         } catch (Exception e) {
-            return LoaiYeuCau.GOI_PHUC_VU;
+            return LoaiYeuCau.GOI_NHAN_VIEN;
         }
     }
     

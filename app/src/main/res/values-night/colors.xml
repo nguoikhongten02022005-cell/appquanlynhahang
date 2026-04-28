@@ -46,7 +46,6 @@
     <color name="ripple_accent">#33F2A45F</color>
     <color name="ripple_neutral">#1FE8ECE5</color>
 
-    <color name="hero_overlay">#1F000000</color>
     <color name="hero_decor_light">#17FFFFFF</color>
 
     <color name="category_selected_bg">#4A2815</color>

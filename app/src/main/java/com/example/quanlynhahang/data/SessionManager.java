@@ -68,7 +68,7 @@ public class SessionManager {
 
         long idNguoiDungAnhXa = timHoacTaoNguoiDungTuDuLieuCu(databaseHelper, emailCu, matKhauCu);
         if (daDangNhapCu && idNguoiDungAnhXa > 0) {
-            Log.i(TAG, "Migration dữ liệu đăng nhập cũ thành công. userId=" + idNguoiDungAnhXa);
+            Log.i(TAG, "Migration dữ liệu đăng nhập cũ thành công.");
             luuPhienKhachHang(idNguoiDungAnhXa);
         } else {
             Log.i(TAG, "Không thể khôi phục phiên đăng nhập cũ, xóa phiên mới.");
@@ -277,7 +277,7 @@ public class SessionManager {
             return -1;
         }
 
-        Log.i(TAG, "Tìm hoặc tạo người dùng tương ứng cho dữ liệu đăng nhập cũ. email=" + emailCu);
+        Log.i(TAG, "Tìm hoặc tạo người dùng tương ứng cho dữ liệu đăng nhập cũ.");
         NguoiDung nguoiDungDaTonTai = databaseHelper.getUserByEmail(emailCu);
         if (nguoiDungDaTonTai != null) {
             return nguoiDungDaTonTai.layId();

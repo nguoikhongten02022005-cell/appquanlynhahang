@@ -10,10 +10,6 @@
 
     <string name="section_category">Danh mục món</string>
     <string name="section_recommended">Món đề xuất</string>
-    <string name="home_hero_eyebrow">Món nổi bật</string>
-    <string name="home_hero_title">Cá hồi nướng sốt cam đang được gọi nhiều tối nay</string>
-    <string name="home_hero_subtitle">Vị béo nhẹ, sốt cam thơm thanh và dùng ngon nhất khi gọi kèm salad hoặc đồ uống mát.</string>
-    <string name="home_hero_meta">Phục vụ số lượng giới hạn trong ngày</string>
     <string name="home_quick_order_subtitle">Chọn món và xác nhận đơn nhanh, không cần giữ bàn trước</string>
     <string name="home_quick_book_subtitle">Giữ chỗ trước, chọn món sau nếu muốn</string>
 
@@ -55,6 +51,8 @@
     <string name="cart_note_hint">Ví dụ: Ít cay, giao nhanh, không hành…</string>
     <string name="cart_items_title">Món đã chọn</string>
     <string name="cart_empty_message">Giỏ hàng của bạn đang trống</string>
+    <string name="cart_empty_title">Giỏ hàng đang trống</string>
+    <string name="cart_empty_body">Hãy chọn món trong thực đơn để bắt đầu đặt hàng.</string>
     <string name="cart_subtotal_label">Tạm tính: %1$s</string>
     <string name="cart_total_label">Tổng tiền: %1$s</string>
     <string name="cart_checkout">Tiếp tục</string>
@@ -399,28 +397,15 @@
     <string name="admin_toggle_dish_unavailable">Ngừng phục vụ</string>
     <string name="admin_empty_dishes">Không có món ăn phù hợp.</string>
     <string name="admin_empty_users">Không có tài khoản phù hợp.</string>
-    <string name="admin_filter_all_roles_format">Tất cả: %1$d</string>
-    <string name="admin_filter_role_label">Vai trò</string>
-    <string name="admin_filter_customers">Khách hàng</string>
-    <string name="admin_filter_employees_format">Nhân viên: %1$d</string>
-    <string name="admin_filter_admins_format">Admin: %1$d</string>
     <string name="admin_add_user">Thêm tài khoản</string>
-    <string name="admin_change_role">Đổi vai trò</string>
-    <string name="admin_lock_user">Khóa tài khoản</string>
-    <string name="admin_unlock_user">Mở khóa tài khoản</string>
     <string name="admin_user_edit_account">Sửa tài khoản</string>
     <string name="admin_user_lock_account">Khóa tài khoản</string>
     <string name="admin_user_unlock_account">Mở khóa tài khoản</string>
     <string name="admin_user_delete_account">Xóa tài khoản</string>
     <string name="admin_user_delete_success">Đã xóa tài khoản</string>
     <string name="admin_self_delete_blocked">Không thể xóa tài khoản đang đăng nhập</string>
-    <string name="admin_user_view_detail">Xem chi tiết</string>
-    <string name="admin_user_edit_info">Chỉnh sửa thông tin</string>
-    <string name="admin_user_reset_password">Đặt lại mật khẩu</string>
-    <string name="admin_user_action_title_detail">Thao tác tài khoản</string>
     <string name="admin_user_status_active">Đang hoạt động</string>
     <string name="admin_user_status_locked">Đã khóa</string>
-    <string name="admin_user_role_format">Vai trò: %1$s</string>
     <string name="admin_user_phone_format">SĐT: %1$s</string>
     <string name="admin_user_email_hint">Email hoặc tên đăng nhập</string>
     <string name="admin_dish_category_format">Danh mục: %1$s</string>
@@ -444,8 +429,6 @@
     <string name="admin_delete_confirm_title">Xoá món ăn?</string>
     <string name="admin_delete_confirm_message">Món ăn này sẽ bị xoá khỏi danh sách quản lý.</string>
     <string name="admin_delete_confirm_message_named">Bạn có chắc muốn xoá “%1$s”? Nếu món đã từng xuất hiện trong đơn hàng, hệ thống sẽ lưu trữ món thay vì xoá vĩnh viễn.</string>
-    <string name="admin_change_role_title">Đổi vai trò tài khoản</string>
-    <string name="admin_change_role_message">Chọn vai trò mới cho tài khoản này.</string>
     <string name="admin_dish_validation_required">Vui lòng nhập đầy đủ tên món, giá bán, danh mục và mô tả.</string>
     <string name="admin_dish_validation_price">Giá bán phải là số tiền hợp lệ lớn hơn 0.</string>
     <string name="admin_dish_validation_description">Mô tả món ăn cần đủ rõ ràng, tối thiểu 10 ký tự.</string>
@@ -454,11 +437,9 @@
     <string name="admin_dish_update_success">Đã cập nhật món ăn</string>
     <string name="admin_dish_delete_success">Đã xoá món khỏi danh sách hiển thị</string>
     <string name="admin_dish_availability_success">Đã cập nhật trạng thái phục vụ của món</string>
-    <string name="admin_user_role_update_success">Đã cập nhật vai trò tài khoản</string>
     <string name="admin_user_active_update_success">Đã cập nhật trạng thái tài khoản</string>
     <string name="admin_action_failed">Không thể thực hiện thao tác, vui lòng thử lại</string>
     <string name="admin_self_lock_blocked">Bạn không thể tự khoá chính mình</string>
-    <string name="admin_self_role_downgrade_blocked">Bạn không thể tự hạ quyền của chính mình</string>
     <string name="admin_role_customer">Quản lý</string>
     <string name="admin_role_employee">Nhân viên</string>
     <string name="admin_role_admin">Admin</string>
@@ -578,6 +559,7 @@ Trạng thái: %5$s</string>
     <string name="admin_search_users_hint">Tìm tên, email hoặc SĐT</string>
     <string name="admin_user_summary_placeholder">Đang tải dữ liệu tài khoản từ SQLite</string>
     <string name="admin_user_stat_all">Tất cả</string>
+    <string name="admin_user_stat_chip_format">%1$s: %2$d</string>
     <string name="admin_user_role_admin_short">Admin</string>
     <string name="admin_user_role_employee_short">Nhân viên</string>
     <string name="admin_users_loading">Đang tải danh sách tài khoản...</string>
@@ -587,14 +569,7 @@ Trạng thái: %5$s</string>
     <string name="admin_user_validation_required">Vui lòng nhập đầy đủ tên, email, số điện thoại và mật khẩu.</string>
     <string name="admin_user_validation_duplicate">Email hoặc số điện thoại đã tồn tại.</string>
     <string name="admin_user_create_success">Đã thêm tài khoản mới</string>
-    <string name="admin_user_action_title">Thao tác tài khoản</string>
-    <string name="admin_user_detail_title">Chi tiết tài khoản</string>
-    <string name="admin_user_detail_content">Tên: %1$s\nEmail: %2$s\nSĐT: %3$s\nVai trò: %4$s\nTrạng thái: %5$s</string>
     <string name="admin_user_edit_unavailable">Chỉnh sửa thông tin tài khoản sẽ được bổ sung sau</string>
-    <string name="admin_user_reset_password_title">Đặt lại mật khẩu</string>
-    <string name="admin_user_reset_password_hint">Mật khẩu mới</string>
-    <string name="admin_user_reset_password_success">Đã đặt lại mật khẩu</string>
-    <string name="admin_user_reset_password_required">Vui lòng nhập mật khẩu mới</string>
     <string name="admin_order_summary_subtitle">Theo dõi nhanh các đơn trong ca hiện tại</string>
     <string name="admin_order_total_label">Tổng đơn</string>
     <string name="admin_order_pending_label">Chờ duyệt</string>

@@ -210,7 +210,8 @@ public class TrungTamQuanTriActivity extends AppCompatActivity {
         if (!sessionManager.damBaoNguoiDungConHoatDong(databaseHelper)) {
             return chuyenVeStaffLauncher();
         }
-        if (sessionManager.layVaiTroSessionHopLe() != VaiTroNguoiDung.ADMIN) {
+        VaiTroNguoiDung vaiTroSession = sessionManager.layVaiTroSessionHopLe();
+        if (vaiTroSession != VaiTroNguoiDung.ADMIN && vaiTroSession != VaiTroNguoiDung.NHAN_VIEN) {
             return chuyenVeStaffLauncher();
         }
         return true;

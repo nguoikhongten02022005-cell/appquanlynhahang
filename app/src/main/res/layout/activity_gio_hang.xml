@@ -13,6 +13,7 @@
         android:layout_marginStart="@dimen/screen_padding_horizontal"
         android:layout_marginTop="@dimen/space_lg"
         android:layout_marginEnd="@dimen/screen_padding_horizontal"
+        android:importantForAccessibility="yes"
         android:text="@string/cart_title"
         android:textAppearance="@style/TextAppearance.Quanlynhahang.PageTitle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -145,29 +146,60 @@
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_mon_trong_don" />
 
-            <Button
+            <LinearLayout
+                android:id="@+id/layoutCartEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:background="@drawable/bg_dish_card"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="@dimen/space_2xl"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="@dimen/header_avatar_size"
+                    android:layout_height="@dimen/header_avatar_size"
+                    android:contentDescription="@string/cd_cart"
+                    android:src="@drawable/ic_shopping_cart_24"
+                    app:tint="@color/primary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:text="@string/cart_empty_title"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.SectionTitle" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/cart_empty_body"
+                    android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnContinueShopping"
+                style="@style/Widget.Quanlynhahang.FilledButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_md"
-                android:background="@drawable/bg_button_orange"
+                android:minHeight="@dimen/button_height"
                 android:text="@string/cart_continue_shopping"
-                android:textAllCaps="false"
-                android:textColor="@color/text_on_color"
                 android:textSize="14sp"
-                android:textStyle="bold"
                 android:visibility="gone" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnClearCart"
+                style="@style/Widget.Quanlynhahang.TonalButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_sm"
-                android:background="@drawable/bg_button_danger_outline"
-                android:backgroundTint="@null"
+                android:minHeight="@dimen/button_height"
                 android:text="@string/cart_clear"
-                android:textAllCaps="false"
-                android:textColor="@color/text_on_color"
+                android:textColor="@color/error"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
@@ -179,40 +211,52 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/surface"
-        android:elevation="8dp"
+        android:elevation="@dimen/cart_footer_elevation"
         android:orientation="vertical"
-        android:padding="@dimen/space_lg"
+        android:paddingStart="@dimen/space_lg"
+        android:paddingTop="@dimen/space_md"
+        android:paddingEnd="@dimen/space_lg"
+        android:paddingBottom="@dimen/space_lg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <TextView
-            android:id="@+id/tvCartSubtotal"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
-            tools:text="Tạm tính: 274.000 đ" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvCartTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_xs"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            tools:text="Tổng tiền: 274.000 đ" />
+            <TextView
+                android:id="@+id/tvCartSubtotal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="@style/TextAppearance.Quanlynhahang.CardBody"
+                tools:text="Tạm tính: 274.000 đ" />
 
-        <Button
+            <TextView
+                android:id="@+id/tvCartTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/brand_primary_dark"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="Tổng tiền: 274.000 đ" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCheckout"
+            style="@style/Widget.Quanlynhahang.FilledButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_md"
-            android:background="@drawable/bg_button_green"
+            android:minHeight="@dimen/button_height"
             android:text="@string/cart_checkout"
-            android:textColor="@color/text_on_color"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            app:icon="@drawable/ic_shopping_cart_24"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/space_sm" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

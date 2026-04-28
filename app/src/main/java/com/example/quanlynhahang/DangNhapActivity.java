@@ -15,8 +15,7 @@ import com.example.quanlynhahang.helper.DieuHuongVaiTroHelper;
 import com.example.quanlynhahang.model.NguoiDung;
 import com.example.quanlynhahang.model.VaiTroNguoiDung;
 
-import java.util.Arrays;
-import java.util.List;
+
 
 public class DangNhapActivity extends AppCompatActivity {
 
@@ -36,29 +35,16 @@ public class DangNhapActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         sessionManager = new SessionManager(this);
         databaseHelper.chuanBiCoSoDuLieu();
-        sessionManager.chuyenDuLieuDangNhapCuNeuCan(databaseHelper);
+        
 
         boolean chiChoPhepPhienKhachHang = getIntent().getBooleanExtra(EXTRA_ONLY_CUSTOMER_SESSION, false);
 
         binding.btnLogin.setOnClickListener(v -> xuLyDangNhap(chiChoPhepPhienKhachHang));
         binding.tvGoToRegister.setOnClickListener(v -> startActivity(new Intent(this, DangKyActivity.class)));
-        napGoiYDangNhapNhanh(chiChoPhepPhienKhachHang);
+        
     }
 
-    private void napGoiYDangNhapNhanh(boolean chiChoPhepPhienKhachHang) {
-        List<VaiTroNguoiDung> thuTuVaiTro = chiChoPhepPhienKhachHang
-                ? Arrays.asList(VaiTroNguoiDung.KHACH_HANG)
-                : Arrays.asList(VaiTroNguoiDung.KHACH_HANG, VaiTroNguoiDung.NHAN_VIEN, VaiTroNguoiDung.ADMIN);
-
-        for (VaiTroNguoiDung vaiTro : thuTuVaiTro) {
-            DatabaseHelper.GoiYDangNhapNhanh goiY = databaseHelper.layGoiYDangNhapNhanhTheoVaiTro(vaiTro);
-            if (goiY != null) {
-                binding.etLoginEmail.setText(goiY.email);
-                binding.etLoginPassword.setText(goiY.matKhau);
-                return;
-            }
-        }
-    }
+    
 
     private void xuLyDangNhap(boolean chiChoPhepPhienKhachHang) {
         String emailHoacSoDienThoai = layTextDaCatKhoangTrang(binding.etLoginEmail);

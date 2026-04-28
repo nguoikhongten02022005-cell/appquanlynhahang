@@ -25,6 +25,8 @@ public class NguoiDungQuanTriAdapter extends RecyclerView.Adapter<NguoiDungQuanT
     public interface HanhDongListener {
         void khiSua(NguoiDung nguoiDung);
 
+        void khiXoa(NguoiDung nguoiDung);
+
         void khiBatTatTrangThaiHoatDong(NguoiDung nguoiDung);
     }
 
@@ -58,44 +60,8 @@ public class NguoiDungQuanTriAdapter extends RecyclerView.Adapter<NguoiDungQuanT
         return danhSachNguoiDung.size();
     }
 
-    public static String taoMoTaHienThi(Context context, NguoiDung nguoiDung) {
-        return nguoiDung.layHoTen() + " · " + taoNhanVaiTro(context, nguoiDung) + " · " + taoTrangThaiHienThi(context, nguoiDung);
-    }
-
-    public static String taoMoTaHienThi(NguoiDung nguoiDung) {
-        return nguoiDung.layHoTen();
-    }
-
-    public static String taoNhanVaiTro(Context context, NguoiDung nguoiDung) {
-        if (nguoiDung.laAdmin()) {
-            return context.getString(R.string.admin_user_role_admin_short);
-        }
-        if (nguoiDung.laNhanVien()) {
-            return context.getString(R.string.admin_user_role_employee_short);
-        }
-        return context.getString(R.string.admin_role_customer);
-    }
-
-    public static int taoNhanVaiTro(NguoiDung nguoiDung) {
-        if (nguoiDung.laAdmin()) {
-            return R.string.admin_user_role_admin_short;
-        }
-        if (nguoiDung.laNhanVien()) {
-            return R.string.admin_user_role_employee_short;
-        }
-        return R.string.admin_role_customer;
-    }
-
     public static String taoChuCaiDaiDien(NguoiDung nguoiDung) {
         return taoChuCaiDaiDienTuTen(nguoiDung.layHoTen());
-    }
-
-    public static String taoTrangThaiHienThi(Context context, NguoiDung nguoiDung) {
-        return context.getString(nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked);
-    }
-
-    public static int taoTrangThaiHienThi(NguoiDung nguoiDung) {
-        return nguoiDung.dangHoatDong() ? R.string.admin_user_status_active : R.string.admin_user_status_locked;
     }
 
     private static String taoChuCaiDaiDienTuTen(String hoTen) {
@@ -137,11 +103,10 @@ public class NguoiDungQuanTriAdapter extends RecyclerView.Adapter<NguoiDungQuanT
             binding.tvAdminUserAvatar.setTextColor(Color.parseColor(taoMauChuAvatar(nguoiDung)));
 
             ViewCompat.setBackgroundTintList(binding.viewAdminUserStatusDot, ColorStateList.valueOf(mauTrangThai));
-            binding.btnAdminUserActions.setOnClickListener(v -> hanhDongListener.khiSua(nguoiDung));
-            itemView.setOnLongClickListener(v -> {
-                hanhDongListener.khiSua(nguoiDung);
-                return true;
-            });
+            binding.btnAdminUserToggle.setText(nguoiDung.dangHoatDong() ? R.string.admin_user_lock_account : R.string.admin_user_unlock_account);
+            binding.btnAdminUserEdit.setOnClickListener(v -> hanhDongListener.khiSua(nguoiDung));
+            binding.btnAdminUserDelete.setOnClickListener(v -> hanhDongListener.khiXoa(nguoiDung));
+            binding.btnAdminUserToggle.setOnClickListener(v -> hanhDongListener.khiBatTatTrangThaiHoatDong(nguoiDung));
             itemView.setOnClickListener(v -> hanhDongListener.khiSua(nguoiDung));
         }
 

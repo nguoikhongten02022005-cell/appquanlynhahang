@@ -42,8 +42,6 @@ final class SeedDataHelper {
         try {
             JSONObject seed = docSeed(appContext);
             damBaoMonAnTuJson(databaseHelper, appContext, db, seed.optJSONArray("dishes"));
-            chuanHoaSeedMonAnSaiDanhMuc(appContext, db);
-            xoaNguoiDungCuKhongConDung(db);
             damBaoNguoiDungTuJson(databaseHelper, appContext, db, seed.optJSONArray("users"));
 
             long idKhachHang = layIdKhachHangSeed(db);
@@ -168,6 +166,39 @@ final class SeedDataHelper {
                     user.optBoolean("active", true)
             );
         }
+    }
+
+    private static void xoaMonMauCuKhongConTrongSeed(SQLiteDatabase db) {
+        String[] tenMonMauCu = new String[]{
+                "Mì Ý bò bằm",
+                "Gỏi tôm xoài xanh",
+                "Nước cam ép",
+                "Khoai",
+                "Khoai tây",
+                "Khoai tây chiên",
+                "Khoai lang kén"
+        };
+        db.delete(
+                DatabaseHelper.TABLE_DISH,
+                DatabaseHelper.COL_DISH_NAME + " IN (" + taoDanhSachPlaceholder(tenMonMauCu.length) + ")",
+                tenMonMauCu
+        );
+        db.delete(
+                DatabaseHelper.TABLE_ORDER_ITEM,
+                DatabaseHelper.COL_ORDER_ITEM_DISH_NAME + " IN (" + taoDanhSachPlaceholder(tenMonMauCu.length) + ")",
+                tenMonMauCu
+        );
+    }
+
+    private static String taoDanhSachPlaceholder(int soLuong) {
+        if (soLuong <= 0) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder("?");
+        for (int i = 1; i < soLuong; i++) {
+            builder.append(", ?");
+        }
+        return builder.toString();
     }
 
     private static void xoaNguoiDungCuKhongConDung(SQLiteDatabase db) {
@@ -298,18 +329,10 @@ final class SeedDataHelper {
                     "1"
             );
             if (cursor.moveToFirst()) {
-                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_USER_ID));
-                ContentValues values = new ContentValues();
-                values.put(DatabaseHelper.COL_USER_NAME, name);
-                values.put(DatabaseHelper.COL_USER_EMAIL, email);
-                values.put(DatabaseHelper.COL_USER_PHONE, phone);
-                values.put(DatabaseHelper.COL_USER_ROLE, role.name());
-                values.put(DatabaseHelper.COL_USER_IS_ACTIVE, isActive ? 1 : 0);
-                db.update(DatabaseHelper.TABLE_USER, values, DatabaseHelper.COL_USER_ID + " = ?", new String[]{String.valueOf(userId)});
                 return;
             }
 
-            Log.i(TAG, "Tạo tài khoản mẫu: " + email);
+            Log.i(TAG, "Tạo tài khoản mẫu mới.");
             databaseHelper.insertUser(db, name, email, phone, password, role, isActive);
         } finally {
             if (cursor != null) {
@@ -527,21 +550,31 @@ final class SeedDataHelper {
     }
 
     static void taoMonAnNeuChuaCo(DatabaseHelper databaseHelper, SQLiteDatabase db, String tenMon, String giaBan, String moTa, String tenAnh, boolean conPhucVu, String danhMuc, int diemDeXuat) {
-        if (TextUtils.isEmpty(tenMon)) {
+        if (TextUtils.isEmpty(tenMon) || daCoMonAnTheoTen(db, tenMon)) {
             return;
         }
+        databaseHelper.insertDish(db, tenMon, giaBan, moTa, tenAnh, conPhucVu, danhMuc, diemDeXuat);
+    }
+
+    private static boolean daCoMonAnTheoTen(SQLiteDatabase db, String tenMon) {
         Cursor cursor = null;
         try {
-            cursor = db.query(DatabaseHelper.TABLE_DISH, new String[]{DatabaseHelper.COL_DISH_ID}, DatabaseHelper.COL_DISH_NAME + " = ?", new String[]{tenMon}, null, null, null, "1");
-            if (cursor.moveToFirst()) {
-                return;
-            }
+            cursor = db.query(
+                    DatabaseHelper.TABLE_DISH,
+                    new String[]{DatabaseHelper.COL_DISH_ID},
+                    DatabaseHelper.COL_DISH_NAME + " = ?",
+                    new String[]{tenMon},
+                    null,
+                    null,
+                    null,
+                    "1"
+            );
+            return cursor.moveToFirst();
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-        databaseHelper.insertDish(db, tenMon, giaBan, moTa, tenAnh, conPhucVu, danhMuc, diemDeXuat);
     }
 
     private static void chuanHoaMonAnMacDinh(Context appContext, SQLiteDatabase db, String tenMon, String danhMucDung, int diemDeXuat, boolean conPhucVu, @Nullable String danhMucCuSai) {
@@ -560,14 +593,17 @@ final class SeedDataHelper {
     }
 
     private static String layTenAnhMacDinhTheoMon(Context appContext, @Nullable String tenMon) {
+        if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_bo_luc_lac))) {
+            return "bo_luc_lac";
+        }
         if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_lau_thai))) {
-            return TEN_ANH_MAC_DINH;
+            return "lau_thai_hai_san";
         }
         if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_salad_ca_hoi))) {
-            return TEN_ANH_MAC_DINH;
+            return "salad_ca_hoi";
         }
         if (TextUtils.equals(tenMon, appContext.getString(R.string.dish_tra_dao))) {
-            return TEN_ANH_MAC_DINH;
+            return "tra_dao_cam_sa";
         }
         return TEN_ANH_MAC_DINH;
     }

@@ -26,10 +26,6 @@ public class DanhMucMonAdapter extends RecyclerView.Adapter<DanhMucMonAdapter.Ca
     private final OnDanhMucClickListener onDanhMucClickListener;
     private int viTriDangChon;
 
-    public DanhMucMonAdapter(List<DanhMucMon> danhSachDanhMuc, OnDanhMucClickListener onDanhMucClickListener) {
-        this(danhSachDanhMuc, onDanhMucClickListener, KHONG_CO_DANH_MUC_DANG_CHON);
-    }
-
     public DanhMucMonAdapter(List<DanhMucMon> danhSachDanhMuc,
                            OnDanhMucClickListener onDanhMucClickListener,
                            int viTriDangChon) {
